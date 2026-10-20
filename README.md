@@ -1,6 +1,6 @@
 # alexanderk.dev
 
-My personal site: resume and projects inside a macOS Terminal window (follows the visitor's light/dark setting). Every page has a working zsh-style prompt, so you can navigate by typing (`help`, `ls`, `cd projects`, `open switch-to-youtube`, `resume`...) or just click.
+My personal site: resume and projects, styled like a 90s DOS terminal. Every page has a working command prompt, so you can navigate by typing (`HELP`, `DIR`, `CD PROJECTS`, `OPEN SWITCH-TO-YOUTUBE`, `RESUME`...) or just click.
 
 **Live:** [alexanderk.dev](https://alexanderk.dev)
 
@@ -19,7 +19,7 @@ projects/index.html                  Project list
 projects/<project>/index.html        One page per project
 css/style.css                        All styles (theme colors at the top)
 js/github.js                         Live GitHub stats
-js/terminal.js                       Command prompt and "Last login" line
+js/terminal.js                       Command prompt and boot screen
 404.html                             Not-found page
 wrangler.jsonc, .assetsignore        Cloudflare deploy config
 ```
@@ -37,7 +37,7 @@ Then open http://localhost:8000.
 1. Copy `projects/switch-to-youtube/` to a new folder and edit the content.
 2. Set `data-repo="owner/repo"` on the `.gh-stats` element to show live stats.
 3. Add a block for it in `projects/index.html`.
-4. Add it to the `PROJECTS` list at the top of `js/terminal.js` so `ls`, `cd`, and `open` know about it.
+4. Add it to the `PROJECTS` list at the top of `js/terminal.js` so `DIR` and `OPEN` know about it.
 
 ## Update the resume
 

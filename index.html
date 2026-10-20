@@ -5,40 +5,40 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Alexander Kashyap</title>
   <meta name="description" content="Alexander Kashyap - software developer building data-driven enterprise systems in C#, .NET, SQL, and Python.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./css/style.css">
 </head>
-<body data-root="./" data-page="home" data-cwd="~">
-  <div class="window">
-    <div class="chrome">
-      <div class="titlebar">
-        <div class="lights" aria-hidden="true"><span class="close"></span><span class="min"></span><span class="max"></span></div>
-        <div class="title">alexander — -zsh — 80×24</div>
-      </div>
-      <nav class="tabs">
-        <a href="./" aria-current="page">about</a>
-        <a href="./projects/">projects</a>
-        <a href="./assets/Alexander_Kashyap_Resume.pdf">resume.pdf</a>
+<body data-root="./" data-page="home">
+  <div class="boot" aria-hidden="true"></div>
+  <header class="menubar">
+    <div class="wrap">
+      <span class="title">ALEXANDERK.DEV</span>
+      <nav>
+        <a href="./" aria-current="page">ABOUT</a>
+        <a href="./projects/">PROJECTS</a>
+        <a href="./assets/Alexander_Kashyap_Resume.pdf">RESUME.PDF</a>
       </nav>
     </div>
+  </header>
 
-    <main class="term">
-    <p class="line dim last-login">Last login on ttys000</p>
-    <p class="ps1" data-cwd="~">whoami</p>
-    <div class="out">
-      <h1>Alexander Kashyap</h1>
-      <p>Software developer with ~2 years of experience building data-driven enterprise systems in C#, .NET, SQL, and Python. I like turning business requirements into reliable solutions, and explaining how things work.</p>
-    </div>
-    <p class="ps1" data-cwd="~">ls</p>
-    <div class="out ls">
-      <a class="blue" href="projects/">projects</a>
-      <a href="assets/Alexander_Kashyap_Resume.pdf" download>resume.pdf</a>
-      <a href="https://www.linkedin.com/in/alexander-kashyap/">linkedin.url</a>
-    </div>
-    <p class="ps1" data-cwd="~">cat experience.txt</p>
-    <div class="out">
+  <main class="wrap">
+    <p class="cmd">WHOAMI</p>
+    <h1 class="screen-title">Alexander Kashyap</h1>
+    <p class="lead">Software developer with ~2 years of experience building data-driven enterprise systems in C#, .NET, SQL, and Python. I like turning business requirements into reliable solutions, and explaining how things work.</p>
+    <ul class="actions">
+      <li><a class="btn primary" href="assets/Alexander_Kashyap_Resume.pdf" download>Download resume</a></li>
+      <li><a class="btn" href="projects/">Projects</a></li>
+      <li><a class="btn" href="https://www.linkedin.com/in/alexander-kashyap/">LinkedIn</a></li>
+    </ul>
+
+    <section class="box">
+      <h2 class="box-title">Experience.txt</h2>
+
       <div class="entry">
-        <div class="entry-head"><span><span class="b">Application Developer</span> @ K-Rise Systems</span><span class="dim">Jan 2025 – Present</span></div>
-        <div class="dim">Aurora, IL · Enterprise software</div>
+        <div class="entry-head"><h3>Application Developer</h3><span class="when">JAN 2025 - PRESENT</span></div>
+        <div class="where">K-Rise Systems / Aurora, IL / Enterprise software</div>
         <ul>
           <li>Worked on the rebuild of the company's AP Automation application for JD Edwards in C# and .NET, adding new AI features across the invoice pipeline, from scanned capture through validation and into JDE vouchers.</li>
           <li>Help implement AP Automation for clients: gathering requirements from their finance teams, customizing the solution to fit their workflows, and carrying improvements back into the base product.</li>
@@ -48,26 +48,30 @@
           <li>Supported development of EASYPay and EASYCommerce, the company's .NET payments and e-commerce applications.</li>
         </ul>
       </div>
+
       <div class="entry">
-        <div class="entry-head"><span><span class="b">AI Evaluator (Contract)</span> @ Outlier, a Scale AI platform</span><span class="dim">May 2024 – Jan 2025</span></div>
-        <div class="dim">Remote</div>
+        <div class="entry-head"><h3>AI Evaluator (Contract)</h3><span class="when">MAY 2024 - JAN 2025</span></div>
+        <div class="where">Outlier, a Scale AI platform / Remote</div>
         <ul>
           <li>Evaluated and compared AI-generated code for correctness, clarity, and quality, writing feedback used as training data for large language models.</li>
         </ul>
       </div>
+
       <div class="entry">
-        <div class="entry-head"><span><span class="b">Software Engineering Intern</span> @ Chamberlain Group</span><span class="dim">May 2022 – Jan 2023</span></div>
-        <div class="dim">Middleware · Chicago, IL</div>
+        <div class="entry-head"><h3>Software Engineering Intern</h3><span class="when">MAY 2022 - JAN 2023</span></div>
+        <div class="where">Chamberlain Group / Middleware / Chicago, IL</div>
         <ul>
           <li>Built RESTful API endpoints in .NET 6 for the myQ connected-device platform.</li>
           <li>Helped migrate services from .NET Core 3.1 to .NET 6 in an Agile/Scrum team.</li>
         </ul>
       </div>
-    </div>
-    <p class="ps1" data-cwd="~">cat education.txt</p>
-    <div class="out">
+    </section>
+
+    <section class="box">
+      <h2 class="box-title">Education.txt</h2>
       <div class="entry">
-        <div class="entry-head"><span><span class="b">B.S. Computer Science</span> @ Northern Illinois University</span><span class="dim">May 2024</span></div>
+        <div class="entry-head"><h3>B.S. Computer Science</h3><span class="when">MAY 2024</span></div>
+        <div class="where">Northern Illinois University</div>
         <ul>
           <li>Coursework: Databases, Probability &amp; Statistics, Data Structures, Algorithms, Software Engineering</li>
           <li>Scholarship player, NIU Esports</li>
@@ -75,27 +79,37 @@
           <li>Transfer Merit Scholar</li>
         </ul>
       </div>
-    </div>
-    <p class="ps1" data-cwd="~">cat skills.txt</p>
-    <div class="out">
-      <dl class="kv">
-        <dt>languages</dt><dd>SQL, Python, C#, JavaScript/TypeScript, C++</dd>
-        <dt>databases</dt><dd>Microsoft SQL Server (T-SQL, SSMS), MySQL</dd>
-        <dt>frameworks</dt><dd>.NET / .NET Core, REST APIs, Git, Jira</dd>
-        <dt>cloud</dt><dd>AWS, Azure</dd>
-        <dt>enterprise</dt><dd>JD Edwards (ERP)</dd>
-        <dt>certifications</dt><dd>AWS Certified Cloud Practitioner (2024)</dd>
-      </dl>
-    </div>
+    </section>
 
-    <p class="line dim" style="margin-top:1.45em"># type 'help' and press return to explore, or just click around</p>
-    <div class="prompt-output" aria-live="polite"></div>
-    <form class="prompt-form" autocomplete="off">
-      <label for="cmd">alexander@alexanderk-dev ~ % </label>
-      <input id="cmd" type="text" spellcheck="false" autocapitalize="off" autocorrect="off" aria-label="Command">
-    </form>
-    </main>
-  </div>
+    <section class="box">
+      <h2 class="box-title">Skills.txt</h2>
+      <dl class="skills">
+        <div><dt>Languages</dt><dd>SQL, Python, C#, JavaScript/TypeScript, C++</dd></div>
+        <div><dt>Databases</dt><dd>Microsoft SQL Server (T-SQL, SSMS), MySQL</dd></div>
+        <div><dt>Frameworks</dt><dd>.NET / .NET Core, REST APIs, Git, Jira</dd></div>
+        <div><dt>Cloud</dt><dd>AWS, Azure</dd></div>
+        <div><dt>Enterprise</dt><dd>JD Edwards (ERP)</dd></div>
+        <div><dt>Certified</dt><dd>AWS Certified Cloud Practitioner (2024)</dd></div>
+      </dl>
+    </section>
+
+    <div class="prompt-area">
+      <p class="prompt-hint">Type HELP and press Enter, or just click around.</p>
+      <div class="prompt-output" aria-live="polite"></div>
+      <form class="prompt-form" data-dir="ALEXANDERK" autocomplete="off">
+        <label for="cmd">C:\ALEXANDERK&gt;</label>
+        <input id="cmd" name="cmd" type="text" spellcheck="false" autocapitalize="off" aria-label="Command">
+      </form>
+    </div>
+  </main>
+
+  <footer class="statusbar">
+    <div class="wrap">
+      <span>(C) 2026 ALEXANDER KASHYAP</span>
+      <a href="https://www.linkedin.com/in/alexander-kashyap/">LINKEDIN</a>
+      <span>READY</span>
+    </div>
+  </footer>
 
   <script src="./js/terminal.js"></script>
 </body>

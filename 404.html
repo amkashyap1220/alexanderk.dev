@@ -5,42 +5,49 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>404 - Alexander Kashyap</title>
   <meta name="description" content="Page not found.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
 </head>
-<body data-root="/" data-page="home" data-cwd="~">
-  <div class="window">
-    <div class="chrome">
-      <div class="titlebar">
-        <div class="lights" aria-hidden="true"><span class="close"></span><span class="min"></span><span class="max"></span></div>
-        <div class="title">alexander — -zsh — 80×24</div>
-      </div>
-      <nav class="tabs">
-        <a href="/">about</a>
-        <a href="/projects/">projects</a>
-        <a href="/assets/Alexander_Kashyap_Resume.pdf">resume.pdf</a>
+<body data-root="/" data-page="home">
+  <header class="menubar">
+    <div class="wrap">
+      <span class="title">ALEXANDERK.DEV</span>
+      <nav>
+        <a href="/">ABOUT</a>
+        <a href="/projects/">PROJECTS</a>
+        <a href="/assets/Alexander_Kashyap_Resume.pdf">RESUME.PDF</a>
       </nav>
     </div>
+  </header>
 
-    <main class="term">
-    <p class="line dim last-login">Last login on ttys000</p>
-    <p class="ps1" data-cwd="~">cd this-page</p>
-    <div class="out">
-      <p>cd: no such file or directory: this-page</p>
-    </div>
-    <p class="ps1" data-cwd="~">ls</p>
-    <div class="out ls">
-      <a class="blue" href="/">~</a>
-      <a class="blue" href="/projects/">projects</a>
-    </div>
+  <main class="wrap">
+    <p class="cmd">CD THIS-PAGE</p>
+    <h1 class="screen-title">404</h1>
+    <p class="lead">File not found. Abort, Retry, Fail?</p>
+    <ul class="actions">
+      <li><a class="btn primary" href="/">Retry from home</a></li>
+      <li><a class="btn" href="/projects/">Projects</a></li>
+    </ul>
 
-    <p class="line dim" style="margin-top:1.45em"># type 'help' and press return to explore, or just click around</p>
-    <div class="prompt-output" aria-live="polite"></div>
-    <form class="prompt-form" autocomplete="off">
-      <label for="cmd">alexander@alexanderk-dev ~ % </label>
-      <input id="cmd" type="text" spellcheck="false" autocapitalize="off" autocorrect="off" aria-label="Command">
-    </form>
-    </main>
-  </div>
+    <div class="prompt-area">
+      <p class="prompt-hint">Type HELP and press Enter, or just click around.</p>
+      <div class="prompt-output" aria-live="polite"></div>
+      <form class="prompt-form" data-dir="ALEXANDERK" autocomplete="off">
+        <label for="cmd">C:\ALEXANDERK&gt;</label>
+        <input id="cmd" name="cmd" type="text" spellcheck="false" autocapitalize="off" aria-label="Command">
+      </form>
+    </div>
+  </main>
+
+  <footer class="statusbar">
+    <div class="wrap">
+      <span>(C) 2026 ALEXANDER KASHYAP</span>
+      <a href="https://www.linkedin.com/in/alexander-kashyap/">LINKEDIN</a>
+      <span>READY</span>
+    </div>
+  </footer>
 
   <script src="/js/terminal.js"></script>
 </body>
