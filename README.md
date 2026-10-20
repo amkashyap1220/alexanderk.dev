@@ -1,29 +1,65 @@
 # alexanderk.dev
 
-My personal site: resume and projects on a green-phosphor CRT terminal. The site is navigated only by typing at the `COMMAND?` prompt: `HELP`, `DIR`, `CD PROJECTS`, `CD ..`, `OPEN SWITCH-TO-YOUTUBE`, `TYPE SKILLS.TXT`, `1`-`7` on the menu, `RESUME`, `LINKEDIN`, `GITHUB`, `CLS`, `MENU`. Tapping the screen brings up the keyboard on phones.
+My personal site: resume and projects inside a macOS Terminal window running a small zsh look-alike. The site is navigated only by typing commands.
 
 **Live:** [alexanderk.dev](https://alexanderk.dev)
+
+## Try it
+
+```
+help                 every command
+ls / ls -la          list files
+cd projects          change directory (cd .., cd ~, cd -)
+cat about.txt        print a file
+open resume.pdf      download the resume (open linkedin.url, open github.url)
+neofetch             the quick version
+```
+
+Also: `pwd`, `history`, `clear` (Ctrl+L), `man <cmd>`, `echo`, `date`, `git status`, Tab completion, ↑/↓ history, Ctrl+C. Shortcuts: `about`, `experience`, `education`, `skills`, `projects`, `resume`, `linkedin`, `github`.
 
 ## Built with
 
 - Plain HTML, CSS, and JavaScript (no frameworks, no build step)
-- GitHub REST API for live star and commit counts on project pages
+- GitHub REST API for live star and commit counts
 - Cloudflare Workers (static assets), redeployed automatically on every push to `main`
 
-## Project structure
+## How it's organized
+
+The terminal has a virtual filesystem rooted at `~`:
 
 ```
-index.html                           Welcome screen (sections live in <template> tags,
-                                     printed by ABOUT, EXPERIENCE, EDUCATION, SKILLS)
-assets/Alexander_Kashyap_Resume.pdf  Downloadable resume
-projects/index.html                  Project list
-projects/<project>/index.html        One page per project
-css/style.css                        All styles (theme colors at the top)
+~/about.txt  experience.txt  education.txt  skills.txt  resume.pdf  linkedin.url
+~/projects/<project>/README.md  github.url
+```
+
+Every directory is a real page so links can be shared. The pages are identical shells that differ only in `<body data-cwd="...">`; all file contents live in `<template id="tpl-...">` tags on every page.
+
+```
+index.html                           ~
+projects/index.html                  ~/projects
+projects/<project>/index.html        ~/projects/<project>
+404.html                             not-found page
+assets/Alexander_Kashyap_Resume.pdf  resume.pdf
+css/style.css                        Terminal styles (colors at the top)
+js/terminal.js                       The shell: filesystem, commands, prompt
 js/github.js                         Live GitHub stats
-js/terminal.js                       Command line, boot screen, ASCII boxes
-404.html                             Not-found page
+tools/build_pages.py                 Generates the HTML pages
 wrangler.jsonc, .assetsignore        Cloudflare deploy config
 ```
+
+## Editing content
+
+File contents (about, experience, skills, project READMEs) are repeated on every page, so edit them in `tools/build_pages.py` and regenerate all pages:
+
+```
+python tools/build_pages.py .
+```
+
+## Add a project
+
+1. Add it to `PROJECTS` at the top of `js/terminal.js`.
+2. In `tools/build_pages.py`, add its README template, a row in the projects table, and a `page(...)` call.
+3. Run `python tools/build_pages.py .`
 
 ## Run locally
 
@@ -33,21 +69,10 @@ python -m http.server 8000
 
 Then open http://localhost:8000.
 
-## Add a project
-
-1. Copy `projects/switch-to-youtube/` to a new folder and edit the content.
-2. Point the live stats at the repo: `<span data-gh="owner/repo" data-field="stars"></span>` (fields: stars, commits, language, updated).
-3. Add a row to the table and a README entry in `projects/index.html`.
-4. Add it to the `PROJECTS` list at the top of `js/terminal.js` so `DIR` and `OPEN` know about it.
-
-## Edit resume content
-
-The About, Experience, Education, and Skills sections are in `index.html` inside `<template id="tpl-...">` tags. Wrap any block in `<div class="abox" data-title="TITLE"><div class="body">...</div></div>` to give it an ASCII box.
-
 ## Update the resume
 
 Replace `assets/Alexander_Kashyap_Resume.pdf` with a new PDF of the same name.
 
 ## Deployment
 
-Connected to a Cloudflare Worker through Workers Builds. Every push to `main` runs `npx wrangler deploy`, which reads `wrangler.jsonc` and uploads the site. `.assetsignore` keeps non-site files (README, config, `.git`) from being published.
+Connected to a Cloudflare Worker through Workers Builds. Every push to `main` runs `npx wrangler deploy`, which reads `wrangler.jsonc` and uploads the site. `.assetsignore` keeps non-site files (README, tools, config, `.git`) from being published.

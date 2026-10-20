@@ -1,475 +1,576 @@
 /* ==========================================================================
-   Terminal behavior
-   The whole site is navigated by typing commands at the COMMAND? prompt.
+   alexanderk.dev — zsh in the browser
+   The site is navigated only by typing commands. There's a small virtual
+   filesystem rooted at ~ (/Users/alexander):
 
-   - ASCII boxes: sizes every .abox to whole characters and draws its edges
-   - Boot screen on the home page (once per visit, skippable)
-   - The command line (type HELP)
-   - On the home page, sections live in <template id="tpl-NAME"> and get
-     printed into the terminal by commands (ABOUT, EXPERIENCE, ...)
+     ~/about.txt  experience.txt  education.txt  skills.txt
+     ~/linkedin.url
+     ~/projects/<project>/README.md  github.url
 
-   Each page's <body> says where it is:
-     data-root     path from this page back to the site root ("./", "../", ...)
-     data-page     "home", "projects", or "project"
-     data-project  the project's slug, on project pages
-   To add a project, add it to PROJECTS below (its number is its position).
+   Each directory is a real page (so links can be shared); the pages are
+   identical shells that differ only in <body data-cwd="...">.
+   File contents live in <template id="tpl-NAME"> tags on every page.
+
+   To add a project: add it to PROJECTS below, add its README template in
+   the page generator, and create projects/<slug>/index.html.
    ========================================================================== */
 
 (function () {
-  const PROJECTS = [
-    {
-      slug: "switch-to-youtube",
-      dosName: "SWITCH~1",
-      aliases: ["switchtoyoutube", "switch", "youtube"],
-      about: "FREE WEB APP: SPOTIFY PLAYLISTS -> YOUTUBE MUSIC",
-      repo: "https://github.com/amkashyap1220/SwitchToYoutube",
-    },
-    {
-      slug: "alexanderk-dev",
-      dosName: "ALEXAN~1",
-      aliases: ["alexanderk.dev", "site", "website"],
-      about: "THIS WEBSITE",
-      repo: "https://github.com/amkashyap1220/alexanderk.dev",
-    },
-  ];
-  // Home-page menu: number -> command
-  const MENU = ["about", "experience", "education", "skills", "projects", "resume", "linkedin"];
-  const SECTIONS = ["about", "experience", "education", "skills"];   // printed from templates
-
+  // ---------------------------------------------------------------- data
+  const USER = "alexander";
+  const HOST = "alexanderk-dev";
   const LINKEDIN = "https://www.linkedin.com/in/alexander-kashyap/";
   const GITHUB = "https://github.com/amkashyap1220";
+  const PROJECTS = [
+    { slug: "switch-to-youtube", repo: "https://github.com/amkashyap1220/SwitchToYoutube" },
+    { slug: "alexanderk-dev", repo: "https://github.com/amkashyap1220/alexanderk.dev" },
+  ];
 
   const body = document.body;
-  const root = body.dataset.root || "./";
-  const page = body.dataset.page || "home";
-  const currentSlug = body.dataset.project || "";
-  const current = PROJECTS.find((p) => p.slug === currentSlug);
-  const RESUME = root + "assets/Alexander_Kashyap_Resume.pdf";
+  const root = body.dataset.root || "./";            // path back to the site root
+  const notFound = body.dataset.notfound === "1";
+  const cwd = body.dataset.cwd || "~";
+
+  // Directories: name list in display order. Files: what they are.
+  const DIRS = {
+    "~": ["about.txt", "experience.txt", "education.txt", "skills.txt", "projects", "linkedin.url"],
+    "~/projects": PROJECTS.map((p) => p.slug),
+  };
+  const FILES = {
+    "~/about.txt": { kind: "txt", tpl: "about" },
+    "~/experience.txt": { kind: "txt", tpl: "experience" },
+    "~/education.txt": { kind: "txt", tpl: "education" },
+    "~/skills.txt": { kind: "txt", tpl: "skills" },
+    "~/linkedin.url": { kind: "url", href: LINKEDIN },
+  };
+  const PAGE = { "~": "", "~/projects": "projects/" };
+  PROJECTS.forEach((p) => {
+    const dir = "~/projects/" + p.slug;
+    DIRS[dir] = ["README.md", "github.url"];
+    FILES[dir + "/README.md"] = { kind: "md", tpl: "readme-" + p.slug };
+    FILES[dir + "/github.url"] = { kind: "url", href: p.repo };
+    PAGE[dir] = "projects/" + p.slug + "/";
+  });
+  // What runs automatically when you arrive in a directory
+  const ON_ARRIVE = { "~/projects": "ls -l" };
+  PROJECTS.forEach((p) => { ON_ARRIVE["~/projects/" + p.slug] = "cat README.md"; });
+
+  // macOS paths are case-insensitive: look things up in lowercase
+  const CANON = {};
+  Object.keys(DIRS).concat(Object.keys(FILES)).forEach((k) => { CANON[k.toLowerCase()] = k; });
+
+  const repoFor = (dir) => (PROJECTS.find((p) => dir === "~/projects/" + p.slug) || {}).repo;
+
+  // ---------------------------------------------------------------- session (survives page changes)
+  const store = {
+    get(k, fallback) { try { const v = sessionStorage.getItem(k); return v === null ? fallback : JSON.parse(v); } catch (e) { return fallback; } },
+    set(k, v) { try { sessionStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* ignore */ } },
+    del(k) { try { sessionStorage.removeItem(k); } catch (e) { /* ignore */ } },
+  };
+
+  // ---------------------------------------------------------------- DOM
   const term = document.querySelector(".term");
-  const WHERE = page === "projects" ? "C:\\PROJECTS"
-    : page === "project" ? "C:\\PROJECTS\\" + (PROJECTS.find((p) => p.slug === currentSlug) || {}).dosName
-    : page === "notfound" ? "C:\\???" : "C:\\";
+  const out = document.querySelector(".out");
   const scroller = document.querySelector(".scroll");
-
-  // ---------- ASCII boxes ----------
-  let cw = 0;
-  function measure() {
-    const probe = document.createElement("span");
-    probe.textContent = "M".repeat(100);
-    probe.style.cssText = "position:absolute;visibility:hidden;white-space:pre";
-    term.appendChild(probe);
-    cw = probe.getBoundingClientRect().width / 100;
-    probe.remove();
-    document.documentElement.style.setProperty("--cw", cw + "px");
-  }
-  function frame(box) {
-    if (!cw) return;
-    box.style.width = "";
-    const parent = box.parentElement;
-    const cs = getComputedStyle(parent);
-    const avail = parent.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
-    const n = Math.floor(avail / cw);
-    if (n < 12) { box.classList.remove("framed"); return; }
-    box.style.width = n * cw + "px";
-
-    let top = box.querySelector(":scope > .edge.top");
-    let bottom = box.querySelector(":scope > .edge.bottom");
-    if (!top) {
-      top = document.createElement("div");
-      top.className = "edge top";
-      top.setAttribute("aria-hidden", "true");
-      box.prepend(top);
-      bottom = document.createElement("div");
-      bottom.className = "edge bottom";
-      bottom.setAttribute("aria-hidden", "true");
-      box.append(bottom);
-    }
-    let title = (box.dataset.title || "").toUpperCase();
-    const room = n - 9;                       // "+--[ " + " ]" + at least one "-" and the corner
-    if (title.length > room) title = title.slice(0, Math.max(1, room - 1)) + "~";   // DOS-style short name
-    const head = title ? "+--[ " : "+";
-    const tail = title ? " ]" : "";
-    const dashes = Math.max(0, n - head.length - title.length - tail.length - 1);
-    top.textContent = "";
-    top.append(head);
-    if (title) {
-      const t = document.createElement("span");
-      t.className = "t";
-      t.textContent = title;
-      top.append(t);
-    }
-    top.append(tail + "-".repeat(dashes) + "+");
-    bottom.textContent = "+" + "-".repeat(n - 2) + "+";
-    box.classList.add("framed");
-  }
-  function frameAll(scope) { (scope || document).querySelectorAll(".abox").forEach(frame); }
-  function setupBoxes() { measure(); frameAll(); }
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(setupBoxes);
-  setupBoxes();
-  let resizeTimer;
-  window.addEventListener("resize", () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(setupBoxes, 120);
-  });
-
-  // ---------- Boot screen (home page only) ----------
-  const boot = document.querySelector(".boot");
-  const startSection = page === "home" ? location.hash.slice(1).toLowerCase() : "";
-  if (boot) {
-    let seen = false;
-    try { seen = sessionStorage.getItem("booted") === "1"; } catch (e) { /* storage blocked */ }
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (seen || reduce || startSection) {
-      boot.classList.add("done");
-    } else {
-      const lines = [
-        "ALEXANDERK-DEV TERMINAL  VT102",
-        "",
-        "MEMORY TEST . . . . . . 640K OK",
-        "CONNECTING  . . . . . . 9600 8N1",
-        "LOADING PROFILE . . . . OK",
-      ];
-      let i = 0;
-      const finish = () => {
-        clearInterval(timer);
-        boot.classList.add("done");
-        try { sessionStorage.setItem("booted", "1"); } catch (e) { /* ignore */ }
-        setupBoxes();
-      };
-      const timer = setInterval(() => {
-        if (i < lines.length) boot.textContent += lines[i++] + "\n";
-        else { clearInterval(timer); setTimeout(finish, 450); }
-      }, 150);
-      boot.addEventListener("click", finish);
-      document.addEventListener("keydown", finish, { once: true });
-    }
-  }
-
-  // ---------- Command line ----------
   const line = document.querySelector(".cmdline");
-  if (!line) return;
   const input = line.querySelector("input");
-  const typed = line.querySelector(".typed");
-  const out = document.querySelector(".prompt-output");
-  const history = [];
-  let histPos = 0;
+  const psEl = line.querySelector(".ps");
+  const before = line.querySelector(".before");
+  const cur = line.querySelector(".cur");
+  const after = line.querySelector(".after");
 
-  const sync = () => { typed.textContent = input.value; };
-  input.addEventListener("input", sync);
-  input.addEventListener("focus", () => line.classList.add("focused"));
-  input.addEventListener("blur", () => line.classList.remove("focused"));
-
-  // Clicking or tapping anywhere on the screen focuses the prompt (so phones get a keyboard),
-  // unless the visitor is selecting text to copy.
-  document.querySelector(".crt").addEventListener("click", () => {
-    if (boot && !boot.classList.contains("done")) return;
-    if (String(window.getSelection())) return;
-    input.focus({ preventScroll: true });
-  });
-
-  function print(text) {
-    const div = document.createElement("div");
-    div.textContent = text;
-    out.appendChild(div);
+  // ---------------------------------------------------------------- output helpers
+  function span(text, cls) {
+    const s = document.createElement("span");
+    if (cls) s.className = cls;
+    s.textContent = text;
+    return s;
   }
-  function blank() { print(""); }
-  function printTemplate(name) {
+  // print("plain", ["colored", "g b"], ...)
+  function print(...segs) {
+    const d = document.createElement("div");
+    d.className = "ln";
+    segs.forEach((s) => d.append(typeof s === "string" ? s : span(s[0], s[1])));
+    out.appendChild(d);
+    return d;
+  }
+  const err = (text) => print([text, "r"]);
+  function printNode(node) {
+    const d = document.createElement("div");
+    d.className = "block";
+    d.appendChild(node);
+    out.appendChild(d);
+    if (window.GH) window.GH.fill(d);
+    return d;
+  }
+  function printTpl(name) {
     const tpl = document.getElementById("tpl-" + name);
     if (!tpl) return false;
-    const wrap = document.createElement("div");
-    wrap.className = "printed";
-    wrap.appendChild(tpl.content.cloneNode(true));
-    out.appendChild(wrap);
-    frameAll(wrap);
+    printNode(tpl.content.cloneNode(true));
     return true;
   }
-  function go(url, label) {
-    blank();
-    print("NOW ENTERING " + label.toUpperCase() + " . . .");
+  function promptNodes(dir) {
+    const frag = document.createDocumentFragment();
+    frag.append(span(USER + "@" + HOST, "user"), " ", span(dir, "path"));
+    if (repoFor(dir)) {
+      const g = span("git:(", "git");
+      g.append(span("main", "branch"), ")");
+      frag.append(" ", g);
+    }
+    frag.append(" ", span("%", "sym"), " ");
+    return frag;
+  }
+  function echo(dir, cmd) {
+    const d = document.createElement("div");
+    d.className = "ln ps";
+    d.append(promptNodes(dir), cmd);
+    out.appendChild(d);
+  }
+  function scrollToPrompt() { line.scrollIntoView({ block: "nearest" }); }
+
+  // ---------------------------------------------------------------- paths
+  const HOME_ABS = "/Users/" + USER;
+  // Returns { key } for a path inside ~ (key may not exist), or { outside: "/abs/path" }.
+  function resolve(arg, from) {
+    let p = (arg || "").trim();
+    if (/^\/+$/.test(p)) return { key: "~" };          // "/" is the site's root: home
+    p = p.replace(/\/+$/, "") || ".";
+    let segs;
+    if (p === "~" || p.startsWith("~/")) { segs = []; p = p.slice(2); }
+    else if (p.toLowerCase() === HOME_ABS.toLowerCase() || p.toLowerCase().startsWith(HOME_ABS.toLowerCase() + "/")) { segs = []; p = p.slice(HOME_ABS.length + 1); }
+    else if (p.startsWith("/")) return { outside: p || "/" };
+    else segs = (from || cwd).split("/").slice(1);
+    for (const part of p.split("/")) {
+      if (!part || part === ".") continue;
+      if (part === "..") {
+        if (!segs.length) return { outside: "/Users" };
+        segs.pop();
+      } else segs.push(part);
+    }
+    const key = "~" + (segs.length ? "/" + segs.join("/") : "");
+    return { key: CANON[key.toLowerCase()] || key };
+  }
+  const isDir = (k) => Object.prototype.hasOwnProperty.call(DIRS, k);
+  const isFile = (k) => Object.prototype.hasOwnProperty.call(FILES, k);
+  const abs = (k) => HOME_ABS + k.slice(1);
+  const baseName = (k) => k.split("/").pop();
+
+  // ---------------------------------------------------------------- navigation
+  function go(dir, typed) {
+    store.set("oldpwd", cwd);
+    store.set("arrive", { from: cwd, cmd: typed, to: dir });
+    line.classList.add("off");
     input.disabled = true;
-    setTimeout(() => { location.href = url; }, 350);
-  }
-  function openTab(url, label) {
-    print("OPENING " + label + " IN A NEW WINDOW . . .");
-    window.open(url, "_blank", "noopener");
-  }
-  function clean(arg) {
-    return (arg || "").toLowerCase().trim().replace(/\\/g, "/").replace(/^\.\//, "").replace(/\/+$/, "");
-  }
-  function findProject(name) {
-    const n = clean(name).replace(/^(~\/|\/)?projects\//, "");
-    if (!n) return undefined;
-    if (/^\d+$/.test(n)) return page === "projects" ? PROJECTS[Number(n) - 1] : undefined;
-    return PROJECTS.find((p) => p.slug === n || p.dosName.toLowerCase() === n || p.aliases.includes(n));
-  }
-  function openProject(p) { go(root + "projects/" + p.slug + "/", p.slug); }
-
-  // Prints a home-page section; from other pages, goes home and prints it there.
-  function section(name) {
-    if (page === "home" && printTemplate(name)) return;
-    go(root + "#" + name, "home");
+    location.href = root + PAGE[dir];
   }
 
-  // ----- what's in each "directory" -----
-  function dir() {
-    if (page === "home") {
-      print(" DIRECTORY OF C:\\");
-      print("");
-      print("  ABOUT       TXT      WHO I AM");
-      print("  EXPERIENCE  TXT      WHERE I'VE WORKED");
-      print("  EDUCATION   TXT      SCHOOL");
-      print("  SKILLS      TXT      WHAT I WORK WITH");
-      print("  PROJECTS    <DIR>    THINGS I'VE BUILT");
-      print("  RESUME      PDF      MY RESUME");
-      print("  LINKEDIN    URL      MY LINKEDIN");
-      print("");
-      print(" TYPE <NAME> TO READ, CD PROJECTS, OR RESUME / LINKEDIN");
-    } else if (page === "projects") {
-      print(" DIRECTORY OF C:\\PROJECTS");
-      print("");
-      print("     ..                       <DIR>");
-      PROJECTS.forEach((p, i) => print("  " + (i + 1) + "  " + p.slug.toUpperCase().padEnd(22) + "<DIR>    " + p.about));
-      print("");
-      print(" TYPE A NUMBER OR OPEN <NAME>");
-    } else if (page === "notfound") {
-      print("?NOTHING HERE. TYPE CD ~ TO GO HOME");
-    } else {
-      print(" DIRECTORY OF C:\\PROJECTS\\" + current.dosName);
-      print("");
-      print("  ..          <DIR>");
-      print("  README      TXT      (ON SCREEN)");
-      print("  SOURCE      URL      TYPE GITHUB TO VIEW THE CODE");
-    }
+  // ---------------------------------------------------------------- ls coloring
+  function lsName(dir, name) {
+    const k = dir === "~" ? "~/" + name : dir + "/" + name;
+    if (isDir(k)) return [name, "bl b"];
+    if (/\.url$/.test(name)) return [name, "c"];
+    return [name, ""];
+  }
+  function lsLong(dir, showAll) {
+    const names = (showAll ? [".", ".."] : []).concat(DIRS[dir]);
+    print("total " + names.length * 8);
+    names.forEach((name) => {
+      const k = name === "." ? dir : name === ".." ? (dir.split("/").slice(0, -1).join("/") || "~") : (dir + "/" + name);
+      const d = name === "." || name === ".." || isDir(k);
+      const size = d ? "96" : "1024";
+      const perms = d ? "drwxr-xr-x" : "-rw-r--r--";
+      print([perms, "d"], "  ", [USER, "y"], "  ", ["staff", "d"], "  ", size.padStart(6), "  ", ["Oct 20 2026", "d"], "  ",
+        d ? [name, "bl b"] : lsName(dir, name));
+    });
   }
 
-  function cd(arg) {
-    const raw = (arg || "").trim();
-    const a = /^[\\/]+$/.test(raw) ? "/" : clean(arg);   // "CD \" means the root, like DOS
-    if (!a) return print(WHERE);
-    if (a === "~" || a === "/" || a === "c:" || a === "c:/") {
-      if (page === "home") return print("?ALREADY IN C:\\. TRY DIR");
-      return go(root, "home");
-    }
-    if (a === "..") {
-      if (page === "notfound") return go(root, "home");
-      if (page === "project") return go(root + "projects/", "projects");
-      if (page === "projects") return go(root, "home");
-      return print("?ALREADY AT THE TOP DIRECTORY. TRY DIR");
-    }
-    if (a === "../..") return go(root, "home");
-    if (a === "projects" || a === "~/projects" || a === "/projects") {
-      if (page === "projects") return print("?ALREADY IN PROJECTS. TRY DIR");
-      return go(root + "projects/", "projects");
-    }
-    const p = findProject(a);
-    if (p) {
-      if (p.slug === currentSlug) return print("?ALREADY IN " + p.slug.toUpperCase());
-      return openProject(p);
-    }
-    if (/\.(txt|pdf|url)$/.test(a) || SECTIONS.includes(a) || a === "resume" || a === "linkedin") {
-      return print("?" + a.toUpperCase() + " IS A FILE, NOT A DIRECTORY. TRY TYPE OR OPEN");
-    }
-    print("?NO SUCH DIRECTORY: " + a.toUpperCase());
-  }
-
-  function typeFile(arg) {
-    const a = clean(arg).replace(/\.txt$/, "");
-    const shown = (arg || "").trim().toUpperCase();
-    if (!a) return print("?USAGE: TYPE <FILE>   (TRY DIR)");
-    if (SECTIONS.includes(a)) return section(a);
-    if (a === "readme" && (page === "project" || page === "projects")) {
-      const hidden = term.querySelectorAll(":scope > .cleared");
-      if (hidden.length) {             // after CLS: bring the page's text back
-        hidden.forEach((el) => { el.classList.remove("cleared"); out.before(el); });
-        frameAll();
-        return;
-      }
-      return print(page === "project" ? "README.TXT IS ALREADY ON SCREEN. SCROLL UP"
-                                       : "THE READMES ARE ON SCREEN. SCROLL UP, OR OPEN <NAME>");
-    }
-    if (/^resume(\.pdf)?$/.test(a)) return print("?CAN'T TYPE A PDF. TYPE RESUME TO DOWNLOAD IT");
-    if (/^linkedin(\.url)?$/.test(a)) return print("URL = " + LINKEDIN.toUpperCase() + "   (TYPE LINKEDIN TO OPEN IT)");
-    if (findProject(a) || a === "projects") return print("?" + shown + " IS A DIRECTORY. TRY CD " + shown);
-    print("?FILE NOT FOUND: " + shown);
-  }
-
-  function openThing(arg) {
-    const a = clean(arg);
-    if (!a) return print("?USAGE: OPEN <NAME>   (TRY DIR)");
-    if (/^resume(\.pdf)?$/.test(a)) return COMMANDS.resume();
-    if (/^linkedin(\.url)?$/.test(a)) return COMMANDS.linkedin();
-    if (/^(github|source)$/.test(a)) return COMMANDS.github();
-    if (SECTIONS.includes(a.replace(/\.txt$/, "")) || a === "readme.txt" || a === "readme") return typeFile(a);
-    if (a === "projects") return cd("projects");
-    const p = findProject(a);
-    if (p) {
-      if (p.slug === currentSlug) return print("?" + p.slug.toUpperCase() + " IS ALREADY OPEN");
-      return openProject(p);
-    }
-    print("?FILE NOT FOUND: " + a.toUpperCase());
-  }
-
-  function showMenu() {
-    const welcome = document.querySelector('.term > .abox[data-title="WELCOME"]');
-    if (page !== "home" || !welcome) return go(root, "home");
-    const copy = document.createElement("div");
-    copy.className = "printed";
-    const box = welcome.cloneNode(true);
-    box.classList.remove("cleared");
-    box.style.marginTop = "";
-    box.querySelectorAll(".edge").forEach((e) => e.remove());
-    copy.appendChild(box);
-    out.appendChild(copy);
-    frameAll(copy);
+  // ---------------------------------------------------------------- commands
+  const HELP = [
+    ["ls [-la] [dir]", "list files"],
+    ["cd <dir>", "change directory (cd projects, cd .., cd ~, cd -)"],
+    ["cat <file>", "print a file (cat about.txt)"],
+    ["open <file>", "open a file, link, or folder (open linkedin.url)"],
+    ["pwd", "print the current directory"],
+    ["neofetch", "who I am, the quick version"],
+    ["history", "commands you've run"],
+    ["clear", "clear the screen (or Ctrl+L)"],
+    ["man <command>", "show help for a command"],
+  ];
+  const SHORTCUTS = [
+    ["about", "cat ~/about.txt"],
+    ["experience", "cat ~/experience.txt"],
+    ["education", "cat ~/education.txt"],
+    ["skills", "cat ~/skills.txt"],
+    ["projects", "cd ~/projects"],
+    ["linkedin", "open ~/linkedin.url"],
+    ["github", "open the code on GitHub"],
+  ];
+  function helpGrid(rows) {
+    const g = document.createElement("div");
+    g.className = "help";
+    rows.forEach(([c, d]) => g.append(span(c, "cmdname"), span(d, "d")));
+    printNode(g);
   }
 
   const COMMANDS = {
     help() {
-      print("COMMANDS (TYPE ONE, THEN PRESS ENTER):");
+      print(["zsh", "b"], " on ", [HOST, "g"], " — commands:");
+      helpGrid(HELP);
       print("");
-      print("  ABOUT          WHO I AM");
-      print("  EXPERIENCE     WHERE I'VE WORKED");
-      print("  EDUCATION      SCHOOL");
-      print("  SKILLS         WHAT I WORK WITH");
-      print("  PROJECTS       THINGS I'VE BUILT");
-      print("  OPEN <NAME>    OPEN A PROJECT OR FILE");
-      print("  RESUME         DOWNLOAD MY RESUME (PDF)");
-      print("  LINKEDIN       OPEN MY LINKEDIN");
-      print("  GITHUB         VIEW THE CODE ON GITHUB");
-      print("  DIR            LIST WHAT'S HERE");
-      print("  CD <DIR>       CHANGE DIRECTORY (CD PROJECTS, CD .., CD ~)");
-      print("  TYPE <FILE>    READ A FILE (TYPE SKILLS.TXT)");
-      print("  MENU           SHOW THE MAIN MENU");
-      print("  CLS            CLEAR THE SCREEN");
-      if (page === "home") { print(""); print("  OR TYPE 1-7 TO PICK FROM THE MENU"); }
-      if (page === "projects") { print(""); print("  OR TYPE 1-" + PROJECTS.length + " TO OPEN A PROJECT"); }
-      if (page === "project") { print(""); print("  TYPE CD .. TO GO BACK TO PROJECTS"); }
-      if (page === "notfound") { print(""); print("  TYPE CD ~ TO GO HOME"); }
+      print(["shortcuts:", "b"]);
+      helpGrid(SHORTCUTS);
+      print("");
+      print(["tips: ", "d"], "Tab completes names · ↑ ↓ browse history · Ctrl+C cancels", "");
     },
-    about() { section("about"); },
-    whoami() { section("about"); },
-    experience() { section("experience"); },
-    work() { section("experience"); },
-    education() { section("education"); },
-    school() { section("education"); },
-    skills() { section("skills"); },
-    projects() {
-      if (page === "projects") return dir();
-      go(root + "projects/", "projects");
-    },
-    open: openThing,
-    run: openThing,
-    type: typeFile,
-    cat: typeFile,
-    more: typeFile,
-    dir, ls: dir,
-    cd, chdir: cd,
-    back() { cd(".."); },
-    home() { page === "home" ? showMenu() : go(root, "home"); },
-    menu: showMenu,
-    resume() {
-      print("DOWNLOADING RESUME.PDF . . .");
-      const a = document.createElement("a");
-      a.href = RESUME;
-      a.download = "Alexander_Kashyap_Resume.pdf";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-    },
-    linkedin() { openTab(LINKEDIN, "LINKEDIN"); },
-    github() {
-      if (current) return openTab(current.repo, "GITHUB: " + current.slug.toUpperCase());
-      openTab(GITHUB, "GITHUB");
-    },
-    cls() {
-      out.innerHTML = "";
-      Array.from(term.children).forEach((el) => {
-        if (el !== out && el !== line && el.tagName !== "TEMPLATE") el.classList.add("cleared");
+
+    ls(args) {
+      const flags = args.filter((a) => a.startsWith("-")).join("");
+      const long = flags.includes("l");
+      const all = flags.includes("a");
+      const targets = args.filter((a) => !a.startsWith("-"));
+      if (!targets.length) targets.push(".");
+      targets.forEach((t, i) => {
+        const r = resolve(t);
+        if (r.outside) return err("ls: " + t + ": Permission denied");
+        if (isFile(r.key)) return print(lsName(r.key.split("/").slice(0, -1).join("/"), baseName(r.key)));
+        if (!isDir(r.key)) return err("ls: " + t + ": No such file or directory");
+        if (targets.length > 1) print((i ? "\n" : "") + t + ":");
+        if (long && r.key === "~/projects" && !all) {
+          printTpl("projects-table");
+          return;
+        }
+        if (long) return lsLong(r.key, all);
+        const row = document.createElement("div");
+        row.className = "cols";
+        (all ? [".", ".."] : []).concat(DIRS[r.key]).forEach((n) => {
+          const s = n === "." || n === ".." ? [n, "bl b"] : lsName(r.key, n);
+          row.append(span(s[0], s[1]));
+        });
+        printNode(row);
       });
     },
-    clear() { COMMANDS.cls(); },
-    ver() { print("ALEXANDERK-DEV TERMINAL VERSION 1.0"); },
-    date() { print("CURRENT DATE IS " + new Date().toDateString().toUpperCase()); },
-    exit() { print("NO CARRIER. (TYPE MENU TO RECONNECT)"); },
-    sudo() { print("?ACCESS DENIED. THIS INCIDENT WILL BE REPORTED"); },
+
+    cd(args, typed) {
+      let t = args[0];
+      if (!t) t = "~";
+      if (t === "-") {
+        const old = store.get("oldpwd", null);
+        if (!old) return err("cd: OLDPWD not set");
+        print(old);
+        if (old === cwd) return;
+        return go(old, typed);
+      }
+      const r = resolve(t);
+      if (r.outside) return err("cd: permission denied: " + r.outside);
+      if (isFile(r.key)) return err("cd: not a directory: " + t);
+      if (!isDir(r.key)) return err("cd: no such file or directory: " + t);
+      if (r.key === cwd && !notFound) return;     // already here: zsh prints nothing
+      go(r.key, typed);
+    },
+
+    cat(args) {
+      if (!args.length) return print(["usage: cat <file>   ", "r"], ["(try: cat about.txt)", "d"]);
+      args.forEach((t) => {
+        const r = resolve(t);
+        if (r.outside) return err("cat: " + t + ": Permission denied");
+        if (isDir(r.key)) return err("cat: " + t + ": Is a directory");
+        if (!isFile(r.key)) return err("cat: " + t + ": No such file or directory");
+        const f = FILES[r.key];
+        if (f.tpl) return printTpl(f.tpl);
+        if (f.kind === "url") {
+          print("[InternetShortcut]");
+          return print("URL=", [f.href, "c"]);
+        }
+      });
+    },
+
+    open(args, typed) {
+      const targets = args.filter((a) => !a.startsWith("-"));
+      if (!targets.length) return print(["Usage: open [filenames]", "r"], ["   (try: open linkedin.url)", "d"]);
+      for (const t of targets) {
+        if (/^https?:\/\//i.test(t)) { window.open(t, "_blank", "noopener"); continue; }
+        const r = resolve(t);
+        if (r.outside || (!isDir(r.key) && !isFile(r.key))) {
+          err("The file " + (r.outside || abs(r.key)) + " does not exist.");
+          continue;
+        }
+        if (isDir(r.key)) {
+          if (r.key === cwd) { print(["(you're already in " + r.key + ")", "d"]); continue; }
+          return go(r.key, typed);                 // "opening" a folder takes you there
+        }
+        const f = FILES[r.key];
+        if (f.kind === "url") window.open(f.href, "_blank", "noopener");
+        else if (f.tpl) printTpl(f.tpl);
+      }
+    },
+
+    pwd() { print(abs(cwd)); },
+    whoami() { print(USER); },
+    hostname() { print(HOST); },
+    neofetch() { printTpl("neofetch"); },
+    clear() { out.textContent = ""; },
+    history() {
+      const h = store.get("history", []);
+      h.forEach((c, i) => print([String(i + 1).padStart(5), "d"], "  ", c));
+    },
+    echo(args) { print(args.join(" ").replace(/^["']|["']$/g, "")); },
+    date() {
+      const d = new Date();
+      const tz = (d.toTimeString().match(/\(([^)]+)\)/) || [])[1] || "";
+      const short = tz.split(" ").map((w) => w[0]).join("");
+      const parts = d.toString().split(" ");   // Tue Oct 20 2026 17:35:00 GMT-0500 (...)
+      print(parts[0] + " " + parts[1] + " " + String(d.getDate()).padStart(2) + " " + parts[4] + " " + short + " " + parts[3]);
+    },
+    man(args) {
+      const name = (args[0] || "").toLowerCase();
+      if (!name) return print("What manual page do you want?");
+      const row = HELP.find(([c]) => c.split(" ")[0] === name) || SHORTCUTS.find(([c]) => c === name);
+      if (!row) return print("No manual entry for " + name);
+      print([name.toUpperCase() + "(1)", "b"]);
+      print("");
+      print(["NAME", "b"]);
+      print("     " + name + " – " + row[1]);
+      print(["SYNOPSIS", "b"]);
+      print("     ", [row[0], "g"]);
+    },
+    git(args) {
+      const repo = repoFor(cwd);
+      if (!repo) return err("fatal: not a git repository (or any of the parent directories): .git");
+      if (args[0] === "status") { print("On branch main"); return print("nothing to commit, working tree clean"); }
+      if (args[0] === "log") return COMMANDS.github();
+      print("usage: git status | git log", ["   (or type github to see the repo)", "d"]);
+    },
+    sudo() { print("Sorry, user " + USER + " may not run sudo on " + HOST + "."); },
+    exit() {
+      print("logout");
+      print("");
+      print("[Process completed]");
+      line.classList.add("off");
+      input.blur();
+      const restart = () => { store.del("arrive"); location.href = root; };
+      setTimeout(() => {
+        document.addEventListener("keydown", restart, { once: true });
+        document.addEventListener("click", restart, { once: true });
+      }, 50);
+    },
+
+    // shortcuts
+    about() { COMMANDS.cat(["~/about.txt"]); },
+    experience() { COMMANDS.cat(["~/experience.txt"]); },
+    education() { COMMANDS.cat(["~/education.txt"]); },
+    skills() { COMMANDS.cat(["~/skills.txt"]); },
+    projects(args, typed) {
+      if (cwd === "~/projects" && !notFound) return COMMANDS.ls(["-l"]);
+      COMMANDS.cd(["~/projects"], typed);
+    },
+    home(args, typed) { COMMANDS.cd(["~"], typed); },
+    linkedin() { window.open(LINKEDIN, "_blank", "noopener"); print(["Opening LinkedIn in a new tab…", "d"]); },
+    github() {
+      const repo = repoFor(cwd);
+      window.open(repo || GITHUB, "_blank", "noopener");
+      print(["Opening " + (repo || GITHUB).replace("https://", "") + " in a new tab…", "d"]);
+    },
   };
+  COMMANDS.logout = COMMANDS.exit;
+  COMMANDS.cls = COMMANDS.clear;
+  COMMANDS.dir = COMMANDS.ls;
+  COMMANDS.type = COMMANDS.cat;
+  COMMANDS.more = COMMANDS.cat;
+  COMMANDS.less = COMMANDS.cat;
+  COMMANDS.ll = (args) => COMMANDS.ls(["-l"].concat(args));
+  const COMMAND_NAMES = ["cat", "cd", "clear", "echo", "date", "exit", "git", "help", "history", "ls", "man", "neofetch", "open", "pwd", "whoami",
+    "about", "experience", "education", "skills", "projects", "linkedin", "github"];
 
-  function run(raw) {
+  // ---------------------------------------------------------------- running a line
+  function tokenize(text) {
+    const toks = [];
+    const re = /"([^"]*)"|'([^']*)'|(\S+)/g;
+    let m;
+    while ((m = re.exec(text))) toks.push(m[1] !== undefined ? m[1] : m[2] !== undefined ? m[2] : m[3]);
+    return toks;
+  }
+
+  function run(raw, opts) {
     const text = raw.trim();
-    blank();
-    print("COMMAND? " + text.toUpperCase());
+    if (!(opts && opts.silent)) echo(cwd, raw);
     if (!text) return;
-
-    // DOS-style shortcuts with no space: "cd..", "cd\"
-    const squashed = text.match(/^cd(\.\.|\\|\/)$/i);
-    if (squashed) return cd(squashed[1] === ".." ? ".." : "/");
-
-    const [cmd, ...rest] = text.split(/\s+/);
-    const key = cmd.toLowerCase();
-    const arg = rest.join(" ");
-
-    if (/^\d+$/.test(key)) {
-      if (page === "home" && MENU[Number(key) - 1]) return COMMANDS[MENU[Number(key) - 1]]();
-      if (page === "projects" && PROJECTS[Number(key) - 1]) return openProject(PROJECTS[Number(key) - 1]);
-      const max = page === "home" ? MENU.length : page === "projects" ? PROJECTS.length : 0;   // no menu on project pages or the 404
-      return print(max ? "?PICK A NUMBER FROM 1-" + max : "?NO MENU HERE. TYPE HELP");
+    if (!(opts && opts.noHistory)) {
+      const h = store.get("history", []);
+      h.push(text);
+      store.set("history", h.slice(-200));
     }
-    if (Object.prototype.hasOwnProperty.call(COMMANDS, key)) return COMMANDS[key](arg);
-    if (key === "..") return cd("..");
-    if (SECTIONS.includes(key.replace(/\.txt$/, ""))) return section(key.replace(/\.txt$/, ""));   // typing a file name reads it
-    const p = findProject(key);
-    if (p && !arg) return openThing(key);                                                        // typing a project name opens it
-    print("?SYNTAX ERROR: " + cmd.toUpperCase() + " IS NOT A COMMAND. TYPE HELP");
+    // allow "a && b" / "a; b"
+    const parts = text.split(/\s*(?:&&|;)\s*/).filter(Boolean);
+    for (const part of parts) {
+      if (input.disabled) break;
+      runOne(part, text);
+    }
   }
 
-  function submit(value) {
-    if (value.trim()) { history.push(value); histPos = history.length; }
-    run(value);
-    line.scrollIntoView({ block: "nearest" });
+  function runOne(text, typed) {
+    const toks = tokenize(text);
+    const name = toks[0];
+    const key = name.toLowerCase();
+    const args = toks.slice(1);
+    if (Object.prototype.hasOwnProperty.call(COMMANDS, key)) return COMMANDS[key](args, typed);
+    // zsh AUTO_CD: typing a directory name goes there
+    const r = resolve(name);
+    if (!r.outside && isDir(r.key) && !args.length) return COMMANDS.cd([name], typed);
+    if (!r.outside && isFile(r.key)) {
+      err("zsh: permission denied: " + name);
+      return print(["hint: ", "y"], "try ", [(FILES[r.key].kind === "txt" || FILES[r.key].kind === "md" ? "cat " : "open ") + name, "g"]);
+    }
+    err("zsh: command not found: " + name);
+    if (!store.get("hinted", false)) {
+      print(["hint: ", "y"], "type ", ["help", "g"], " to see what you can do");
+      store.set("hinted", true);
+    }
   }
 
-  input.form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const value = input.value;
-    input.value = "";
-    sync();
-    submit(value);
-  });
+  // ---------------------------------------------------------------- the input line
+  psEl.append(promptNodes(cwd));
+  let histPos = store.get("history", []).length;
+  let draft = "";
+
+  function render() {
+    const v = input.value;
+    const pos = input.selectionStart == null ? v.length : input.selectionStart;
+    before.textContent = v.slice(0, pos);
+    cur.textContent = v[pos] || " ";
+    after.textContent = v.slice(pos + 1);
+  }
+  ["input", "keyup", "click", "select", "focus"].forEach((ev) => input.addEventListener(ev, () => setTimeout(render, 0)));
+  input.addEventListener("focus", () => line.classList.add("focused"));
+  input.addEventListener("blur", () => line.classList.remove("focused"));
+
+  function setValue(v) {
+    input.value = v;
+    input.setSelectionRange(v.length, v.length);
+    render();
+  }
+
+  function complete() {
+    const v = input.value.slice(0, input.selectionStart);
+    const rest = input.value.slice(input.selectionStart);
+    const toks = v.split(/\s+/);
+    const word = toks[toks.length - 1];
+    let options;
+    let prefix;
+    let base = "";
+    if (toks.length === 1) {
+      prefix = word.toLowerCase();
+      options = COMMAND_NAMES.filter((c) => c.startsWith(prefix)).map((c) => ({ name: c, dir: false }));
+    } else {
+      const slash = word.lastIndexOf("/");
+      base = slash >= 0 ? word.slice(0, slash + 1) : "";
+      prefix = (slash >= 0 ? word.slice(slash + 1) : word).toLowerCase();
+      const r = resolve(base || ".");
+      if (r.outside || !isDir(r.key)) return;
+      const cmd = toks[0].toLowerCase();
+      options = DIRS[r.key]
+        .map((n) => ({ name: n, dir: isDir(r.key + "/" + n) }))
+        .filter((o) => o.name.toLowerCase().startsWith(prefix))
+        .filter((o) => (cmd === "cd" ? o.dir : true));
+    }
+    if (!options.length) return;
+    const head = v.slice(0, v.length - word.length);
+    if (options.length === 1) {
+      const o = options[0];
+      return setValue(head + base + o.name + (o.dir ? "/" : " ") + rest);
+    }
+    // extend to the longest common prefix, then list the choices
+    let common = options[0].name;
+    options.forEach((o) => { while (!o.name.toLowerCase().startsWith(common.toLowerCase())) common = common.slice(0, -1); });
+    if (common.length > prefix.length) return setValue(head + base + common + rest);
+    echo(cwd, input.value);
+    const row = document.createElement("div");
+    row.className = "cols";
+    options.forEach((o) => row.append(span(o.name + (o.dir ? "/" : ""), o.dir ? "bl b" : "")));
+    printNode(row);
+    scrollToPrompt();
+  }
 
   input.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowUp" && histPos > 0) {
-      input.value = history[--histPos];
-      sync();
+    const h = store.get("history", []);
+    if (e.key === "Enter") {
       e.preventDefault();
+      const v = input.value;
+      setValue("");
+      histPos = store.get("history", []).length + (v.trim() ? 1 : 0);
+      draft = "";
+      run(v);
+      scrollToPrompt();
+    } else if (e.key === "Tab") {
+      e.preventDefault();
+      complete();
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      if (histPos === h.length) draft = input.value;
+      if (histPos > 0) setValue(h[--histPos]);
     } else if (e.key === "ArrowDown") {
-      histPos = Math.min(histPos + 1, history.length);
-      input.value = history[histPos] || "";
-      sync();
       e.preventDefault();
-    } else if (e.key === "Escape") {
-      input.value = "";
-      sync();
+      if (histPos < h.length) { histPos++; setValue(histPos === h.length ? draft : h[histPos]); }
+    } else if (e.ctrlKey && (e.key === "c" || e.key === "C")) {
+      e.preventDefault();
+      echo(cwd, input.value + "^C");
+      setValue("");
+      scrollToPrompt();
+    } else if ((e.ctrlKey && (e.key === "l" || e.key === "L")) || (e.metaKey && (e.key === "k" || e.key === "K"))) {
+      e.preventDefault();
+      COMMANDS.clear();
+    } else if (e.ctrlKey && (e.key === "u" || e.key === "U")) {
+      e.preventDefault();
+      setValue("");
     }
   });
 
-  // Start typing anywhere and it goes to the command line
+  // Click or tap anywhere in the window to type (unless selecting text to copy)
+  document.querySelector(".window").addEventListener("click", () => {
+    if (input.disabled || String(window.getSelection())) return;
+    input.focus({ preventScroll: true });
+    scrollToPrompt();
+  });
+  // Typing anywhere goes to the prompt
   document.addEventListener("keydown", (e) => {
-    if (e.ctrlKey || e.metaKey || e.altKey) return;
-    if (document.activeElement === input) return;
-    if (boot && !boot.classList.contains("done")) return;
-    if (/^[a-z0-9.~\/\\-]$/i.test(e.key)) {
+    if (input.disabled || document.activeElement === input || e.metaKey || e.altKey) return;
+    if (e.key.length === 1 || e.key === "Tab" || e.key === "ArrowUp") {
       input.focus({ preventScroll: true });
-      line.scrollIntoView({ block: "nearest" });
+      scrollToPrompt();
     }
   });
 
-  // Arriving from another page with ABOUT/EXPERIENCE/...: print it right away
-  if (startSection && SECTIONS.includes(startSection)) {
-    run(startSection);
-    history.push(startSection);
-    histPos = history.length;
-    line.scrollIntoView({ block: "nearest" });
+  // ---------------------------------------------------------------- start up
+  function lastLogin() {
+    const d = new Date();
+    const parts = d.toString().split(" ");
+    print(["Last login: " + parts[0] + " " + parts[1] + " " + String(d.getDate()).padStart(2) + " " + parts[4] + " on ttys000", ""]);
   }
 
-  if (scroller) scroller.focus({ preventScroll: true });   // so arrow keys and space scroll the screen
+  function start() {
+    const arrive = store.get("arrive", null);
+    store.del("arrive");
+    document.title = document.title;   // set by the page
+    if (notFound) {
+      lastLogin();
+      echo("~", "cd " + decodeURIComponent(location.pathname));
+      err("cd: no such file or directory: " + decodeURIComponent(location.pathname));
+      print(["hint: ", "y"], "type ", ["cd ~", "g"], " to go home, or ", ["help", "g"], " for commands");
+    } else if (arrive && arrive.to === cwd) {
+      echo(arrive.from, arrive.cmd);          // continue the session from the last page
+      if (ON_ARRIVE[cwd]) run(ON_ARRIVE[cwd], { noHistory: true });
+    } else {
+      lastLogin();
+      if (cwd === "~") printTpl("motd");
+      else {
+        echo("~", "cd " + cwd);
+        if (ON_ARRIVE[cwd]) run(ON_ARRIVE[cwd], { noHistory: true });
+      }
+    }
+    line.classList.remove("off");
+    if (scroller) scroller.scrollTop = 0;
+    if (window.matchMedia("(pointer: fine)").matches) input.focus({ preventScroll: true });
+    render();
+  }
+
+  start();
 })();

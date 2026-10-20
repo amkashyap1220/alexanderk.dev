@@ -2,7 +2,9 @@
    Live GitHub stats
    Any element like <span data-gh="owner/repo" data-field="stars"></span>
    gets filled in. Fields: stars, commits, language, updated.
+   Optional data-width="N" pads the value to N characters (for tables).
 
+   Content printed later by the terminal calls window.GH.fill(element).
    Uses GitHub's public API (no key needed). Results are cached in the
    visitor's browser for 30 minutes, since GitHub allows 60 requests/hour
    per visitor without a key.
@@ -11,6 +13,7 @@
 (function () {
   const CACHE_MINUTES = 30;
   const API = "https://api.github.com/repos/";
+  const pending = {};
 
   function readCache(repo) {
     try {
@@ -44,16 +47,20 @@
     return list.length;
   }
 
-  async function load(repo) {
-    const cached = readCache(repo);
-    if (cached) return cached;
-    const res = await fetch(API + repo);
-    if (!res.ok) throw new Error("repo " + res.status);
-    const info = await res.json();
-    const commits = await countCommits(repo);
-    const data = { stars: info.stargazers_count, language: info.language, pushed: info.pushed_at, commits };
-    writeCache(repo, data);
-    return data;
+  function load(repo) {
+    if (pending[repo]) return pending[repo];
+    pending[repo] = (async () => {
+      const cached = readCache(repo);
+      if (cached) return cached;
+      const res = await fetch(API + repo);
+      if (!res.ok) throw new Error("repo " + res.status);
+      const info = await res.json();
+      const commits = await countCommits(repo);
+      const data = { stars: info.stargazers_count, language: info.language, pushed: info.pushed_at, commits };
+      writeCache(repo, data);
+      return data;
+    })();
+    return pending[repo];
   }
 
   function timeAgo(iso) {
@@ -75,27 +82,26 @@
     return "--";
   }
 
-  const byRepo = {};
-  document.querySelectorAll("[data-gh][data-field]").forEach((el) => {
-    (byRepo[el.dataset.gh] = byRepo[el.dataset.gh] || []).push(el);
-  });
+  function put(el, text) {
+    const w = Number(el.dataset.width || 0);
+    if (w && text.length > w) text = text.slice(0, w - 1) + "\u2026";   // keep table columns aligned
+    el.textContent = w ? (el.dataset.align === "left" ? text.padEnd(w) : text.padStart(w)) : text;
+  }
 
-  Object.keys(byRepo).forEach((repo) => {
-    const els = byRepo[repo];
-    els.forEach((el) => {
-      const w = Number(el.dataset.width || 0);
-      el.textContent = w ? "...".padStart(w) : "...";
+  function fill(scope) {
+    const byRepo = {};
+    (scope || document).querySelectorAll("[data-gh][data-field]").forEach((el) => {
+      (byRepo[el.dataset.gh] = byRepo[el.dataset.gh] || []).push(el);
     });
-    load(repo)
-      .then((d) => els.forEach((el) => {
-        const v = value(d, el.dataset.field);
-        // keep table columns aligned: pad to the placeholder's width if one is set
-        const w = Number(el.dataset.width || 0);
-        el.textContent = w ? (el.dataset.align === "left" ? v.padEnd(w) : v.padStart(w)) : v;
-      }))
-      .catch(() => els.forEach((el) => {
-        const w = Number(el.dataset.width || 0);
-        el.textContent = w ? "--".padStart(w) : "--";
-      }));
-  });
+    Object.keys(byRepo).forEach((repo) => {
+      const els = byRepo[repo];
+      els.forEach((el) => put(el, "..."));
+      load(repo)
+        .then((d) => els.forEach((el) => put(el, value(d, el.dataset.field))))
+        .catch(() => els.forEach((el) => put(el, "--")));
+    });
+  }
+
+  window.GH = { fill };
+  fill(document);
 })();
