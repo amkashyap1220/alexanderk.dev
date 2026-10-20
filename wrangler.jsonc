@@ -5,7 +5,8 @@
   "assets": {
     // Serve the repo root as a static site
     "directory": "./",
-    // Show 404.html for pages that don't exist
-    "not_found_handling": "404-page"
+    // Every path (like /projects/switch-to-youtube) loads index.html;
+    // the terminal reads the address and opens in that directory
+    "not_found_handling": "single-page-application"
   }
 }

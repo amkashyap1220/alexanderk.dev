@@ -4,15 +4,18 @@
    filesystem rooted at ~ (/Users/alexander):
 
      ~/about.txt  experience.txt  education.txt  skills.txt
-     ~/linkedin.url
-     ~/projects/<project>/README.md  github.url
+     ~/github.webloc  linkedin.webloc
+     ~/projects/<project>/README.md  github.webloc
 
-   Each directory is a real page (so links can be shared); the pages are
-   identical shells that differ only in <body data-cwd="...">.
-   File contents live in <template id="tpl-NAME"> tags on every page.
+   .webloc files are macOS website shortcuts; `open` opens them in a new tab.
 
-   To add a project: add it to PROJECTS below, add its README template in
-   the page generator, and create projects/<slug>/index.html.
+   It's a single page: cd changes the directory in place (no reloads). The
+   address bar follows along (/projects/switch-to-youtube) so links can be
+   shared; Cloudflare serves index.html for every path (single-page mode).
+   File contents live in <template id="tpl-NAME"> tags in index.html.
+
+   To add a project: add it to PROJECTS below and add its README template
+   in tools/build_pages.py.
    ========================================================================== */
 
 (function () {
@@ -26,14 +29,11 @@
     { slug: "alexanderk-dev", repo: "https://github.com/amkashyap1220/alexanderk.dev" },
   ];
 
-  const body = document.body;
-  const root = body.dataset.root || "./";            // path back to the site root
-  const notFound = body.dataset.notfound === "1";
-  const cwd = body.dataset.cwd || "~";
+  let cwd = "~";                                      // current directory
 
   // Directories: name list in display order. Files: what they are.
   const DIRS = {
-    "~": ["about.txt", "experience.txt", "education.txt", "skills.txt", "projects", "linkedin.url"],
+    "~": ["about.txt", "experience.txt", "education.txt", "skills.txt", "projects", "github.webloc", "linkedin.webloc"],
     "~/projects": PROJECTS.map((p) => p.slug),
   };
   const FILES = {
@@ -41,19 +41,17 @@
     "~/experience.txt": { kind: "txt", tpl: "experience" },
     "~/education.txt": { kind: "txt", tpl: "education" },
     "~/skills.txt": { kind: "txt", tpl: "skills" },
-    "~/linkedin.url": { kind: "url", href: LINKEDIN },
+    "~/github.webloc": { kind: "webloc", href: GITHUB, label: "GitHub" },
+    "~/linkedin.webloc": { kind: "webloc", href: LINKEDIN, label: "LinkedIn" },
   };
-  const PAGE = { "~": "", "~/projects": "projects/" };
+  const URLS = { "~": "/", "~/projects": "/projects" };   // address bar path for each directory
   PROJECTS.forEach((p) => {
     const dir = "~/projects/" + p.slug;
-    DIRS[dir] = ["README.md", "github.url"];
+    DIRS[dir] = ["README.md", "github.webloc"];
     FILES[dir + "/README.md"] = { kind: "md", tpl: "readme-" + p.slug };
-    FILES[dir + "/github.url"] = { kind: "url", href: p.repo };
-    PAGE[dir] = "projects/" + p.slug + "/";
+    FILES[dir + "/github.webloc"] = { kind: "webloc", href: p.repo, label: p.repo.replace("https://", "") };
+    URLS[dir] = "/projects/" + p.slug;
   });
-  // What runs automatically when you arrive in a directory
-  const ON_ARRIVE = { "~/projects": "ls -l" };
-  PROJECTS.forEach((p) => { ON_ARRIVE["~/projects/" + p.slug] = "cat README.md"; });
 
   // macOS paths are case-insensitive: look things up in lowercase
   const CANON = {};
@@ -61,7 +59,7 @@
 
   const repoFor = (dir) => (PROJECTS.find((p) => dir === "~/projects/" + p.slug) || {}).repo;
 
-  // ---------------------------------------------------------------- session (survives page changes)
+  // ---------------------------------------------------------------- session (history survives reloads)
   const store = {
     get(k, fallback) { try { const v = sessionStorage.getItem(k); return v === null ? fallback : JSON.parse(v); } catch (e) { return fallback; } },
     set(k, v) { try { sessionStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* ignore */ } },
@@ -69,9 +67,7 @@
   };
 
   // ---------------------------------------------------------------- DOM
-  const term = document.querySelector(".term");
   const out = document.querySelector(".out");
-  const scroller = document.querySelector(".scroll");
   const line = document.querySelector(".cmdline");
   const input = line.querySelector("input");
   const psEl = line.querySelector(".ps");
@@ -155,20 +151,25 @@
   const abs = (k) => HOME_ABS + k.slice(1);
   const baseName = (k) => k.split("/").pop();
 
-  // ---------------------------------------------------------------- navigation
-  function go(dir, typed) {
-    store.set("oldpwd", cwd);
-    store.set("arrive", { from: cwd, cmd: typed, to: dir });
-    line.classList.add("off");
-    input.disabled = true;
-    location.href = root + PAGE[dir];
+  // ---------------------------------------------------------------- changing directory (in place)
+  let oldpwd = null;
+  function setCwd(dir) {
+    cwd = dir;
+    psEl.textContent = "";
+    psEl.append(promptNodes(cwd));
+    document.title = USER + "@" + HOST + ": " + cwd;
+    try { history.replaceState(null, "", URLS[cwd]); } catch (e) { /* file:// previews */ }
+  }
+  function go(dir) {
+    oldpwd = cwd;
+    setCwd(dir);
   }
 
   // ---------------------------------------------------------------- ls coloring
   function lsName(dir, name) {
     const k = dir === "~" ? "~/" + name : dir + "/" + name;
     if (isDir(k)) return [name, "bl b"];
-    if (/\.url$/.test(name)) return [name, "c"];
+    if (/\.webloc$/.test(name)) return [name, "c"];
     return [name, ""];
   }
   function lsLong(dir, showAll) {
@@ -189,7 +190,7 @@
     ["ls [-la] [dir]", "list files"],
     ["cd <dir>", "change directory (cd projects, cd .., cd ~, cd -)"],
     ["cat <file>", "print a file (cat about.txt)"],
-    ["open <file>", "open a file, link, or folder (open linkedin.url)"],
+    ["open <file>", "open a link in a new tab (open linkedin.webloc)"],
     ["pwd", "print the current directory"],
     ["neofetch", "who I am, the quick version"],
     ["history", "commands you've run"],
@@ -202,8 +203,8 @@
     ["education", "cat ~/education.txt"],
     ["skills", "cat ~/skills.txt"],
     ["projects", "cd ~/projects"],
-    ["linkedin", "open ~/linkedin.url"],
-    ["github", "open the code on GitHub"],
+    ["linkedin", "open ~/linkedin.webloc"],
+    ["github", "open the GitHub link for where you are"],
   ];
   function helpGrid(rows) {
     const g = document.createElement("div");
@@ -254,18 +255,15 @@
       let t = args[0];
       if (!t) t = "~";
       if (t === "-") {
-        const old = store.get("oldpwd", null);
-        if (!old) return err("cd: OLDPWD not set");
-        print(old);
-        if (old === cwd) return;
-        return go(old, typed);
+        if (!oldpwd) return err("cd: OLDPWD not set");
+        print(oldpwd);
+        return go(oldpwd);
       }
       const r = resolve(t);
       if (r.outside) return err("cd: permission denied: " + r.outside);
       if (isFile(r.key)) return err("cd: not a directory: " + t);
       if (!isDir(r.key)) return err("cd: no such file or directory: " + t);
-      if (r.key === cwd && !notFound) return;     // already here: zsh prints nothing
-      go(r.key, typed);
+      go(r.key);                                   // zsh prints nothing on success
     },
 
     cat(args) {
@@ -277,31 +275,39 @@
         if (!isFile(r.key)) return err("cat: " + t + ": No such file or directory");
         const f = FILES[r.key];
         if (f.tpl) return printTpl(f.tpl);
-        if (f.kind === "url") {
-          print("[InternetShortcut]");
-          return print("URL=", [f.href, "c"]);
+        if (f.kind === "webloc") {      // a .webloc is a small XML property list holding one URL
+          print(["<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "d"]);
+          print(["<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">", "d"]);
+          print(["<plist version=\"1.0\">", "d"]);
+          print(["<dict>", "d"]);
+          print(["    <key>", "d"], ["URL", "y"], ["</key>", "d"]);
+          print(["    <string>", "d"], [f.href, "c"], ["</string>", "d"]);
+          print(["</dict>", "d"]);
+          print(["</plist>", "d"]);
         }
       });
     },
 
-    open(args, typed) {
+    // Like macOS: open a website shortcut (.webloc) or a URL in the browser.
+    // On a real Mac, opening a text file would launch a text editor, so here it points you to cat.
+    open(args) {
       const targets = args.filter((a) => !a.startsWith("-"));
-      if (!targets.length) return print(["Usage: open [filenames]", "r"], ["   (try: open linkedin.url)", "d"]);
-      for (const t of targets) {
-        if (/^https?:\/\//i.test(t)) { window.open(t, "_blank", "noopener"); continue; }
+      if (!targets.length) return print(["Usage: open <file.webloc>", "r"], ["   (try: open linkedin.webloc)", "d"]);
+      targets.forEach((t) => {
+        if (/^https?:\/\//i.test(t)) {
+          window.open(t, "_blank", "noopener");
+          return print(["Opening " + t.replace(/^https?:\/\//i, "") + " in a new tab\u2026", "d"]);
+        }
         const r = resolve(t);
-        if (r.outside || (!isDir(r.key) && !isFile(r.key))) {
-          err("The file " + (r.outside || abs(r.key)) + " does not exist.");
-          continue;
-        }
-        if (isDir(r.key)) {
-          if (r.key === cwd) { print(["(you're already in " + r.key + ")", "d"]); continue; }
-          return go(r.key, typed);                 // "opening" a folder takes you there
-        }
+        if (r.outside || (!isDir(r.key) && !isFile(r.key))) return err("The file " + (r.outside || abs(r.key)) + " does not exist.");
+        if (isDir(r.key)) return print(["open: " + t + " is a folder. Use: ", "y"], ["cd " + t, "g"]);
         const f = FILES[r.key];
-        if (f.kind === "url") window.open(f.href, "_blank", "noopener");
-        else if (f.tpl) printTpl(f.tpl);
-      }
+        if (f.kind === "webloc") {
+          window.open(f.href, "_blank", "noopener");
+          return print(["Opening " + f.label + " in a new tab\u2026", "d"]);
+        }
+        print(["open: " + t + " is a text file. Use: ", "y"], ["cat " + t, "g"]);
+      });
     },
 
     pwd() { print(abs(cwd)); },
@@ -346,8 +352,9 @@
       print("");
       print("[Process completed]");
       line.classList.add("off");
+      input.disabled = true;
       input.blur();
-      const restart = () => { store.del("arrive"); location.href = root; };
+      const restart = () => { location.href = "/"; };
       setTimeout(() => {
         document.addEventListener("keydown", restart, { once: true });
         document.addEventListener("click", restart, { once: true });
@@ -359,17 +366,10 @@
     experience() { COMMANDS.cat(["~/experience.txt"]); },
     education() { COMMANDS.cat(["~/education.txt"]); },
     skills() { COMMANDS.cat(["~/skills.txt"]); },
-    projects(args, typed) {
-      if (cwd === "~/projects" && !notFound) return COMMANDS.ls(["-l"]);
-      COMMANDS.cd(["~/projects"], typed);
-    },
-    home(args, typed) { COMMANDS.cd(["~"], typed); },
-    linkedin() { window.open(LINKEDIN, "_blank", "noopener"); print(["Opening LinkedIn in a new tab…", "d"]); },
-    github() {
-      const repo = repoFor(cwd);
-      window.open(repo || GITHUB, "_blank", "noopener");
-      print(["Opening " + (repo || GITHUB).replace("https://", "") + " in a new tab…", "d"]);
-    },
+    projects() { COMMANDS.cd(["~/projects"]); },
+    home() { COMMANDS.cd(["~"]); },
+    linkedin() { COMMANDS.open(["~/linkedin.webloc"]); },
+    github() { COMMANDS.open([repoFor(cwd) ? "github.webloc" : "~/github.webloc"]); },
   };
   COMMANDS.logout = COMMANDS.exit;
   COMMANDS.cls = COMMANDS.clear;
@@ -416,19 +416,11 @@
     // zsh AUTO_CD: typing a directory name goes there
     const r = resolve(name);
     if (!r.outside && isDir(r.key) && !args.length) return COMMANDS.cd([name], typed);
-    if (!r.outside && isFile(r.key)) {
-      err("zsh: permission denied: " + name);
-      return print(["hint: ", "y"], "try ", [(FILES[r.key].kind === "txt" || FILES[r.key].kind === "md" ? "cat " : "open ") + name, "g"]);
-    }
+    if (!r.outside && isFile(r.key)) return err("zsh: permission denied: " + name);
     err("zsh: command not found: " + name);
-    if (!store.get("hinted", false)) {
-      print(["hint: ", "y"], "type ", ["help", "g"], " to see what you can do");
-      store.set("hinted", true);
-    }
   }
 
   // ---------------------------------------------------------------- the input line
-  psEl.append(promptNodes(cwd));
   let histPos = store.get("history", []).length;
   let draft = "";
 
@@ -524,8 +516,8 @@
     }
   });
 
-  // Click or tap anywhere in the window to type (unless selecting text to copy)
-  document.querySelector(".window").addEventListener("click", () => {
+  // Click or tap anywhere to type (unless selecting text to copy)
+  document.addEventListener("click", () => {
     if (input.disabled || String(window.getSelection())) return;
     input.focus({ preventScroll: true });
     scrollToPrompt();
@@ -547,27 +539,16 @@
   }
 
   function start() {
-    const arrive = store.get("arrive", null);
-    store.del("arrive");
-    document.title = document.title;   // set by the page
-    if (notFound) {
-      lastLogin();
-      echo("~", "cd " + decodeURIComponent(location.pathname));
-      err("cd: no such file or directory: " + decodeURIComponent(location.pathname));
-      print(["hint: ", "y"], "type ", ["cd ~", "g"], " to go home, or ", ["help", "g"], " for commands");
-    } else if (arrive && arrive.to === cwd) {
-      echo(arrive.from, arrive.cmd);          // continue the session from the last page
-      if (ON_ARRIVE[cwd]) run(ON_ARRIVE[cwd], { noHistory: true });
-    } else {
-      lastLogin();
-      if (cwd === "~") printTpl("motd");
-      else {
-        echo("~", "cd " + cwd);
-        if (ON_ARRIVE[cwd]) run(ON_ARRIVE[cwd], { noHistory: true });
-      }
+    lastLogin();
+    // Open in the directory the address points to (/projects/... links can be shared)
+    const path = decodeURIComponent(location.pathname).replace(/\/index\.html$/i, "/").replace(/\/+$/, "") || "/";
+    const dir = Object.keys(URLS).find((k) => URLS[k].toLowerCase() === path.toLowerCase());
+    if (dir) setCwd(dir);
+    else {
+      setCwd("~");
+      err("zsh: no such file or directory: " + path);
     }
     line.classList.remove("off");
-    if (scroller) scroller.scrollTop = 0;
     if (window.matchMedia("(pointer: fine)").matches) input.focus({ preventScroll: true });
     render();
   }

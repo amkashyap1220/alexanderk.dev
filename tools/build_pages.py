@@ -35,20 +35,6 @@ def job(role, company, where, when, bullets):
 # ------------------------------------------------------------------ file contents
 T = {}
 
-T["motd"] = box("alexanderk.dev", """<p class="w b">Alexander Kashyap</p>
-<p class="d">Software developer · C#, .NET, SQL, Python · Chicago, IL area</p>
-<div class="blank"></div>
-<p>This site is a terminal. Type a command and press <span class="w">return</span>:</p>
-<div class="blank"></div>
-<div class="help">
-<span class="cmdname">help</span><span class="d">every command</span>
-<span class="cmdname">ls</span><span class="d">see what's here</span>
-<span class="cmdname">cat about.txt</span><span class="d">read about me</span>
-<span class="cmdname">neofetch</span><span class="d">the quick version</span>
-<span class="cmdname">cd projects</span><span class="d">things I've built</span>
-<span class="cmdname">open linkedin.url</span><span class="d">connect with me</span>
-</div>""")
-
 T["about"] = box("about.txt", """<div class="split">
 <div>
 <p class="w b">Alexander Kashyap</p>
@@ -61,7 +47,7 @@ T["about"] = box("about.txt", """<div class="split">
 <dt class="c">role</dt><dd>Application Developer</dd>
 <dt class="c">experience</dt><dd>~2 years</dd>
 <dt class="c">degree</dt><dd>B.S. Computer Science</dd>
-<dt class="c">contact</dt><dd><span class="g">open linkedin.url</span></dd>
+<dt class="c">contact</dt><dd><span class="g">open linkedin.webloc</span></dd>
 </dl>
 </div>""")
 
@@ -134,8 +120,7 @@ def projects_table():
 <thead><tr><th>name</th><th class="num">★ stars</th><th class="num">commits</th><th>language</th><th class="opt">about</th></tr></thead>
 <tbody>
 {rows}
-</tbody></table></div>
-<p><span class="d">open a project with</span> <span class="g">cd &lt;name&gt;</span> <span class="d">(try</span> <span class="g">cd switch-to-youtube</span><span class="d">)</span></p>"""
+</tbody></table></div>"""
 
 
 T["projects-table"] = projects_table()
@@ -150,7 +135,7 @@ def status(repo, blurb, stack):
 <dt class="c">language</dt><dd>{gh(repo, "language", 0, "m")}</dd>
 <dt class="c">updated</dt><dd>{gh(repo, "updated")}</dd>
 <dt class="c">stack</dt><dd><ul class="tags">{"".join(f"<li>{s}</li>" for s in stack)}</ul></dd>
-<dt class="c">source</dt><dd><span class="g">open github.url</span></dd>
+<dt class="c">source</dt><dd><span class="g">open github.webloc</span></dd>
 </dl>""")
 
 
@@ -178,8 +163,6 @@ T["readme-switch-to-youtube"] = "\n".join([
 </div>"""),
     section("## How it works", """<!-- Your in-depth, teach-it-to-someone walkthrough goes here. -->
 <p><span class="y b">TODO:</span> a full walkthrough of how this project works is coming soon.</p>"""),
-    '<div class="blank"></div>',
-    '<p class="d">cd .. to go back · open github.url to view the code</p>',
 ])
 
 T["readme-alexanderk-dev"] = "\n".join([
@@ -190,17 +173,13 @@ T["readme-alexanderk-dev"] = "\n".join([
     section("## Why I made it", "<p>I wanted one place to show my work, and to explain each project as if I were teaching it, because teaching something is the best way I know to really understand it.</p>"),
     section("## How it works", """<!-- Your in-depth walkthrough goes here. -->
 <p><span class="y b">TODO:</span> a full walkthrough of how this site is built is coming soon.</p>"""),
-    '<div class="blank"></div>',
-    '<p class="d">cd .. to go back · open github.url to view the code</p>',
 ])
 
 TEMPLATES = "\n".join(f'<template id="tpl-{k}">\n{v}\n</template>' for k, v in T.items())
 
 
-# ------------------------------------------------------------------ page shell
-def page(path, *, title, desc, root, cwd, notfound=False):
-    folder = "alexander" if cwd == "~" else cwd.split("/")[-1]
-    nf = ' data-notfound="1"' if notfound else ""
+# ------------------------------------------------------------------ the page (single page: the whole tab is the terminal)
+def page(path, *, title, desc):
     html = f"""<!doctype html>
 <html lang="en">
 <head>
@@ -212,27 +191,21 @@ def page(path, *, title, desc, root, cwd, notfound=False):
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{root}css/style.css">
+  <link rel="stylesheet" href="/css/style.css">
 </head>
-<body data-root="{root}" data-cwd="{cwd}"{nf}>
-  <div class="window">
-    <div class="titlebar">
-      <div class="lights" aria-hidden="true"><span class="close"></span><span class="min"></span><span class="max"></span></div>
-      <div class="title">{folder} — -zsh — 80×24</div>
-    </div>
-    <div class="scroll" tabindex="-1">
-      <main class="term">
-        <div class="out" aria-live="polite"></div>
-        <form class="cmdline off" autocomplete="off" onsubmit="return false"><span class="ps"></span><span class="before"></span><span class="cur"> </span><span class="after"></span><input type="text" spellcheck="false" autocapitalize="off" autocorrect="off" aria-label="Terminal command. Type help and press enter."></form>
-        <noscript><p>This site is a terminal and needs JavaScript to run.</p></noscript>
-      </main>
-    </div>
+<body>
+  <div class="scroll" tabindex="-1">
+    <main class="term">
+      <div class="out" aria-live="polite"></div>
+      <form class="cmdline off" autocomplete="off" onsubmit="return false"><span class="ps"></span><span class="before"></span><span class="cur"> </span><span class="after"></span><input type="text" spellcheck="false" autocapitalize="off" autocorrect="off" aria-label="Terminal command"></form>
+      <noscript><p>This site is a terminal and needs JavaScript to run.</p></noscript>
+    </main>
   </div>
 
 {TEMPLATES}
 
-  <script src="{root}js/github.js"></script>
-  <script src="{root}js/terminal.js"></script>
+  <script src="/js/github.js"></script>
+  <script src="/js/terminal.js"></script>
 </body>
 </html>
 """
@@ -241,17 +214,6 @@ def page(path, *, title, desc, root, cwd, notfound=False):
     open(full, "w").write(html)
 
 
-page("index.html", title="Alexander Kashyap",
-     desc="Alexander Kashyap - software developer building data-driven enterprise systems in C#, .NET, SQL, and Python.",
-     root="./", cwd="~")
-page("projects/index.html", title="projects - Alexander Kashyap",
-     desc="Projects by Alexander Kashyap, with write-ups on how each one was built.",
-     root="../", cwd="~/projects")
-page("projects/switch-to-youtube/index.html", title="switch-to-youtube - Alexander Kashyap",
-     desc="Switch To YouTube: a free, open-source web app for moving Spotify liked songs and playlists to YouTube Music.",
-     root="../../", cwd="~/projects/switch-to-youtube")
-page("projects/alexanderk-dev/index.html", title="alexanderk-dev - Alexander Kashyap",
-     desc="How this site was built: a zsh-style terminal in plain HTML, CSS, and JavaScript, deployed to Cloudflare from GitHub.",
-     root="../../", cwd="~/projects/alexanderk-dev")
-page("404.html", title="404 - Alexander Kashyap", desc="Page not found.", root="/", cwd="~", notfound=True)
+page("index.html", title="alexander@alexanderk-dev: ~",
+     desc="Alexander Kashyap - software developer building data-driven enterprise systems in C#, .NET, SQL, and Python.")
 print("built")

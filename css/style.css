@@ -1,21 +1,16 @@
 /* ==========================================================================
    alexanderk.dev — macOS Terminal theme
-   A Terminal.app window running zsh, with an ANSI color palette.
+   The whole browser tab is a zsh terminal, with an ANSI color palette.
    Change the colors here to restyle the whole site.
    ========================================================================== */
 
 :root {
   color-scheme: dark;
-  --desktop: radial-gradient(1200px 700px at 20% 10%, #3b2f63 0%, transparent 60%),
-             radial-gradient(1000px 700px at 90% 90%, #1d4f6b 0%, transparent 60%),
-             linear-gradient(160deg, #1b1830 0%, #10121c 100%);
   --win: #1e1e1e;            /* terminal background */
   --text: #e4e4e4;           /* default foreground */
   --bright: #ffffff;
   --dim: #8a8a8a;
   --box: #5a5a5a;            /* box-drawing lines */
-  --titlebar: #2b2b2b;
-  --titlebar-text: #b5b5b5;
   --cursor: #d9d9d9;
   --sel: #3a5a8a;
 
@@ -28,7 +23,6 @@
   --cyan: #56c8d8;
 
   --font: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Monaco, "JetBrains Mono", Consolas, monospace;
-  --ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
   --lh: 1.5em;               /* one terminal line */
 }
 
@@ -37,8 +31,7 @@ html, body { height: 100%; }
 
 body {
   margin: 0;
-  background: var(--desktop);
-  background-color: #10121c;
+  background: var(--win);
   font-family: var(--font);
   font-size: 14px;
   line-height: 1.5;
@@ -48,55 +41,18 @@ body {
 
 ::selection { background: var(--sel); color: var(--bright); }
 
-/* ---------- The Terminal window ---------- */
-.window {
-  position: fixed;
-  top: 32px;
-  bottom: 32px;
-  left: 50%;
-  width: min(1040px, calc(100% - 48px));
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  background: var(--win);
-  border-radius: 11px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55), 0 0 0 0.5px rgba(0, 0, 0, 0.6);
-  overflow: hidden;
-}
-
-.titlebar {
-  position: relative;
-  flex: none;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--titlebar);
-  border-bottom: 1px solid #111;
-  font-family: var(--ui);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--titlebar-text);
-  user-select: none;
-}
-.lights { position: absolute; left: 13px; top: 9px; display: flex; gap: 8px; }
-.lights span { width: 12px; height: 12px; border-radius: 50%; display: block; }
-.lights .close { background: #ff5f57; box-shadow: inset 0 0 0 0.5px #e0443e; }
-.lights .min   { background: #febc2e; box-shadow: inset 0 0 0 0.5px #dea123; }
-.lights .max   { background: #28c840; box-shadow: inset 0 0 0 0.5px #1aab29; }
-.titlebar .title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 84px; }
-
+/* ---------- The whole tab is the terminal ---------- */
 .scroll {
-  flex: 1;
+  position: fixed;
+  inset: 0;
   overflow-y: auto;
-  padding: 6px 12px 18px;
+  padding: 6px 10px 24px;
   cursor: text;
   scrollbar-width: thin;
   scrollbar-color: #555 transparent;
   outline: none;
 }
-.term { max-width: 100ch; }
+.term { max-width: 110ch; }
 
 /* ---------- Text ---------- */
 p, ul, ol, dl, h1, h2, h3, pre, figure { margin: 0; font: inherit; }
@@ -214,12 +170,10 @@ ol.num li::before { content: counter(n) ". "; color: var(--cyan); }
 }
 .cmdline.off { visibility: hidden; }
 
-/* ---------- Phones: the window fills the screen ---------- */
+/* ---------- Phones ---------- */
 @media (max-width: 640px) {
-  body { font-size: 12.5px; background: var(--win); }
-  .window { top: 0; bottom: 0; width: 100%; border-radius: 0; border: 0; box-shadow: none; }
-  .titlebar .title { padding: 0 70px; font-size: 12px; }
-  .scroll { padding: 6px 10px 18px; }
+  body { font-size: 12.5px; }
+  .scroll { padding: 6px 8px 24px; }
   .help { grid-template-columns: 16ch minmax(0, 1fr); }
   .tbl { font-size: 11.5px; }
   .tbl .opt { display: none; }
