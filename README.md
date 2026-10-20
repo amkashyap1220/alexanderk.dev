@@ -1,21 +1,19 @@
 # alexanderk.dev
 
-My personal site: about me and my projects, inside a macOS Terminal window running a small zsh look-alike. The site is navigated only by typing commands.
+My personal site: my resume and projects, in a full-page terminal running a small zsh look-alike. The site is navigated only by typing commands.
 
 **Live:** [alexanderk.dev](https://alexanderk.dev)
 
 ## Try it
 
 ```
-help                 every command
 ls / ls -la          list files
 cd projects          change directory (cd .., cd ~, cd -)
-cat about.txt        print a file
+cat resume.txt       view a file (README.txt in each project)
 open linkedin.webloc open a link in a new tab (github.webloc in ~ and each project)
-neofetch             the quick version
 ```
 
-Also: `pwd`, `history`, `clear` (Ctrl+L), `man <cmd>`, `echo`, `date`, `git status`, Tab completion, ↑/↓ history, Ctrl+C. Shortcuts: `about`, `experience`, `education`, `skills`, `projects`, `linkedin`, `github`.
+Also: `pwd`, `history`, `clear` (Ctrl+L), `man <cmd>`, `echo`, `date`, `git status`, Tab completion, ↑/↓ history, Ctrl+C.
 
 ## Built with
 
@@ -30,8 +28,8 @@ It's a single page: the whole browser tab is the terminal, and `cd` changes dire
 The terminal has a virtual filesystem rooted at `~`:
 
 ```
-~/about.txt  experience.txt  education.txt  skills.txt  github.webloc  linkedin.webloc
-~/projects/<project>/README.md  github.webloc
+~/resume.txt  github.webloc  linkedin.webloc
+~/projects/<project>/README.txt  github.webloc
 ```
 
 `.webloc` files are macOS website shortcuts (an XML property list holding one URL). `open` opens them in a new tab; `open` on a text file points you to `cat` instead, since a real Mac would launch a text editor.
@@ -48,7 +46,7 @@ wrangler.jsonc           Cloudflare config (single-page mode)
 
 ## Editing content
 
-Edit file contents (about, experience, skills, project READMEs) in `tools/build_pages.py`, then regenerate:
+`cat` shows files in a formatted viewer (a file header bar like `bat`, a timeline, chips, stat badges) rather than plain text. Edit file contents (resume and project READMEs) in `tools/build_pages.py`, then regenerate:
 
 ```
 python tools/build_pages.py .

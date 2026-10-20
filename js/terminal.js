@@ -3,9 +3,8 @@
    The site is navigated only by typing commands. There's a small virtual
    filesystem rooted at ~ (/Users/alexander):
 
-     ~/about.txt  experience.txt  education.txt  skills.txt
-     ~/github.webloc  linkedin.webloc
-     ~/projects/<project>/README.md  github.webloc
+     ~/resume.txt  github.webloc  linkedin.webloc
+     ~/projects/<project>/README.txt  github.webloc
 
    .webloc files are macOS website shortcuts; `open` opens them in a new tab.
 
@@ -33,22 +32,19 @@
 
   // Directories: name list in display order. Files: what they are.
   const DIRS = {
-    "~": ["about.txt", "experience.txt", "education.txt", "skills.txt", "projects", "github.webloc", "linkedin.webloc"],
+    "~": ["resume.txt", "projects", "github.webloc", "linkedin.webloc"],
     "~/projects": PROJECTS.map((p) => p.slug),
   };
   const FILES = {
-    "~/about.txt": { kind: "txt", tpl: "about" },
-    "~/experience.txt": { kind: "txt", tpl: "experience" },
-    "~/education.txt": { kind: "txt", tpl: "education" },
-    "~/skills.txt": { kind: "txt", tpl: "skills" },
+    "~/resume.txt": { kind: "txt", tpl: "resume" },
     "~/github.webloc": { kind: "webloc", href: GITHUB, label: "GitHub" },
     "~/linkedin.webloc": { kind: "webloc", href: LINKEDIN, label: "LinkedIn" },
   };
   const URLS = { "~": "/", "~/projects": "/projects" };   // address bar path for each directory
   PROJECTS.forEach((p) => {
     const dir = "~/projects/" + p.slug;
-    DIRS[dir] = ["README.md", "github.webloc"];
-    FILES[dir + "/README.md"] = { kind: "md", tpl: "readme-" + p.slug };
+    DIRS[dir] = ["README.txt", "github.webloc"];
+    FILES[dir + "/README.txt"] = { kind: "txt", tpl: "readme-" + p.slug };
     FILES[dir + "/github.webloc"] = { kind: "webloc", href: p.repo, label: p.repo.replace("https://", "") };
     URLS[dir] = "/projects/" + p.slug;
   });
@@ -102,7 +98,15 @@
   function printTpl(name) {
     const tpl = document.getElementById("tpl-" + name);
     if (!tpl) return false;
-    printNode(tpl.content.cloneNode(true));
+    const node = tpl.content.cloneNode(true);
+    // file viewer header: show the file's size, like bat does
+    const size = node.querySelector(".doc-size");
+    if (size) {
+      const lines = node.querySelector(".doc-body").textContent.split("\n").filter((l) => l.trim()).length;
+      const kb = (new Blob([node.querySelector(".doc-body").textContent]).size / 1024).toFixed(1);
+      size.textContent = lines + " lines \u00b7 " + kb + " KB \u00b7 UTF-8";
+    }
+    printNode(node);
     return true;
   }
   function promptNodes(dir) {
@@ -186,44 +190,19 @@
   }
 
   // ---------------------------------------------------------------- commands
+  // Used by `man`
   const HELP = [
     ["ls [-la] [dir]", "list files"],
     ["cd <dir>", "change directory (cd projects, cd .., cd ~, cd -)"],
-    ["cat <file>", "print a file (cat about.txt)"],
+    ["cat <file>", "view a file (cat resume.txt)"],
     ["open <file>", "open a link in a new tab (open linkedin.webloc)"],
     ["pwd", "print the current directory"],
-    ["neofetch", "who I am, the quick version"],
     ["history", "commands you've run"],
     ["clear", "clear the screen (or Ctrl+L)"],
     ["man <command>", "show help for a command"],
   ];
-  const SHORTCUTS = [
-    ["about", "cat ~/about.txt"],
-    ["experience", "cat ~/experience.txt"],
-    ["education", "cat ~/education.txt"],
-    ["skills", "cat ~/skills.txt"],
-    ["projects", "cd ~/projects"],
-    ["linkedin", "open ~/linkedin.webloc"],
-    ["github", "open the GitHub link for where you are"],
-  ];
-  function helpGrid(rows) {
-    const g = document.createElement("div");
-    g.className = "help";
-    rows.forEach(([c, d]) => g.append(span(c, "cmdname"), span(d, "d")));
-    printNode(g);
-  }
 
   const COMMANDS = {
-    help() {
-      print(["zsh", "b"], " on ", [HOST, "g"], " — commands:");
-      helpGrid(HELP);
-      print("");
-      print(["shortcuts:", "b"]);
-      helpGrid(SHORTCUTS);
-      print("");
-      print(["tips: ", "d"], "Tab completes names · ↑ ↓ browse history · Ctrl+C cancels", "");
-    },
-
     ls(args) {
       const flags = args.filter((a) => a.startsWith("-")).join("");
       const long = flags.includes("l");
@@ -267,7 +246,7 @@
     },
 
     cat(args) {
-      if (!args.length) return print(["usage: cat <file>   ", "r"], ["(try: cat about.txt)", "d"]);
+      if (!args.length) return print(["usage: cat <file>   ", "r"], ["(try: cat resume.txt)", "d"]);
       args.forEach((t) => {
         const r = resolve(t);
         if (r.outside) return err("cat: " + t + ": Permission denied");
@@ -313,7 +292,6 @@
     pwd() { print(abs(cwd)); },
     whoami() { print(USER); },
     hostname() { print(HOST); },
-    neofetch() { printTpl("neofetch"); },
     clear() { out.textContent = ""; },
     history() {
       const h = store.get("history", []);
@@ -330,7 +308,7 @@
     man(args) {
       const name = (args[0] || "").toLowerCase();
       if (!name) return print("What manual page do you want?");
-      const row = HELP.find(([c]) => c.split(" ")[0] === name) || SHORTCUTS.find(([c]) => c === name);
+      const row = HELP.find(([c]) => c.split(" ")[0] === name);
       if (!row) return print("No manual entry for " + name);
       print([name.toUpperCase() + "(1)", "b"]);
       print("");
@@ -343,8 +321,8 @@
       const repo = repoFor(cwd);
       if (!repo) return err("fatal: not a git repository (or any of the parent directories): .git");
       if (args[0] === "status") { print("On branch main"); return print("nothing to commit, working tree clean"); }
-      if (args[0] === "log") return COMMANDS.github();
-      print("usage: git status | git log", ["   (or type github to see the repo)", "d"]);
+      if (args[0] === "log") return COMMANDS.open(["github.webloc"]);
+      print("usage: git status | git log");
     },
     sudo() { print("Sorry, user " + USER + " may not run sudo on " + HOST + "."); },
     exit() {
@@ -360,26 +338,11 @@
         document.addEventListener("click", restart, { once: true });
       }, 50);
     },
-
-    // shortcuts
-    about() { COMMANDS.cat(["~/about.txt"]); },
-    experience() { COMMANDS.cat(["~/experience.txt"]); },
-    education() { COMMANDS.cat(["~/education.txt"]); },
-    skills() { COMMANDS.cat(["~/skills.txt"]); },
-    projects() { COMMANDS.cd(["~/projects"]); },
-    home() { COMMANDS.cd(["~"]); },
-    linkedin() { COMMANDS.open(["~/linkedin.webloc"]); },
-    github() { COMMANDS.open([repoFor(cwd) ? "github.webloc" : "~/github.webloc"]); },
   };
   COMMANDS.logout = COMMANDS.exit;
-  COMMANDS.cls = COMMANDS.clear;
-  COMMANDS.dir = COMMANDS.ls;
-  COMMANDS.type = COMMANDS.cat;
   COMMANDS.more = COMMANDS.cat;
   COMMANDS.less = COMMANDS.cat;
-  COMMANDS.ll = (args) => COMMANDS.ls(["-l"].concat(args));
-  const COMMAND_NAMES = ["cat", "cd", "clear", "echo", "date", "exit", "git", "help", "history", "ls", "man", "neofetch", "open", "pwd", "whoami",
-    "about", "experience", "education", "skills", "projects", "linkedin", "github"];
+  const COMMAND_NAMES = ["cat", "cd", "clear", "echo", "date", "exit", "git", "history", "ls", "man", "open", "pwd", "whoami"];
 
   // ---------------------------------------------------------------- running a line
   function tokenize(text) {
@@ -413,10 +376,8 @@
     const key = name.toLowerCase();
     const args = toks.slice(1);
     if (Object.prototype.hasOwnProperty.call(COMMANDS, key)) return COMMANDS[key](args, typed);
-    // zsh AUTO_CD: typing a directory name goes there
     const r = resolve(name);
-    if (!r.outside && isDir(r.key) && !args.length) return COMMANDS.cd([name], typed);
-    if (!r.outside && isFile(r.key)) return err("zsh: permission denied: " + name);
+    if (!r.outside && (isDir(r.key) || isFile(r.key))) return err("zsh: permission denied: " + name);
     err("zsh: command not found: " + name);
   }
 

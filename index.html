@@ -20,104 +20,143 @@
     </main>
   </div>
 
-<template id="tpl-about">
-<div class="abox" data-title="about.txt"><div class="body">
-<div class="split">
-<div>
-<p class="w b">Alexander Kashyap</p>
-<p>Software developer with ~2 years of experience building data-driven enterprise systems in C#, .NET, SQL, and Python.</p>
-<div class="blank"></div>
-<p>I like turning business requirements into reliable solutions, and explaining how things work.</p>
+<template id="tpl-resume">
+<article class="doc">
+<header class="doc-bar"><span><span class="d">File:</span> <span class="w b">resume.txt</span></span><span class="d doc-size"></span></header>
+<div class="doc-body">
+<div class="hero">
+<h1>Alexander Kashyap</h1>
+<p class="tagline">Software Developer <span class="d">·</span> C# <span class="d">·</span> .NET <span class="d">·</span> SQL <span class="d">·</span> Python</p>
+<p class="meta"><span>⌖ Chicago, IL area</span><span>↗ <span class="g">open linkedin.webloc</span></span><span>↗ <span class="g">open github.webloc</span></span></p>
 </div>
-<dl class="kv">
-<dt class="c">location</dt><dd>Chicago, IL area</dd>
-<dt class="c">role</dt><dd>Application Developer</dd>
-<dt class="c">experience</dt><dd>~2 years</dd>
-<dt class="c">degree</dt><dd>B.S. Computer Science</dd>
-<dt class="c">contact</dt><dd><span class="g">open linkedin.webloc</span></dd>
-</dl>
+<section class="doc-sec">
+<h2 class="c">Summary</h2>
+<p>Software developer with ~2 years of experience building data-driven enterprise systems in C#, .NET, SQL, and Python. Comfortable working across the stack, from database design to API integrations, and skilled at turning business requirements into reliable solutions.</p>
+</section>
+<section class="doc-sec">
+<h2 class="y">Experience</h2>
+<div class="timeline"><div class="tl-item now">
+<div class="tl-when">Jan 2025 – Present</div>
+<div class="tl-what">
+<div><span class="role">Application Developer</span> <span class="d">@</span> <span class="org">K-Rise Systems</span></div>
+<div class="where">Aurora, IL · Enterprise software</div>
+<ul class="ticks"><li>Worked on the rebuild of the company's AP Automation application for JD Edwards in C# and .NET, adding new AI features across the invoice pipeline, from scanned capture through validation and into JDE vouchers.</li><li>Help implement AP Automation for clients: gathering requirements from their finance teams, customizing the solution to fit their workflows, and carrying improvements back into the base product.</li><li>Wrote SQL to insert and update JD Edwards tables as invoices flowed through the pipeline, keeping accounts payable data accurate and in sync between systems.</li><li>Built AP Automation reports and dashboards, writing the SQL queries and the report pages in JavaScript and CSS.</li><li>Integrated AI APIs to match addresses extracted from scanned invoices against address records in the database.</li><li>Supported development of EASYPay and EASYCommerce, the company's .NET payments and e-commerce applications.</li></ul>
 </div>
-</div></div>
-</template>
-<template id="tpl-experience">
-<div class="abox" data-title="experience.txt"><div class="body">
-<div class="job">
-<div class="job-head"><span><span class="y b">Application Developer</span> <span class="d">@</span> <span class="c">K-Rise Systems</span></span><span class="d">Jan 2025 – Present</span></div>
-<div class="d">Aurora, IL · Enterprise software</div>
-<ul class="dots">
-<li>Worked on the rebuild of the company's AP Automation application for JD Edwards in C# and .NET, adding new AI features across the invoice pipeline, from scanned capture through validation and into JDE vouchers.</li>
-<li>Help implement AP Automation for clients: gathering requirements from their finance teams, customizing the solution to fit their workflows, and carrying improvements back into the base product.</li>
-<li>Wrote SQL to insert and update JD Edwards tables as invoices flowed through the pipeline, keeping accounts payable data accurate and in sync between systems.</li>
-<li>Built AP Automation reports and dashboards, writing the SQL queries and the report pages in JavaScript and CSS.</li>
-<li>Integrated AI APIs to match addresses extracted from scanned invoices against address records in the database.</li>
-<li>Supported development of EASYPay and EASYCommerce, the company's .NET payments and e-commerce applications.</li>
-</ul>
 </div>
-<div class="job">
-<div class="job-head"><span><span class="y b">AI Evaluator (Contract)</span> <span class="d">@</span> <span class="c">Outlier</span></span><span class="d">May 2024 – Jan 2025</span></div>
-<div class="d">Remote · a Scale AI platform</div>
-<ul class="dots">
-<li>Evaluated and compared AI-generated code for correctness, clarity, and quality, writing feedback used as training data for large language models.</li>
-</ul>
+<div class="tl-item">
+<div class="tl-when">May 2024 – Jan 2025</div>
+<div class="tl-what">
+<div><span class="role">AI Evaluator (Contract)</span> <span class="d">@</span> <span class="org">Outlier</span></div>
+<div class="where">Remote · a Scale AI platform</div>
+<ul class="ticks"><li>Evaluated and compared AI-generated code for correctness, clarity, and quality, writing feedback used as training data for large language models.</li></ul>
 </div>
-<div class="job">
-<div class="job-head"><span><span class="y b">Software Engineering Intern</span> <span class="d">@</span> <span class="c">Chamberlain Group</span></span><span class="d">May 2022 – Jan 2023</span></div>
-<div class="d">Chicago, IL · Middleware</div>
-<ul class="dots">
-<li>Built RESTful API endpoints in .NET 6 for the myQ connected-device platform.</li>
-<li>Helped migrate services from .NET Core 3.1 to .NET 6 in an Agile/Scrum team.</li>
-</ul>
+</div>
+<div class="tl-item">
+<div class="tl-when">May 2022 – Jan 2023</div>
+<div class="tl-what">
+<div><span class="role">Software Engineering Intern</span> <span class="d">@</span> <span class="org">Chamberlain Group</span></div>
+<div class="where">Chicago, IL · Middleware</div>
+<ul class="ticks"><li>Built RESTful API endpoints in .NET 6 for the myQ connected-device platform.</li><li>Helped migrate services from .NET Core 3.1 to .NET 6 in an Agile/Scrum team.</li></ul>
 </div>
 </div></div>
-</template>
-<template id="tpl-education">
-<div class="abox" data-title="education.txt"><div class="body">
-<div class="job-head"><span><span class="y b">B.S. Computer Science</span> <span class="d">@</span> <span class="c">Northern Illinois University</span></span><span class="d">May 2024</span></div>
-<ul class="dots">
-<li>Coursework: Databases, Probability &amp; Statistics, Data Structures, Algorithms, Software Engineering</li>
-<li>Scholarship player, NIU Esports</li>
-<li>Event Coordinator / Board Member, Association for Computing Machinery (ACM)</li>
-<li>Transfer Merit Scholar</li>
-</ul>
-</div></div>
-</template>
-<template id="tpl-skills">
-<div class="abox" data-title="skills.txt"><div class="body">
-<dl class="kv">
-<dt class="bl b">languages</dt><dd>SQL, Python, C#, JavaScript/TypeScript, C++</dd>
-<dt class="bl b">databases</dt><dd>Microsoft SQL Server (T-SQL, SSMS), MySQL</dd>
-<dt class="bl b">frameworks</dt><dd>.NET / .NET Core, REST APIs</dd>
-<dt class="bl b">tools</dt><dd>Git, Jira</dd>
-<dt class="bl b">cloud</dt><dd>AWS, Azure</dd>
-<dt class="bl b">enterprise</dt><dd>JD Edwards (ERP)</dd>
-<dt class="bl b">certified</dt><dd>AWS Certified Cloud Practitioner (2024)</dd>
-</dl>
-</div></div>
-</template>
-<template id="tpl-neofetch">
-<div class="neofetch">
-<pre><span class="c b">    ___    __ __
-   /   |  / //_/
-  / /| | / ,&lt;
- / ___ |/ /| |
-/_/  |_/_/ |_|</span></pre>
-<div>
-<p><span class="g b">alexander</span>@<span class="g b">alexanderk-dev</span></p>
-<p class="d">------------------------</p>
-<dl class="kv">
-<dt class="y b">Name</dt><dd>Alexander Kashyap</dd>
-<dt class="y b">Role</dt><dd>Application Developer</dd>
-<dt class="y b">Company</dt><dd>K-Rise Systems</dd>
-<dt class="y b">Location</dt><dd>Chicago, IL area</dd>
-<dt class="y b">Uptime</dt><dd>~2 years professional</dd>
-<dt class="y b">Languages</dt><dd>SQL, Python, C#, JavaScript, C++</dd>
-<dt class="y b">Stack</dt><dd>.NET, SQL Server, REST APIs, AWS, Azure</dd>
-<dt class="y b">Education</dt><dd>B.S. Computer Science, NIU</dd>
-<dt class="y b">Shell</dt><dd>zsh</dd>
-</dl>
-<div class="swatches"><span style="background:#1e1e1e;outline:1px solid #444"></span><span style="background:var(--red)"></span><span style="background:var(--green)"></span><span style="background:var(--yellow)"></span><span style="background:var(--blue)"></span><span style="background:var(--magenta)"></span><span style="background:var(--cyan)"></span><span style="background:#e4e4e4"></span></div>
+</section>
+<section class="doc-sec">
+<h2 class="m">Education</h2>
+<div class="timeline"><div class="tl-item">
+<div class="tl-when">May 2024</div>
+<div class="tl-what">
+<div><span class="role">B.S. Computer Science</span> <span class="d">@</span> <span class="org">Northern Illinois University</span></div>
+<div class="where">DeKalb, IL</div>
+<ul class="ticks"><li>Coursework: Databases, Probability &amp; Statistics, Data Structures, Algorithms, Software Engineering</li><li>Scholarship player, NIU Esports</li><li>Event Coordinator / Board Member, Association for Computing Machinery (ACM)</li><li>Transfer Merit Scholar</li></ul>
 </div>
+</div></div>
+</section>
+<section class="doc-sec">
+<h2 class="g">Skills</h2>
+<div class="skills"><div class="skill-label">languages</div><div class="chips"><span class="chip c">SQL</span><span class="chip c">Python</span><span class="chip c">C#</span><span class="chip c">JavaScript</span><span class="chip c">TypeScript</span><span class="chip c">C++</span></div><div class="skill-label">databases</div><div class="chips"><span class="chip g">SQL Server</span><span class="chip g">T-SQL</span><span class="chip g">SSMS</span><span class="chip g">MySQL</span></div><div class="skill-label">frameworks</div><div class="chips"><span class="chip m">.NET</span><span class="chip m">.NET Core</span><span class="chip m">REST APIs</span></div><div class="skill-label">tools</div><div class="chips"><span class="chip y">Git</span><span class="chip y">Jira</span></div><div class="skill-label">cloud</div><div class="chips"><span class="chip bl">AWS</span><span class="chip bl">Azure</span></div><div class="skill-label">enterprise</div><div class="chips"><span class="chip r">JD Edwards (ERP)</span></div></div>
+</section>
+<section class="doc-sec">
+<h2 class="bl">Certifications</h2>
+<div class="chips"><span class="chip y">AWS Certified Cloud Practitioner · 2024</span></div>
+</section>
 </div>
+</article>
+</template>
+<template id="tpl-readme-switch-to-youtube">
+<article class="doc">
+<header class="doc-bar"><span><span class="d">File:</span> <span class="w b">README.txt</span></span><span class="d doc-size"></span></header>
+<div class="doc-body">
+<div class="hero">
+<h1>Switch To YouTube</h1>
+<p class="tagline">A free, open-source web app that moves your Spotify liked songs and playlists to YouTube Music.</p>
+</div>
+<div class="stats">
+<span class="stat"><span class="y">★ <span data-gh="amkashyap1220/SwitchToYoutube" data-field="stars">--</span></span> <span class="d">stars</span></span>
+<span class="stat"><span class="g"><span data-gh="amkashyap1220/SwitchToYoutube" data-field="commits">--</span></span> <span class="d">commits</span></span>
+<span class="stat"><span class="m"><span data-gh="amkashyap1220/SwitchToYoutube" data-field="language">--</span></span></span>
+<span class="stat"><span class="d">updated</span> <span data-gh="amkashyap1220/SwitchToYoutube" data-field="updated">--</span></span>
+</div>
+<div class="chips"><span class="chip c">Python</span><span class="chip c">Flask</span><span class="chip c">Spotify API (spotipy)</span><span class="chip c">YouTube Music API (ytmusicapi)</span><span class="chip c">Docker</span></div>
+<p class="meta"><span>↗ source: <span class="g">open github.webloc</span></span></p>
+<section class="doc-sec">
+<h2 class="c">What it is</h2>
+<p>Switch To YouTube is a small Flask web app. You sign in to Spotify and YouTube Music, pick your liked songs and the playlists you want, and it rebuilds them on YouTube Music.</p>
+<ol class="steps">
+<li>Sign in to both services.</li>
+<li>Choose your liked songs and/or playlists.</li>
+<li>For each song, the app searches YouTube Music and picks the closest match by title, artist, and length.</li>
+<li>Liked songs get liked on YouTube Music, and each playlist is recreated with the same name.</li>
+<li>At the end, it shows how many songs were found and lists any it couldn't match.</li>
+</ol>
+</section>
+<section class="doc-sec">
+<h2 class="m">Why I made it</h2>
+<p>Every tool I could find for moving playlists between services was paid. Moving playlists you already own shouldn't cost money, so I built a free, open-source option anyone can use.</p>
+</section>
+<section class="doc-sec">
+<h2 class="g">Screenshots</h2>
+<!-- Temporary placeholder: replace with <img src="/screenshots/switch-to-youtube-1.png" alt="..."> once real screenshots are in -->
+<div class="shots"><div class="no-image"><svg viewBox="0 0 16 13" shape-rendering="crispEdges" aria-hidden="true"><path class="plume" d="M8 0h3v1H8zM7 1h3v1H7z"/><path d="M5 2h6v1H5zM4 3h8v1H4zM3 4h10v2H3zM3 6h2v1H3zM7 6h2v1H7zM11 6h2v1h-2zM3 7h10v2H3zM3 9h6v1H3zM10 9h1v1h-1zM12 9h1v1h-1zM3 10h10v1H3zM4 11h8v1H4zM2 12h12v1H2z"/></svg><span>no image yet</span></div></div>
+</section>
+<section class="doc-sec">
+<h2 class="y">How it works</h2>
+<!-- Your in-depth, teach-it-to-someone walkthrough goes here. -->
+<div class="callout"><span class="y b">TODO</span> &nbsp;A full walkthrough of how this project works is coming soon.</div>
+</section>
+</div>
+</article>
+</template>
+<template id="tpl-readme-alexanderk-dev">
+<article class="doc">
+<header class="doc-bar"><span><span class="d">File:</span> <span class="w b">README.txt</span></span><span class="d doc-size"></span></header>
+<div class="doc-body">
+<div class="hero">
+<h1>alexanderk.dev</h1>
+<p class="tagline">This website: my resume and projects, in a terminal you navigate by typing.</p>
+</div>
+<div class="stats">
+<span class="stat"><span class="y">★ <span data-gh="amkashyap1220/alexanderk.dev" data-field="stars">--</span></span> <span class="d">stars</span></span>
+<span class="stat"><span class="g"><span data-gh="amkashyap1220/alexanderk.dev" data-field="commits">--</span></span> <span class="d">commits</span></span>
+<span class="stat"><span class="m"><span data-gh="amkashyap1220/alexanderk.dev" data-field="language">--</span></span></span>
+<span class="stat"><span class="d">updated</span> <span data-gh="amkashyap1220/alexanderk.dev" data-field="updated">--</span></span>
+</div>
+<div class="chips"><span class="chip c">HTML</span><span class="chip c">CSS</span><span class="chip c">JavaScript</span><span class="chip c">GitHub API</span><span class="chip c">Cloudflare Workers</span></div>
+<p class="meta"><span>↗ source: <span class="g">open github.webloc</span></span></p>
+<section class="doc-sec">
+<h2 class="c">What it is</h2>
+<p>A hand-built static site with no frameworks and no build step. It's a small zsh look-alike with a virtual filesystem: <span class="g">ls</span>, <span class="g">cd</span>, <span class="g">cat</span>, <span class="g">open</span>, tab completion and history, all on a single page. Project READMEs pull live star and commit counts from the GitHub API, and the site redeploys to Cloudflare automatically whenever I push to <span class="m">main</span>.</p>
+</section>
+<section class="doc-sec">
+<h2 class="m">Why I made it</h2>
+<p>I wanted one place to show my work, and to explain each project as if I were teaching it, because teaching something is the best way I know to really understand it.</p>
+</section>
+<section class="doc-sec">
+<h2 class="y">How it works</h2>
+<!-- Your in-depth walkthrough goes here. -->
+<div class="callout"><span class="y b">TODO</span> &nbsp;A full walkthrough of how this site is built is coming soon.</div>
+</section>
+</div>
+</article>
 </template>
 <template id="tpl-projects-table">
 <div class="tbl"><table>
@@ -126,70 +165,6 @@
 <tr><td><span class="bl b">switch-to-youtube/</span></td><td class="num"><span data-gh="amkashyap1220/SwitchToYoutube" data-field="stars" class="y">--</span></td><td class="num"><span data-gh="amkashyap1220/SwitchToYoutube" data-field="commits" class="g">--</span></td><td><span data-gh="amkashyap1220/SwitchToYoutube" data-field="language" class="m">--</span></td><td class="d opt">Spotify → YouTube Music</td></tr>
 <tr><td><span class="bl b">alexanderk-dev/</span></td><td class="num"><span data-gh="amkashyap1220/alexanderk.dev" data-field="stars" class="y">--</span></td><td class="num"><span data-gh="amkashyap1220/alexanderk.dev" data-field="commits" class="g">--</span></td><td><span data-gh="amkashyap1220/alexanderk.dev" data-field="language" class="m">--</span></td><td class="d opt">this website</td></tr>
 </tbody></table></div>
-</template>
-<template id="tpl-readme-switch-to-youtube">
-<p class="m b"># Switch To YouTube</p>
-<div class="abox" data-title="README.md"><div class="body">
-<p>A free, open-source web app that moves your Spotify liked songs and playlists to YouTube Music.</p>
-<div class="blank"></div>
-<dl class="kv">
-<dt class="c">stars</dt><dd><span class="y">★ </span><span data-gh="amkashyap1220/SwitchToYoutube" data-field="stars" class="y">--</span></dd>
-<dt class="c">commits</dt><dd><span data-gh="amkashyap1220/SwitchToYoutube" data-field="commits" class="g">--</span></dd>
-<dt class="c">language</dt><dd><span data-gh="amkashyap1220/SwitchToYoutube" data-field="language" class="m">--</span></dd>
-<dt class="c">updated</dt><dd><span data-gh="amkashyap1220/SwitchToYoutube" data-field="updated">--</span></dd>
-<dt class="c">stack</dt><dd><ul class="tags"><li>Python</li><li>Flask</li><li>Spotify API (spotipy)</li><li>YouTube Music API (ytmusicapi)</li><li>Docker</li></ul></dd>
-<dt class="c">source</dt><dd><span class="g">open github.webloc</span></dd>
-</dl>
-</div></div>
-<div class="abox" data-title="## What it is"><div class="body">
-<p>Switch To YouTube is a small Flask web app. You sign in to Spotify and YouTube Music, pick your liked songs and the playlists you want, and it rebuilds them on YouTube Music.</p>
-<div class="blank"></div>
-<ol class="num">
-<li>Sign in to both services.</li>
-<li>Choose your liked songs and/or playlists.</li>
-<li>For each song, the app searches YouTube Music and picks the closest match by title, artist, and length.</li>
-<li>Liked songs get liked on YouTube Music, and each playlist is recreated with the same name.</li>
-<li>At the end, it shows how many songs were found and lists any it couldn't match.</li>
-</ol>
-</div></div>
-<div class="abox" data-title="## Why I made it"><div class="body">
-<p>Every tool I could find for moving playlists between services was paid. Moving playlists you already own shouldn't cost money, so I built a free, open-source option anyone can use.</p>
-</div></div>
-<div class="abox" data-title="## Screenshots"><div class="body">
-<div class="shots">
-<!-- Temporary placeholder: replace with <img src="/projects/switch-to-youtube/screenshot-1.png" alt="..."> once real screenshots are in -->
-<div class="no-image"><svg viewBox="0 0 16 13" shape-rendering="crispEdges" aria-hidden="true"><path class="plume" d="M8 0h3v1H8zM7 1h3v1H7z"/><path d="M5 2h6v1H5zM4 3h8v1H4zM3 4h10v2H3zM3 6h2v1H3zM7 6h2v1H7zM11 6h2v1h-2zM3 7h10v2H3zM3 9h6v1H3zM10 9h1v1h-1zM12 9h1v1h-1zM3 10h10v1H3zM4 11h8v1H4zM2 12h12v1H2z"/></svg><span>no image yet</span></div>
-</div>
-</div></div>
-<div class="abox" data-title="## How it works"><div class="body">
-<!-- Your in-depth, teach-it-to-someone walkthrough goes here. -->
-<p><span class="y b">TODO:</span> a full walkthrough of how this project works is coming soon.</p>
-</div></div>
-</template>
-<template id="tpl-readme-alexanderk-dev">
-<p class="m b"># alexanderk.dev</p>
-<div class="abox" data-title="README.md"><div class="body">
-<p>This website: my portfolio and project write-ups, running in a terminal you navigate by typing.</p>
-<div class="blank"></div>
-<dl class="kv">
-<dt class="c">stars</dt><dd><span class="y">★ </span><span data-gh="amkashyap1220/alexanderk.dev" data-field="stars" class="y">--</span></dd>
-<dt class="c">commits</dt><dd><span data-gh="amkashyap1220/alexanderk.dev" data-field="commits" class="g">--</span></dd>
-<dt class="c">language</dt><dd><span data-gh="amkashyap1220/alexanderk.dev" data-field="language" class="m">--</span></dd>
-<dt class="c">updated</dt><dd><span data-gh="amkashyap1220/alexanderk.dev" data-field="updated">--</span></dd>
-<dt class="c">stack</dt><dd><ul class="tags"><li>HTML</li><li>CSS</li><li>JavaScript</li><li>GitHub API</li><li>Cloudflare Workers</li></ul></dd>
-<dt class="c">source</dt><dd><span class="g">open github.webloc</span></dd>
-</dl>
-</div></div>
-<div class="abox" data-title="## What it is"><div class="body">
-<p>A hand-built static site with no frameworks and no build step. It's a small zsh look-alike with a virtual filesystem: <span class="g">ls</span>, <span class="g">cd</span>, <span class="g">cat</span>, <span class="g">open</span>, tab completion and history. Project pages pull live star and commit counts from the GitHub API, and the whole site redeploys to Cloudflare automatically whenever I push to <span class="m">main</span>.</p>
-</div></div>
-<div class="abox" data-title="## Why I made it"><div class="body">
-<p>I wanted one place to show my work, and to explain each project as if I were teaching it, because teaching something is the best way I know to really understand it.</p>
-</div></div>
-<div class="abox" data-title="## How it works"><div class="body">
-<!-- Your in-depth walkthrough goes here. -->
-<p><span class="y b">TODO:</span> a full walkthrough of how this site is built is coming soon.</p>
-</div></div>
 </template>
 
   <script src="/js/github.js"></script>
