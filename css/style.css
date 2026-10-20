@@ -1,0 +1,191 @@
+/* ==========================================================================
+   alexanderk.dev — CRT terminal theme
+   A green-phosphor CRT screen inside a bezel: all caps, ASCII tables,
+   aligned columns, a COMMAND? prompt and a minicom-style status bar.
+   Change the colors here to restyle the whole site.
+   ========================================================================== */
+
+:root {
+  color-scheme: dark;
+  --bezel: #cfd2cf;
+  --screen: #0d1f15;
+  --screen-edge: #050d08;
+  --fg: #3fd07f;                         /* phosphor */
+  --fg-dim: #2a9a5c;
+  --fg-hi: #8af0b5;
+  --glow: rgba(63, 208, 127, 0.45);
+  --bar-bg: #2ea866;                     /* status bar */
+  --bar-fg: #072112;
+  --font: "Share Tech Mono", "Courier New", monospace;
+  --lh: 1.45em;                          /* one terminal line */
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bezel);
+  font-family: var(--font);
+  font-size: 19px;
+  line-height: 1.45;
+  color: var(--fg);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ---------- The CRT screen ---------- */
+.crt {
+  position: fixed;
+  inset: 14px;
+  border-radius: 34px / 30px;
+  background: radial-gradient(ellipse at 50% 45%, var(--screen) 0%, #0a1810 60%, var(--screen-edge) 100%);
+  box-shadow:
+    inset 0 0 70px rgba(0, 0, 0, 0.85),
+    inset 0 0 14px rgba(0, 0, 0, 0.9),
+    0 0 0 2px #b9bcb9;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  text-shadow: 0 0 2px var(--glow), 0 0 8px rgba(63, 208, 127, 0.25);
+}
+/* scanlines + glass glare, on top of everything, never blocking clicks */
+.crt::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0) 0 2px, rgba(0, 0, 0, 0.18) 2px 3px),
+    radial-gradient(ellipse at 30% 10%, rgba(255, 255, 255, 0.05), transparent 45%);
+  z-index: 5;
+}
+
+.scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 26px 34px 30px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--fg-dim) transparent;
+}
+.term { max-width: 82ch; }
+
+/* ---------- Text basics ---------- */
+p, ul, ol, dl, h1, h2, h3, pre, figure { margin: 0; font: inherit; }
+.blank { height: var(--lh); }
+.dim { color: var(--fg-dim); }
+.hi { color: var(--fg-hi); }
+
+a { color: var(--fg-hi); text-decoration: none; border-bottom: 1px dashed var(--fg-dim); }
+a:hover, a:focus-visible { background: var(--fg); color: var(--screen); text-shadow: none; outline: none; border-bottom-color: transparent; }
+
+::selection { background: var(--fg); color: var(--screen); text-shadow: none; }
+
+/* COMMAND? lines */
+.cmd { margin-top: var(--lh); white-space: pre-wrap; }
+.cmd:first-child { margin-top: 0; }
+.cmd::before { content: "COMMAND? "; }
+.out { margin-top: var(--lh); }
+
+/* "--- SECTION ------------" rules */
+.rule { margin-top: var(--lh); white-space: nowrap; overflow: hidden; color: var(--fg); }
+.rule::after { content: " " "-------------------------------------------------------------------------------------------------------------"; color: var(--fg-dim); }
+
+/* Two columns, like the screen in the reference: text left, readout right */
+.split { display: grid; grid-template-columns: minmax(0, 1fr) 34ch; gap: 0 4ch; align-items: start; }
+@media (max-width: 900px) { .split { grid-template-columns: 1fr; gap: var(--lh) 0; } }
+
+/* Aligned label ..... value readouts */
+.readout { display: grid; grid-template-columns: auto 1fr; gap: 0 3ch; }
+.readout dt { white-space: nowrap; }
+.readout dd { margin: 0; text-align: right; }
+.readout.left dd { text-align: left; }
+
+/* Lists with "-" bullets */
+.dash { list-style: none; padding: 0; }
+.dash li { padding-left: 2ch; text-indent: -2ch; }
+.dash li::before { content: "- "; color: var(--fg-dim); }
+ol.num { list-style: none; padding: 0; counter-reset: n; }
+ol.num li { counter-increment: n; padding-left: 4ch; text-indent: -4ch; }
+ol.num li::before { content: counter(n) ". "; display: inline-block; width: 4ch; text-indent: 0; color: var(--fg-dim); }
+
+/* Job header: role / company / dates on one line */
+.job { margin-top: var(--lh); }
+.job-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0 3ch; color: var(--fg-hi); }
+
+/* ASCII tables */
+pre.ascii { white-space: pre; overflow-x: auto; letter-spacing: 0.06em; scrollbar-width: thin; }
+pre.ascii a { border-bottom: 0; }
+
+/* Screenshot placeholder */
+.shots { display: flex; flex-wrap: wrap; gap: 2ch; margin-top: 4px; }
+.shots img { max-width: 100%; display: block; border: 1px solid var(--fg-dim); filter: grayscale(1) sepia(1) hue-rotate(80deg) saturate(2.5) brightness(0.9); }
+.no-image { display: inline-grid; justify-items: center; gap: 6px; padding: 18px 28px; border: 1px dashed var(--fg-dim); color: var(--fg-dim); }
+.no-image svg { width: 56px; height: auto; fill: var(--fg); filter: drop-shadow(0 0 3px var(--glow)); }
+.no-image .plume { fill: var(--fg-hi); }
+
+/* ---------- Command line with a real block cursor ---------- */
+.cmdline { position: relative; margin-top: var(--lh); white-space: pre-wrap; cursor: text; }
+.cmdline .typed { color: var(--fg); }
+.cmdline input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  opacity: 0;            /* the visible text and cursor are drawn by .typed and .block */
+  font: inherit;
+  border: 0;
+  padding: 0;
+  background: transparent;
+}
+.block {
+  display: inline-block;
+  width: 0.62em;
+  height: 1.1em;
+  vertical-align: -0.2em;
+  background: var(--fg);
+  box-shadow: 0 0 6px var(--glow);
+  animation: blink 1.06s steps(1) infinite;
+}
+.cmdline:not(.focused) .block { animation: none; opacity: 0.75; }
+@keyframes blink { 50% { opacity: 0; } }
+
+.prompt-output > div { white-space: pre-wrap; min-height: var(--lh); }
+
+/* ---------- minicom-style status bar (also the site navigation) ---------- */
+.statusbar {
+  position: relative;
+  z-index: 6;
+  background: var(--bar-bg);
+  color: var(--bar-fg);
+  text-shadow: none;
+  padding: 2px 34px 4px;
+  white-space: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.statusbar a { color: var(--bar-fg); border: 0; padding: 0 2px; }
+.statusbar a:hover, .statusbar a:focus-visible, .statusbar a[aria-current="page"] { background: var(--bar-fg); color: var(--bar-bg); }
+.statusbar .sep { opacity: 0.7; padding: 0 0.6ch; }
+
+/* ---------- Boot screen (home page, once per visit) ---------- */
+.boot {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  background: inherit;
+  padding: 26px 34px;
+  white-space: pre-wrap;
+  cursor: pointer;
+}
+.boot.done { display: none; }
+
+@media (prefers-reduced-motion: reduce) { .block { animation: none; } }
+
+@media (max-width: 640px) {
+  body { font-size: 16px; letter-spacing: 0.03em; }
+  .crt { inset: 6px; border-radius: 20px / 18px; }
+  .scroll { padding: 18px 16px 22px; }
+  .statusbar { padding: 2px 16px 4px; }
+  .boot { padding: 18px 16px; }
+}
