@@ -118,6 +118,45 @@ ol.num li::before { content: counter(n) ". "; display: inline-block; width: 4ch;
 pre.ascii { white-space: pre; overflow-x: auto; letter-spacing: 0.06em; scrollbar-width: thin; }
 pre.ascii a { border-bottom: 0; }
 
+/* ---------- ASCII boxes:  +--[ TITLE ]-----+  with | sides ----------
+   js/terminal.js sizes each .abox to a whole number of characters and
+   draws the top and bottom edges; the sides are drawn here. */
+:root { --cw: 0.62em; }            /* one character's width; measured and set by JS */
+.abox { position: relative; margin-top: var(--lh); max-width: 100%; }
+.abox > .edge { white-space: pre; overflow: hidden; color: var(--fg-dim); }
+.abox > .edge .t { color: var(--fg-hi); }
+.abox > .edge a { border-bottom: 0; }
+.abox > .body { padding: 0 calc(var(--cw) * 2); }
+.abox.framed::before, .abox.framed::after {
+  content: "|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A|\A";
+  position: absolute;
+  top: var(--lh);
+  bottom: var(--lh);
+  width: var(--cw);
+  overflow: hidden;
+  white-space: pre;
+  color: var(--fg-dim);
+  pointer-events: none;
+}
+.abox.framed::before { left: 0; }
+.abox.framed::after { right: 0; }
+.abox:not(.framed) > .edge { visibility: hidden; }
+.abox:not(.framed) { border-left: 1px dashed var(--fg-dim); border-right: 1px dashed var(--fg-dim); }
+
+/* Welcome-screen menu */
+.menu { list-style: none; padding: 0; }
+.menu li { white-space: pre-wrap; }
+.menu button {
+  all: unset;
+  cursor: pointer;
+  color: var(--fg-hi);
+  text-transform: uppercase;
+  letter-spacing: inherit;
+}
+.menu button:hover, .menu button:focus-visible { background: var(--fg); color: var(--screen); text-shadow: none; }
+.menu .k { display: inline-block; width: 4ch; color: var(--fg); }
+.menu .d { color: var(--fg-dim); }
+
 /* Screenshot placeholder */
 .shots { display: flex; flex-wrap: wrap; gap: 2ch; margin-top: 4px; }
 .shots img { max-width: 100%; display: block; border: 1px solid var(--fg-dim); filter: grayscale(1) sepia(1) hue-rotate(80deg) saturate(2.5) brightness(0.9); }
@@ -151,6 +190,7 @@ pre.ascii a { border-bottom: 0; }
 @keyframes blink { 50% { opacity: 0; } }
 
 .prompt-output > div { white-space: pre-wrap; min-height: var(--lh); }
+.prompt-output > .printed { white-space: normal; min-height: 0; }
 
 /* ---------- minicom-style status bar (also the site navigation) ---------- */
 .statusbar {

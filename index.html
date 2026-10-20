@@ -15,75 +15,108 @@
     <div class="boot" aria-hidden="true"></div>
     <div class="scroll" tabindex="-1">
       <main class="term">
-        <p class="cmd">WHOAMI</p>
-        <div class="out split">
-          <div>
-            <p class="hi">ALEXANDER KASHYAP</p>
-            <p>Software developer with ~2 years of experience building data-driven enterprise systems in C#, .NET, SQL, and Python.</p>
+        <div class="abox" style="margin-top:0" data-title="WELCOME">
+          <div class="body">
+            <p class="hi">ALEXANDERK.DEV</p>
+            <p>ALEXANDER KASHYAP - SOFTWARE DEVELOPER - CHICAGO, IL AREA</p>
             <div class="blank"></div>
-            <p>I like turning business requirements into reliable solutions, and explaining how things work.</p>
+            <p>TYPE A COMMAND, OR SELECT AN OPTION:</p>
+            <div class="blank"></div>
+            <ul class="menu">
+              <li><span class="k">1</span><button type="button" data-run="about">ABOUT       </button><span class="d">WHO I AM</span></li>
+              <li><span class="k">2</span><button type="button" data-run="experience">EXPERIENCE  </button><span class="d">WHERE I'VE WORKED</span></li>
+              <li><span class="k">3</span><button type="button" data-run="education">EDUCATION   </button><span class="d">SCHOOL</span></li>
+              <li><span class="k">4</span><button type="button" data-run="skills">SKILLS      </button><span class="d">WHAT I WORK WITH</span></li>
+              <li><span class="k">5</span><button type="button" data-run="projects">PROJECTS    </button><span class="d">THINGS I'VE BUILT</span></li>
+              <li><span class="k">6</span><button type="button" data-run="resume">RESUME      </button><span class="d">DOWNLOAD RESUME.PDF</span></li>
+              <li><span class="k">7</span><button type="button" data-run="linkedin">LINKEDIN    </button><span class="d">CONNECT ON LINKEDIN</span></li>
+            </ul>
+            <div class="blank"></div>
+            <p class="dim">TYPE HELP FOR ALL COMMANDS.</p>
           </div>
-          <dl class="readout">
-            <dt>LOCATION</dt><dd>CHICAGO, IL AREA</dd>
-            <dt>ROLE</dt><dd>APPLICATION DEV</dd>
-            <dt>EXPERIENCE</dt><dd>~2 YEARS</dd>
-            <dt>DEGREE</dt><dd>B.S. COMP SCI</dd>
-            <dt>RESUME</dt><dd><a href="assets/Alexander_Kashyap_Resume.pdf" download>RESUME.PDF</a></dd>
-            <dt>PROJECTS</dt><dd><a href="projects/">CD PROJECTS</a></dd>
-            <dt>CONTACT</dt><dd><a href="https://www.linkedin.com/in/alexander-kashyap/">LINKEDIN</a></dd>
-          </dl>
         </div>
 
-        <p class="cmd">TYPE EXPERIENCE.TXT</p>
-        <div class="out">
-        <div class="job" style="margin-top:0">
-          <div class="job-head"><span>APPLICATION DEVELOPER</span><span>K-RISE SYSTEMS, AURORA IL</span><span>JAN 2025 - PRESENT</span></div>
-          <ul class="dash">
-            <li>Worked on the rebuild of the company's AP Automation application for JD Edwards in C# and .NET, adding new AI features across the invoice pipeline, from scanned capture through validation and into JDE vouchers.</li>
-            <li>Help implement AP Automation for clients: gathering requirements from their finance teams, customizing the solution to fit their workflows, and carrying improvements back into the base product.</li>
-            <li>Wrote SQL to insert and update JD Edwards tables as invoices flowed through the pipeline, keeping accounts payable data accurate and in sync between systems.</li>
-            <li>Built AP Automation reports and dashboards, writing the SQL queries and the report pages in JavaScript and CSS.</li>
-            <li>Integrated AI APIs to match addresses extracted from scanned invoices against address records in the database.</li>
-            <li>Supported development of EASYPay and EASYCommerce, the company's .NET payments and e-commerce applications.</li>
-          </ul>
+        <!-- Sections below are printed into the terminal by commands (ABOUT, EXPERIENCE, ...) -->
+        <template id="tpl-about">
+        <div class="abox" data-title="ABOUT.TXT">
+          <div class="body">
+            <div class="split">
+              <div>
+                <p class="hi">ALEXANDER KASHYAP</p>
+                <p>Software developer with ~2 years of experience building data-driven enterprise systems in C#, .NET, SQL, and Python.</p>
+                <div class="blank"></div>
+                <p>I like turning business requirements into reliable solutions, and explaining how things work.</p>
+              </div>
+              <dl class="readout">
+                <dt>LOCATION</dt><dd>CHICAGO, IL AREA</dd>
+                <dt>ROLE</dt><dd>APPLICATION DEV</dd>
+                <dt>EXPERIENCE</dt><dd>~2 YEARS</dd>
+                <dt>DEGREE</dt><dd>B.S. COMP SCI</dd>
+                <dt>RESUME</dt><dd><a href="assets/Alexander_Kashyap_Resume.pdf" download>RESUME.PDF</a></dd>
+                <dt>CONTACT</dt><dd><a href="https://www.linkedin.com/in/alexander-kashyap/">LINKEDIN</a></dd>
+              </dl>
+            </div>
+          </div>
         </div>
-        <div class="job">
-          <div class="job-head"><span>AI EVALUATOR (CONTRACT)</span><span>OUTLIER, A SCALE AI PLATFORM</span><span>MAY 2024 - JAN 2025</span></div>
-          <ul class="dash">
-            <li>Evaluated and compared AI-generated code for correctness, clarity, and quality, writing feedback used as training data for large language models.</li>
-          </ul>
+        </template>
+        <template id="tpl-experience">
+        <div class="abox" data-title="EXPERIENCE.TXT">
+          <div class="body">
+            <div class="job" style="margin-top:0">
+              <div class="job-head"><span>APPLICATION DEVELOPER</span><span>K-RISE SYSTEMS, AURORA IL</span><span>JAN 2025 - PRESENT</span></div>
+              <ul class="dash">
+              <li>Worked on the rebuild of the company's AP Automation application for JD Edwards in C# and .NET, adding new AI features across the invoice pipeline, from scanned capture through validation and into JDE vouchers.</li>
+              <li>Help implement AP Automation for clients: gathering requirements from their finance teams, customizing the solution to fit their workflows, and carrying improvements back into the base product.</li>
+              <li>Wrote SQL to insert and update JD Edwards tables as invoices flowed through the pipeline, keeping accounts payable data accurate and in sync between systems.</li>
+              <li>Built AP Automation reports and dashboards, writing the SQL queries and the report pages in JavaScript and CSS.</li>
+              <li>Integrated AI APIs to match addresses extracted from scanned invoices against address records in the database.</li>
+              <li>Supported development of EASYPay and EASYCommerce, the company's .NET payments and e-commerce applications.</li>
+              </ul>
+            </div>
+            <div class="job">
+              <div class="job-head"><span>AI EVALUATOR (CONTRACT)</span><span>OUTLIER, A SCALE AI PLATFORM</span><span>MAY 2024 - JAN 2025</span></div>
+              <ul class="dash">
+              <li>Evaluated and compared AI-generated code for correctness, clarity, and quality, writing feedback used as training data for large language models.</li>
+              </ul>
+            </div>
+            <div class="job">
+              <div class="job-head"><span>SOFTWARE ENGINEERING INTERN</span><span>CHAMBERLAIN GROUP, CHICAGO IL</span><span>MAY 2022 - JAN 2023</span></div>
+              <ul class="dash">
+              <li>Built RESTful API endpoints in .NET 6 for the myQ connected-device platform.</li>
+              <li>Helped migrate services from .NET Core 3.1 to .NET 6 in an Agile/Scrum team.</li>
+              </ul>
+            </div>
+          </div>
         </div>
-        <div class="job">
-          <div class="job-head"><span>SOFTWARE ENGINEERING INTERN</span><span>CHAMBERLAIN GROUP, CHICAGO IL</span><span>MAY 2022 - JAN 2023</span></div>
-          <ul class="dash">
-            <li>Built RESTful API endpoints in .NET 6 for the myQ connected-device platform.</li>
-            <li>Helped migrate services from .NET Core 3.1 to .NET 6 in an Agile/Scrum team.</li>
-          </ul>
+        </template>
+        <template id="tpl-education">
+        <div class="abox" data-title="EDUCATION.TXT">
+          <div class="body">
+            <div class="job-head"><span>B.S. COMPUTER SCIENCE</span><span>NORTHERN ILLINOIS UNIVERSITY</span><span>MAY 2024</span></div>
+            <ul class="dash">
+              <li>Coursework: Databases, Probability &amp; Statistics, Data Structures, Algorithms, Software Engineering</li>
+              <li>Scholarship player, NIU Esports</li>
+              <li>Event Coordinator / Board Member, Association for Computing Machinery (ACM)</li>
+              <li>Transfer Merit Scholar</li>
+            </ul>
+          </div>
         </div>
+        </template>
+        <template id="tpl-skills">
+        <div class="abox" data-title="SKILLS.TXT">
+          <div class="body">
+            <dl class="readout left">
+              <dt>LANGUAGES</dt><dd>SQL, PYTHON, C#, JAVASCRIPT/TYPESCRIPT, C++</dd>
+              <dt>DATABASES</dt><dd>MICROSOFT SQL SERVER (T-SQL, SSMS), MYSQL</dd>
+              <dt>FRAMEWORKS</dt><dd>.NET / .NET CORE, REST APIS, GIT, JIRA</dd>
+              <dt>CLOUD</dt><dd>AWS, AZURE</dd>
+              <dt>ENTERPRISE</dt><dd>JD EDWARDS (ERP)</dd>
+              <dt>CERTIFIED</dt><dd>AWS CERTIFIED CLOUD PRACTITIONER (2024)</dd>
+            </dl>
+          </div>
         </div>
-
-        <p class="cmd">TYPE EDUCATION.TXT</p>
-        <div class="out">
-          <div class="job-head"><span>B.S. COMPUTER SCIENCE</span><span>NORTHERN ILLINOIS UNIVERSITY</span><span>MAY 2024</span></div>
-          <ul class="dash">
-            <li>Coursework: Databases, Probability &amp; Statistics, Data Structures, Algorithms, Software Engineering</li>
-            <li>Scholarship player, NIU Esports</li>
-            <li>Event Coordinator / Board Member, Association for Computing Machinery (ACM)</li>
-            <li>Transfer Merit Scholar</li>
-          </ul>
-        </div>
-
-        <p class="cmd">TYPE SKILLS.TXT</p>
-        <dl class="out readout left">
-          <dt>LANGUAGES</dt><dd>SQL, PYTHON, C#, JAVASCRIPT/TYPESCRIPT, C++</dd>
-          <dt>DATABASES</dt><dd>MICROSOFT SQL SERVER (T-SQL, SSMS), MYSQL</dd>
-          <dt>FRAMEWORKS</dt><dd>.NET / .NET CORE, REST APIS, GIT, JIRA</dd>
-          <dt>CLOUD</dt><dd>AWS, AZURE</dd>
-          <dt>ENTERPRISE</dt><dd>JD EDWARDS (ERP)</dd>
-          <dt>CERTIFIED</dt><dd>AWS CERTIFIED CLOUD PRACTITIONER (2024)</dd>
-        </dl>
-
-        <p class="out dim">TYPE HELP FOR COMMANDS, OR JUST CLICK AROUND.</p>
+        </template>
+        <noscript><p class="out">THIS TERMINAL NEEDS JAVASCRIPT. <a href="assets/Alexander_Kashyap_Resume.pdf">DOWNLOAD RESUME.PDF</a> OR <a href="projects/">SEE PROJECTS</a>.</p></noscript>
 
         <div class="prompt-output" aria-live="polite"></div>
         <form class="cmdline" autocomplete="off">COMMAND? <span class="typed"></span><span class="block" aria-hidden="true"></span><input type="text" spellcheck="false" autocapitalize="off" autocorrect="off" aria-label="Command (type HELP)"></form>

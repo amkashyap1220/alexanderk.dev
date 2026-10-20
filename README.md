@@ -13,13 +13,14 @@ My personal site: resume and projects on a green-phosphor CRT terminal. Every pa
 ## Project structure
 
 ```
-index.html                           About / resume
+index.html                           Welcome screen (sections live in <template> tags,
+                                     printed by ABOUT, EXPERIENCE, EDUCATION, SKILLS)
 assets/Alexander_Kashyap_Resume.pdf  Downloadable resume
 projects/index.html                  Project list
 projects/<project>/index.html        One page per project
 css/style.css                        All styles (theme colors at the top)
 js/github.js                         Live GitHub stats
-js/terminal.js                       Command prompt and boot screen
+js/terminal.js                       Command line, boot screen, ASCII boxes
 404.html                             Not-found page
 wrangler.jsonc, .assetsignore        Cloudflare deploy config
 ```
@@ -38,6 +39,10 @@ Then open http://localhost:8000.
 2. Point the live stats at the repo: `<span data-gh="owner/repo" data-field="stars"></span>` (fields: stars, commits, language, updated).
 3. Add a row to the table and a README entry in `projects/index.html`.
 4. Add it to the `PROJECTS` list at the top of `js/terminal.js` so `DIR` and `OPEN` know about it.
+
+## Edit resume content
+
+The About, Experience, Education, and Skills sections are in `index.html` inside `<template id="tpl-...">` tags. Wrap any block in `<div class="abox" data-title="TITLE"><div class="body">...</div></div>` to give it an ASCII box.
 
 ## Update the resume
 
