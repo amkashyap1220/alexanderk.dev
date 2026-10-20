@@ -1,6 +1,6 @@
 # alexanderk.dev
 
-My personal site: resume and projects inside a macOS Terminal window running a small zsh look-alike. The site is navigated only by typing commands.
+My personal site: about me and my projects, inside a macOS Terminal window running a small zsh look-alike. The site is navigated only by typing commands.
 
 **Live:** [alexanderk.dev](https://alexanderk.dev)
 
@@ -11,11 +11,11 @@ help                 every command
 ls / ls -la          list files
 cd projects          change directory (cd .., cd ~, cd -)
 cat about.txt        print a file
-open resume.pdf      download the resume (open linkedin.url, open github.url)
+open linkedin.url    open a link (open github.url in a project)
 neofetch             the quick version
 ```
 
-Also: `pwd`, `history`, `clear` (Ctrl+L), `man <cmd>`, `echo`, `date`, `git status`, Tab completion, ↑/↓ history, Ctrl+C. Shortcuts: `about`, `experience`, `education`, `skills`, `projects`, `resume`, `linkedin`, `github`.
+Also: `pwd`, `history`, `clear` (Ctrl+L), `man <cmd>`, `echo`, `date`, `git status`, Tab completion, ↑/↓ history, Ctrl+C. Shortcuts: `about`, `experience`, `education`, `skills`, `projects`, `linkedin`, `github`.
 
 ## Built with
 
@@ -28,7 +28,7 @@ Also: `pwd`, `history`, `clear` (Ctrl+L), `man <cmd>`, `echo`, `date`, `git stat
 The terminal has a virtual filesystem rooted at `~`:
 
 ```
-~/about.txt  experience.txt  education.txt  skills.txt  resume.pdf  linkedin.url
+~/about.txt  experience.txt  education.txt  skills.txt  linkedin.url
 ~/projects/<project>/README.md  github.url
 ```
 
@@ -39,7 +39,6 @@ index.html                           ~
 projects/index.html                  ~/projects
 projects/<project>/index.html        ~/projects/<project>
 404.html                             not-found page
-assets/Alexander_Kashyap_Resume.pdf  resume.pdf
 css/style.css                        Terminal styles (colors at the top)
 js/terminal.js                       The shell: filesystem, commands, prompt
 js/github.js                         Live GitHub stats
@@ -69,9 +68,9 @@ python -m http.server 8000
 
 Then open http://localhost:8000.
 
-## Update the resume
+## Privacy
 
-Replace `assets/Alexander_Kashyap_Resume.pdf` with a new PDF of the same name.
+No resume download, phone number, email, or street address is published here. Only information already public on LinkedIn and GitHub is shown.
 
 ## Deployment
 
