@@ -8,7 +8,7 @@ My personal site: resume, projects, and write-ups explaining how each project wo
 
 - Plain HTML, CSS, and JavaScript (no frameworks, no build step)
 - GitHub REST API for live star and commit counts on project pages
-- Cloudflare Pages for hosting, with automatic deploys on every push to `main`
+- Cloudflare Workers (static assets) for hosting, with automatic deploys on every push to `main`
 
 ## Project structure
 
@@ -37,4 +37,4 @@ Then open http://localhost:8000.
 
 ## Deployment
 
-Connected to Cloudflare Pages. Every push to `main` redeploys the site automatically.
+Connected to a Cloudflare Worker through Workers Builds. Every push to `main` runs `npx wrangler deploy`, which reads `wrangler.jsonc` and uploads the site. `.assetsignore` keeps non-site files (README, config) from being published.
