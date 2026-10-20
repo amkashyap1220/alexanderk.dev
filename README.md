@@ -1,6 +1,6 @@
 # alexanderk.dev
 
-My personal site: resume and projects on a green-phosphor CRT terminal. Every page has a working `COMMAND?` prompt, so you can navigate by typing (`HELP`, `DIR`, `CD PROJECTS`, `OPEN SWITCH-TO-YOUTUBE`, `1`, `RESUME`...) or just click.
+My personal site: resume and projects on a green-phosphor CRT terminal. The site is navigated only by typing at the `COMMAND?` prompt: `HELP`, `DIR`, `CD PROJECTS`, `CD ..`, `OPEN SWITCH-TO-YOUTUBE`, `TYPE SKILLS.TXT`, `1`-`7` on the menu, `RESUME`, `LINKEDIN`, `GITHUB`, `CLS`, `MENU`. Tapping the screen brings up the keyboard on phones.
 
 **Live:** [alexanderk.dev](https://alexanderk.dev)
 
