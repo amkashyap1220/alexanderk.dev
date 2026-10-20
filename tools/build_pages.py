@@ -45,33 +45,45 @@ def chips(items, color=""):
 
 
 # ------------------------------------------------------------------ resume.txt
+# Matches the real resume, section for section. Phone and email are redacted on purpose.
 JOBS = [
-    ("Application Developer", "K-Rise Systems", "Aurora, IL · Enterprise software", "Jan 2025 – Present", True, [
-        "Worked on the rebuild of the company's AP Automation application for JD Edwards in C# and .NET, adding new AI features across the invoice pipeline, from scanned capture through validation and into JDE vouchers.",
-        "Help implement AP Automation for clients: gathering requirements from their finance teams, customizing the solution to fit their workflows, and carrying improvements back into the base product.",
-        "Wrote SQL to insert and update JD Edwards tables as invoices flowed through the pipeline, keeping accounts payable data accurate and in sync between systems.",
-        "Built AP Automation reports and dashboards, writing the SQL queries and the report pages in JavaScript and CSS.",
-        "Integrated AI APIs to match addresses extracted from scanned invoices against address records in the database.",
-        "Supported development of EASYPay and EASYCommerce, the company's .NET payments and e-commerce applications.",
+    ("Application Developer", "K-Rise Systems", "Aurora, IL · Enterprise software company", "January 2025 – Present", True, [
+        "Worked on the rebuild of the company's AP Automation application for JD Edwards (primary project) in C# and .NET, adding new AI features and updates across the invoice pipeline, from scanned capture through validation and into JDE vouchers",
+        "Help implement AP Automation for clients, gathering requirements from their finance teams, customizing the solution to fit their workflows, and carrying improvements back into the base product",
+        "Wrote SQL to insert and update JD Edwards tables as invoices flowed through the pipeline, keeping accounts payable data accurate and in sync between systems",
+        "Built AP Automation reports and dashboards, writing the SQL queries and building the report pages in JavaScript and CSS to give clients visibility into automation performance and their invoice data",
+        "Integrated AI APIs to match addresses extracted from scanned invoices against address records in the database, reducing manual lookup",
+        "Supported development of EASYPay and EASYCommerce, the company's .NET payments and e-commerce applications, including SQL to keep payment and order data in sync with JD Edwards",
     ]),
-    ("AI Evaluator (Contract)", "Outlier", "Remote · a Scale AI platform", "May 2024 – Jan 2025", False, [
-        "Evaluated and compared AI-generated code for correctness, clarity, and quality, writing feedback used as training data for large language models.",
+    ("AI Evaluator (Contract)", "Outlier, a Scale AI platform", "Remote", "May 2024 – January 2025", False, [
+        "Evaluated and compared AI-generated code for correctness, clarity, and quality, writing feedback used as training data to improve large language models",
+        "Applied detailed scoring rubrics consistently to coding tasks, flagging bugs and logical errors",
     ]),
-    ("Software Engineering Intern", "Chamberlain Group", "Chicago, IL · Middleware", "May 2022 – Jan 2023", False, [
-        "Built RESTful API endpoints in .NET 6 for the myQ connected-device platform.",
-        "Helped migrate services from .NET Core 3.1 to .NET 6 in an Agile/Scrum team.",
+    ("Software Engineering Intern – Middleware", "Chamberlain Group", "Chicago, IL", "May 2022 – January 2023", False, [
+        "Built RESTful API endpoints in .NET 6 for the myQ connected-device platform",
+        "Helped migrate services from .NET Core 3.1 to .NET 6, improving performance and maintainability in an Agile/Scrum team",
+    ]),
+]
+
+PROJECTS_ON_RESUME = [
+    ("Switch To YouTube", "Open-source", '<span class="c">github.com/amkashyap1220/SwitchToYoutube</span>', "August 2023 – 2024", False, [
+        "Built a free, open-source tool that uses the Spotify and YouTube Music APIs to transfer users' playlists between platforms, as an alternative to paid migration services",
+    ]),
+    ("ATG Shop", "Databases course (CSCI 466)", "", "August 2023 – December 2023", False, [
+        "Designed a normalized relational schema in MySQL for inventory, orders, and customers, and wrote the SQL behind order tracking and inventory management",
+        "Built the full web application on the LAMP stack for store owners and customers",
     ]),
 ]
 
 
-def timeline(items):
+def timeline(items, sep="@"):
     rows = []
     for role, org, where, when, now, pts in items:
         rows.append(f"""<div class="tl-item{' now' if now else ''}">
 <div class="tl-when">{when}</div>
 <div class="tl-what">
-<div><span class="role">{role}</span> <span class="d">@</span> <span class="org">{org}</span></div>
-<div class="where">{where}</div>
+<div><span class="role">{role}</span> <span class="d">{sep}</span> <span class="org">{org}</span></div>
+{f'<div class="where">{where}</div>' if where else ''}
 {bullets(pts) if pts else ""}
 </div>
 </div>""")
@@ -79,31 +91,32 @@ def timeline(items):
 
 
 SKILLS = [
-    ("languages", ["SQL", "Python", "C#", "JavaScript", "TypeScript", "C++"], "c"),
-    ("databases", ["SQL Server", "T-SQL", "SSMS", "MySQL"], "g"),
-    ("frameworks", [".NET", ".NET Core", "REST APIs"], "m"),
-    ("tools", ["Git", "Jira"], "y"),
+    ("languages", ["SQL", "Python", "C#", "JavaScript/TypeScript", "C++"], "c"),
+    ("databases", ["Microsoft SQL Server (T-SQL, SSMS)", "MySQL", "NoSQL"], "g"),
+    ("frameworks &amp; tools", [".NET / .NET Core", "REST APIs", "Git", "Jira"], "m"),
     ("cloud", ["AWS", "Azure"], "bl"),
-    ("enterprise", ["JD Edwards (ERP)"], "r"),
+    ("enterprise systems", ["JD Edwards (ERP)"], "r"),
+    ("certifications", ["AWS Certified Cloud Practitioner (May 2024)"], "y"),
 ]
 
+REDACTED = '<span class="redact" title="redacted">redacted</span>'
+
 resume = doc("resume.txt", "\n".join([
-    """<div class="hero">
+    f"""<div class="hero">
 <h1>Alexander Kashyap</h1>
-<p class="tagline">Software Developer <span class="d">·</span> C# <span class="d">·</span> .NET <span class="d">·</span> SQL <span class="d">·</span> Python</p>
-<p class="meta"><span>⌖ Chicago, IL area</span><span>↗ <span class="g">open linkedin.webloc</span></span><span>↗ <span class="g">open github.webloc</span></span></p>
+<p class="contact"><span>Chicago, IL Area</span><span class="sep">|</span><span>{REDACTED}</span><span class="sep">|</span><span>{REDACTED}</span><span class="sep">|</span><span class="c">linkedin.com/in/alexander-kashyap</span><span class="sep">|</span><span class="c">alexanderk.dev</span></p>
 </div>""",
-    sec("Summary", "<p>Software developer with ~2 years of experience building data-driven enterprise systems in C#, .NET, SQL, and Python. Comfortable working across the stack, from database design to API integrations, and skilled at turning business requirements into reliable solutions.</p>", "c"),
+    sec("Summary", "<p>Software developer with ~2 years of experience building data-driven enterprise systems in C#, .NET, SQL, and Python. Comfortable working across the stack, from database design to API integrations, and skilled at turning business requirements into reliable solutions. Detail-oriented, quick to learn, and focused on building systems people can depend on.</p>", "c"),
     sec("Experience", timeline(JOBS), "y"),
-    sec("Education", timeline([("B.S. Computer Science", "Northern Illinois University", "DeKalb, IL", "May 2024", False, [
-        "Coursework: Databases, Probability &amp; Statistics, Data Structures, Algorithms, Software Engineering",
+    sec("Projects", timeline(PROJECTS_ON_RESUME, sep="|"), "g"),
+    sec("Education", timeline([("Bachelor of Science in Computer Science", "Northern Illinois University", "", "May 2024", False, [
+        "Relevant coursework: Databases, Probability &amp; Statistics, Data Structures, Algorithms, Software Engineering",
         "Scholarship player, NIU Esports",
         "Event Coordinator / Board Member, Association for Computing Machinery (ACM)",
         "Transfer Merit Scholar",
     ])]), "m"),
-    sec("Skills", '<div class="skills">' + "".join(
-        f'<div class="skill-label">{label}</div>{chips(items, color)}' for label, items, color in SKILLS) + "</div>", "g"),
-    sec("Certifications", chips(["AWS Certified Cloud Practitioner · 2024"], "y"), "bl"),
+    sec("Skills &amp; Certifications", '<div class="skills">' + "".join(
+        f'<div class="skill-label">{label}</div>{chips(items, color)}' for label, items, color in SKILLS) + "</div>", "bl"),
 ]))
 
 

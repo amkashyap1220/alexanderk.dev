@@ -169,6 +169,22 @@ ol.num li::before { content: counter(n) ". "; color: var(--cyan); }
 .hero + * { margin-top: 1em; }
 .meta { display: flex; flex-wrap: wrap; gap: 0.2em 3ch; color: var(--dim); margin-top: 0.7em; }
 
+/* resume contact line, with redaction bars */
+.contact { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25em 1.2ch; color: var(--text); }
+.contact .sep { color: #555; }
+.redact {
+  display: inline-block;
+  padding: 0 1.2ch;
+  border-radius: 3px;
+  background: #3b3b3b;
+  color: #777;
+  font-size: 0.82em;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  line-height: 1.6;
+  user-select: none;
+}
+
 /* sections */
 .doc-sec { margin-top: 1.8em; }
 .doc-sec > h2 {
@@ -186,8 +202,8 @@ ol.num li::before { content: counter(n) ". "; color: var(--cyan); }
 .doc-sec p + p { margin-top: 0.8em; }
 
 /* experience / education timeline */
-.tl-item { display: grid; grid-template-columns: 19ch minmax(0, 1fr); gap: 0 3ch; }
-.tl-when { color: var(--dim); text-align: right; padding-top: 0.05em; white-space: nowrap; }
+.tl-item { display: grid; grid-template-columns: 15ch minmax(0, 1fr); gap: 0 3ch; }
+.tl-when { color: var(--dim); text-align: right; padding-top: 0.05em; line-height: 1.35; }
 .tl-what { position: relative; border-left: 2px solid #3a3a3a; padding: 0 0 1.3em 2.6ch; }
 .tl-item:last-child .tl-what { padding-bottom: 0.2em; }
 .tl-what::before {
@@ -227,7 +243,7 @@ ol.num li::before { content: counter(n) ". "; color: var(--cyan); }
 .chip.y { color: var(--yellow); border-color: rgba(229, 192, 123, 0.35); background: rgba(229, 192, 123, 0.08); }
 .chip.bl { color: var(--blue); border-color: rgba(106, 165, 255, 0.35); background: rgba(106, 165, 255, 0.08); }
 .chip.r { color: var(--red); border-color: rgba(255, 107, 104, 0.35); background: rgba(255, 107, 104, 0.08); }
-.skills { display: grid; grid-template-columns: 12ch minmax(0, 1fr); gap: 0.65em 2ch; align-items: center; }
+.skills { display: grid; grid-template-columns: 20ch minmax(0, 1fr); gap: 0.65em 2ch; align-items: center; }
 .skill-label { color: var(--dim); font-size: 0.85em; letter-spacing: 0.1em; text-transform: uppercase; }
 
 /* README stats */
