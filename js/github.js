@@ -4,6 +4,9 @@
      <span data-gh="owner/repo" data-field="stars"></span>
    Fields: stars, commits, language, updated.
 
+   Also fills in a project's README, as GitHub shows it:
+     <div data-readme="owner/repo"></div>
+
    Uses GitHub's public API (no key needed). Answers are saved in the
    browser for 30 minutes, because GitHub allows 60 requests an hour.
    ========================================================================== */
@@ -75,5 +78,41 @@
     });
   }
 
+  // README: GitHub's API returns it already turned into HTML (and made safe by GitHub)
+  async function loadReadme(repo) {
+    const key = repo + ":readme";
+    const hit = cached(key);
+    if (hit) return hit;
+    const res = await fetch(API + repo + "/readme", { headers: { Accept: "application/vnd.github.html+json" } });
+    if (!res.ok) throw new Error("GitHub error " + res.status);
+    const html = await res.text();
+    save(key, html);
+    return html;
+  }
+
+  function fillReadme(el) {
+    const repo = el.dataset.readme;
+    loadReadme(repo)
+      .then((html) => {
+        el.innerHTML = html;
+        // Relative images and links in a README point inside the repo, so point them at GitHub
+        el.querySelectorAll("img[src]").forEach((img) => {
+          const src = img.getAttribute("src");
+          if (!/^(https?:|data:)/.test(src)) img.src = "https://raw.githubusercontent.com/" + repo + "/HEAD/" + src.replace(/^\.?\//, "");
+        });
+        el.querySelectorAll("a[href]").forEach((a) => {
+          const href = a.getAttribute("href");
+          if (href.startsWith("#")) return;
+          if (!/^(https?:|mailto:)/.test(href)) a.href = "https://github.com/" + repo + "/blob/HEAD/" + href.replace(/^\.?\//, "");
+          a.target = "_blank";
+          a.rel = "noopener";
+        });
+      })
+      .catch(() => {
+        el.innerHTML = '<p class="muted">Couldn\'t load the README right now. <a href="https://github.com/' + repo + '#readme">Read it on GitHub</a>.</p>';
+      });
+  }
+
   fill(document);
+  document.querySelectorAll("[data-readme]").forEach(fillReadme);
 })();
