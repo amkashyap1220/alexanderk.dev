@@ -6,7 +6,9 @@
    zips with js/chicago-home-value-model.js and draws them with Observable Plot.
 
    The reader picks buying or renting, sets a target and a weight for each
-   factor, and can add a second person. Nothing is scored until every factor
+   factor, can name where they work (commute becomes the drive time there,
+   from /writing/chicago-home-value-drive.json, src/commute.py), and can add
+   a second person. Nothing is scored until every factor
    that counts has a target. After that every change rescores and redraws the
    map and the table. Colors come from the site's CSS variables, so the map
    redraws when the theme or the width changes.
@@ -26,7 +28,7 @@
   const FACTORS = [
     { name: "Schools", hint: "District test scores as a percentile within the state: 80 means better than 80% of the state's districts.", before: "", after: "percentile", digits: 0 },
     { name: "Safety", hint: "Crimes per 1,000 residents a year, from the local police department.", before: "", after: "crimes per 1,000", digits: 1 },
-    { name: "Commute", hint: "Average one-way trip to work.", before: "", after: "minutes", digits: 0 },
+    { name: "Commute", hint: "Average one-way trip to work (Census). Name where you work and it becomes the drive time from each zip to there instead.", before: "", after: "minutes", digits: 0 },
     { name: "Walkability", hint: "EPA walkability index, from 1 (need a car for everything) to 20 (very walkable).", before: "", after: "out of 20", digits: 1 },
     { name: "Home age", hint: "How old the typical (median) home is.", before: "", after: "years old", digits: 0 },
   ];
@@ -42,6 +44,8 @@
   ];
 
   let data = null, geo = null, byZip = null;
+  let drive = null;        // drive(fromZip, toZip) in minutes, from chicago-home-value-drive.json
+  let places = [];         // [{ zip, label }] for the workplace box
   let mode = "buy";
   let view = 0;            // 0 = you, 1 = person 2, 2 = best for both
   let result = null;
@@ -64,7 +68,21 @@
       '<p class="hv-hint"><span data-hint="' + i + '"></span> <span data-typical="' + i + '"></span></p>' +
       '<label class="hv-target"><span>Target: <span data-before="' + i + '"></span></span>' +
       '<input type="text" inputmode="decimal" name="t' + i + '">' +
-      '<span data-after="' + i + '"></span></label></div>';
+      '<span data-after="' + i + '"></span></label>' +
+      (i === 2 ? '<label class="hv-target"><span>Where you work:</span>' +
+        '<input class="hv-work" type="text" name="work" list="hv-places" placeholder="town or zip" aria-label="Where you work, a town or zip code">' +
+        '</label><p class="hv-hint" data-work></p>' : "") +
+      '</div>';
+  }
+
+  // "60606", "Naperville" or "Naperville, IL 60540" (from the list) all work; returns a zip or null
+  function findWork(text) {
+    const s = text.trim().toLowerCase();
+    if (!s) return null;
+    const zip = s.match(/\b\d{5}\b/);
+    if (zip) return places.some((p) => p.zip === zip[0]) ? zip[0] : undefined;
+    const hit = places.find((p) => p.label.toLowerCase().startsWith(s));
+    return hit ? hit.zip : undefined;
   }
 
   function personForm(k) {
@@ -74,16 +92,13 @@
       '<legend>' + (k === 0 ? "You" : "Person 2") + '</legend>' +
       '<p class="hv-intro">For each one, type the value you want (your target) and slide how much it matters (its weight). ' +
       'A zip scores 100 when it matches all your targets, and less the further off it is.</p>' +
+      '<p class="hv-sample" data-sample><b>These are sample values.</b> Change them to yours one at a time, or press Clear to start empty.</p>' +
       [0, 1, 2, 3, 4, 5].map(row).join("") +
-      '<div class="hv-buttons"><button class="btn small" type="button" data-fill>Fill in typical values</button>' +
+      '<div class="hv-buttons"><button class="btn small" type="button" data-fill>Use sample values</button>' +
       '<button class="btn small" type="button" data-clear>Clear</button>' +
       (k === 1 ? '<button class="btn small" type="button" data-remove>Remove person 2</button>' : "") + '</div>';
     fs.addEventListener("input", update);
-    fs.querySelector("[data-fill]").addEventListener("click", () => {
-      if (!data) return;
-      data.example[mode].targets.forEach((t, i) => { fs.elements["t" + i].value = t.toLocaleString(); });
-      update();
-    });
+    fs.querySelector("[data-fill]").addEventListener("click", () => { fillSample(fs); update(); });
     fs.querySelector("[data-clear]").addEventListener("click", () => {
       fs.querySelectorAll("input[type=range]").forEach((el) => { el.value = 2; });
       fs.querySelectorAll("input[type=text]").forEach((el) => { el.value = ""; });
@@ -92,6 +107,7 @@
     const remove = fs.querySelector("[data-remove]");
     if (remove) remove.addEventListener("click", () => { fs.remove(); addBtn.hidden = false; setView(0); });
     label(fs);
+    fillSample(fs);
     return fs;
   }
 
@@ -109,7 +125,7 @@
       const v = rows.map((z) => z[mode][i]).filter((x) => x != null).sort((a, b) => a - b);
       el.textContent = "Typical zip: " + fs[i].before + fmt(v[v.length >> 1], fs[i].digits) + (fs[i].after ? " " + fs[i].after : "") + ".";
     });
-    scope.querySelectorAll("input[name^=w]").forEach((el) => {
+    scope.querySelectorAll("input[type=range]").forEach((el) => {
       el.setAttribute("aria-label", "How much " + fs[el.name.slice(1)].name.toLowerCase() + " matters");
     });
     scope.querySelectorAll("input[name^=t]").forEach((el) => {
@@ -117,6 +133,27 @@
       el.setAttribute("aria-label", fs[i].name + " target" + (fs[i].after ? ", " + fs[i].after : ", dollars"));
       el.placeholder = i === 5 ? "e.g. " + fs[5].example : "";
     });
+  }
+
+  // The sample values (SAMPLE in src/value.py): typical targets, every weight Normal, a job in the Loop
+  function sampleText() {
+    const s = data.sample[mode];
+    return { targets: s.targets.map((t) => t.toLocaleString()), sliders: s.weights.map((w) => String(WEIGHTS.findIndex((st) => st.weight === w))), work: placeName(s.workplace) };
+  }
+
+  function fillSample(fs) {
+    if (!data) return;
+    const s = sampleText();
+    s.targets.forEach((t, i) => { fs.elements["t" + i].value = t; });
+    s.sliders.forEach((v, i) => { fs.elements["w" + i].value = v; });
+    fs.elements.work.value = s.work;
+  }
+
+  // Shows the "sample values" note while every field still holds its sample value
+  function markSample(fs) {
+    const s = data && sampleText();
+    fs.querySelector("[data-sample]").hidden = !s || fs.elements.work.value !== s.work ||
+      s.targets.some((t, i) => fs.elements["t" + i].value !== t) || s.sliders.some((v, i) => fs.elements["w" + i].value !== v);
   }
 
   // "350k", "$1,500" and "30" all work
@@ -131,7 +168,11 @@
     const f = fs.elements;
     const steps = [0, 1, 2, 3, 4, 5].map((i) => WEIGHTS[Number(f["w" + i].value)]);
     steps.forEach((st, i) => { f["w" + i].nextElementSibling.textContent = st.word; });
-    return { weights: steps.map((st) => st.weight), targets: [0, 1, 2, 3, 4, 5].map((i) => parse(f["t" + i].value)) };
+    const workplace = findWork(f.work.value);
+    const note = fs.querySelector("[data-work]");
+    note.textContent = workplace ? "Commute is now the drive time to " + placeName(workplace) + ", without traffic." :
+      workplace === undefined ? "No zip in the Chicago area matches that. Try a zip code." : "";
+    return { weights: steps.map((st) => st.weight), targets: [0, 1, 2, 3, 4, 5].map((i) => parse(f["t" + i].value)), workplace };
   }
 
   function setView(v) {
@@ -141,34 +182,39 @@
     update();
   }
 
+  const ps = () => [...peopleEl.querySelectorAll(".hv-person")].map(readPerson);
+  const placeName = (zip) => (places.find((p) => p.zip === zip) || { label: zip }).label;
+
   // ---- Scoring
 
   // What's still missing before a person can be scored, as text, or null when they're ready
   function missing(p, who) {
     if (p.weights.every((w) => w === 0)) return who + " set everything to Ignore, so give at least one thing a weight.";
     const need = factors().filter((f, i) => p.weights[i] > 0 && p.targets[i] == null).map((f) => f.name.toLowerCase());
+    if (p.workplace === undefined) return who + " named a workplace the map doesn't know.";
     if (!need.length) return null;
     return who + " still need" + (who === "You" ? "" : "s") + " a target for " + need.join(", ").replace(/, ([^,]*)$/, " and $1") + ".";
   }
 
   function update() {
     if (!data) return;
-    const ps = [...peopleEl.querySelectorAll(".hv-person")].map(readPerson);
-    const gaps = ps.map((p, k) => missing(p, k === 0 ? "You" : "Person 2")).filter(Boolean);
+    const people = ps();
+    peopleEl.querySelectorAll(".hv-person").forEach(markSample);
+    const gaps = people.map((p, k) => missing(p, k === 0 ? "You" : "Person 2")).filter(Boolean);
     root.classList.toggle("hv-unscored", gaps.length > 0);
     if (gaps.length) {
       result = null;
       draw();
       tableEl.innerHTML = "";
       summaryEl.innerHTML = "<b>Nothing is scored yet.</b> " + gaps.join(" ") +
-        " To skip a factor, set its weight to Ignore. Not sure where to start? Press <i>Fill in typical values</i>.";
+        " To skip a factor, set its weight to Ignore. Not sure where to start? Press <i>Use sample values</i>.";
       return;
     }
-    result = window.HVModel.run(data.zips, mode, ps, data.top);
-    if (view >= ps.length && view !== 2) view = 0;
+    result = window.HVModel.run(data.zips, mode, people, data.top, drive);
+    if (view >= people.length && view !== 2) view = 0;
     draw();
     fillTable();
-    summarize(ps.length);
+    summarize(people.length);
   }
 
   function current() {
@@ -189,7 +235,8 @@
       : "<b>" + (view === 1 ? "Person 2's " : "Your ") + picks.size + " best areas " + what + ".</b> The closest match is " +
         name(best) + ", scoring " + Math.round(score(best)) + " out of 100.";
     summaryEl.innerHTML = head + " <b>" + onList + "</b> of the " + picks.size + " " + (onList === 1 ? "is" : "are") +
-      " on Niche's list of the best places to live (the diamonds).";
+      " on Niche's list of the best places to live (the diamonds)." +
+      (peopleEl.querySelector("[data-sample]:not([hidden])") ? " <i>These come from sample values. Change them below to see yours.</i>" : "");
   }
 
   // ---- Map
@@ -253,6 +300,7 @@
             (view === 2 && two ? "Score for both " : "Score ") + Math.round(score(r)) + " of 100, #" + rank.get(r.zip) + " of " + result.rows.length +
               (picks.has(r.zip) ? " (in " + label + " top " + data.top + ")" : ""),
             two ? "You " + Math.round(r.scores[0]) + ", person 2 " + Math.round(r.scores[1]) : null,
+            ...ps().map((p, k) => p.workplace ? (two ? (k ? "Person 2" : "You") + ": " : "") + Math.round(r.commutes[k]) + " min drive to " + placeName(p.workplace) : null),
             priceText(r),
             r.list ? "On the Niche list (" + r.list + ")" : null,
           ].filter(Boolean).join("\n");
@@ -278,10 +326,14 @@
     const two = result.picks.length > 1;
     const rows = result.rows.filter((r) => picks.has(r.zip)).sort((a, b) => score(b) - score(a));
     const scoreHead = (view === 2 && two ? "<th>Both</th>" : "<th>Score</th>") + (two ? "<th>You</th><th>Person 2</th>" : "");
-    const head = "<thead><tr><th>#</th><th>Place</th><th>Zip</th>" + scoreHead + "<th>" + (mode === "buy" ? "Median sale" : "Rent") +
+    // A drive-time column for each person who named a workplace
+    const works = ps().map((p, k) => (p.workplace ? k : null)).filter((k) => k != null);
+    const driveHead = works.map((k) => "<th>" + (two ? (k ? "Person 2" : "You") + " drive" : "Drive to work") + "</th>").join("");
+    const head = "<thead><tr><th>#</th><th>Place</th><th>Zip</th>" + scoreHead + driveHead + "<th>" + (mode === "buy" ? "Median sale" : "Rent") +
       "</th><th>On Niche</th></tr></thead>";
     const body = rows.map((r, i) => "<tr><td>" + (i + 1) + "</td><td>" + name(r) + "</td><td>" + r.zip + "</td><td><b>" + Math.round(score(r)) + "</b></td>" +
       (two ? "<td>" + Math.round(r.scores[0]) + "</td><td>" + Math.round(r.scores[1]) + "</td>" : "") +
+      works.map((k) => "<td>" + Math.round(r.commutes[k]) + " min</td>").join("") +
       "<td>" + money(r[mode][5]) + "</td><td>" + (r.list ? "Yes" : "No") + "</td></tr>").join("");
     tableEl.innerHTML = head + "<tbody>" + body + "</tbody>";
   }
@@ -290,10 +342,14 @@
 
   function setMode(m) {
     if (m === mode) return;
+    const old = data ? sampleText().targets[5] : null;
     mode = m;
     document.querySelectorAll("[data-mode]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.mode === mode)));
-    // A sale price and a monthly rent aren't the same target, so the price box starts over
-    peopleEl.querySelectorAll(".hv-person").forEach((fs) => { fs.elements.t5.value = ""; });
+    // A sale price and a monthly rent aren't the same target, so the price box starts over:
+    // with the new sample price if it held the old one, otherwise empty
+    peopleEl.querySelectorAll(".hv-person").forEach((fs) => {
+      fs.elements.t5.value = data && fs.elements.t5.value === old ? sampleText().targets[5] : "";
+    });
     label(peopleEl);
     update();
   }
@@ -316,12 +372,20 @@
   }).observe(mapEl);
 
   peopleEl.append(personForm(0));
-  Promise.all([fetch("/writing/chicago-home-value.json").then((r) => r.json()), fetch("/writing/chicago-home-value-zips.json").then((r) => r.json())])
-    .then(([json, shapes]) => {
+  Promise.all(["", "-zips", "-drive"].map((f) => fetch("/writing/chicago-home-value" + f + ".json").then((r) => r.json())))
+    .then(([json, shapes, times]) => {
       data = json;
       geo = shapes;
       byZip = new Map(data.zips.map((z) => [z.zip, z]));
+      // Drive times: an n x n grid of whole minutes, row = from, column = to
+      const index = new Map(times.zips.map((z, i) => [z, i]));
+      const grid = Uint8Array.from(atob(times.minutes), (c) => c.charCodeAt(0));
+      drive = (from, to) => (index.has(from) && index.has(to) ? grid[index.get(from) * times.zips.length + index.get(to)] : null);
+      places = times.zips.map((z) => ({ zip: z, label: (byZip.get(z)?.place || "Zip") + ", " + (byZip.get(z)?.state || (z[0] === "4" ? "IN" : "IL")) + " " + z }))
+        .sort((a, b) => a.label.localeCompare(b.label));
+      document.getElementById("hv-places").innerHTML = places.map((p) => '<option value="' + p.label + '">').join("");
       label(peopleEl);
+      peopleEl.querySelectorAll(".hv-person").forEach(fillSample);
       update();
     })
     .catch(() => { mapEl.innerHTML = '<p class="muted">The map could not load. The data is in the GitHub repo linked above.</p>'; });
