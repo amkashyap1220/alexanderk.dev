@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Stats · Alexander Kashyap</title>
   <meta name="description" content="Live stats from Alexander Kashyap's public GitHub repos: languages, commits and recent activity.">
+  <meta name="theme-color" content="#f9f9f8" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#171820" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -12,26 +15,28 @@
   <script src="/js/theme.js"></script>
 </head>
 <body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
   <header class="site-header">
     <div class="wrap">
       <a class="name" href="/">Alexander Kashyap</a>
-      <nav>
+      <nav class="site-nav" aria-label="Main">
         <a href="/">About</a>
         <a href="/projects/">Projects</a>
         <a href="/writing/">Writing</a>
         <a href="/stats/" aria-current="page">Stats</a>
       </nav>
       <div class="header-actions">
-        <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle theme">
-          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
-          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Dark mode" aria-pressed="false">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
         </button>
         <a class="btn small" href="https://github.com/amkashyap1220" target="_blank" rel="noopener">GitHub</a>
       </div>
     </div>
   </header>
 
-  <main>
+  <main id="main" tabindex="-1">
     <section class="hero">
       <div class="narrow">
         <p class="eyebrow">Stats</p>
@@ -43,22 +48,22 @@
     <!-- Each box below starts with a loading message; js/stats.js replaces it. -->
     <section class="section">
       <div class="wrap">
-        <div class="stat-grid" id="numbers">
-          <p class="muted">Loading from GitHub…</p>
-        </div>
+        <h2 class="sr-only">Overview</h2>
+        <p class="muted" id="numbers-status" role="status">Loading from GitHub…</p>
+        <dl class="stat-grid" id="numbers"></dl>
         <div class="highlights" id="highlights"></div>
       </div>
     </section>
 
     <section class="section">
       <div class="narrow">
-        <h2>Languages</h2>
-        <p class="intro">Across all my repos, measured by how many repos use each language, or by how much code is in it.</p>
+        <h2 class="section-title">Languages</h2>
+        <p class="section-intro">Across all my repos, measured by how many repos use each language, or by how much code is in it.</p>
         <div class="toggle" role="group" aria-label="Measure languages by">
           <button class="btn small" type="button" data-language-mode="repos" aria-pressed="true">By repos</button>
           <button class="btn small" type="button" data-language-mode="bytes" aria-pressed="false">By code size</button>
         </div>
-        <div class="bars" id="languages">
+        <div id="languages" aria-live="polite" aria-busy="true">
           <p class="muted">Loading…</p>
         </div>
       </div>
@@ -66,9 +71,9 @@
 
     <section class="section">
       <div class="narrow">
-        <h2>Activity</h2>
-        <p class="intro">Public activity over the last 90 days: pushes, new repos, pull requests.</p>
-        <div class="activity-summary" id="activity-summary">
+        <h2 class="section-title">Activity</h2>
+        <p class="section-intro">Public activity over the last 90 days: pushes, new repos, pull requests.</p>
+        <div class="activity-summary" id="activity-summary" aria-live="polite" aria-busy="true">
           <p class="muted">Loading…</p>
         </div>
         <ul class="latest" id="latest"></ul>
@@ -78,14 +83,14 @@
 
   <footer class="site-footer">
     <div class="wrap">
-      <span>© 2026 Alexander Kashyap</span>
-      <span>
-        <a href="https://www.linkedin.com/in/alexander-kashyap/" target="_blank" rel="noopener">LinkedIn</a>
-        <a href="https://github.com/amkashyap1220" target="_blank" rel="noopener">GitHub</a>
-      </span>
+      <p>© 2026 Alexander Kashyap</p>
+      <ul class="footer-links">
+        <li><a href="https://www.linkedin.com/in/alexander-kashyap/" target="_blank" rel="noopener">LinkedIn</a></li>
+        <li><a href="https://github.com/amkashyap1220" target="_blank" rel="noopener">GitHub</a></li>
+      </ul>
     </div>
   </footer>
-
+  <script src="/js/gh.js"></script>
   <script src="/js/stats.js"></script>
 </body>
 </html>

@@ -1,23 +1,66 @@
 /* ==========================================================================
    alexanderk.dev — styles
    Monospace "docs" look: Fira Code, warm off-white, brick-red accent.
-   Colors live in the tokens below. Dark mode = the .dark class on <html>
-   (set by js/theme.js from the toggle, or from the system setting).
+
+   1. Tokens        colors, spacing, type, radius (light + dark)
+   2. Base          reset, body, links, focus, utilities
+   3. Layout        page widths, header, footer
+   4. Components    buttons, hero, pill, chips, cards, grids, sections
+   5. Content       entries (About), prose (README + posts), posts list
+   6. Stats page
+   7. Phones
    ========================================================================== */
 
+
+/* ---------- 1. Tokens ---------- */
 :root {
+  /* colors (light) — every text color passes WCAG AA on every surface it sits on */
   --bg: #f9f9f8;
   --text: #1c1e24;
-  --muted: #6b6f76;
+  --muted: #676b71;
   --border: #dcddd9;
   --card: rgba(255, 255, 255, 0.4);
-  --soft: #f0f1ef;          /* secondary buttons, code blocks */
-  --accent: #c24a42;        /* brick red */
-  --header-bg: rgba(249, 249, 248, 0.9);
+  --soft: #f0f1ef;            /* secondary buttons, code, bar tracks */
+  --accent: #b6463e;          /* brick red */
   color-scheme: light;
+
+  /* spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 40px;
+  --space-9: 56px;
+  --space-10: 80px;
+  --space-11: 96px;
+
+  /* type scale */
+  --fs-2xs: 11px;
+  --fs-xs: 12px;
+  --fs-sm: 13px;
+  --fs-md: 14px;
+  --fs-base: 16px;
+  --fs-lg: 18px;
+  --fs-xl: 24px;
+  --fs-2xl: 30px;
+  --fs-3xl: 48px;
+
+  /* radius */
+  --radius-sm: 4px;
+  --radius: 6px;
+  --radius-lg: 8px;
+  --radius-pill: 999px;
+
+  --font: "Fira Code", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --header-height: 46px;
 }
 
-.dark {
+/* Dark colors. js/theme.js puts .dark or .light on <html>; with JavaScript off,
+   the system setting decides (the media query below). */
+:root.dark {
   --bg: #171820;
   --text: #f4f1f2;
   --muted: #8f93a3;
@@ -25,87 +68,139 @@
   --card: rgba(29, 31, 40, 0.6);
   --soft: #20232d;
   --accent: #e06c75;
-  --header-bg: rgba(23, 24, 32, 0.9);
   color-scheme: dark;
 }
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    --bg: #171820;
+    --text: #f4f1f2;
+    --muted: #8f93a3;
+    --border: #2d3140;
+    --card: rgba(29, 31, 40, 0.6);
+    --soft: #20232d;
+    --accent: #e06c75;
+    color-scheme: dark;
+  }
+}
 
-* { box-sizing: border-box; }
 
-html { scroll-padding-top: 72px; }   /* #links don't hide under the sticky header */
+/* ---------- 2. Base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-padding-top: calc(var(--header-height) + var(--space-6)); }   /* #links don't hide under the sticky header */
 
 body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: "Fira Code", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 16px;
+  font-family: var(--font);
+  font-size: var(--fs-base);
   line-height: 1.5;
 }
+
+h1, h2, h3, p, ul, ol, dl, dd { margin: 0; }
 
 a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; text-underline-offset: 3px; }
 
-h1, h2, h3, p, ul, dl { margin: 0; }
+/* One clear focus ring for keyboard users, everywhere */
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: var(--radius-sm); }
+
+/* Inline code, wherever it appears */
+code { font-family: inherit; font-size: 0.9em; }
+:not(pre) > code { padding: 1px 6px; border-radius: var(--radius-sm); background: var(--soft); }
 
 .muted { color: var(--muted); }
 
-/* Page widths: .wrap for header/grids, .narrow for reading text */
-.wrap   { max-width: 900px; margin: 0 auto; padding: 0 20px; }
-.narrow { max-width: 680px; margin: 0 auto; padding: 0 20px; }
+/* Hidden on screen, still read by screen readers */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* "Skip to content": the first thing a keyboard user reaches */
+.skip-link {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
+  z-index: 20;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius);
+  background: var(--text);
+  color: var(--bg);
+  font-size: var(--fs-sm);
+  transform: translateY(-200%);
+}
+.skip-link:focus { transform: none; }
+main:focus { outline: none; }   /* the skip link moves focus here; no ring needed */
 
 
-/* ---------- Header (sticky, see-through) ---------- */
+/* ---------- 3. Layout ---------- */
+.wrap   { max-width: 900px; margin: 0 auto; padding: 0 var(--space-5); }
+.narrow { max-width: 680px; margin: 0 auto; padding: 0 var(--space-5); }
+
+/* Header: sticky and slightly see-through */
 .site-header {
   position: sticky;
   top: 0;
   z-index: 10;
-  background: var(--header-bg);
+  background: color-mix(in srgb, var(--bg) 90%, transparent);
   backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--border);
 }
-.site-header .wrap { display: flex; align-items: center; gap: 16px; height: 46px; }
-.site-header .name { color: var(--text); font-size: 13px; font-weight: 600; }
-.site-header nav { display: flex; gap: 4px; margin: 0 auto; }
-.site-header nav a { padding: 6px 12px; border-radius: 6px; color: var(--muted); font-size: 14px; }
-.site-header nav a:hover { color: var(--text); background: var(--soft); text-decoration: none; }
-.site-header nav a[aria-current="page"] { color: var(--text); }
-.header-actions { display: flex; align-items: center; gap: 8px; }
+.site-header .wrap { display: flex; align-items: center; gap: var(--space-4); height: var(--header-height); }
+.site-header .name { color: var(--text); font-size: var(--fs-sm); font-weight: 600; white-space: nowrap; }
+.site-nav { display: flex; gap: var(--space-1); margin: 0 auto; min-width: 0; }
+.site-nav a { padding: 6px var(--space-3); border-radius: var(--radius); color: var(--muted); font-size: var(--fs-md); white-space: nowrap; }
+.site-nav a:hover { color: var(--text); background: var(--soft); text-decoration: none; }
+.site-nav a[aria-current="page"] { color: var(--text); }
+.header-actions { display: flex; align-items: center; gap: var(--space-2); }
 
+/* Theme toggle: the sun shows in light mode, the moon in dark mode */
+.icon-moon { display: none; }
+:root.dark .icon-sun { display: none; }
+:root.dark .icon-moon { display: inline; }
+
+.site-footer { padding: var(--space-7) 0; border-top: 1px solid var(--border); color: var(--muted); font-size: var(--fs-xs); }
+.site-footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-2); }
+.site-footer a { color: var(--muted); }
+.footer-links { display: flex; gap: var(--space-4); padding: 0; list-style: none; }
+
+
+/* ---------- 4. Components ---------- */
 /* Buttons */
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 7px 16px;
+  gap: var(--space-2);
+  padding: 7px var(--space-4);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius);
   background: var(--soft);
   color: var(--muted);
   font: inherit;
-  font-size: 13px;
+  font-size: var(--fs-sm);
   cursor: pointer;
 }
 .btn:hover { color: var(--text); text-decoration: none; }
 .btn.primary { background: transparent; border-color: var(--text); color: var(--text); }
 .btn.primary:hover { background: var(--text); color: var(--bg); }
-.btn.small { padding: 4px 10px; font-size: 12px; }
-.icon-btn { background: none; border: 0; padding: 6px; color: var(--text); cursor: pointer; display: inline-flex; }
-.icon-btn svg, .btn svg { width: 14px; height: 14px; }
+.btn.small { padding: var(--space-1) 10px; font-size: var(--fs-xs); }
+.btn[aria-pressed="true"] { background: transparent; border-color: var(--text); color: var(--text); }
+.icon-btn { display: inline-flex; padding: 6px; border: 0; background: none; color: var(--text); cursor: pointer; }
+.icon-btn svg { width: 14px; height: 14px; }
 
-
-/* ---------- Hero ---------- */
-.hero { padding: 96px 0 72px; text-align: center; }
-.eyebrow {
-  color: var(--accent);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-.hero h1 { margin: 16px 0 6px; font-size: 48px; line-height: 1.1; letter-spacing: -0.025em; }
-.hero .tagline { color: var(--accent); font-size: 14px; }
-.hero .lead { max-width: 560px; margin: 28px auto 0; color: var(--muted); line-height: 1.6; }
-.actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 32px; }
+/* Hero: the centered intro at the top of every page */
+.hero { padding: var(--space-11) 0 72px; text-align: center; }
+.eyebrow { color: var(--accent); font-size: var(--fs-xs); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+.hero h1 { margin: var(--space-4) 0 6px; font-size: var(--fs-3xl); line-height: 1.1; letter-spacing: -0.025em; }
+.tagline { color: var(--accent); font-size: var(--fs-md); }
+.lead { max-width: 560px; margin: 28px auto 0; color: var(--muted); line-height: 1.6; }
+.actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: var(--space-7); }
 
 /* Red-tinted pill for live GitHub stats */
 .pill {
@@ -113,165 +208,162 @@ h1, h2, h3, p, ul, dl { margin: 0; }
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  gap: 4px 10px;
+  gap: var(--space-1) 10px;
   margin-top: 14px;
-  padding: 4px 14px;
+  padding: var(--space-1) 14px;
   border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
-  border-radius: 16px;      /* not fully round, so it still looks right if it wraps on a phone */
+  border-radius: var(--space-4);      /* not fully round, so it still looks right if it wraps */
   background: color-mix(in srgb, var(--accent) 7%, transparent);
   color: var(--muted);
-  font-size: 12px;
+  font-size: var(--fs-xs);
 }
 .pill > span { white-space: nowrap; }
 .pill b { color: var(--text); font-weight: 500; }
 .pill .sep { width: 1px; height: 12px; background: color-mix(in srgb, var(--accent) 25%, transparent); }
 
+/* Chips (tags) */
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 14px 0 0; padding: 0; list-style: none; }
+.hero .chips { justify-content: center; }
+.chip { padding: 2px 10px; border: 1px solid var(--border); border-radius: var(--radius-pill); color: var(--muted); font-size: var(--fs-2xs); }
 
-/* ---------- Sections ---------- */
-.section { padding: 80px 0; border-top: 1px solid var(--border); }
-.section h2 { margin-bottom: 12px; font-size: 30px; line-height: 1.2; letter-spacing: -0.025em; }
-.section .intro { margin-bottom: 36px; color: var(--muted); }
+/* Dates: "Jan 2025 – Present" */
+.when { color: var(--muted); font-size: var(--fs-sm); white-space: nowrap; }
 
-/* Experience / education entries */
-.entry + .entry { margin-top: 40px; }
-.entry-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0 16px; }
-.entry h3 { font-size: 16px; font-weight: 600; }
-.entry .when { color: var(--muted); font-size: 13px; }
-.entry .where { margin-top: 2px; color: var(--accent); font-size: 13px; }
-.entry ul { margin-top: 12px; padding-left: 0; list-style: none; }
-.entry li { position: relative; padding-left: 20px; color: var(--muted); font-size: 14px; line-height: 1.6; }
-.entry li + li { margin-top: 8px; }
-.entry li::before { content: "›"; position: absolute; left: 4px; color: var(--accent); }
+/* Sections: full-width rule, then a title */
+.section { padding: var(--space-10) 0; border-top: 1px solid var(--border); }
+.section-title { margin-bottom: var(--space-3); font-size: var(--fs-2xl); line-height: 1.2; letter-spacing: -0.025em; }
+.section-intro { margin-bottom: 36px; color: var(--muted); }
 
-/* Card grid */
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
+/* Grids of cards. min() keeps columns from ever being wider than the screen. */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr)); gap: 10px; }
+.grid.two { grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr)); gap: 14px; }
+
 .card {
-  display: block;
-  padding: 16px;
+  padding: var(--space-4);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   background: var(--card);
-  color: var(--text);
 }
-a.card:hover { border-color: var(--accent); text-decoration: none; }
-.card h3 { font-size: 14px; font-weight: 500; }
-.card p { margin-top: 6px; color: var(--muted); font-size: 12px; line-height: 1.6; }
-.card .label { color: var(--accent); font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
-.card .pill { margin-top: 14px; }
-.grid.two { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
+.card-label { color: var(--accent); font-size: var(--fs-2xs); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+.card-title { font-size: var(--fs-md); font-weight: 500; }
+.card-text { margin-top: 6px; color: var(--muted); font-size: var(--fs-xs); line-height: 1.6; }
 
-/* Project cards line up part by part across a row. Each card spans 4 rows
-   of the parent grid (title, stats, description, tags) and shares them through
-   subgrid, so each row is as tall as that part in the tallest card. */
+/* Project cards: the title is the link, stretched over the whole card.
+   Each card spans 4 rows of the grid (head, stats, text, tags) through subgrid,
+   so every part lines up across a row. */
 .project {
+  position: relative;
   display: grid;
   grid-row: span 4;
   grid-template-rows: subgrid;
   row-gap: 0;
   align-content: start;
-  padding: 20px;
+  padding: var(--space-5);
 }
-.project .pill { justify-self: start; margin: 10px 0 4px; }
+.project:hover { border-color: var(--accent); }
+.project:has(.card-link:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+.card-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0 var(--space-3); }
+.project .card-title { font-size: var(--fs-base); font-weight: 600; }
+.project .card-text { font-size: var(--fs-sm); }
+.project .when { font-size: var(--fs-xs); }
+.project .pill { justify-self: start; margin: var(--space-4) 0 var(--space-1); }
 .project .chips { align-self: start; margin-top: 0; padding-top: 14px; }
-.project h3 { font-size: 16px; font-weight: 600; }
-.card-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0 12px; }
-.card-head .when { color: var(--muted); font-size: 12px; white-space: nowrap; }
-.project p { font-size: 13px; }
-
-/* Chips (tags) */
-.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
-.chip { padding: 2px 10px; border: 1px solid var(--border); border-radius: 999px; color: var(--muted); font-size: 11px; }
-.hero .chips { justify-content: center; }
+.card-link { color: var(--text); }
+.card-link:hover { text-decoration: none; }
+.card-link:focus-visible { outline: none; }
+.card-link::after { content: ""; position: absolute; inset: 0; }   /* makes the whole card clickable */
 
 
-/* ---------- Long-form text: a project's README from GitHub, and blog posts (.prose) ---------- */
-.readme, .prose { font-size: 14px; line-height: 1.7; overflow-wrap: break-word; }
-.section h2 + .readme { margin-top: 24px; }   /* room under the "README" heading */
-.readme > * + *, .prose > * + * { margin-top: 14px; }
-.section .readme h1, .section .readme h2, .section .readme h3, .section .prose h1, .section .prose h2, .section .prose h3 { margin: 28px 0 8px; font-size: 18px; letter-spacing: -0.01em; }
-.readme .markdown-heading:first-child h1, .readme > :first-child, .prose > :first-child { margin-top: 0; }
-.readme .anchor { display: none; }           /* GitHub's little link icons next to headings */
-.readme ul, .readme ol, .prose ul, .prose ol { padding-left: 22px; }
-.readme img, .prose img { max-width: 100%; border-radius: 6px; }
-.readme pre, .prose pre { overflow-x: auto; padding: 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--soft); font-size: 13px; }
-.readme code, .prose code { font-family: inherit; font-size: 0.9em; }
-.readme :not(pre) > code, .prose :not(pre) > code { padding: 1px 6px; border-radius: 4px; background: var(--soft); }
-.readme table, .prose table { border-collapse: collapse; font-size: 13px; }
-.readme th, .prose th { color: var(--muted); font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; text-align: left; }
-.readme th, .readme td, .prose th, .prose td { padding: 8px 14px 8px 0; border-bottom: 1px solid var(--border); }
-.prose { font-size: 15px; }
-.prose blockquote { margin-inline: 0; margin-bottom: 0; padding-left: 16px; border-left: 3px solid var(--accent); color: var(--muted); }
+/* ---------- 5. Content ---------- */
+/* Experience / education entries (About page) */
+.entry + .entry { margin-top: var(--space-8); }
+.entry-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0 var(--space-4); }
+.entry-title { font-size: var(--fs-base); font-weight: 600; }
+.entry-where { margin-top: 2px; color: var(--accent); font-size: var(--fs-sm); }
+.entry ul { margin-top: var(--space-3); padding-left: 0; list-style: none; }
+.entry li { position: relative; padding-left: var(--space-5); color: var(--muted); font-size: var(--fs-md); line-height: 1.6; }
+.entry li + li { margin-top: var(--space-2); }
+.entry li::before { content: "›"; position: absolute; left: var(--space-1); color: var(--accent); }
 
+/* Long-form text: blog posts and READMEs (.prose), plus GitHub-only bits (.readme) */
+.prose { font-size: 15px; line-height: 1.7; overflow-wrap: break-word; }   /* posts and walkthroughs */
+.prose > * + * { margin-top: 14px; }
+.prose > :first-child { margin-top: 0; }
+.prose :is(h1, h2, h3, h4, h5, h6) { margin: 28px 0 var(--space-2); font-size: var(--fs-lg); letter-spacing: -0.01em; }
+.prose ul, .prose ol { padding-left: 22px; }
+.prose img { max-width: 100%; height: auto; border-radius: var(--radius); }
+.prose pre { overflow-x: auto; padding: 14px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--soft); font-size: var(--fs-sm); }
+.prose table { display: block; max-width: 100%; overflow-x: auto; border-collapse: collapse; font-size: var(--fs-sm); }   /* wide tables scroll in place */
+.prose th { color: var(--muted); font-size: var(--fs-2xs); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; text-align: left; }
+.prose th, .prose td { padding: var(--space-2) 14px var(--space-2) 0; border-bottom: 1px solid var(--border); }
+.prose blockquote { margin-inline: 0; margin-bottom: 0; padding-left: var(--space-4); border-left: 3px solid var(--accent); color: var(--muted); }
 
-/* ---------- Writing: list of posts ---------- */
+.readme { margin-top: var(--space-6); font-size: var(--fs-md); }   /* READMEs are a size smaller */
+.readme .anchor { display: none; }                        /* GitHub's link icons next to headings */
+.readme .markdown-heading:first-child > *, .readme .markdown-body > :first-child { margin-top: 0; }
+
+/* Writing: list of posts */
 .posts { padding: 0; list-style: none; }
 .post-link {
   display: grid;
   grid-template-columns: 130px 1fr;
-  gap: 2px 24px;
-  padding: 20px 0;
+  gap: 2px var(--space-6);
+  padding: var(--space-5) 0;
   border-bottom: 1px solid var(--border);
   color: var(--text);
 }
 .posts li:first-child .post-link { border-top: 1px solid var(--border); }
 .post-link:hover { text-decoration: none; }
-.post-link:hover h3 { color: var(--accent); }
-.post-link time { color: var(--muted); font-size: 13px; line-height: 1.9; }
-.post-link h3 { font-size: 16px; font-weight: 600; }
-.post-link p { grid-column: 2; color: var(--muted); font-size: 13px; }
-.empty { padding: 32px; border: 1px dashed var(--border); border-radius: 8px; color: var(--muted); font-size: 14px; text-align: center; }
+.post-link:hover .post-title { color: var(--accent); }
+.post-link time { color: var(--muted); font-size: var(--fs-sm); line-height: 1.9; }
+.post-title { font-size: var(--fs-base); font-weight: 600; }
+.post-summary { grid-column: 2; color: var(--muted); font-size: var(--fs-sm); }
+.empty { padding: var(--space-7); border: 1px dashed var(--border); border-radius: var(--radius-lg); color: var(--muted); font-size: var(--fs-md); text-align: center; }
 
 
-/* ---------- Stats page ---------- */
-.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
-.stat { padding: 20px 16px; text-align: center; }
-.card .stat-value { margin: 0; color: var(--text); font-size: 30px; font-weight: 700; letter-spacing: -0.025em; }
-.card .stat-label { margin-top: 2px; font-size: 12px; }
-.highlights { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 32px; margin-top: 24px; font-size: 14px; }
+/* ---------- 6. Stats page ---------- */
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr)); gap: 10px; }
+.stat { display: flex; flex-direction: column-reverse; padding: var(--space-5) var(--space-4); text-align: center; }   /* <dt> label below its <dd> number */
+.stat-value { font-size: var(--fs-2xl); font-weight: 700; letter-spacing: -0.025em; }
+.stat-label { margin-top: 2px; color: var(--muted); font-size: var(--fs-xs); }
+.highlights { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-1) var(--space-7); margin-top: var(--space-6); font-size: var(--fs-md); }
 
-/* "By code size / By repos" switch */
-.toggle { display: inline-flex; gap: 6px; margin-bottom: 24px; }
-.toggle .btn[aria-pressed="true"] { border-color: var(--text); color: var(--text); background: transparent; }
+.toggle { display: inline-flex; gap: 6px; margin-bottom: var(--space-6); }
 
 /* Language bars: name | bar | value */
-.bar-row { display: grid; grid-template-columns: 130px 1fr 110px; align-items: center; gap: 14px; font-size: 13px; }
+.bar-row { display: grid; grid-template-columns: 130px 1fr 110px; align-items: center; gap: 14px; font-size: var(--fs-sm); }
 .bar-row + .bar-row { margin-top: 10px; }
 .bar-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.bar-track { height: 10px; border-radius: 999px; background: var(--soft); }
-.bar { height: 100%; border-radius: 999px; background: var(--accent); }
+.bar-track { height: 10px; border-radius: var(--radius-pill); background: var(--soft); }
+.bar { height: 100%; border-radius: var(--radius-pill); background: var(--accent); }
 .bar-value { color: var(--muted); text-align: right; }
 
-.activity-summary { font-size: 14px; }
-.latest { margin-top: 20px; padding: 0; list-style: none; font-size: 13px; }
-.latest li { padding: 8px 0; border-top: 1px solid var(--border); }
-.latest code { padding: 1px 6px; border-radius: 4px; background: var(--soft); font-family: inherit; font-size: 12px; }
+.activity-summary { font-size: var(--fs-md); }
+.latest { margin-top: var(--space-5); padding: 0; list-style: none; font-size: var(--fs-sm); }
+.latest li { padding: var(--space-2) 0; border-top: 1px solid var(--border); }
+.latest code { font-size: var(--fs-xs); }
 
 
-/* ---------- Footer ---------- */
-.site-footer { padding: 32px 0; border-top: 1px solid var(--border); color: var(--muted); font-size: 12px; }
-.site-footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; }
-.site-footer a { color: var(--muted); }
-.site-footer a + a { margin-left: 16px; }
-
-
-/* ---------- Phones ---------- */
+/* ---------- 7. Phones ---------- */
 @media (max-width: 640px) {
-  .site-header nav a { padding: 6px 8px; }
   .site-header .name { display: none; }
-  .site-header nav { gap: 0; margin: 0 auto 0 0; }
-  .header-actions .btn { display: none; }   /* GitHub is still in the footer */
+  .header-actions .btn { display: none; }      /* GitHub is still in the footer */
+  .site-nav { gap: 0; margin: 0 auto 0 0; }
+  .site-nav a { padding: 6px var(--space-2); }
   .hero { padding: 64px 0 48px; }
   .hero h1 { font-size: 34px; }
-  .section { padding: 56px 0; }
-  .section h2 { font-size: 24px; }
+  .section { padding: var(--space-9) 0; }
+  .section-title { font-size: var(--fs-xl); }
   .post-link { grid-template-columns: 1fr; }
-  .post-link p { grid-column: auto; }
+  .post-summary { grid-column: auto; }
   .bar-row { grid-template-columns: 90px 1fr 80px; gap: 10px; }
   .stat-grid { grid-template-columns: 1fr 1fr; }
   .stat:last-child:nth-child(odd) { grid-column: 1 / -1; }   /* no lonely half-width tile at the end */
 }
 
-/* Theme toggle: show the sun in light mode, the moon in dark mode */
-.icon-moon { display: none; }
-.dark .icon-sun { display: none; }
-.dark .icon-moon { display: inline; }
+/* The smallest phones (iPhone SE and similar): tighten the header so it fits */
+@media (max-width: 400px) {
+  .wrap, .narrow { padding: 0 var(--space-4); }
+  .site-header .wrap { gap: var(--space-2); }
+  .site-nav a { padding: 6px; font-size: 12.5px; }
+}

@@ -1,23 +1,18 @@
 /* ==========================================================================
-   Stats page: everything comes from GitHub's public API (no key).
+   Stats page: everything comes from GitHub's public API (no key), through
+   the shared, cached helpers in js/gh.js.
 
-     1. EXTRACT    one request for the profile, one for the repo list,
-                   two per repo (languages, commit count), up to three for
-                   the last 90 days of public activity
-     2. TRANSFORM  skip forks, add up bytes per language, count commits,
-                   bucket activity by day, weekday and hour
-     3. LOAD       draw the numbers, the language bars and the activity summary
-
-   The fetched data is saved in the browser for 30 minutes, because GitHub
-   allows 60 requests an hour without a key.
+     1. EXTRACT    the profile, the repo list, languages and commit count per
+                   repo, and the last 90 days of public activity
+     2. TRANSFORM  skip forks, add up languages, count commits, find the
+                   busiest weekday and hour
+     3. LOAD       draw the numbers, the language bars and the activity
    ========================================================================== */
 
 (function () {
+  const { cached, api, commits, languages, timeAgo, el } = window.GH;
   const USER = "amkashyap1220";
   const TIME_ZONE = "America/Chicago";       // activity is bucketed in my time zone
-  const CACHE_KEY = "gh:stats";
-  const CACHE_MINUTES = 30;
-  const API = "https://api.github.com/";
 
   // Repos that have a page on this site; everything else links to GitHub
   const PROJECT_PAGES = {
@@ -28,74 +23,42 @@
 
 
   // ---------------------------------------------------------------- 1. extract
-  async function get(path) {
-    const res = await fetch(API + path);
-    if (!res.ok) throw new Error("GitHub error " + res.status);
-    return res;
-  }
+  const json = (path) => api(path).then((r) => r.json());
 
-  // Total commits on the default branch: ask for 1 per page, read the last page number
-  async function countCommits(repo) {
-    const res = await get("repos/" + repo + "/commits?per_page=1");
-    const last = (res.headers.get("Link") || "").match(/[?&]page=(\d+)>; rel="last"/);
-    return last ? Number(last[1]) : (await res.json()).length;
-  }
+  const profile = () => cached("user:" + USER, () =>
+    json("users/" + USER).then((u) => ({ since: u.created_at })));
+
+  // Forks are skipped: they're mostly other people's code
+  const ownRepos = () => cached("repos:" + USER, () =>
+    json("users/" + USER + "/repos?per_page=100&type=owner").then((list) => list
+      .filter((r) => !r.fork)
+      .map((r) => ({ name: r.name, fullName: r.full_name, url: r.html_url, stars: r.stargazers_count, pushed: r.pushed_at }))));
 
   // Public events only go back 90 days (max 300), 100 per page
-  async function recentEvents() {
+  const recentEvents = () => cached("events:" + USER, async () => {
     const events = [];
     for (let page = 1; page <= 3; page++) {
-      const batch = await (await get("users/" + USER + "/events/public?per_page=100&page=" + page)).json();
-      events.push(...batch);
+      const batch = await json("users/" + USER + "/events/public?per_page=100&page=" + page);
+      events.push(...batch.map((e) => ({ type: e.type, repo: e.repo.name, at: e.created_at, ref: e.payload && e.payload.ref })));
       if (batch.length < 100) break;
     }
     return events;
-  }
+  });
 
   async function fetchAll() {
-    const [user, allRepos] = await Promise.all([
-      get("users/" + USER).then((r) => r.json()),
-      get("users/" + USER + "/repos?per_page=100&type=owner").then((r) => r.json()),
-    ]);
-    const repos = allRepos.filter((r) => !r.fork);    // forks are mostly other people's code
-
-    // Languages and commit counts for every repo, all at once. One failing repo doesn't sink the page.
-    const details = await Promise.all(repos.map(async (r) => {
-      const [languages, commits] = await Promise.all([
-        get("repos/" + r.full_name + "/languages").then((res) => res.json()).catch(() => ({})),
-        countCommits(r.full_name).catch(() => 0),
-      ]);
-      return { name: r.name, url: r.html_url, stars: r.stargazers_count, pushed: r.pushed_at, languages, commits };
-    }));
-
-    // Activity is optional: if it fails, the rest of the page still shows
-    const events = await recentEvents().catch(() => null);
-
-    return {
-      since: user.created_at,
-      repos: details,
-      events: events && events.map((e) => ({
-        type: e.type,
-        repo: e.repo.name,
-        at: e.created_at,
-        ref: e.payload && e.payload.ref,
-      })),
-    };
-  }
-
-  async function load() {
-    try {
-      const saved = JSON.parse(localStorage.getItem(CACHE_KEY));
-      if (saved && Date.now() - saved.time < CACHE_MINUTES * 60 * 1000) return saved.data;
-    } catch (e) { /* storage blocked: just fetch */ }
-    const data = await fetchAll();
-    try { localStorage.setItem(CACHE_KEY, JSON.stringify({ time: Date.now(), data })); } catch (e) { /* ignore */ }
-    return data;
+    const [user, repos] = await Promise.all([profile(), ownRepos()]);
+    // Languages and commits for every repo at once; one failing repo doesn't sink the page
+    const details = await Promise.all(repos.map(async (r) => ({
+      ...r,
+      languages: await languages(r.fullName).catch(() => ({})),
+      commits: await commits(r.fullName).catch(() => 0),
+    })));
+    return { since: user.since, repos: details };
   }
 
 
   // ---------------------------------------------------------------- 2. transform
-  // { language: { bytes, repos } }, biggest first
+  // [{ name, bytes, repos }] for every language
   function languageTotals(repos) {
     const totals = {};
     repos.forEach((r) => {
@@ -108,16 +71,9 @@
     return Object.values(totals);
   }
 
-  // "2026-10-20" for a moment, in TIME_ZONE
   const dayKey = new Intl.DateTimeFormat("en-CA", { timeZone: TIME_ZONE, year: "numeric", month: "2-digit", day: "2-digit" });
   const weekdayName = new Intl.DateTimeFormat("en-US", { timeZone: TIME_ZONE, weekday: "long" });
   const hourOf = new Intl.DateTimeFormat("en-US", { timeZone: TIME_ZONE, hour: "numeric", hourCycle: "h23" });
-
-  function activityByDay(events) {
-    const counts = {};
-    events.forEach((e) => { const d = dayKey.format(new Date(e.at)); counts[d] = (counts[d] || 0) + 1; });
-    return counts;
-  }
 
   // The value that appears most often, e.g. the busiest weekday
   function mostCommon(values) {
@@ -126,43 +82,27 @@
     return Object.keys(counts).sort((a, b) => counts[b] - counts[a])[0];
   }
 
+  const sum = (list, key) => list.reduce((total, x) => total + x[key], 0);
+
 
   // ---------------------------------------------------------------- 3. load (draw)
-  // Builds an element; text always goes in as textContent, never as HTML
-  function el(tag, cls, text) {
-    const e = document.createElement(tag);
-    if (cls) e.className = cls;
-    if (text != null) e.textContent = text;
-    return e;
-  }
-
-  function timeAgo(date) {
-    const days = Math.floor((Date.now() - new Date(date)) / 86400000);
-    if (days < 1) return "today";
-    if (days < 30) return days + (days === 1 ? " day ago" : " days ago");
-    const months = Math.floor(days / 30);
-    if (months < 12) return months + (months === 1 ? " month ago" : " months ago");
-    const years = Math.floor(months / 12);
-    return years + (years === 1 ? " year ago" : " years ago");
-  }
-
   const linkFor = (repo) => PROJECT_PAGES[repo.name] || repo.url;
-  const sum = (list, key) => list.reduce((total, x) => total + x[key], 0);
+  const done = (box) => box.setAttribute("aria-busy", "false");
 
   function drawNumbers(data) {
     const box = document.getElementById("numbers");
-    const langs = languageTotals(data.repos);
+    document.getElementById("numbers-status").hidden = true;
     const tiles = [
-      [data.repos.length.toLocaleString(), "public repos"],
-      [sum(data.repos, "commits").toLocaleString(), "commits"],
-      [sum(data.repos, "stars").toLocaleString(), "stars"],
-      [langs.length.toLocaleString(), "languages"],
-      [String(new Date(data.since).getFullYear()), "on GitHub since"],   // no comma in a year
+      ["public repos", data.repos.length.toLocaleString()],
+      ["commits", sum(data.repos, "commits").toLocaleString()],
+      ["stars", sum(data.repos, "stars").toLocaleString()],
+      ["languages", languageTotals(data.repos).length.toLocaleString()],
+      ["on GitHub since", String(new Date(data.since).getFullYear())],   // no comma in a year
     ];
     box.textContent = "";
-    tiles.forEach(([value, label]) => {
+    tiles.forEach(([label, value]) => {
       const tile = el("div", "card stat");
-      tile.append(el("p", "stat-value", value), el("p", "stat-label", label));
+      tile.append(el("dt", "stat-label", label), el("dd", "stat-value", value));   // shown number-first by CSS
       box.append(tile);
     });
 
@@ -188,10 +128,11 @@
     const langs = languageTotals(data.repos).sort((a, b) => b[languageMode] - a[languageMode] || b.bytes - a.bytes);
     const total = languageMode === "bytes" ? sum(langs, "bytes") : data.repos.length;
     box.textContent = "";
+    done(box);
     if (!langs.length) return box.append(el("p", "muted", "No languages found yet."));
 
-    // Show the top 8; fold the rest into "Other" (only when measuring bytes, where shares add up to 100%)
-    let shown = langs.slice(0, 8);
+    // Show the top 8; fold the rest into "Other" (only for code size, where shares add up to 100%)
+    const shown = langs.slice(0, 8);
     if (languageMode === "bytes" && langs.length > 8) {
       shown.push({ name: "Other", bytes: sum(langs.slice(8), "bytes"), repos: 0 });
     }
@@ -199,14 +140,15 @@
 
     shown.forEach((lang) => {
       const value = lang[languageMode];
+      const amount = languageMode === "bytes"
+        ? ((value / total) * 100).toFixed(1) + "%"
+        : value + " of " + total + (total === 1 ? " repo" : " repos");
       const row = el("div", "bar-row");
       const track = el("div", "bar-track");
       const bar = el("div", "bar");
       bar.style.width = Math.max(1, (value / biggest) * 100) + "%";   // longest bar = full width
+      track.setAttribute("aria-hidden", "true");                        // the text next to it says the same
       track.append(bar);
-      const amount = languageMode === "bytes"
-        ? ((value / total) * 100).toFixed(1) + "%"
-        : value + " of " + total + (total === 1 ? " repo" : " repos");
       row.append(el("span", "bar-name", lang.name), track, el("span", "bar-value", amount));
       box.append(row);
     });
@@ -216,11 +158,11 @@
     const summary = document.getElementById("activity-summary");
     const feed = document.getElementById("latest");
     summary.textContent = feed.textContent = "";
+    done(summary);
     if (!events) return summary.append(el("p", "muted", "Couldn't load recent activity from GitHub right now."));
-
     if (!events.length) return summary.append(el("p", "muted", "No public activity in the last 90 days."));
 
-    const days = Object.keys(activityByDay(events)).length;
+    const days = new Set(events.map((e) => dayKey.format(new Date(e.at)))).size;
     const day = mostCommon(events.map((e) => weekdayName.format(new Date(e.at))));
     const hour = Number(mostCommon(events.map((e) => hourOf.format(new Date(e.at)))));
     const clock = (h) => ((h + 11) % 12 + 1) + (h < 12 ? "am" : "pm");
@@ -236,36 +178,42 @@
       repo.href = "https://github.com/" + e.repo;
       repo.target = "_blank";
       repo.rel = "noopener";
+      const when = el("time", null, timeAgo(e.at));
+      when.dateTime = e.at;
       item.append(el("span", "muted", "Pushed to "), el("code", null, (e.ref || "").replace("refs/heads/", "")),
-        el("span", "muted", " in "), repo, el("span", "muted", " · " + timeAgo(e.at)));
+        el("span", "muted", " in "), repo, el("span", "muted", " · "), when);
       feed.append(item);
     });
   }
 
+  // Activity handles its own errors; this covers the numbers and languages
   function showError() {
-    ["numbers", "languages", "activity-summary"].forEach((id) => {
-      const box = document.getElementById(id);
-      box.textContent = "";
-      box.append(el("p", "muted", "Couldn't reach GitHub right now. Try again in a few minutes."));
-    });
+    const message = "Couldn't reach GitHub right now. Try again in a few minutes.";
+    document.getElementById("numbers-status").textContent = message;
+    const box = document.getElementById("languages");
+    box.textContent = "";
+    box.append(el("p", "muted", message));
+    done(box);
   }
 
-  // The "by code size / by repos" toggle
+  // The "by repos / by code size" toggle
   let data = null;
   document.querySelectorAll("[data-language-mode]").forEach((button) => {
     button.addEventListener("click", () => {
       languageMode = button.dataset.languageMode;
-      document.querySelectorAll("[data-language-mode]").forEach((b) => b.setAttribute("aria-pressed", b === button));
+      document.querySelectorAll("[data-language-mode]").forEach((b) => b.setAttribute("aria-pressed", String(b === button)));
       if (data) drawLanguages(data);
     });
   });
 
-  load()
+  fetchAll()
     .then((result) => {
       data = result;
       drawNumbers(data);
       drawLanguages(data);
-      drawActivity(data.events);
     })
     .catch(showError);
+
+  // Activity loads on its own: if it fails, the rest of the page still shows
+  recentEvents().then(drawActivity, () => drawActivity(null));
 })();
