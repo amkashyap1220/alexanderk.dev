@@ -19,6 +19,7 @@ js/github.js                   Fills in GitHub stats and READMEs
 js/stats.js                    Fetches and draws the Stats page
 worker/index.js                Cloudflare script: refreshes GitHub data every 5 min, serves /data/github.json
 404.html, favicon*.svg         Not-found page and tab icons (light, dark)
+og.png                         Image shown when the site's link is shared
 wrangler.jsonc                 Cloudflare settings
 .assetsignore                  Keeps README, config, and .git off the live site
 ```
@@ -28,7 +29,7 @@ wrangler.jsonc                 Cloudflare settings
 - **Resume info:** `index.html`.
 - **Add a project:**
   1. Copy an `<article class="card project">` in `projects/index.html`, change the repo name in each `data-gh="owner/repo"`, and link it to the new page.
-  2. Copy a page in `projects/` (for example `switch-to-youtube.html`) and change the name and every `owner/repo`.
+  2. Copy a page in `projects/` (for example `switch-to-youtube.html`) and change the name, every `owner/repo`, and the `og:` link-preview tags at the top.
 - **New post:** copy `writing/_template.html`, then add it to the list in `writing/index.html`.
 - **WIP** each project page has a marked `#walkthrough`
 
