@@ -10,7 +10,7 @@
    ========================================================================== */
 
 (function () {
-  const { cached, api, commits, languages, timeAgo, el } = window.GH;
+  const { cached, api, commits, languages, languageColor, timeAgo, el } = window.GH;
   const USER = "amkashyap1220";
   const TIME_ZONE = "America/Chicago";       // activity is bucketed in my time zone
 
@@ -112,11 +112,13 @@
     if (!data.repos.length) return;
     const top = [...data.repos].sort((a, b) => b.stars - a.stars)[0];
     const latest = [...data.repos].sort((a, b) => new Date(b.pushed) - new Date(a.pushed))[0];
-    [["Most starred", top, "★ " + top.stars], ["Last updated", latest, timeAgo(latest.pushed)]].forEach(([label, repo, detail]) => {
+    [["Most starred", top, "★", " " + top.stars], ["Last updated", latest, null, timeAgo(latest.pushed)]].forEach(([label, repo, icon, detail]) => {
       const line = el("p");
       const link = el("a", null, repo.name);
       link.href = linkFor(repo);
-      line.append(el("span", "muted", label + ": "), link, el("span", "muted", " · " + detail));
+      line.append(el("span", "muted", label + ": "), link, el("span", "muted", " · "));
+      if (icon) line.append(el("span", "star", icon));   // the gold star
+      line.append(el("span", "muted", detail));
       highlights.append(line);
     });
   }
@@ -147,6 +149,8 @@
       const track = el("div", "bar-track");
       const bar = el("div", "bar");
       bar.style.width = Math.max(1, (value / biggest) * 100) + "%";   // longest bar = full width
+      const color = lang.name === "Other" ? "var(--muted)" : languageColor(lang.name);
+      if (color) bar.style.setProperty("--lang", color);                // GitHub's color for the language
       track.setAttribute("aria-hidden", "true");                        // the text next to it says the same
       track.append(bar);
       row.append(el("span", "bar-name", lang.name), track, el("span", "bar-value", amount));

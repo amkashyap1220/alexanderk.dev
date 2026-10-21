@@ -8,7 +8,7 @@
    ========================================================================== */
 
 (function () {
-  const { repo, readme, timeAgo } = window.GH;
+  const { repo, readme, timeAgo, languageColor } = window.GH;
 
   function show(data, field) {
     if (field === "stars") return String(data.stars);
@@ -21,7 +21,11 @@
   document.querySelectorAll("[data-gh]").forEach((el) => {
     el.textContent = "...";
     repo(el.dataset.gh)
-      .then((data) => { el.textContent = show(data, el.dataset.field); })
+      .then((data) => {
+        el.textContent = show(data, el.dataset.field);
+        const color = el.dataset.field === "language" && languageColor(data.language);
+        if (color) el.style.setProperty("--lang", color);   // CSS draws a dot in this color
+      })
       .catch(() => { el.textContent = "--"; });
   });
 

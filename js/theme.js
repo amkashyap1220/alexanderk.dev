@@ -1,9 +1,9 @@
 /* ==========================================================================
    Light / dark theme
    Loaded in <head> (not deferred) so the right theme is set before the page
-   paints, with no flash. Uses the visitor's saved choice if there is one,
-   otherwise their system setting, and always puts .light or .dark on <html>.
-   (With JavaScript off, css/style.css falls back to the system setting.)
+   paints, with no flash. The site starts light; if the visitor switched to
+   dark before, that choice is remembered. Always puts .light or .dark on
+   <html>, and matches the phone browser's bar color (theme-color).
    The button with data-theme-toggle switches it and remembers the choice.
    ========================================================================== */
 
@@ -17,10 +17,11 @@
   function apply(theme) {
     root.classList.toggle("dark", theme === "dark");
     root.classList.toggle("light", theme !== "dark");
+    const bar = document.querySelector('meta[name="theme-color"]');
+    if (bar) bar.content = theme === "dark" ? "#171820" : "#f9f9f8";
   }
 
-  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  apply(savedTheme() || (prefersDark ? "dark" : "light"));
+  apply(savedTheme() === "dark" ? "dark" : "light");
 
   document.addEventListener("DOMContentLoaded", () => {
     const button = document.querySelector("[data-theme-toggle]");

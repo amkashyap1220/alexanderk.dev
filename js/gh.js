@@ -8,6 +8,7 @@
    - GH.api(path): fetch from api.github.com; throws on an error status.
    - GH.repo / GH.commits / GH.languages / GH.readme: cached lookups, so
      the Projects and Stats pages reuse each other's data.
+   - GH.languageColor(name): GitHub's color for a language, or null.
    - GH.timeAgo(date), GH.el(tag, class, text): display helpers.
    ========================================================================== */
 
@@ -57,6 +58,18 @@
   const readme = (name) => cached("readme:" + name, () =>
     api("repos/" + name + "/readme", { headers: { Accept: "application/vnd.github.html+json" } }).then((r) => r.text()));
 
+  // GitHub's colors for common languages (from github-linguist), used for the
+  // dots next to language names and the bars on the Stats page
+  const LANGUAGE_COLORS = {
+    "C": "#555555", "C#": "#178600", "C++": "#f34b7d", "CSS": "#563d7c", "Dart": "#00B4AB",
+    "Dockerfile": "#384d54", "Go": "#00ADD8", "HTML": "#e34c26", "Java": "#b07219",
+    "JavaScript": "#f1e05a", "Jupyter Notebook": "#DA5B0B", "Kotlin": "#A97BFF", "PHP": "#4F5D95",
+    "PLpgSQL": "#336790", "PowerShell": "#012456", "Python": "#3572A5", "R": "#198CE7",
+    "Ruby": "#701516", "Rust": "#dea584", "SCSS": "#c6538c", "Shell": "#89e051", "SQL": "#e38c00",
+    "Swift": "#F05138", "TSQL": "#e38c00", "TypeScript": "#3178c6", "Vue": "#41b883",
+  };
+  const languageColor = (name) => LANGUAGE_COLORS[name] || null;
+
   function timeAgo(date) {
     const days = Math.floor((Date.now() - new Date(date)) / 86400000);
     if (days < 1) return "today";
@@ -75,5 +88,5 @@
     return e;
   }
 
-  window.GH = { cached, api, commits, repo, languages, readme, timeAgo, el };
+  window.GH = { cached, api, commits, repo, languages, readme, languageColor, timeAgo, el };
 })();
