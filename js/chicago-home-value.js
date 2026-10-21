@@ -45,6 +45,7 @@
   let mode = "buy";
   let view = 0;            // 0 = you, 1 = person 2, 2 = best for both
   let result = null;
+  let started = false;     // no scores until the reader sets something (or asks for the defaults)
 
   const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   const money = (x) => "$" + Math.round(x).toLocaleString();
@@ -82,10 +83,11 @@
       '<span data-budget-after>' + BUDGET[mode].after + '</span></label></div>' +
       '<div class="hv-buttons"><button class="btn small" type="button" data-reset>Reset</button>' +
       (k === 1 ? '<button class="btn small" type="button" data-remove>Remove person 2</button>' : "") + '</div>';
-    fs.addEventListener("input", update);
+    fs.addEventListener("input", () => { started = true; update(); });
     fs.querySelector("[data-reset]").addEventListener("click", () => {
       fs.querySelectorAll("input[type=range]").forEach((el) => { el.value = el.name === "ps" ? 50 : 2; });
       fs.querySelectorAll("input[type=text]").forEach((el) => { el.value = ""; });
+      if (k === 0) started = false;
       update();
     });
     const remove = fs.querySelector("[data-remove]");
@@ -143,6 +145,16 @@
 
   function update() {
     if (!data) return;
+    root.classList.toggle("hv-unscored", !started);
+    if (!started) {
+      result = null;
+      draw();
+      tableEl.innerHTML = "";
+      summaryEl.innerHTML = "<b>Nothing is ranked yet.</b> Tell the map what matters to you: slide an importance or fill in a must-have, and it will show your 20 best-value " +
+        (mode === "buy" ? "places to buy" : "places to rent") + '. Or <button class="btn small" type="button" data-start>use the middle settings</button>.';
+      summaryEl.querySelector("[data-start]").addEventListener("click", () => { started = true; update(); });
+      return;
+    }
     const ps = people();
     if (ps.some((p) => p.weights.every((w) => w === 0) && p.priceShare < 1)) {
       summaryEl.textContent = "Set at least one thing above Ignore, or set low price to 100%.";
@@ -181,7 +193,8 @@
 
   function draw() {
     const width = mapEl.clientWidth;
-    if (!result || width < 200) return;
+    if (!geo || width < 200) return;
+    if (!result) return drawPlain(width);
     const { picks, score, label } = current();
     const scored = new Map(result.rows.map((r) => [r.zip, r]));
     const values = result.rows.map(score);
@@ -201,9 +214,7 @@
         Plot.geo(feats.filter((f) => !scored.has(f.id)), { fill: css("--hv-none"), stroke: bg, strokeWidth: 0.5 }),
         Plot.geo(inSample, { fill: (f) => color(score(scored.get(f.id))), stroke: bg, strokeWidth: 0.5 }),
         Plot.geo(inSample.filter((f) => picks.has(f.id)), { fill: pick, stroke: bg, strokeWidth: 1 }),
-        // Niche's places, always shown: a diamond with a halo in the page color so it reads on any fill
-        Plot.dot(feats.filter((f) => byZip.get(f.id)?.list), Plot.centroid({ symbol: "diamond", r: 4, stroke: bg, strokeWidth: 3.5, fill: "none" })),
-        Plot.dot(feats.filter((f) => byZip.get(f.id)?.list), Plot.centroid({ symbol: "diamond", r: 4, stroke: css("--text"), strokeWidth: 1.5, fill: "none" })),
+        nicheMarks(feats, bg),
         Plot.tip(inSample, Plot.pointer(Plot.centroid({
           fill: bg, stroke: css("--border"),
           title: (f) => {
@@ -222,6 +233,41 @@
     plot.setAttribute("aria-label", "Map of " + result.rows.length + " Chicago-area zip codes colored by value score, stronger blue is better value. " +
       "The top " + data.top + " are orange and listed in the table below. Diamonds mark the Niche list.");
     mapEl.replaceChildren(plot);
+  }
+
+  // Before the reader has set anything: every zip in one neutral color, with Niche's places marked
+  function drawPlain(width) {
+    const bg = css("--bg");
+    const feats = geo.features;
+    const plot = Plot.plot({
+      width,
+      height: Math.round(width * 1.12),
+      margin: 4,
+      projection: { type: "mercator", domain: geo },
+      style: { background: "transparent", color: css("--muted"), fontFamily: css("--font"), fontSize: "11px" },
+      marks: [
+        Plot.geo(feats, { fill: css("--hv-none"), stroke: bg, strokeWidth: 0.5 }),
+        nicheMarks(feats, bg),
+        Plot.tip(feats, Plot.pointer(Plot.centroid({
+          fill: bg, stroke: css("--border"),
+          title: (f) => {
+            const z = byZip.get(f.id);
+            return z ? [name(z) + " " + z.zip, z.list ? "On the Niche list (" + z.list + ")" : null].filter(Boolean).join("\n") : "Zip " + f.id;
+          },
+        }))),
+      ],
+    });
+    plot.setAttribute("aria-label", "Map of Chicago-area zip codes. Nothing is ranked yet. Diamonds mark Niche's best places to live.");
+    mapEl.replaceChildren(plot);
+  }
+
+  // Niche's places, always shown: a diamond with a halo in the page color so it reads on any fill
+  function nicheMarks(feats, bg) {
+    const listed = feats.filter((f) => byZip.get(f.id)?.list);
+    return [
+      Plot.dot(listed, Plot.centroid({ symbol: "diamond", r: 4, stroke: bg, strokeWidth: 3.5, fill: "none" })),
+      Plot.dot(listed, Plot.centroid({ symbol: "diamond", r: 4, stroke: css("--text"), strokeWidth: 1.5, fill: "none" })),
+    ];
   }
 
   // ---- Table
