@@ -22,6 +22,7 @@
   --card: rgba(255, 255, 255, 0.4);
   --soft: #f0f1ef;            /* secondary buttons, code, bar tracks */
   --accent: #2b7a4b;          /* green */
+  --gold: #b07d00;            /* GitHub stars */
   color-scheme: light;
 
   /* spacing scale */
@@ -58,8 +59,9 @@
   --header-height: 46px;
 }
 
-/* Dark colors. js/theme.js puts .dark or .light on <html>; with JavaScript off,
-   the system setting decides (the media query below). */
+/* Dark colors, used when the visitor turns dark mode on (js/theme.js puts
+   .dark on <html>). The site starts light for everyone, including with
+   JavaScript off. */
 :root.dark {
   --bg: #171820;
   --text: #f4f1f2;
@@ -68,19 +70,8 @@
   --card: rgba(29, 31, 40, 0.6);
   --soft: #20232d;
   --accent: #4ec98a;
+  --gold: #e3b341;
   color-scheme: dark;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not(.light) {
-    --bg: #171820;
-    --text: #f4f1f2;
-    --muted: #8f93a3;
-    --border: #2d3140;
-    --card: rgba(29, 31, 40, 0.6);
-    --soft: #20232d;
-    --accent: #4ec98a;
-    color-scheme: dark;
-  }
 }
 
 
@@ -219,6 +210,17 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
 }
 .pill > span { white-space: nowrap; }
 .pill b { color: var(--text); font-weight: 500; }
+.star { color: var(--gold); }
+/* A language name gets a dot in GitHub's color for that language (set by js/github.js) */
+[data-field="language"][style*="--lang"]::before {
+  content: "";
+  display: inline-block;
+  width: 0.65em;
+  height: 0.65em;
+  margin-right: 0.4em;
+  border-radius: 50%;
+  background: var(--lang);
+}
 .pill .sep { width: 1px; height: 12px; background: color-mix(in srgb, var(--accent) 25%, transparent); }
 
 /* Chips (tags) */
@@ -335,7 +337,7 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
 .bar-row + .bar-row { margin-top: 10px; }
 .bar-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .bar-track { height: 10px; border-radius: var(--radius-pill); background: var(--soft); }
-.bar { height: 100%; border-radius: var(--radius-pill); background: var(--accent); }
+.bar { height: 100%; border-radius: var(--radius-pill); background: var(--lang, var(--accent)); }   /* GitHub's color for the language */
 .bar-value { color: var(--muted); text-align: right; }
 
 .activity-summary { font-size: var(--fs-md); }
@@ -345,10 +347,16 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
 
 
 /* ---------- 7. Phones ---------- */
-@media (max-width: 640px) {
+/* Tablets and small laptops: drop the name from the header so the nav and
+   the LinkedIn / GitHub buttons fit (every page already shows the name big) */
+@media (max-width: 820px) {
   .site-header .name { display: none; }
-  .header-actions .btn { display: none; }      /* GitHub is still in the footer */
-  .site-nav { gap: 0; margin: 0 auto 0 0; }
+  .site-nav { margin: 0 auto 0 0; }
+}
+
+@media (max-width: 640px) {
+  .header-actions .btn { display: none; }      /* LinkedIn and GitHub are still in the footer */
+  .site-nav { gap: 0; }
   .site-nav a { padding: 6px var(--space-2); }
   .hero { padding: 64px 0 48px; }
   .hero h1 { font-size: 34px; }
@@ -362,7 +370,7 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
 }
 
 /* The smallest phones (iPhone SE and similar): tighten the header so it fits */
-@media (max-width: 400px) {
+@media (max-width: 420px) {
   .wrap, .narrow { padding: 0 var(--space-4); }
   .site-header .wrap { gap: var(--space-2); }
   .site-nav a { padding: 6px; font-size: 12.5px; }
