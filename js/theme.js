@@ -1,8 +1,9 @@
 /* ==========================================================================
    Light / dark theme
    Loaded in <head> (not deferred) so the right theme is set before the page
-   paints, with no flash. The site starts light; if the visitor switched to
-   dark before, that choice is remembered. Always puts .light or .dark on
+   paints, with no flash. The site follows the visitor's system setting
+   (light or dark) and changes with it, unless they've used the toggle:
+   then their choice is remembered and wins. Always puts .light or .dark on
    <html>, and matches the phone browser's bar color (theme-color) and the
    browser tab icon (favicon.svg / favicon-dark.svg).
    The button with data-theme-toggle switches it and remembers the choice.
@@ -24,7 +25,10 @@
     if (icon) icon.href = theme === "dark" ? "/favicon-dark.svg" : "/favicon.svg";
   }
 
-  apply(savedTheme() === "dark" ? "dark" : "light");
+  const system = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+  const systemTheme = () => (system && system.matches ? "dark" : "light");
+  const saved = savedTheme();
+  apply(saved === "dark" || saved === "light" ? saved : systemTheme());
 
   document.addEventListener("DOMContentLoaded", () => {
     const button = document.querySelector("[data-theme-toggle]");
@@ -32,6 +36,11 @@
     // aria-pressed tells screen readers whether dark mode is on
     const sync = () => button.setAttribute("aria-pressed", String(root.classList.contains("dark")));
     sync();
+    // The system setting changed (say, dark mode at sunset): follow it, unless the visitor picked one
+    if (system && system.addEventListener) system.addEventListener("change", () => {
+      const picked = savedTheme();
+      if (picked !== "dark" && picked !== "light") { apply(systemTheme()); sync(); }
+    });
     button.addEventListener("click", () => {
       const theme = root.classList.contains("dark") ? "light" : "dark";
       apply(theme);
