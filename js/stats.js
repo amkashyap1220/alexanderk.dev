@@ -180,7 +180,7 @@
     });
   }
 
-  let languageMode = "bytes";   // or "repos"
+  let languageMode = "repos";   // or "bytes"
 
   function drawLanguages(data) {
     const box = document.getElementById("languages");
