@@ -4,12 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Is there a cheap good zip code in Chicagoland? · Alexander Kashyap</title>
-  <meta name="description" content="I scored 339 Chicago-area zip codes on schools, safety, commute and walkability, and looked for the ones that sell for less than their quality predicts. A pre-registered study, with an honest answer.">
+  <meta name="description" content="I scored 338 Chicago-area zip codes on schools, safety, commute and walkability, counted what a home costs to run, and ranked where you get the most for your money.">
   <!-- Link previews (iMessage, Discord, Slack, LinkedIn, ...) -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Alexander Kashyap">
   <meta property="og:title" content="Is there a cheap good zip code in Chicagoland? · Alexander Kashyap">
-  <meta property="og:description" content="I scored 339 Chicago-area zip codes on schools, safety, commute and walkability, and looked for the ones that sell for less than their quality predicts.">
+  <meta property="og:description" content="I scored 338 Chicago-area zip codes on schools, safety, commute and walkability, counted what a home costs to run, and ranked where you get the most for your money.">
   <meta property="og:url" content="https://alexanderk.dev/writing/chicago-home-value">
   <meta property="og:image" content="https://alexanderk.dev/og.png">
   <meta property="og:image:width" content="1200">
@@ -52,7 +52,7 @@
       <div class="narrow">
         <p class="eyebrow"><time datetime="2026-10-21">Oct 21, 2026</time></p>
         <h1>Is there a cheap good zip code in Chicagoland?</h1>
-        <p class="lead">I scored 339 Chicago-area zip codes on schools, safety, commute and walkability, and looked for the ones that sell for less than their quality predicts. The answer is yes, but only just.</p>
+        <p class="lead">I scored 338 Chicago-area zip codes on quality and on what a home costs to run, ranked the best values, then checked them against the places everyone recommends.</p>
         <div class="actions">
           <a class="btn primary" href="https://github.com/amkashyap1220/Home-Value-Score" target="_blank" rel="noopener">Data and code</a>
           <a class="btn" href="/writing/">← All writing</a>
@@ -62,15 +62,10 @@
 
     <section class="section">
       <article class="narrow prose" id="post">
-        <p>Ask anyone where to buy a house around Chicago and you'll hear the same names: Naperville, Hinsdale, Evanston, the North Shore. Those places are good, and you pay for it. I wanted to know whether there are places that are nearly as good but cost a lot less, and whether they're places nobody mentions.</p>
+        <p>Ask anyone where to buy a house around Chicago and you'll hear the same names: Naperville, Hinsdale, Evanston, the North Shore. I wanted to find the best value instead: places where you get the most for your money once you count what a home costs to own and run, not only its sale price. Then I wanted to check whether any of them are places nobody mentions.</p>
 
-        <h2>The question, set in advance</h2>
-        <p>It's easy to fool yourself with data like this: run the numbers, see something interesting, then decide that's what you were looking for. To avoid that, I wrote down the hypothesis, every definition and the pass/fail rule <a href="https://github.com/amkashyap1220/Home-Value-Score/blob/main/docs/decisions.md">in one file</a> and <a href="https://github.com/amkashyap1220/Home-Value-Score/commit/935ee45">committed it</a> before downloading any price data. Scientists call this pre-registration. Anything I changed later is logged in that file with a reason.</p>
-        <blockquote>Among zip codes in the Chicago metro, some above-median-quality zips sell for much less per square foot than their quality and property taxes predict, and most of them are <b>not</b> on the usual "best places to live" list.</blockquote>
-        <p>The rule: the hypothesis holds if at least 3 zips are both high quality and significantly underpriced, and more than half of those aren't on the reputation list. Otherwise it fails. Either answer would get this post.</p>
-
-        <h2>How it works</h2>
-        <p><b>The area.</b> The 13 counties of the Chicago metro, 9 in Illinois and 4 in Northwest Indiana. Zips with fewer than 20 sales in the past year were dropped, which left 339.</p>
+        <h2>How I scored value</h2>
+        <p><b>The area.</b> The 13 counties of the Chicago metro, 9 in Illinois and 4 in Northwest Indiana. Zips with fewer than 20 sales in the past year were dropped, which left 338.</p>
         <p><b>A quality score from 0 to 100.</b> Four things a homebuyer cares about, each turned into a percentile rank and averaged with equal weight:</p>
         <ul>
           <li><b>Schools:</b> district test proficiency, ranked within each state first, since Illinois and Indiana use different tests.</li>
@@ -79,72 +74,59 @@
           <li><b>Walkability:</b> the EPA's National Walkability Index.</li>
         </ul>
         <p>Nothing price-based goes into the score, since that would make the test circular. Race and ethnicity, and stand-ins for them, aren't used anywhere. Steering buyers by the makeup of a neighborhood is what fair-housing law forbids and what redlining did.</p>
-        <p><b>A model of price.</b> A linear regression predicts each zip's median price per square foot from its quality score and its property tax rate. The <b>residual</b> is the actual price minus the predicted one. A negative residual means the zip sells for less than the model expects.</p>
-        <p><b>A value pick</b> is a zip with above-median quality whose residual is more than one standard deviation below zero, which works out to at least $63 per square foot cheaper than predicted.</p>
-        <p><b>The reputation list</b> is Niche's 2026 "Best Places to Live in Illinois" top 20, plus the Chicago-area places in the top 50 of its Indiana ranking, matched to zip codes.</p>
+        <p><b>What a home costs to own and run.</b> Next to quality, the model accounts for four costs that come on top of the price:</p>
+        <ul>
+          <li><b>Property tax rate:</b> taxes paid as a share of home value, from the Census.</li>
+          <li><b>Home energy:</b> the typical monthly electricity and gas bill, from the Census.</li>
+          <li><b>Commuting fuel:</b> a yearly gasoline estimate from how many people drive, how long they drive, and the regional pump price (EIA).</li>
+          <li><b>Home age:</b> how old the typical house is, from the Census.</li>
+        </ul>
+        <p><b>The model.</b> A linear regression predicts each zip's median price per square foot from its quality score and those four costs. The <b>residual</b> is the actual price minus the predicted one. A negative residual means homes there sell for less than the model expects for what you get.</p>
+        <p><b>A value pick</b> is a zip with above-median quality whose residual is more than one standard deviation below zero. That works out to at least $56 per square foot cheaper than predicted.</p>
 
-        <h2>The chart</h2>
-        <p>Each dot is a zip. Further right means higher quality. Lower means cheaper than the model predicts. Value picks sit in the shaded corner. Hover or tap a dot for details.</p>
+        <h2>The best-value areas</h2>
+        <p>Each dot is a zip. Further right means higher quality, and lower means cheaper than the model predicts. The value picks are in the shaded corner. Hover over or tap a dot for details.</p>
       </article>
 
       <figure class="wrap hv" aria-labelledby="hv-caption">
-        <div class="hv-controls">
-          <div class="toggle" role="group" aria-label="Model">
-            <button class="btn small" type="button" data-hv-model="primary" aria-pressed="true">Main model</button>
-            <button class="btn small" type="button" data-hv-model="extended" aria-pressed="false">Follow-up model</button>
-          </div>
-          <ul class="hv-legend" aria-label="Legend">
-            <li><span class="hv-key pick"></span>Value pick</li>
-            <li><span class="hv-key other"></span>Other zip</li>
-            <li><span class="hv-key list"></span>On the Niche list</li>
-          </ul>
-        </div>
+        <ul class="hv-legend" aria-label="Legend">
+          <li><span class="hv-key pick"></span>Value pick</li>
+          <li><span class="hv-key other"></span>Other zip</li>
+        </ul>
         <div id="hv-chart" class="hv-chart"><p class="muted">Loading the chart…</p></div>
         <figcaption id="hv-caption"><span id="hv-summary"></span> Prices: Redfin, June 2025 to May 2026.</figcaption>
       </figure>
 
       <article class="narrow prose">
-        <h2>The result: supported, by the rule</h2>
-        <p>The main model finds <b>16 value picks, and 11 of them aren't on the reputation list</b>. That passes the rule I set beforehand, so the hypothesis is supported.</p>
-        <p>The reputation list is also roughly where you'd expect. Its 32 zips have a median quality of 62, against 49 for everywhere else, and they typically sell about $27 per square foot <i>above</i> what the model predicts. Some of that premium is the name.</p>
+        <p>Based on my model, these are the 16 best-value zip codes in the Chicago area, most underpriced first:</p>
+        <table id="hv-table"></table>
+        <p>12 are in Illinois and 4 in Indiana. Most are just above the quality median (scores in the 50s and 60s), not top-tier areas. That's what the model is built to find: solid places at a clear discount. Quality has the clearest effect, adding about $1.90 per square foot for every point. Energy bills and commuting fuel both pull prices down, as you'd expect. Once those are in, home age and the tax rate make no measurable difference.</p>
 
-        <details class="hv-details">
-          <summary>The value picks, as a table</summary>
-          <table id="hv-table"></table>
-        </details>
-
-        <h2>Why I only half believe it</h2>
-        <p>A pass by the rule isn't the end of it. I'd also decided in advance to stress-test the result, and it doesn't hold up as well as the headline suggests.</p>
+        <h2>How much to trust the list</h2>
+        <p>Before looking at prices, I decided how I'd stress-test the result. Some picks hold up and some don't.</p>
         <ul>
-          <li><b>Indiana does a lot of the work.</b> 9 of the 16 picks are in Indiana, and Indiana zips as a group sit about $61 per square foot below the line. I put the tax rate in the model to account for Indiana's cap on homestead property taxes, but the model gave it almost no weight. So part of "underpriced" here just means "in Indiana". All 5 picks that are on the Niche list are Indiana towns (Valparaiso twice, Munster, Chesterton and Dyer).</li>
-          <li><b>Illinois on its own still passes.</b> Rerunning everything on Illinois zips alone gives 11 picks, none of them on the list. This is the strongest evidence for the hypothesis.</li>
-          <li><b>The picks depend on the recipe.</b> When I rebuilt the score four times, leaving out one ingredient each time, only 4 of the 16 picks stayed picks in at least three of the four versions.</li>
-          <li><b>Some picks are data artifacts.</b> I looked at the top 10 by hand. Robbins scores well partly because its police department reports no crime data, so its score is the average of the other three. Small rural towns like Kentland and Rensselaer get great commute scores because people work locally, not because they're close to Chicago jobs. North Chicago's short commutes come from Naval Station Great Lakes.</li>
-          <li><b>The model only explains a quarter of prices</b> (R² = 0.25). Lot size, the lake, home condition, flood risk and airport noise all matter and aren't in it.</li>
+          <li><b>Change the recipe.</b> I rebuilt the score four times, leaving out one ingredient each time. 7 of the 16 picks stayed picks in at least three of the four versions: Kentland, North Chicago, Joliet's east side (60433), Rensselaer, Woodstock, Valparaiso (46383) and Schaumburg (60173).</li>
+          <li><b>Illinois on its own.</b> Rerunning everything on Illinois zips alone gives 15 picks. Woodstock, Joliet 60433, Itasca and Sycamore are among them.</li>
+          <li><b>Some picks are data artifacts.</b> I checked the most underpriced zips by hand. Robbins scores well partly because its police department reports no crime data, so its score is the average of the other three ingredients. Small rural towns like Kentland and Rensselaer get great commute scores because people work locally, not because they're close to Chicago jobs. North Chicago's short commutes come from Naval Station Great Lakes.</li>
+          <li><b>The model explains 41% of prices</b> (R² = 0.41). Lot size, the lake, home condition, flood risk and airport noise all matter and aren't in it.</li>
         </ul>
+        <p>The strongest leads are suburban, have complete data and hold up under the checks: <b>Woodstock</b> and <b>Joliet's east side (60433)</b> pass both, <b>Schaumburg (60173)</b> survives the recipe changes, and <b>Itasca</b> and <b>Sycamore</b> hold in the Illinois-only run. They're leads worth a weekend drive, not proof of a bargain. A zip code averages over very different streets, and a model this simple can't see what makes a particular block cheap.</p>
 
-        <h2>Follow-up: what a house costs to run</h2>
-        <p>After seeing the results, I wanted to know whether running costs explain some of the gap. A cheaper house with high energy bills or a long drive isn't much of a deal. So I added a second model with three more inputs: median home age, the typical monthly electricity and gas bill (both from the Census), and the yearly cost of gasoline for the commute.</p>
-        <p>Since I added this after seeing the results, <b>it doesn't change the verdict above</b>. It's labeled as a follow-up in the <a href="https://github.com/amkashyap1220/Home-Value-Score/blob/main/docs/decisions.md#change-log">change log</a>. Switch the chart to "Follow-up model" to see it.</p>
+        <h2>Did I find hidden value?</h2>
+        <p>Now for the comparison with word of mouth. For the reputation list I used Niche's 2026 "Best Places to Live in Illinois" top 20, plus the Chicago-area places in the top 50 of its Indiana ranking, matched to 32 zip codes.</p>
+        <blockquote><b>15 of my 16 value picks are not on the list.</b> The only overlap is Valparaiso (46383).</blockquote>
+        <p>Before seeing any prices, I wrote down the rule for calling this a yes: at least 3 value picks, with more than half of them off the reputation list. The result clears it easily. The list's own zips are well chosen but expensive. Their median quality is 62, against 49 everywhere else. They typically sell about $27 per square foot <i>above</i> what the model predicts, and 62% of them sit above the line. Part of what you pay for in those places is the name.</p>
+
+        <h2>Notes on the method</h2>
         <ul>
-          <li>It explains more: R² rises from 0.25 to 0.41.</li>
-          <li>Energy bills and commuting fuel both pull prices down, as you'd expect. Home age makes no measurable difference once the others are in.</li>
-          <li>It still finds 16 picks, now with 15 off the reputation list and only 4 in Indiana. Cheaper gas and energy in Indiana explain part of its lower prices.</li>
-        </ul>
-        <p>Take the cost numbers loosely. Energy bills grow with house size, and the fuel estimate is built from commute time, which the quality score already includes.</p>
-
-        <h2>So where would I look?</h2>
-        <p>Woodstock, Grayslake and Itasca are suburban picks with complete data, and each shows up in at least two versions of the analysis (main, Illinois-only, follow-up). Woodstock shows up in all three. Joliet's east side (60433) is one of the four picks that survive the leave-one-out test. These are leads worth a weekend drive, not proof of a bargain. A zip code averages over very different streets, and a model this simple can't see what makes a particular block cheap.</p>
-
-        <h2>What I'd tell someone doing this again</h2>
-        <ul>
-          <li>Write the rule down first. Without it, I'd have been tempted to drop the Indiana caveat, or to make the follow-up model the headline because it looks better.</li>
-          <li>Missing data quietly flatters. A town with no crime data looks safer than it is unless you flag it.</li>
-          <li>Run the checks you set up in advance even after the headline passes. They're what made this post honest.</li>
+          <li><b>I set the method before looking.</b> It's easy to fool yourself with data like this: run the numbers, see something interesting, then decide that's what you were looking for. So I wrote down the question, every definition and the pass/fail rule, and <a href="https://github.com/amkashyap1220/Home-Value-Score/commit/935ee45">committed them</a> before downloading any price data. Scientists call this pre-registration.</li>
+          <li><b>One change came after the first run.</b> The pre-registered model only had quality and the tax rate. After running it, I added energy bills, commuting fuel and home age, because a buyer pays those costs on top of the price. Changing a model after seeing results is exactly what pre-registration exists to catch, so it's logged with the reason in <a href="https://github.com/amkashyap1220/Home-Value-Score/blob/main/docs/decisions.md#change-log">the decision file</a>. The first run also cleared the rule (16 picks, 11 off the list), but 9 of its picks were in Indiana. Cheaper gas and energy in Indiana explain part of that, and adding them cut Indiana's picks to 4.</li>
+          <li><b>Missing data quietly flatters.</b> A town with no crime data looks safer than it is unless you flag it.</li>
+          <li><b>The cost numbers are rough.</b> Energy bills grow with house size, and the fuel estimate is built from commute time, which the quality score already includes.</li>
         </ul>
 
         <h2>Data and code</h2>
-        <p>Everything is in the <a href="https://github.com/amkashyap1220/Home-Value-Score">Home-Value-Score repo</a>: the pre-registration, the Python scripts (pandas and statsmodels), the data notes, and the full results. Sources: Redfin Data Center (prices), Zillow Research (trend context), Census ACS and TIGER files, Illinois Report Card and Indiana Department of Education (schools), FBI Crime Data Explorer, EPA Smart Location Database, EIA gasoline prices, and Niche's 2026 rankings. Each one's URL, pull date and license is in the README.</p>
+        <p>Everything is in the <a href="https://github.com/amkashyap1220/Home-Value-Score">Home-Value-Score repo</a>: the decision file, the Python scripts (pandas and statsmodels), the data notes, and the <a href="https://github.com/amkashyap1220/Home-Value-Score/blob/main/docs/results.md">full results</a>. Sources: Redfin Data Center (prices), Zillow Research (trend context), Census ACS and TIGER files, Illinois Report Card and Indiana Department of Education (schools), FBI Crime Data Explorer, EPA Smart Location Database, EIA gasoline prices, and Niche's 2026 rankings. Each one's URL, pull date and license is in the README.</p>
       </article>
     </section>
 
@@ -153,20 +135,14 @@
       :root { --pick: #ce5c00; --other: #888a85; }   /* orange 3, aluminium 4 */
       :root.dark { --pick: #fcaf3e; --other: #888a85; }   /* orange 1 */
       .hv { max-width: 860px; margin: var(--space-7) auto; }
-      .hv-controls { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--space-3) var(--space-6); margin-bottom: var(--space-3); }
-      .hv .toggle { margin: 0; }
-      .hv-legend { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-5); padding: 0; list-style: none; color: var(--muted); font-size: var(--fs-xs); }
+      .hv-legend { display: flex; justify-content: flex-end; margin-bottom: var(--space-3); flex-wrap: wrap; gap: var(--space-1) var(--space-5); padding: 0; list-style: none; color: var(--muted); font-size: var(--fs-xs); }
       .hv-legend li { display: flex; align-items: center; gap: 6px; }
       .hv-key { display: inline-block; width: 10px; height: 10px; border-radius: 50%; }
       .hv-key.pick { background: var(--pick); }
       .hv-key.other { background: var(--other); opacity: 0.65; width: 7px; height: 7px; }
-      .hv-key.list { border: 1.5px solid var(--text); border-radius: 1px; transform: rotate(45deg) scale(0.8); }
       .hv-chart { min-height: 380px; }
       .hv-chart svg { display: block; max-width: 100%; height: auto; overflow: visible; }
       .hv figcaption { margin-top: var(--space-2); color: var(--muted); font-size: var(--fs-xs); line-height: 1.6; }
-      .hv-details { padding: var(--space-3) var(--space-4); border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); }
-      .hv-details summary { cursor: pointer; font-size: var(--fs-md); }
-      .hv-details table { margin-top: var(--space-3); }
     </style>
   </main>
 
