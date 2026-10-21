@@ -21,17 +21,25 @@
   const addBtn = document.getElementById("hv-add");
   const viewEl = document.getElementById("hv-view");
 
+  // Each factor: what it measures, and the wording around its optional "must" box
   const FACTORS = [
-    { name: "Schools", hint: "≥ %ile", label: "Target: schools at least this percentile in the state (0 to 100)" },
-    { name: "Safety", hint: "≤ per 1k", label: "Target: at most this many crimes per 1,000 residents a year" },
-    { name: "Commute", hint: "≤ min", label: "Target: average commute at most this many minutes" },
-    { name: "Walkability", hint: "≥ 1–20", label: "Target: EPA walkability index at least this (1 to 20)" },
-    { name: "Newer homes", hint: "≤ years", label: "Target: typical home at most this many years old" },
+    { name: "Schools", hint: "District test scores, ranked within the state: 80 means better than 80% of the state's districts.", before: "At least", example: "60", after: "percentile" },
+    { name: "Safety", hint: "Crimes per 1,000 residents a year, from the local police department.", before: "At most", example: "15", after: "crimes per 1,000" },
+    { name: "Commute", hint: "Average one-way trip to work.", before: "At most", example: "30", after: "minutes" },
+    { name: "Walkability", hint: "EPA walkability index, from 1 (need a car for everything) to 20 (very walkable).", before: "At least", example: "12", after: "out of 20" },
+    { name: "Newer homes", hint: "How old the typical (median) home is.", before: "At most", example: "40", after: "years old" },
+  ];
+  // The importance slider runs 0 to 4; these are the weights and words for each step
+  const IMPORTANCE = [
+    { weight: 0, word: "Ignore" }, { weight: 0.5, word: "Low" }, { weight: 1, word: "Normal" },
+    { weight: 2, word: "High" }, { weight: 3, word: "Top" },
   ];
   const BUDGET = {
-    buy: { hint: "≤ $", label: "Budget: median sale price at most this many dollars (350k works)" },
-    rent: { hint: "≤ $/mo", label: "Budget: median rent at most this many dollars a month" },
+    buy: { before: "at most $", example: "350k", after: "(compared with the zip's median sale price)" },
+    rent: { before: "at most $", example: "1,500", after: "a month (compared with the zip's median rent)" },
   };
+  // Decimals for each factor's "typical zip" note
+  const TYPICAL_DIGITS = [0, 1, 0, 1, 0];
 
   let data = null, geo = null, byZip = null;
   let mode = "buy";
@@ -52,29 +60,50 @@
     fs.className = "hv-person";
     fs.dataset.k = k;
     const rows = FACTORS.map((f, i) =>
-      '<label class="hv-row"><span>' + f.name + '</span>' +
-      '<input type="range" name="w' + i + '" min="0" max="3" step="0.5" value="1" aria-label="' + f.name + ' weight">' +
-      '<output>1</output>' +
-      '<input type="text" inputmode="decimal" name="t' + i + '" placeholder="' + f.hint + '" aria-label="' + f.label + '"></label>').join("");
+      '<div class="hv-factor">' +
+      '<label class="hv-line"><span class="hv-name">' + f.name + '</span>' +
+      '<input type="range" name="w' + i + '" min="0" max="4" step="1" value="2" aria-label="How much ' + f.name.toLowerCase() + ' matter">' +
+      '<output>Normal</output></label>' +
+      '<p class="hv-hint">' + f.hint + ' <span data-typical="' + i + '"></span></p>' +
+      '<label class="hv-must"><span>Must have: ' + f.before + '</span>' +
+      '<input type="text" inputmode="decimal" name="t' + i + '" placeholder="e.g. ' + f.example + '">' +
+      '<span>' + f.after + '</span></label></div>').join("");
     fs.innerHTML =
       '<legend>' + (k === 0 ? "You" : "Person 2") + '</legend>' +
-      '<div class="hv-row hv-head" aria-hidden="true"><span></span><span>How much it counts</span><span></span><span>Target</span></div>' +
+      '<p class="hv-intro">Slide each one to set how much it matters to you. The "must have" boxes are optional: fill one in only for a hard limit, and zips that miss it drop down the ranking.</p>' +
       rows +
-      '<label class="hv-row hv-price"><span>Low price</span>' +
-      '<input type="range" name="ps" min="0" max="100" step="5" value="50" aria-label="How much a low price counts, as a share of the score">' +
-      '<output>50%</output>' +
-      '<input type="text" inputmode="decimal" name="budget" aria-label="' + BUDGET[mode].label + '" placeholder="' + BUDGET[mode].hint + '"></label>' +
-      '<div class="hv-buttons"><button class="btn small" type="button" data-reset>' + "Reset" + '</button>' +
+      '<div class="hv-factor hv-price">' +
+      '<label class="hv-line"><span class="hv-name">Low price</span>' +
+      '<input type="range" name="ps" min="0" max="100" step="5" value="50" aria-label="Share of the score that is low price">' +
+      '<output>50%</output></label>' +
+      '<p class="hv-hint">How much of the score is price. At 50%, half the score is a low price and half is everything above. At 0%, price is ignored.</p>' +
+      '<label class="hv-must"><span data-budget-before>Budget: ' + BUDGET[mode].before + '</span>' +
+      '<input class="hv-wide" type="text" inputmode="decimal" name="budget" placeholder="e.g. ' + BUDGET[mode].example + '">' +
+      '<span data-budget-after>' + BUDGET[mode].after + '</span></label></div>' +
+      '<div class="hv-buttons"><button class="btn small" type="button" data-reset>Reset</button>' +
       (k === 1 ? '<button class="btn small" type="button" data-remove>Remove person 2</button>' : "") + '</div>';
     fs.addEventListener("input", update);
     fs.querySelector("[data-reset]").addEventListener("click", () => {
-      fs.querySelectorAll("input[type=range]").forEach((el) => { el.value = el.name === "ps" ? 50 : 1; });
+      fs.querySelectorAll("input[type=range]").forEach((el) => { el.value = el.name === "ps" ? 50 : 2; });
       fs.querySelectorAll("input[type=text]").forEach((el) => { el.value = ""; });
       update();
     });
     const remove = fs.querySelector("[data-remove]");
     if (remove) remove.addEventListener("click", () => { fs.remove(); addBtn.hidden = false; setView(0); });
+    if (data) showTypical(fs);
     return fs;
+  }
+
+  // "Typical zip: 24 minutes" under each factor, the median over the current sample
+  function showTypical(scope) {
+    const rows = data.zips.filter((z) => z[mode]);
+    scope.querySelectorAll("[data-typical]").forEach((el) => {
+      const i = Number(el.dataset.typical);
+      if (i === 0) return;   // a percentile's typical value is 50 by definition
+      const v = rows.map((z) => z[mode].v[i]).filter((x) => x != null).sort((a, b) => a - b);
+      const m = v[v.length >> 1];
+      el.textContent = "Typical zip: " + m.toFixed(TYPICAL_DIGITS[i]) + " " + FACTORS[i].after + ".";
+    });
   }
 
   // "350k", "$1,500" and "30" all work
@@ -87,8 +116,9 @@
 
   function readPerson(fs) {
     const f = fs.elements;
-    const weights = [0, 1, 2, 3, 4].map((i) => Number(f["w" + i].value));
-    [0, 1, 2, 3, 4].forEach((i) => { f["w" + i].nextElementSibling.textContent = f["w" + i].value; });
+    const steps = [0, 1, 2, 3, 4].map((i) => IMPORTANCE[Number(f["w" + i].value)]);
+    const weights = steps.map((st) => st.weight);
+    steps.forEach((st, i) => { f["w" + i].nextElementSibling.textContent = st.word; });
     f.ps.nextElementSibling.textContent = f.ps.value + "%";
     return {
       weights,
@@ -115,7 +145,7 @@
     if (!data) return;
     const ps = people();
     if (ps.some((p) => p.weights.every((w) => w === 0) && p.priceShare < 1)) {
-      summaryEl.textContent = "Give at least one thing a weight above 0, or set low price to 100%.";
+      summaryEl.textContent = "Set at least one thing above Ignore, or set low price to 100%.";
       return;
     }
     result = window.HVModel.run(data.zips, mode, ps, data.top);
@@ -213,12 +243,13 @@
   function setMode(m) {
     mode = m;
     document.querySelectorAll("[data-mode]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.mode === mode)));
-    peopleEl.querySelectorAll("input[name=budget]").forEach((el) => {
-      el.value = "";
-      el.placeholder = BUDGET[mode].hint;
-      el.setAttribute("aria-label", BUDGET[mode].label);
+    peopleEl.querySelectorAll(".hv-person").forEach((fs) => {
+      fs.elements.budget.value = "";
+      fs.elements.budget.placeholder = "e.g. " + BUDGET[mode].example;
+      fs.querySelector("[data-budget-before]").textContent = "Budget: " + BUDGET[mode].before;
+      fs.querySelector("[data-budget-after]").textContent = BUDGET[mode].after;
+      showTypical(fs);
     });
-    document.querySelectorAll("[data-mode-text]").forEach((el) => { el.textContent = el.dataset[mode]; });
     update();
   }
 
@@ -245,6 +276,7 @@
       data = json;
       geo = shapes;
       byZip = new Map(data.zips.map((z) => [z.zip, z]));
+      showTypical(peopleEl);
       update();
     })
     .catch(() => { mapEl.innerHTML = '<p class="muted">The map could not load. The data is in the GitHub repo linked above.</p>'; });
