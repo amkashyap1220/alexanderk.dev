@@ -186,6 +186,7 @@ a.card:hover { border-color: var(--accent); text-decoration: none; }
 
 /* ---------- Long-form text: a project's README from GitHub, and blog posts (.prose) ---------- */
 .readme, .prose { font-size: 14px; line-height: 1.7; overflow-wrap: break-word; }
+.section h2 + .readme { margin-top: 24px; }   /* room under the "README" heading */
 .readme > * + *, .prose > * + * { margin-top: 14px; }
 .section .readme h1, .section .readme h2, .section .readme h3, .section .prose h1, .section .prose h2, .section .prose h3 { margin: 28px 0 8px; font-size: 18px; letter-spacing: -0.01em; }
 .readme .markdown-heading:first-child h1, .readme > :first-child, .prose > :first-child { margin-top: 0; }
