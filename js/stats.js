@@ -25,6 +25,8 @@
     "CosmiShapesFinal": "/projects/cosmishapes.html",
     "CNIT-255-Kashyap": "/projects/cnit-255.html",
     "dotNET": "/projects/dotnet.html",
+    "CSCI-330-UNIX-and-Network-Programming": "/projects/csci-330.html",
+    "CSCI-241-Intermediate-Programming": "/projects/csci-241.html",
   };
 
 
