@@ -3,7 +3,8 @@
    Loaded in <head> (not deferred) so the right theme is set before the page
    paints, with no flash. The site starts light; if the visitor switched to
    dark before, that choice is remembered. Always puts .light or .dark on
-   <html>, and matches the phone browser's bar color (theme-color).
+   <html>, and matches the phone browser's bar color (theme-color) and the
+   browser tab icon (favicon.svg / favicon-dark.svg).
    The button with data-theme-toggle switches it and remembers the choice.
    ========================================================================== */
 
@@ -19,6 +20,8 @@
     root.classList.toggle("light", theme !== "dark");
     const bar = document.querySelector('meta[name="theme-color"]');
     if (bar) bar.content = theme === "dark" ? "#2e3436" : "#eeeeec";
+    const icon = document.querySelector('link[rel="icon"]');
+    if (icon) icon.href = theme === "dark" ? "/favicon-dark.svg" : "/favicon.svg";
   }
 
   apply(savedTheme() === "dark" ? "dark" : "light");
