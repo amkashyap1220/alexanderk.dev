@@ -19,6 +19,8 @@
     "SwitchToYoutube": "/projects/switch-to-youtube.html",
     "alexanderk.dev": "/projects/alexanderk-dev.html",
     "Gaps-Between-The-Primes": "/projects/gaps-between-the-primes.html",
+    "466FinalProject": "/projects/atg-shop.html",
+    "RateWillBot": "/projects/ratewillbot.html",
   };
 
 
