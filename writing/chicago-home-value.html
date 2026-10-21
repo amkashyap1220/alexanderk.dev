@@ -90,7 +90,6 @@
           <form class="hv-controls" aria-label="Your weights and targets" onsubmit="return false">
             <div id="hv-people"></div>
             <button class="btn small hv-add" type="button" id="hv-add">+ Add a second person</button>
-            <p class="hv-note">Targets are optional. Schools are a percentile within the state, safety is crimes per 1,000 residents a year, and walkability is the EPA's index from 1 to 20. A zip that meets a target gets full marks for it.</p>
           </form>
         </div>
 
@@ -147,16 +146,21 @@
       .hv-key.pick { background: var(--pick); }
       .hv-key.none { background: var(--hv-none); }
       .hv-key.list { width: 9px; height: 9px; border: 1.5px solid var(--text); border-radius: 1px; transform: rotate(45deg); }
-      .hv figcaption, .hv-note { margin-top: var(--space-2); color: var(--muted); font-size: var(--fs-xs); line-height: 1.6; }
+      .hv figcaption { margin-top: var(--space-2); color: var(--muted); font-size: var(--fs-xs); line-height: 1.6; }
       .hv-person { margin: 0 0 var(--space-3); padding: var(--space-3) var(--space-4) var(--space-4); border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); }
       .hv-person legend { padding: 0 var(--space-1); color: var(--label); font-size: var(--fs-2xs); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
-      .hv-row { display: grid; grid-template-columns: 92px minmax(0, 1fr) 34px 96px; align-items: center; gap: var(--space-2); margin-top: var(--space-2); font-size: var(--fs-sm); }
-      .hv-head { margin-top: 0; color: var(--muted); font-size: var(--fs-2xs); }
-      .hv-price { margin-top: var(--space-3); padding-top: var(--space-3); border-top: 1px solid var(--border); }
-      .hv-row input[type="range"] { width: 100%; accent-color: var(--pick); }
-      .hv-row output { color: var(--muted); text-align: right; }
-      .hv-row input[type="text"] { width: 100%; min-width: 0; padding: 4px 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--soft); color: var(--text); font: inherit; font-size: var(--fs-xs); }
-      .hv-row input[type="text"]::placeholder { color: var(--muted); opacity: 0.8; }
+      .hv-price { margin-top: var(--space-2); border-top-width: 2px; }
+      .hv-intro { margin: 0 0 var(--space-2); color: var(--muted); font-size: var(--fs-xs); line-height: 1.6; }
+      .hv-factor { padding: var(--space-3) 0; border-top: 1px solid var(--border); }
+      .hv-line { display: grid; grid-template-columns: 104px minmax(0, 1fr) 72px; align-items: center; gap: var(--space-3); font-size: var(--fs-sm); }
+      .hv-name { font-weight: 600; }
+      .hv-line input[type="range"] { width: 100%; accent-color: var(--pick); }
+      .hv-line output { color: var(--text); font-size: var(--fs-xs); text-align: right; }
+      .hv-hint { margin: var(--space-1) 0 0; color: var(--muted); font-size: var(--fs-xs); line-height: 1.5; }
+      .hv-must { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: var(--space-2); color: var(--muted); font-size: var(--fs-xs); }
+      .hv-must input { width: 72px; padding: 3px 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--soft); color: var(--text); font: inherit; }
+      .hv-must input.hv-wide { width: 90px; }
+      .hv-must input::placeholder { color: var(--muted); opacity: 0.7; }
       .hv-buttons { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-4); }
       .hv-add[hidden] { display: none; }
       .hv-list { margin-top: var(--space-6); }
@@ -166,7 +170,7 @@
       }
       @media (max-width: 420px) {
         .hv { padding: 0 var(--space-4); }
-        .hv-row { grid-template-columns: 78px minmax(0, 1fr) 30px 84px; gap: 6px; }
+        .hv-line { grid-template-columns: 92px minmax(0, 1fr) 64px; gap: var(--space-2); }
         .hv-list :is(th, td):nth-child(3) { display: none; }   /* the zip column; the map's tooltip has it */
       }
     </style>
