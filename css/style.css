@@ -238,21 +238,7 @@ a.card:hover { border-color: var(--accent); text-decoration: none; }
 .bar { height: 100%; border-radius: 999px; background: var(--accent); }
 .bar-value { color: var(--muted); text-align: right; }
 
-/* Activity heatmap: 13 week-columns of 7 days, like GitHub's */
-.heatmap {
-  display: grid;
-  grid-template-rows: repeat(7, 1fr);
-  grid-auto-flow: column;
-  grid-auto-columns: 1fr;
-  gap: 4px;
-  max-width: 420px;
-}
-.cell { aspect-ratio: 1; border-radius: 3px; background: var(--soft); }
-.cell[data-level="1"] { background: color-mix(in srgb, var(--accent) 30%, var(--soft)); }
-.cell[data-level="2"] { background: color-mix(in srgb, var(--accent) 55%, var(--soft)); }
-.cell[data-level="3"] { background: color-mix(in srgb, var(--accent) 78%, var(--soft)); }
-.cell[data-level="4"] { background: var(--accent); }
-.activity-summary { margin-top: 20px; font-size: 14px; }
+.activity-summary { font-size: 14px; }
 .latest { margin-top: 20px; padding: 0; list-style: none; font-size: 13px; }
 .latest li { padding: 8px 0; border-top: 1px solid var(--border); }
 .latest code { padding: 1px 6px; border-radius: 4px; background: var(--soft); font-family: inherit; font-size: 12px; }

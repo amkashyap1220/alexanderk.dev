@@ -6,7 +6,7 @@
                    the last 90 days of public activity
      2. TRANSFORM  skip forks, add up bytes per language, count commits,
                    bucket activity by day, weekday and hour
-     3. LOAD       draw the numbers, the language bars and the heatmap
+     3. LOAD       draw the numbers, the language bars and the activity summary
 
    The fetched data is saved in the browser for 30 minutes, because GitHub
    allows 60 requests an hour without a key.
@@ -212,32 +212,14 @@
   }
 
   function drawActivity(events) {
-    const grid = document.getElementById("heatmap");
     const summary = document.getElementById("activity-summary");
     const feed = document.getElementById("latest");
-    grid.textContent = summary.textContent = feed.textContent = "";
+    summary.textContent = feed.textContent = "";
     if (!events) return summary.append(el("p", "muted", "Couldn't load recent activity from GitHub right now."));
-
-    // 13 weeks of days, Sunday-first columns like GitHub, ending today
-    const counts = activityByDay(events);
-    const today = dayKey.format(new Date());
-    const [y, m, d] = today.split("-").map(Number);
-    const todayUTC = Date.UTC(y, m - 1, d);
-    const start = todayUTC - (new Date(todayUTC).getUTCDay() + 12 * 7) * 86400000;
-    const busiest = Math.max(1, ...Object.values(counts));
-    for (let t = start; t <= todayUTC; t += 86400000) {
-      const key = new Date(t).toISOString().slice(0, 10);
-      const n = counts[key] || 0;
-      const cell = el("span", "cell");
-      // 0 = empty; otherwise one of 4 shades, darker = busier
-      cell.dataset.level = n === 0 ? 0 : Math.ceil((n / busiest) * 4);
-      cell.title = key + ": " + n + (n === 1 ? " event" : " events");
-      grid.append(cell);
-    }
 
     if (!events.length) return summary.append(el("p", "muted", "No public activity in the last 90 days."));
 
-    const days = Object.keys(counts).length;
+    const days = Object.keys(activityByDay(events)).length;
     const day = mostCommon(events.map((e) => weekdayName.format(new Date(e.at))));
     const hour = Number(mostCommon(events.map((e) => hourOf.format(new Date(e.at)))));
     const clock = (h) => ((h + 11) % 12 + 1) + (h < 12 ? "am" : "pm");
