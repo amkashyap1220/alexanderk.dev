@@ -6,4 +6,4 @@ worker
 .assetsignore
 wrangler.jsonc
 README.md
-writing/_template.html
+research/_template.html

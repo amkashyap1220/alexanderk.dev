@@ -1,6 +1,6 @@
 # alexanderk.dev
 
-My personal site: about me, my projects, my writing, and stats from my GitHub.
+My personal site: about me, my projects, my research, and stats from my GitHub.
 
 **Live:** [alexanderk.dev](https://alexanderk.dev)
 

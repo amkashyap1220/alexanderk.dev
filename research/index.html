@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Writing · Alexander Kashyap</title>
+  <title>Research · Alexander Kashyap</title>
   <meta name="description" content="Articles and opinions by Alexander Kashyap.">
   <!-- Link previews (iMessage, Discord, Slack, LinkedIn, ...) -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Alexander Kashyap">
-  <meta property="og:title" content="Writing · Alexander Kashyap">
+  <meta property="og:title" content="Research · Alexander Kashyap">
   <meta property="og:description" content="Articles and opinions by Alexander Kashyap.">
-  <meta property="og:url" content="https://alexanderk.dev/writing/">
+  <meta property="og:url" content="https://alexanderk.dev/research/">
   <meta property="og:image" content="https://alexanderk.dev/og.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -33,7 +33,7 @@
       <nav class="site-nav" aria-label="Main">
         <a href="/">About</a>
         <a href="/projects/">Projects</a>
-        <a href="/writing/" aria-current="page">Writing</a>
+        <a href="/research/" aria-current="page">Research</a>
         <a href="/stats/"><span class="nav-long">GitHub </span>Stats</a>
       </nav>
       <div class="header-actions">
@@ -50,33 +50,48 @@
   <main id="main" tabindex="-1">
     <section class="hero">
       <div class="narrow">
-        <p class="eyebrow">Writing</p>
-        <h1>Writing</h1>
-        <p class="lead">Opinions, lessons learned, and things I'm thinking about as a developer.</p>
+        <p class="eyebrow">Research</p>
+        <h1>Research</h1>
+        <p class="lead">Data projects and what I found: the question, the method and the results.</p>
       </div>
     </section>
 
     <section class="section">
       <div class="narrow">
         <!-- To add a post:
-             1. Copy writing/_template.html to writing/<slug>.html and write it.
-             2. Add a link to it at the TOP of this list (newest first):
+             1. Copy research/_template.html to research/<slug>.html and write it.
+             2. Optional preview image: 1200 x 630, a light and a dark version
+                (research/<slug>.png and research/<slug>-dark.png). Leave out the
+                <span class="post-thumb"> block for a card without an image.
+             3. Add a card to the TOP of this list (newest first):
 
              <li>
-               <a class="post-link" href="/writing/<slug>.html">
-                 <time datetime="2026-10-20">Oct 20, 2026</time>
-                 <h2 class="post-title">Post title</h2>
-                 <p class="post-summary">One-sentence summary.</p>
+               <a class="post-card" href="/research/<slug>.html">
+                 <span class="post-thumb">
+                   <img class="thumb-light" src="/research/<slug>.png" alt="What the image shows" width="1200" height="630" loading="lazy">
+                   <img class="thumb-dark" src="/research/<slug>-dark.png" alt="What the image shows" width="1200" height="630" loading="lazy">
+                 </span>
+                 <span class="post-body">
+                   <time datetime="2026-10-20">Oct 20, 2026</time>
+                   <h2 class="post-title">Post title</h2>
+                   <span class="post-summary">One- or two-sentence summary.</span>
+                   <span class="chips"><span class="chip">Topic</span></span>
+                 </span>
                </a>
-             </li>
-
-             3. Delete the "No posts yet" paragraph below once there's a post. -->
+             </li> -->
         <ul class="posts">
           <li>
-            <a class="post-link" href="/writing/chicago-home-value.html">
-              <time datetime="2026-10-21">Oct 21, 2026</time>
-              <h2 class="post-title">Where is the best value in Chicagoland?</h2>
-              <p class="post-summary">An interactive map of the best-value Chicago-area zip codes to buy or rent, with your own targets and weights.</p>
+            <a class="post-card" href="/research/chicago-home-value.html">
+              <span class="post-thumb">
+                <img class="thumb-light" src="/research/chicago-home-value.png" alt="Map of Chicago-area zip codes colored from red (low score) to green (high score), with the 20 best-value zips outlined in blue" width="1200" height="630" loading="lazy">
+                <img class="thumb-dark" src="/research/chicago-home-value-dark.png" alt="Map of Chicago-area zip codes colored from red (low score) to green (high score), with the 20 best-value zips outlined in blue" width="1200" height="630" loading="lazy">
+              </span>
+              <span class="post-body">
+                <time datetime="2026-10-21">Oct 21, 2026</time>
+                <h2 class="post-title">Where is the best value in Chicagoland?</h2>
+                <span class="post-summary">An interactive map of the best-value Chicago-area zip codes to buy or rent, with your own targets and weights.</span>
+                <span class="chips"><span class="chip">Interactive map</span><span class="chip">Python</span><span class="chip">Census data</span></span>
+              </span>
             </a>
           </li>
         </ul>

@@ -1,0 +1,3 @@
+# The Writing section moved to Research
+/writing /research/ 301
+/writing/* /research/:splat 301
