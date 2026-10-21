@@ -11,9 +11,11 @@ index.html                     About: summary, experience, education, skills
 projects/index.html            Projects list 
 projects/<project>.html        One page per project: its GitHub README, then "How it works"
 writing/                       Writing: list of posts + _template.html for new ones
+stats/index.html               Stats: live numbers, languages and activity from GitHub
 css/style.css                  All styling (colors at the top, light and dark)
 js/theme.js                    Light/dark toggle
 js/github.js                   Fills in GitHub stats and READMEs
+js/stats.js                    Fetches and draws the Stats page
 wrangler.jsonc                 Cloudflare settings
 .assetsignore                  Keeps README, config, and .git off the live site
 ```
