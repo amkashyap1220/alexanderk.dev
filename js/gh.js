@@ -2,12 +2,12 @@
    gh.js: the small toolkit every GitHub-powered page shares.
    Loaded before js/github.js and js/stats.js; exposes window.GH.
 
-   - GH.cached(key, fetcher): looks in data/github.json first. A GitHub
-     Action saves that file a few times a day, so visitors don't call GitHub
-     at all (GitHub allows only 60 requests an hour per visitor). Anything
-     not in the file (say, a project added since the last run) is fetched
-     live, saved in the browser for 30 minutes, and shared between everyone
-     on the page who asks for it.
+   - GH.cached(key, fetcher): looks in /data/github.json first. The site's
+     Cloudflare script (worker/index.js) refreshes it every 5 minutes, so
+     visitors don't call GitHub at all (GitHub allows only 60 requests an
+     hour per visitor). Anything not in the file (say, a project added
+     since the last run) is fetched live, saved in the browser for 30
+     minutes, and shared between everyone on the page who asks for it.
    - GH.api(path): fetch from api.github.com; throws on an error status.
    - GH.repo / GH.commits / GH.languages / GH.readme: cached lookups, so
      the Projects and Stats pages reuse each other's data.
@@ -20,7 +20,7 @@
   const CACHE_MINUTES = 30;
   const inFlight = {};   // one shared request per key, for this page view
 
-  // Saved by .github/workflows/github-data.yml; keys match the ones below
+  // Served by worker/index.js; keys match the ones below
   let savedFile;
   const saved = () => savedFile = savedFile || fetch("/data/github.json")
     .then((res) => (res.ok ? res.json() : {}))
