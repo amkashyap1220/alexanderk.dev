@@ -17,6 +17,8 @@ js/theme.js                    Light/dark toggle
 js/gh.js                       Shared GitHub fetching + 30-minute cache
 js/github.js                   Fills in GitHub stats and READMEs
 js/stats.js                    Fetches and draws the Stats page
+data/github.json               GitHub numbers + READMEs, saved by the Action below (made on first run)
+.github/                       Action that refreshes data/github.json every 6 hours and on each push
 404.html, favicon*.svg         Not-found page and tab icons (light, dark)
 wrangler.jsonc                 Cloudflare settings
 .assetsignore                  Keeps README, config, and .git off the live site

@@ -2,9 +2,12 @@
    gh.js: the small toolkit every GitHub-powered page shares.
    Loaded before js/github.js and js/stats.js; exposes window.GH.
 
-   - GH.cached(key, fetcher): runs fetcher() once, saves the answer in the
-     browser for 30 minutes (GitHub allows 60 requests an hour without a
-     key), and shares one in-flight request between everyone who asks.
+   - GH.cached(key, fetcher): looks in data/github.json first. A GitHub
+     Action saves that file a few times a day, so visitors don't call GitHub
+     at all (GitHub allows only 60 requests an hour per visitor). Anything
+     not in the file (say, a project added since the last run) is fetched
+     live, saved in the browser for 30 minutes, and shared between everyone
+     on the page who asks for it.
    - GH.api(path): fetch from api.github.com; throws on an error status.
    - GH.repo / GH.commits / GH.languages / GH.readme: cached lookups, so
      the Projects and Stats pages reuse each other's data.
@@ -17,11 +20,21 @@
   const CACHE_MINUTES = 30;
   const inFlight = {};   // one shared request per key, for this page view
 
+  // Saved by .github/workflows/github-data.yml; keys match the ones below
+  let savedFile;
+  const saved = () => savedFile = savedFile || fetch("/data/github.json")
+    .then((res) => (res.ok ? res.json() : {}))
+    .catch(() => ({}));   // no file yet: everything is fetched live
+
   function cached(key, fetcher) {
-    key = "gh:" + key.toLowerCase();
+    key = key.toLowerCase();
+    return saved().then((file) => (key in file ? file[key] : live("gh:" + key, fetcher)));
+  }
+
+  function live(key, fetcher) {
     try {
-      const saved = JSON.parse(localStorage.getItem(key));
-      if (saved && Date.now() - saved.time < CACHE_MINUTES * 60 * 1000) return Promise.resolve(saved.data);
+      const stored = JSON.parse(localStorage.getItem(key));
+      if (stored && Date.now() - stored.time < CACHE_MINUTES * 60 * 1000) return Promise.resolve(stored.data);
     } catch (e) { /* storage blocked: just fetch */ }
 
     inFlight[key] = inFlight[key] || fetcher()
