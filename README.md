@@ -8,9 +8,9 @@ My personal site: my resume and projects, in a full-page terminal that works lik
 
 ```
 ls                     list files (ls -la for details)
-cat resume.txt         view my resume
+cat resume.md          print my resume
 cd projects            go into a folder (cd .., cd ~, cd -)
-cat README.txt         view a project, from inside its folder
+cat README.md          read about a project, from inside its folder
 open linkedin.webloc   open a link in a new tab (github.webloc too)
 ```
 
@@ -19,10 +19,11 @@ Also: `pwd`, `history`, `clear` (Ctrl+L), `man <command>`, `echo`, `date`, `git 
 ## Files
 
 ```
-index.html       The page, plus every file's contents in <template> tags
+index.html       The page
 css/style.css    All styling (colors at the top)
 js/terminal.js   The terminal: pretend filesystem, commands, prompt
 js/github.js     Live GitHub star / commit counts
+files/           The Markdown files you can `cat` (resume, project READMEs)
 wrangler.jsonc   Cloudflare settings
 .assetsignore    Keeps README, config, and .git off the live site
 ```
@@ -34,20 +35,21 @@ No frameworks, no build step, nothing to install.
 - **Pretend filesystem.** `js/terminal.js` lists the folders and files at the top (`DIRS` and `FILES`):
 
   ```
-  ~/resume.txt  github.webloc  linkedin.webloc
-  ~/projects/<project>/README.txt  github.webloc
+  ~/resume.md  github.webloc  linkedin.webloc
+  ~/projects/<project>/README.md  github.webloc
   ```
 
-- **`cat`** shows a file by copying its `<template>` from `index.html` into a viewer card.
+- **`cat`** prints a file's raw text, exactly like `cat` on a Mac. The `.md` files are real files in `files/`, loaded when the page opens.
 - **`.webloc`** files are macOS website shortcuts. `open` opens them in a new tab. `open` on a text file points you to `cat`, since a real Mac would launch a text editor.
 - **One page, no reloads.** `cd` just changes the current folder and updates the address bar (for example `/projects/switch-to-youtube`), so links can be shared. Cloudflare serves `index.html` for every address (`single-page-application` mode in `wrangler.jsonc`), and the terminal starts in the matching folder.
 
 ## Editing
 
-- **Resume or a project write-up:** edit its `<template>` in `index.html`.
+- **Resume or a project write-up:** edit its `.md` file in `files/`.
 - **Add a project:**
   1. Add it to `PROJECTS` at the top of `js/terminal.js`.
-  2. In `index.html`, add a `<template id="tpl-readme-<slug>">` (copy an existing one) and a row in `tpl-projects-table`.
+  2. Write `files/projects/<slug>/README.md`.
+  3. Add a row to `tpl-projects-table` in `index.html`.
 - **Colors:** change the variables at the top of `css/style.css`.
 
 ## Run locally
@@ -60,7 +62,7 @@ Then open http://localhost:8000. (Locally only `/` works on reload; addresses li
 
 ## Privacy
 
-No phone number, email, street address, or resume download is published. The resume's phone and email are shown as redaction bars.
+No phone number, email, street address, or resume download is published. In `files/resume.md` the phone and email are replaced with █ blocks.
 
 ## Deployment
 

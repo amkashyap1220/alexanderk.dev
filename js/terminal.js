@@ -3,16 +3,17 @@
 
    The site is navigated only by typing. There's a pretend filesystem:
 
-     ~/resume.txt  github.webloc  linkedin.webloc
-     ~/projects/<project>/README.txt  github.webloc
+     ~/resume.md  github.webloc  linkedin.webloc
+     ~/projects/<project>/README.md  github.webloc
 
-   - `cat` shows a file using its <template id="tpl-..."> from index.html.
+   - `cat` prints a file's raw text, like a real terminal. The .md files
+     live in the files/ folder and are loaded when the page opens.
    - `open` opens .webloc files (macOS website shortcuts) in a new tab.
    - `cd` changes directory without reloading the page, and updates the
      address bar (e.g. /projects/switch-to-youtube) so links can be shared.
 
-   To add a project: add it to PROJECTS below, then add a
-   <template id="tpl-readme-SLUG"> and a table row in index.html.
+   To add a project: add it to PROJECTS below, write
+   files/projects/SLUG/README.md, and add a table row in index.html.
    ========================================================================== */
 
 (function () {
@@ -30,14 +31,14 @@
 
   // ---------------------------------------------------------------- the filesystem
   // DIRS: each directory and what's in it (in the order `ls` shows).
-  // FILES: each file. Text files point to a template; .webloc files hold a link.
+  // FILES: each file. Text files say where their .md file is (src); .webloc files hold a link.
   // URLS: the address-bar path for each directory.
   const DIRS = {
-    "~": ["resume.txt", "projects", "github.webloc", "linkedin.webloc"],
+    "~": ["resume.md", "projects", "github.webloc", "linkedin.webloc"],
     "~/projects": PROJECTS.map((p) => p.slug),
   };
   const FILES = {
-    "~/resume.txt": { template: "resume" },
+    "~/resume.md": { src: "/files/resume.md" },
     "~/github.webloc": { link: GITHUB, label: "GitHub" },
     "~/linkedin.webloc": { link: LINKEDIN, label: "LinkedIn" },
   };
@@ -45,8 +46,8 @@
 
   PROJECTS.forEach((p) => {
     const dir = "~/projects/" + p.slug;
-    DIRS[dir] = ["README.txt", "github.webloc"];
-    FILES[dir + "/README.txt"] = { template: "readme-" + p.slug };
+    DIRS[dir] = ["README.md", "github.webloc"];
+    FILES[dir + "/README.md"] = { src: "/files/projects/" + p.slug + "/README.md" };
     FILES[dir + "/github.webloc"] = { link: p.repo, label: p.repo.replace("https://", "") };
     URLS[dir] = "/projects/" + p.slug;
   });
@@ -62,7 +63,7 @@
   let cwd = "~";        // current directory
   let oldpwd = null;    // previous directory, for `cd -`
 
-  // Turns what the visitor typed (like "../resume.txt" or "~/projects") into a full path.
+  // Turns what the visitor typed (like "../resume.md" or "~/projects") into a full path.
   // Returns { path: "~/..." } for anything inside ~, or { outside: "/..." } for anything above it.
   function resolve(typed) {
     let p = (typed || "").trim();
@@ -122,27 +123,15 @@
     if (window.GH) window.GH.fill(wrapper);
   }
 
-  // `cat` output: the file's template inside a viewer card with a "File: name" bar
-  function printFile(path) {
-    const body = document.createElement("div");
-    body.className = "doc-body";
-    body.append(document.getElementById("tpl-" + FILES[path].template).content.cloneNode(true));
-
-    // size shown in the bar: count the visible text only, not the HTML indentation
-    const lines = body.textContent.split("\n").map((l) => l.trim()).filter(Boolean);
-    const kb = (new Blob([lines.join("\n")]).size / 1024).toFixed(1);
-
-    const bar = document.createElement("header");
-    bar.className = "doc-bar";
-    const name = span("", "");
-    name.append(span("File: ", "d"), span(path.split("/").pop(), "w b"));
-    bar.append(name, span(lines.length + " lines · " + kb + " KB · UTF-8", "d"));
-
-    const card = document.createElement("article");
-    card.className = "doc";
-    card.append(bar, body);
-    printElement(card);
+  // What a .webloc file really contains: a small Apple XML file holding one URL
+  function weblocText(link) {
+    return '<?xml version="1.0" encoding="UTF-8"?>\n' +
+      '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n' +
+      '<plist version="1.0">\n<dict>\n\t<key>URL</key>\n\t<string>' + link + '</string>\n</dict>\n</plist>\n';
   }
+
+  // A file's text: .md files were loaded at start up, .webloc files are built from their link
+  const fileText = (path) => (FILES[path].link ? weblocText(FILES[path].link) : FILES[path].text);
 
   // The colored prompt: alexander@alexanderk-dev ~/projects git:(main) %
   function promptFor(dir) {
@@ -194,7 +183,7 @@
     names.forEach((name) => {
       const folder = name === "." || name === ".." || isDir(dir + "/" + name);
       print([folder ? "drwxr-xr-x" : "-rw-r--r--", "d"], "  ", [USER, "y"], "  ", ["staff", "d"], "  ",
-        (folder ? "96" : "1024").padStart(6), "  ", ["Oct 20 2026", "d"], "  ", coloredName(dir, name));
+        String(folder ? 96 : new Blob([fileText(dir + "/" + name)]).size).padStart(6), "  ", ["Oct 20 2026", "d"], "  ", coloredName(dir, name));
     });
   }
 
@@ -204,7 +193,7 @@
   const MANUAL = {
     ls: ["ls [-la] [dir]", "list files"],
     cd: ["cd <dir>", "change directory (cd projects, cd .., cd ~, cd -)"],
-    cat: ["cat <file>", "view a file (cat resume.txt)"],
+    cat: ["cat <file>", "print a file (cat resume.md)"],
     open: ["open <file>", "open a link in a new tab (open linkedin.webloc)"],
     pwd: ["pwd", "print the current directory"],
     history: ["history", "commands you've run"],
@@ -253,23 +242,15 @@
     },
 
     cat(args) {
-      if (!args.length) return print(["usage: cat <file>   ", "r"], ["(try: cat resume.txt)", "d"]);
+      if (!args.length) return print(["usage: cat <file>   ", "r"], ["(try: cat resume.md)", "d"]);
       args.forEach((t) => {
         const r = resolve(t);
         if (r.outside) return printError("cat: " + t + ": Permission denied");
         if (isDir(r.path)) return printError("cat: " + t + ": Is a directory");
         if (!isFile(r.path)) return printError("cat: " + t + ": No such file or directory");
-        const file = FILES[r.path];
-        if (file.template) return printFile(r.path);
-        // A .webloc file is a small XML file holding one URL; show it as it really looks
-        print(['<?xml version="1.0" encoding="UTF-8"?>', "d"]);
-        print(['<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">', "d"]);
-        print(['<plist version="1.0">', "d"]);
-        print(["<dict>", "d"]);
-        print(["    <key>", "d"], ["URL", "y"], ["</key>", "d"]);
-        print(["    <string>", "d"], [file.link, "c"], ["</string>", "d"]);
-        print(["</dict>", "d"]);
-        print(["</plist>", "d"]);
+        const text = fileText(r.path);
+        if (text == null) return printError("cat: " + t + ": Input/output error");   // couldn't be loaded
+        print(text.replace(/\n$/, ""));      // plain text, exactly as it is in the file
       });
     },
 
@@ -509,6 +490,17 @@
     return weekday + " " + month + " " + String(d.getDate()).padStart(2) + " " + time + (full ? " " + zone + " " + year : "");
   }
 
+  // Load every .md file first, so `cat` can print them right away
+  async function loadFiles() {
+    await Promise.all(Object.values(FILES).filter((f) => f.src).map(async (f) => {
+      try {
+        const res = await fetch(f.src);
+        // (a missing file comes back as the site's index.html, so skip anything that's HTML)
+        if (res.ok && !(res.headers.get("Content-Type") || "").includes("html")) f.text = await res.text();
+      } catch (e) { /* offline: cat will say it couldn't read the file */ }
+    }));
+  }
+
   print("Last login: " + dateString(false) + " on ttys000");
 
   // Open in the directory the address points to, so shared links like /projects/... work
@@ -518,7 +510,9 @@
   oldpwd = null;
   if (!startDir) printError("zsh: no such file or directory: " + path);
 
-  line.classList.remove("off");
-  if (window.matchMedia("(pointer: fine)").matches) input.focus({ preventScroll: true });
-  drawInput();
+  loadFiles().then(() => {
+    line.classList.remove("off");
+    if (window.matchMedia("(pointer: fine)").matches) input.focus({ preventScroll: true });
+    drawInput();
+  });
 })();
