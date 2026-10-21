@@ -219,6 +219,45 @@ a.card:hover { border-color: var(--accent); text-decoration: none; }
 .empty { padding: 32px; border: 1px dashed var(--border); border-radius: 8px; color: var(--muted); font-size: 14px; text-align: center; }
 
 
+/* ---------- Stats page ---------- */
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.stat { padding: 20px 16px; text-align: center; }
+.card .stat-value { margin: 0; color: var(--text); font-size: 30px; font-weight: 700; letter-spacing: -0.025em; }
+.card .stat-label { margin-top: 2px; font-size: 12px; }
+.highlights { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 32px; margin-top: 24px; font-size: 14px; }
+
+/* "By code size / By repos" switch */
+.toggle { display: inline-flex; gap: 6px; margin-bottom: 24px; }
+.toggle .btn[aria-pressed="true"] { border-color: var(--text); color: var(--text); background: transparent; }
+
+/* Language bars: name | bar | value */
+.bar-row { display: grid; grid-template-columns: 130px 1fr 110px; align-items: center; gap: 14px; font-size: 13px; }
+.bar-row + .bar-row { margin-top: 10px; }
+.bar-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bar-track { height: 10px; border-radius: 999px; background: var(--soft); }
+.bar { height: 100%; border-radius: 999px; background: var(--accent); }
+.bar-value { color: var(--muted); text-align: right; }
+
+/* Activity heatmap: 13 week-columns of 7 days, like GitHub's */
+.heatmap {
+  display: grid;
+  grid-template-rows: repeat(7, 1fr);
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 4px;
+  max-width: 420px;
+}
+.cell { aspect-ratio: 1; border-radius: 3px; background: var(--soft); }
+.cell[data-level="1"] { background: color-mix(in srgb, var(--accent) 30%, var(--soft)); }
+.cell[data-level="2"] { background: color-mix(in srgb, var(--accent) 55%, var(--soft)); }
+.cell[data-level="3"] { background: color-mix(in srgb, var(--accent) 78%, var(--soft)); }
+.cell[data-level="4"] { background: var(--accent); }
+.activity-summary { margin-top: 20px; font-size: 14px; }
+.latest { margin-top: 20px; padding: 0; list-style: none; font-size: 13px; }
+.latest li { padding: 8px 0; border-top: 1px solid var(--border); }
+.latest code { padding: 1px 6px; border-radius: 4px; background: var(--soft); font-family: inherit; font-size: 12px; }
+
+
 /* ---------- Footer ---------- */
 .site-footer { padding: 32px 0; border-top: 1px solid var(--border); color: var(--muted); font-size: 12px; }
 .site-footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; }
@@ -230,13 +269,17 @@ a.card:hover { border-color: var(--accent); text-decoration: none; }
 @media (max-width: 640px) {
   .site-header nav a { padding: 6px 8px; }
   .site-header .name { display: none; }
-  .site-header nav { margin: 0 auto 0 0; }
+  .site-header nav { gap: 0; margin: 0 auto 0 0; }
+  .header-actions .btn { display: none; }   /* GitHub is still in the footer */
   .hero { padding: 64px 0 48px; }
   .hero h1 { font-size: 34px; }
   .section { padding: 56px 0; }
   .section h2 { font-size: 24px; }
   .post-link { grid-template-columns: 1fr; }
   .post-link p { grid-column: auto; }
+  .bar-row { grid-template-columns: 90px 1fr 80px; gap: 10px; }
+  .stat-grid { grid-template-columns: 1fr 1fr; }
+  .stat:last-child:nth-child(odd) { grid-column: 1 / -1; }   /* no lonely half-width tile at the end */
 }
 
 /* Theme toggle: show the sun in light mode, the moon in dark mode */
