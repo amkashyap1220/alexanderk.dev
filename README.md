@@ -4,4 +4,4 @@ My personal site: about me, my projects, my writing, and stats from my GitHub.
 
 **Live:** [alexanderk.dev](https://alexanderk.dev)
 
-Plain HTML, CSS and JavaScript, hosted on Cloudflare. How it's built will be in the walkthrough on its [project page](https://alexanderk.dev/projects/alexanderk-dev).
+Plain HTML, CSS and JavaScript, hosted on Cloudflare.
