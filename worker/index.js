@@ -15,8 +15,8 @@
    GraphQL query covers all repos; a README is only re-fetched when it
    changed) and 1,000 KV writes a day (it only saves when something changed).
 
-   The keys and shapes match the cache keys in js/gh.js, so the browser can
-   use the file as is; anything missing there is fetched live by the browser.
+   The keys and shapes are what js/gh.js looks up, so the browser can use
+   the file as is.
    ========================================================================== */
 
 const USER = "amkashyap1220";

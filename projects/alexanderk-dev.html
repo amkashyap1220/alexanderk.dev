@@ -81,12 +81,104 @@
     <section class="section" id="walkthrough">
       <div class="narrow">
         <h2 class="section-title">Walkthrough</h2>
-        <!-- ============================================================
-             YOUR SECTION. Put your own HTML here. For styles and scripts
-             that only this page uses, add them below (in <style> and
-             <script> tags) or link your own files.
-             ============================================================ -->
-        <p class="muted">Work in progress.</p>
+        <p class="section-intro">How this site works, from the files you see in the repo to the live GitHub numbers. You'll want to know basic HTML, CSS and JavaScript going in.</p>
+
+        <div class="prose">
+          <h3>1. The big picture</h3>
+          <p>The site is almost entirely <b>plain files</b>: HTML pages, one CSS file and a few JavaScript files. There's no framework (like React) and no build step, so the files in the repo are exactly what your browser downloads.</p>
+          <p>The one exception is a small script that runs on Cloudflare and keeps the GitHub numbers up to date. Here's how a visit works:</p>
+<pre><code>your browser ──asks for a page──► Cloudflare ──► the HTML, CSS and JS files
+     │
+     └─asks for /data/github.json─► Cloudflare script ──► saved GitHub data
+                                         ▲
+                       every 5 minutes: asks GitHub for fresh numbers</code></pre>
+
+          <h3>2. The files</h3>
+          <table>
+            <thead><tr><th>File</th><th>What it does</th></tr></thead>
+            <tbody>
+              <tr><td><code>index.html</code></td><td>The About page</td></tr>
+              <tr><td><code>projects/</code></td><td>The Projects list, plus one page per project</td></tr>
+              <tr><td><code>stats/</code>, <code>writing/</code></td><td>The GitHub Stats and Writing pages</td></tr>
+              <tr><td><code>css/style.css</code></td><td>All the styling for every page</td></tr>
+              <tr><td><code>js/theme.js</code></td><td>Light and dark mode</td></tr>
+              <tr><td><code>js/gh.js</code>, <code>js/github.js</code>, <code>js/stats.js</code></td><td>Fill in the GitHub numbers, READMEs and the Stats page</td></tr>
+              <tr><td><code>worker/index.js</code></td><td>The Cloudflare script that fetches from GitHub</td></tr>
+              <tr><td><code>wrangler.jsonc</code></td><td>Cloudflare settings</td></tr>
+            </tbody>
+          </table>
+
+          <h3>3. Styling and dark mode</h3>
+          <p>Every color, space and font size is defined once, as a <b>CSS variable</b> at the top of <code>style.css</code>. The rest of the stylesheet only uses the variables. Dark mode is then just a second set of values for the same variables:</p>
+<pre><code>:root      { --bg: #eeeeec; --text: #2e3436; }   /* light */
+:root.dark { --bg: #2e3436; --text: #eeeeec; }   /* dark */
+
+body { background: var(--bg); color: var(--text); }</code></pre>
+          <p>Switching themes means adding or removing one class, <code>dark</code>, on the page. <code>theme.js</code> does that. It runs before the page is drawn, so there's no flash of the wrong theme. It uses the theme you picked with the toggle if you've picked one, and otherwise follows your device's light or dark setting:</p>
+<pre><code>const saved = localStorage.getItem("theme");          // "dark", "light" or nothing
+const deviceIsDark = matchMedia("(prefers-color-scheme: dark)").matches;
+const theme = saved || (deviceIsDark ? "dark" : "light");
+document.documentElement.classList.toggle("dark", theme === "dark");</code></pre>
+          <p>The colors come from Tango, the palette used by GNOME and most Linux terminals.</p>
+
+          <h3>4. Live GitHub numbers</h3>
+          <p>The stars, commits and languages on the project cards come from GitHub. The obvious approach is to have each visitor's browser ask GitHub directly. The catch: GitHub only allows <b>60 requests an hour</b> per visitor without a key, and the Stats page alone needs dozens. Reload a few times and the numbers stop loading.</p>
+          <p>The fix is to have <b>one</b> program ask GitHub on everyone's behalf and share the answer. That program is a Cloudflare <b>Worker</b>, a small script that runs on Cloudflare's servers. Cloudflare starts it every 5 minutes:</p>
+<pre><code>// wrangler.jsonc
+"triggers": { "crons": ["*/5 * * * *"] }</code></pre>
+          <p>Each run, the Worker:</p>
+          <ol>
+            <li>Asks GitHub for every repo's stars, commits, languages and last update, all in one request (a GraphQL query).</li>
+            <li>Gets recent activity, plus any README that changed since last time.</li>
+            <li>Saves everything as one JSON file in Cloudflare's storage (KV), but only if something changed.</li>
+          </ol>
+          <p>When a browser asks for <code>/data/github.json</code>, the Worker hands back that saved file. Every other address is a normal file:</p>
+<pre><code>async fetch(request, env) {
+  const url = new URL(request.url);
+  // any other address: a normal file
+  if (url.pathname !== "/data/github.json") return env.ASSETS.fetch(request);
+  // the data file: the saved GitHub data
+  const body = await env.GITHUB_DATA.get("github.json");
+  return new Response(body, { headers: { "Content-Type": "application/json" } });
+}</code></pre>
+          <p>On the pages, each number starts as a placeholder that says which repo and which number it wants:</p>
+<pre><code>&lt;b data-gh="amkashyap1220/SwitchToYoutube" data-field="stars"&gt;--&lt;/b&gt;</code></pre>
+          <p><code>github.js</code> finds every placeholder, looks the repo up in the data file, and fills in the number:</p>
+<pre><code>document.querySelectorAll("[data-gh]").forEach((el) =&gt; {
+  repo(el.dataset.gh).then((data) =&gt; {
+    el.textContent = data[el.dataset.field];
+  });
+});</code></pre>
+          <p>Now visitors' browsers never talk to GitHub at all, and the numbers are never more than about 5 minutes old.</p>
+
+          <h3>5. The Stats page is a small data pipeline</h3>
+          <p><code>stats.js</code> is organized like an <b>ETL</b> job, the extract-transform-load pattern data engineers use everywhere:</p>
+          <ul>
+            <li><b>Extract:</b> read the repos, languages and activity from the data file.</li>
+            <li><b>Transform:</b> add up totals, like bytes of code per language across every repo, or the busiest weekday.</li>
+            <li><b>Load:</b> draw the results: the number tiles, the language bars and the activity summary.</li>
+          </ul>
+          <p>For example, here's the transform step that totals up languages:</p>
+<pre><code>function languageTotals(repos) {
+  const totals = {};
+  repos.forEach((r) =&gt; {
+    Object.entries(r.languages).forEach(([lang, bytes]) =&gt; {
+      totals[lang] = totals[lang] || { name: lang, bytes: 0, repos: 0 };
+      totals[lang].bytes += bytes;    // how much code
+      totals[lang].repos += 1;        // how many repos use it
+    });
+  });
+  return Object.values(totals);
+}</code></pre>
+
+          <h3>6. Shipping changes</h3>
+          <p>The repo is connected to Cloudflare, so <b>every push to <code>main</code> deploys the site</b> automatically. Cloudflare runs <code>npx wrangler deploy</code>, which uploads the files and the Worker. It's live in under a minute.</p>
+          <p>Changes don't go straight to <code>main</code>, though. Each one goes on its own branch with a pull request. Cloudflare builds a preview of the branch, and it gets merged once it looks right:</p>
+<pre><code>git checkout -b add-new-project     # new branch
+# ...make changes...
+git push -u origin add-new-project  # Cloudflare builds a preview
+# open a pull request, check the preview, merge → live</code></pre>
+        </div>
       </div>
     </section>
   </main>
