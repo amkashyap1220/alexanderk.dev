@@ -27,6 +27,11 @@
   --label: #8f5902;           /* chocolate 3: eyebrows, taglines, company names */
   --mark: #4e9a06;            /* chameleon 3: bullets, quote bars */
   --star: #ce5c00;            /* orange 3: GitHub stars */
+  /* code highlighting: only Tango shades that pass AA on the code background */
+  --code-keyword: #204a87;    /* sky blue 3 */
+  --code-string: #75507b;     /* plum 2 */
+  --code-number: #cc0000;     /* scarlet red 2 */
+  --code-function: #8f5902;   /* chocolate 3 */
   color-scheme: light;
 
   /* spacing scale */
@@ -77,6 +82,10 @@
   --label: #e9b96e;           /* chocolate 1 */
   --mark: #8ae234;            /* chameleon 1 */
   --star: #fce94f;            /* butter 1 */
+  --code-keyword: #fcaf3e;    /* orange 1 */
+  --code-string: #8ae234;     /* chameleon 1 */
+  --code-number: #fce94f;     /* butter 1 */
+  --code-function: #e9b96e;   /* chocolate 1 */
   color-scheme: dark;
 }
 
@@ -302,6 +311,12 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
 .prose ul, .prose ol { padding-left: 22px; }
 .prose img { max-width: 100%; height: auto; border-radius: var(--radius); }
 .prose pre { overflow-x: auto; padding: 14px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--soft); font-size: var(--fs-sm); }
+/* Code highlighting: Prism's classes (walkthroughs, posts) and GitHub's (READMEs) */
+.token.comment, .token.prolog, .token.doctype, .pl-c { color: var(--muted); font-style: italic; }
+.token.keyword, .token.atrule, .token.selector, .token.tag, .pl-k { color: var(--code-keyword); }
+.token.string, .token.char, .token.attr-value, .token.regex, .pl-s { color: var(--code-string); }
+.token.number, .token.boolean, .token.constant, .token.property, .pl-c1 { color: var(--code-number); }
+.token.function, .token.class-name, .token.attr-name, .token.builtin, .pl-en, .pl-smi { color: var(--code-function); }
 .prose table { display: block; max-width: 100%; overflow-x: auto; border-collapse: collapse; font-size: var(--fs-sm); }   /* wide tables scroll in place */
 .prose th { color: var(--muted); font-size: var(--fs-2xs); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; text-align: left; }
 .prose th, .prose td { padding: var(--space-2) 14px var(--space-2) 0; border-bottom: 1px solid var(--border); }
