@@ -1,7 +1,7 @@
 {
  "commits:amkashyap1220/466finalproject": 47,
  "commits:amkashyap1220/467proj": 6,
- "commits:amkashyap1220/alexanderk.dev": 92,
+ "commits:amkashyap1220/alexanderk.dev": 93,
  "commits:amkashyap1220/amkashyap1220.github.io": 3,
  "commits:amkashyap1220/aws-ccp-study-app": 3,
  "commits:amkashyap1220/beauty-system": 2,
@@ -674,7 +674,7 @@
  "languages:amkashyap1220/alexanderk.dev": {
   "CSS": 17599,
   "HTML": 114890,
-  "JavaScript": 24694
+  "JavaScript": 25299
  },
  "languages:amkashyap1220/amkashyap1220.github.io": {
   "HTML": 159
@@ -755,127 +755,127 @@
   "commits": 47,
   "language": "PHP",
   "pushed": "2026-10-21T04:40:20Z",
-  "stars": 1
+  "stars": 2
  },
  "repo:amkashyap1220/467proj": {
   "commits": 6,
   "language": "JavaScript",
   "pushed": "2023-04-06T23:28:31Z",
-  "stars": 0
+  "stars": 1
  },
  "repo:amkashyap1220/alexanderk.dev": {
-  "commits": 92,
+  "commits": 93,
   "language": "HTML",
-  "pushed": "2026-10-21T13:17:57Z",
-  "stars": 1
+  "pushed": "2026-10-21T13:18:30Z",
+  "stars": 2
  },
  "repo:amkashyap1220/amkashyap1220.github.io": {
   "commits": 3,
   "language": "HTML",
   "pushed": "2022-03-13T21:17:59Z",
-  "stars": 0
+  "stars": 1
  },
  "repo:amkashyap1220/aws-ccp-study-app": {
   "commits": 3,
   "language": null,
   "pushed": "2024-05-15T19:18:03Z",
-  "stars": 0
+  "stars": 1
  },
  "repo:amkashyap1220/beauty-system": {
   "commits": 2,
   "language": "HTML",
   "pushed": "2022-03-12T18:37:13Z",
-  "stars": 0
+  "stars": 1
  },
  "repo:amkashyap1220/cnit-255-kashyap": {
   "commits": 4,
   "language": "Java",
   "pushed": "2020-12-11T21:18:57Z",
-  "stars": 0
+  "stars": 1
  },
  "repo:amkashyap1220/cosmishapesfinal": {
   "commits": 3,
   "language": "C#",
   "pushed": "2020-12-06T16:01:21Z",
-  "stars": 0
+  "stars": 1
  },
  "repo:amkashyap1220/csci-240-computer-programming-in-cpp": {
   "commits": 45,
   "language": "C++",
   "pushed": "2026-10-21T05:04:13Z",
-  "stars": 1
+  "stars": 2
  },
  "repo:amkashyap1220/csci-241-intermediate-programming": {
   "commits": 58,
   "language": "C++",
   "pushed": "2021-04-24T18:26:01Z",
-  "stars": 0
+  "stars": 1
  },
  "repo:amkashyap1220/csci-330-unix-and-network-programming": {
   "commits": 21,
   "language": "C++",
   "pushed": "2021-04-09T22:12:32Z",
-  "stars": 0
+  "stars": 1
  },
  "repo:amkashyap1220/csci467proj": {
   "commits": 2,
   "language": null,
   "pushed": "2022-09-13T16:17:02Z",
-  "stars": 0
+  "stars": 1
  },
  "repo:amkashyap1220/dotnet": {
   "commits": 3,
   "language": "JavaScript",
   "pushed": "2026-10-21T05:12:38Z",
-  "stars": 0
+  "stars": 1
  },
  "repo:amkashyap1220/gaps-between-the-primes": {
   "commits": 8,
   "language": "C++",
   "pushed": "2026-10-21T03:12:16Z",
-  "stars": 1
+  "stars": 2
  },
  "repo:amkashyap1220/movietracker": {
   "commits": 2,
   "language": null,
   "pushed": "2024-11-19T19:10:30Z",
-  "stars": 0
+  "stars": 1
  },
  "repo:amkashyap1220/oldman-final-project": {
   "commits": 95,
   "language": "Java",
   "pushed": "2020-12-11T21:17:28Z",
-  "stars": 0
+  "stars": 1
  },
  "repo:amkashyap1220/projectboaz": {
   "commits": 4,
   "language": null,
   "pushed": "2026-10-16T20:50:06Z",
-  "stars": 1
+  "stars": 2
  },
  "repo:amkashyap1220/python-tictactoe": {
   "commits": 1,
   "language": "Python",
   "pushed": "2021-06-06T17:12:51Z",
-  "stars": 0
+  "stars": 1
  },
  "repo:amkashyap1220/ratewillbot": {
   "commits": 8,
   "language": "Python",
   "pushed": "2026-10-21T04:40:28Z",
-  "stars": 0
+  "stars": 1
  },
  "repo:amkashyap1220/simpleredditbot": {
   "commits": 8,
   "language": "Python",
   "pushed": "2020-12-10T21:04:48Z",
-  "stars": 0
+  "stars": 1
  },
  "repo:amkashyap1220/switchtoyoutube": {
   "commits": 3,
   "language": "Python",
   "pushed": "2026-10-20T19:49:52Z",
-  "stars": 1
+  "stars": 2
  },
  "repo:kashyap6/collegeexperience": {
   "commits": 63,
@@ -888,147 +888,147 @@
    "fullName": "amkashyap1220/466FinalProject",
    "name": "466FinalProject",
    "pushed": "2026-10-21T04:40:20Z",
-   "stars": 1,
+   "stars": 2,
    "url": "https://github.com/amkashyap1220/466FinalProject"
   },
   {
    "fullName": "amkashyap1220/467Proj",
    "name": "467Proj",
    "pushed": "2023-04-06T23:28:31Z",
-   "stars": 0,
+   "stars": 1,
    "url": "https://github.com/amkashyap1220/467Proj"
   },
   {
    "fullName": "amkashyap1220/alexanderk.dev",
    "name": "alexanderk.dev",
-   "pushed": "2026-10-21T13:17:57Z",
-   "stars": 1,
+   "pushed": "2026-10-21T13:18:30Z",
+   "stars": 2,
    "url": "https://github.com/amkashyap1220/alexanderk.dev"
   },
   {
    "fullName": "amkashyap1220/amkashyap1220.github.io",
    "name": "amkashyap1220.github.io",
    "pushed": "2022-03-13T21:17:59Z",
-   "stars": 0,
+   "stars": 1,
    "url": "https://github.com/amkashyap1220/amkashyap1220.github.io"
   },
   {
    "fullName": "amkashyap1220/aws-ccp-study-app",
    "name": "aws-ccp-study-app",
    "pushed": "2024-05-15T19:18:03Z",
-   "stars": 0,
+   "stars": 1,
    "url": "https://github.com/amkashyap1220/aws-ccp-study-app"
   },
   {
    "fullName": "amkashyap1220/beauty-system",
    "name": "beauty-system",
    "pushed": "2022-03-12T18:37:13Z",
-   "stars": 0,
+   "stars": 1,
    "url": "https://github.com/amkashyap1220/beauty-system"
   },
   {
    "fullName": "amkashyap1220/CNIT-255-Kashyap",
    "name": "CNIT-255-Kashyap",
    "pushed": "2020-12-11T21:18:57Z",
-   "stars": 0,
+   "stars": 1,
    "url": "https://github.com/amkashyap1220/CNIT-255-Kashyap"
   },
   {
    "fullName": "amkashyap1220/CosmiShapesFinal",
    "name": "CosmiShapesFinal",
    "pushed": "2020-12-06T16:01:21Z",
-   "stars": 0,
+   "stars": 1,
    "url": "https://github.com/amkashyap1220/CosmiShapesFinal"
   },
   {
    "fullName": "amkashyap1220/CSCI-240-Computer-Programming-in-Cpp",
    "name": "CSCI-240-Computer-Programming-in-Cpp",
    "pushed": "2026-10-21T05:04:13Z",
-   "stars": 1,
+   "stars": 2,
    "url": "https://github.com/amkashyap1220/CSCI-240-Computer-Programming-in-Cpp"
   },
   {
    "fullName": "amkashyap1220/CSCI-241-Intermediate-Programming",
    "name": "CSCI-241-Intermediate-Programming",
    "pushed": "2021-04-24T18:26:01Z",
-   "stars": 0,
+   "stars": 1,
    "url": "https://github.com/amkashyap1220/CSCI-241-Intermediate-Programming"
   },
   {
    "fullName": "amkashyap1220/CSCI-330-UNIX-and-Network-Programming",
    "name": "CSCI-330-UNIX-and-Network-Programming",
    "pushed": "2021-04-09T22:12:32Z",
-   "stars": 0,
+   "stars": 1,
    "url": "https://github.com/amkashyap1220/CSCI-330-UNIX-and-Network-Programming"
   },
   {
    "fullName": "amkashyap1220/CSCI467PROJ",
    "name": "CSCI467PROJ",
    "pushed": "2022-09-13T16:17:02Z",
-   "stars": 0,
+   "stars": 1,
    "url": "https://github.com/amkashyap1220/CSCI467PROJ"
   },
   {
    "fullName": "amkashyap1220/dotNET",
    "name": "dotNET",
    "pushed": "2026-10-21T05:12:38Z",
-   "stars": 0,
+   "stars": 1,
    "url": "https://github.com/amkashyap1220/dotNET"
   },
   {
    "fullName": "amkashyap1220/Gaps-Between-The-Primes",
    "name": "Gaps-Between-The-Primes",
    "pushed": "2026-10-21T03:12:16Z",
-   "stars": 1,
+   "stars": 2,
    "url": "https://github.com/amkashyap1220/Gaps-Between-The-Primes"
   },
   {
    "fullName": "amkashyap1220/MovieTracker",
    "name": "MovieTracker",
    "pushed": "2024-11-19T19:10:30Z",
-   "stars": 0,
+   "stars": 1,
    "url": "https://github.com/amkashyap1220/MovieTracker"
   },
   {
    "fullName": "amkashyap1220/OldMan-Final-Project",
    "name": "OldMan-Final-Project",
    "pushed": "2020-12-11T21:17:28Z",
-   "stars": 0,
+   "stars": 1,
    "url": "https://github.com/amkashyap1220/OldMan-Final-Project"
   },
   {
    "fullName": "amkashyap1220/ProjectBoaz",
    "name": "ProjectBoaz",
    "pushed": "2026-10-16T20:50:06Z",
-   "stars": 1,
+   "stars": 2,
    "url": "https://github.com/amkashyap1220/ProjectBoaz"
   },
   {
    "fullName": "amkashyap1220/Python-TicTacToe",
    "name": "Python-TicTacToe",
    "pushed": "2021-06-06T17:12:51Z",
-   "stars": 0,
+   "stars": 1,
    "url": "https://github.com/amkashyap1220/Python-TicTacToe"
   },
   {
    "fullName": "amkashyap1220/RateWillBot",
    "name": "RateWillBot",
    "pushed": "2026-10-21T04:40:28Z",
-   "stars": 0,
+   "stars": 1,
    "url": "https://github.com/amkashyap1220/RateWillBot"
   },
   {
    "fullName": "amkashyap1220/SimpleRedditBot",
    "name": "SimpleRedditBot",
    "pushed": "2020-12-10T21:04:48Z",
-   "stars": 0,
+   "stars": 1,
    "url": "https://github.com/amkashyap1220/SimpleRedditBot"
   },
   {
    "fullName": "amkashyap1220/SwitchToYoutube",
    "name": "SwitchToYoutube",
    "pushed": "2026-10-20T19:49:52Z",
-   "stars": 1,
+   "stars": 2,
    "url": "https://github.com/amkashyap1220/SwitchToYoutube"
   }
  ],
