@@ -161,7 +161,11 @@ a.card:hover { border-color: var(--accent); text-decoration: none; }
 .grid.two { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
 
 /* Project cards are a bit roomier */
-.project { padding: 20px; }
+/* Every card in a row is the same height. Title and stats go first, so the
+   stats pills line up across cards; the tags sit at the bottom. */
+.project { display: flex; flex-direction: column; padding: 20px; }
+.project .pill { align-self: flex-start; margin: 10px 0 4px; }
+.project .chips { margin-top: auto; padding-top: 14px; }
 .project h3 { font-size: 16px; font-weight: 600; }
 .project p { font-size: 13px; }
 
