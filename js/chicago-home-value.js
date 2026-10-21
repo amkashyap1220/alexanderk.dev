@@ -256,13 +256,13 @@
       // Before the reader has set their targets: every zip in one neutral color
       return frame(width, [
         Plot.geo(feats, { fill: css("--hv-none"), stroke: bg, strokeWidth: 0.5 }),
-        Plot.tip(feats, Plot.pointer(Plot.centroid({
+        ...zipTip(feats, width, {
           fill: bg, stroke: css("--border"),
           title: (f) => {
             const z = byZip.get(f.id);
             return z ? name(z) + " " + z.zip : "Zip " + f.id;
           },
-        }))),
+        }),
       ], "Map of Chicago-area zip codes. Nothing is scored yet.");
     }
 
@@ -282,7 +282,7 @@
       Plot.geo(inSample, { fill: (f) => color(score(scored.get(f.id))), stroke: bg, strokeWidth: 0.5 }),
       // The top areas: a soft blue glow, a halo in the page color, then a crisp blue outline (Tango sky blue reads on red to green)
       ...topMarks(inSample.filter((f) => picks.has(f.id)), bg),
-      Plot.tip(inSample, Plot.pointer(Plot.centroid({
+      ...zipTip(inSample, width, {
         fill: bg, stroke: css("--border"),
         title: (f) => {
           const r = scored.get(f.id);
@@ -295,9 +295,22 @@
             priceText(r),
           ].filter(Boolean).join("\n");
         },
-      }))),
+      }),
     ], "Map of " + result.rows.length + " Chicago-area zip codes colored by score, red for low to green for high. " +
       "The top " + data.top + " are outlined in blue and listed in the table below.");
+  }
+
+  // The detail box for the zip under the pointer. It sits next to the zip, but on a
+  // narrow map it would run off the screen, so there it stays in the top-left corner
+  // and the zip itself gets an outline.
+  function zipTip(feats, width, options) {
+    if (width >= 560) return [Plot.tip(feats, Plot.pointer(Plot.centroid(options)))];
+    const centers = new Map(feats.map((f) => [f.id, d3.geoCentroid(f)]));
+    const at = { px: (f) => centers.get(f.id)[0], py: (f) => centers.get(f.id)[1] };
+    return [
+      Plot.geo(feats, Plot.pointer({ ...at, fill: "none", stroke: css("--text"), strokeWidth: 2 })),
+      Plot.tip(feats, Plot.pointer({ ...options, ...at, frameAnchor: "top-left", anchor: "top-left", pointerSize: 0 })),
+    ];
   }
 
   function topMarks(top, bg) {
