@@ -17,7 +17,7 @@ js/theme.js                    Light/dark toggle
 js/gh.js                       Shared GitHub fetching + 30-minute cache
 js/github.js                   Fills in GitHub stats and READMEs
 js/stats.js                    Fetches and draws the Stats page
-404.html, favicon.svg          Not-found page and site icon
+404.html, favicon*.svg         Not-found page and tab icons (light, dark)
 wrangler.jsonc                 Cloudflare settings
 .assetsignore                  Keeps README, config, and .git off the live site
 ```
