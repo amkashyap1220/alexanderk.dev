@@ -4,12 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Where's the best home value in Chicagoland? · Alexander Kashyap</title>
-  <meta name="description" content="Set your own weights and targets, for buying or renting, alone or with a partner, and see the best-value Chicago-area zip codes on a map, compared with the places everyone recommends.">
+  <meta name="description" content="Set your own targets and weights, for buying or renting, alone or with a partner, and see how every Chicago-area zip code scores on a map, next to the places everyone recommends.">
   <!-- Link previews (iMessage, Discord, Slack, LinkedIn, ...) -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Alexander Kashyap">
   <meta property="og:title" content="Where's the best home value in Chicagoland? · Alexander Kashyap">
-  <meta property="og:description" content="Set your own weights and targets, for buying or renting, alone or with a partner, and see the best-value Chicago-area zip codes on a map, compared with the places everyone recommends.">
+  <meta property="og:description" content="Set your own targets and weights, for buying or renting, alone or with a partner, and see how every Chicago-area zip code scores on a map, next to the places everyone recommends.">
   <meta property="og:url" content="https://alexanderk.dev/writing/chicago-home-value">
   <meta property="og:image" content="https://alexanderk.dev/og.png">
   <meta property="og:image:width" content="1200">
@@ -52,7 +52,7 @@
       <div class="narrow">
         <p class="eyebrow"><time datetime="2026-10-21">Oct 21, 2026</time></p>
         <h1>Where's the best home value in Chicagoland?</h1>
-        <p class="lead">Tell the map what you care about and what you can spend. It ranks every Chicago-area zip code by value for you, with the places everyone recommends marked so you can compare.</p>
+        <p class="lead">Tell the map what you want in a place and how much each thing matters. It scores every Chicago-area zip code against your targets, with the places everyone recommends marked so you can compare.</p>
         <div class="actions">
           <a class="btn primary" href="https://github.com/amkashyap1220/Home-Value-Score" target="_blank" rel="noopener">Data and code</a>
           <a class="btn" href="/writing/">← All writing</a>
@@ -78,7 +78,7 @@
         <div class="hv-grid">
           <figure class="hv-figure" aria-labelledby="hv-caption">
             <ul class="hv-legend" aria-label="Legend">
-              <li class="hv-scored"><span class="hv-key ramp"></span>Value score, low to high</li>
+              <li class="hv-scored"><span class="hv-key ramp"></span>Score, low (red) to high (green)</li>
               <li class="hv-scored"><span class="hv-key pick"></span>Top 20</li>
               <li><span class="hv-key list"></span>Niche's best places to live</li>
               <li class="hv-scored"><span class="hv-key none"></span>Too little data</li>
@@ -87,7 +87,7 @@
             <figcaption id="hv-caption">Hover over or tap a zip for details. Prices: Redfin, June 2025 to May 2026. Rent: Census ACS 2020–2024.</figcaption>
           </figure>
 
-          <form class="hv-controls" aria-label="Your weights and targets" onsubmit="return false">
+          <form class="hv-controls" aria-label="Your targets and weights" onsubmit="return false">
             <div id="hv-people"></div>
             <button class="btn small hv-add" type="button" id="hv-add">+ Add a second person</button>
           </form>
@@ -97,23 +97,23 @@
       </div>
 
       <article class="narrow prose">
-        <h2>How the value score works</h2>
-        <p>Each zip gets six numbers, each turned into a percentile from 0 (worst in the metro) to 100 (best):</p>
+        <h2>How the score works</h2>
+        <p>You give each of six things a <b>target</b> (the value you want) and a <b>weight</b> (how much it matters):</p>
         <ul>
-          <li><b>Schools:</b> district test proficiency, ranked within each state first, since Illinois and Indiana use different tests (Illinois Report Card, Indiana DOE).</li>
-          <li><b>Safety:</b> crimes per 1,000 residents for the police department covering the zip (FBI Crime Data Explorer).</li>
-          <li><b>Commute:</b> average time to work (Census ACS).</li>
-          <li><b>Walkability:</b> the EPA's National Walkability Index.</li>
-          <li><b>Newer homes:</b> the median year the zip's homes were built (Census ACS).</li>
-          <li><b>Low price:</b> median sale price per square foot over the past year (Redfin), or median monthly rent (Census ACS).</li>
+          <li><b>Schools:</b> district test proficiency as a percentile, ranked within each state, since Illinois and Indiana use different tests (Illinois Report Card, Indiana DOE).</li>
+          <li><b>Safety:</b> crimes per 1,000 residents a year for the police department covering the zip (FBI Crime Data Explorer).</li>
+          <li><b>Commute:</b> average one-way time to work (Census ACS).</li>
+          <li><b>Walkability:</b> the EPA's National Walkability Index, 1 to 20.</li>
+          <li><b>Home age:</b> how old the median home is (Census ACS).</li>
+          <li><b>Price:</b> median sale price over the past year (Redfin), or median monthly rent (Census ACS).</li>
         </ul>
-        <p>The first five, weighted by your sliders, make the <b>quality</b> score. Then:</p>
-        <blockquote>value = (1 − price share) × quality + price share × low price</blockquote>
-        <p>If you set a target, a zip that meets it scores 100 on that factor, and one that misses it scores lower the further it misses. Your top 20 are the highest value scores among zips with above-median quality, so a place can't win on price alone. Nothing is ranked until you set something; the sliders start in the middle (everything Normal, price at 50%). With a second person, "best for both" ranks zips by the lower of your two scores, so neither of you ends up somewhere you'd hate.</p>
+        <p>To compare minutes with dollars with crime rates, every value is turned into a percentile: where it falls among the metro's zips, from 0 to 100. A zip's closeness to a target is 100 minus the gap between their percentiles. It's 100 when the zip is exactly on target, and lower the further off it is, in either direction. The score is the weighted average of the six:</p>
+        <blockquote>score = Σ (weight × closeness) ÷ Σ weight</blockquote>
+        <p>So if price is the only thing at Top and the rest are Low, a zip whose median price is exactly your target scores close to 100. Your top 20 are the 20 highest scores. With a second person, each of you gets a score, and "best for both" ranks zips by the lower of the two, so neither of you ends up somewhere far from what you wanted.</p>
         <p>The area is the 13 counties of the Chicago metro, 9 in Illinois and 4 in Northwest Indiana. For buying, a zip needs at least 20 sales in the past year (338 zips); for renting, at least 100 rented homes (347). A missing number, usually crime data a police department didn't report, counts as 50. Race and ethnicity, and stand-ins for them, aren't used anywhere: steering people by the makeup of a neighborhood is what fair-housing law forbids and what redlining did.</p>
 
         <h2>How your picks compare with Niche</h2>
-        <p>The diamonds on the map are the places people usually recommend: Niche's 2026 "Best Places to Live in Illinois" top 20, plus the Chicago-area places in the top 50 of its Indiana ranking, matched to their zip codes. They stay on the map whatever you set, so you can see how your weights line up with them, and the line above the map counts how many of your top 20 are among them. Push low price down to 0% and the map becomes a pure quality ranking; raise it and watch which of Niche's places hold on.</p>
+        <p>The diamonds on the map are the places people usually recommend: Niche's 2026 "Best Places to Live in Illinois" top 20, plus the Chicago-area places in the top 50 of its Indiana ranking, matched to their zip codes. They stay on the map whatever you set, so you can see how your targets line up with them, and the line above the map counts how many of your top 20 are among them.</p>
 
         <h2>What to keep in mind</h2>
         <ul>
@@ -126,8 +126,9 @@
 
     <!-- Styles for this post's map only (scoped under .hv) -->
     <style>
-      :root { --pick: #ce5c00; --hv-low: #dbe4ee; --hv-high: #204a87; --hv-none: #d3d7cf; }   /* orange 3; sky blue 3; aluminium 2 */
-      :root.dark { --pick: #fcaf3e; --hv-low: #3e4850; --hv-high: #729fcf; --hv-none: #4a4f50; }   /* orange 1; sky blue 1 */
+      /* Score ramp, low to high: scarlet red 3, orange 2, butter 2, chameleon 1 (lighter as it gets better, so it reads without color too) */
+      :root { --pick: #ce5c00; --hv-0: #a40000; --hv-1: #f57900; --hv-2: #edd400; --hv-3: #8ae234; --hv-none: #d3d7cf; }
+      :root.dark { --pick: #fcaf3e; --hv-0: #ef2929; --hv-1: #f57900; --hv-2: #edd400; --hv-3: #8ae234; --hv-none: #4a4f50; }
       .hv-hero { padding-bottom: var(--space-8); }
       .hv-section { padding-top: var(--space-7); }
       .hv { max-width: 1100px; margin: 0 auto var(--space-9); padding: 0 var(--space-5); }
@@ -144,14 +145,13 @@
       .hv-unscored .hv-scored { display: none; }
       .hv-summary .btn { vertical-align: baseline; }
       .hv-key { display: inline-block; width: 12px; height: 12px; border-radius: 2px; }
-      .hv-key.ramp { width: 36px; background: linear-gradient(90deg, var(--hv-low), var(--hv-high)); }
-      .hv-key.pick { background: var(--pick); }
+      .hv-key.ramp { width: 44px; background: linear-gradient(90deg, var(--hv-0), var(--hv-1), var(--hv-2), var(--hv-3)); }
+      .hv-key.pick { border: 2.25px solid var(--text); }
       .hv-key.none { background: var(--hv-none); }
       .hv-key.list { width: 9px; height: 9px; border: 1.5px solid var(--text); border-radius: 1px; transform: rotate(45deg); }
       .hv figcaption { margin-top: var(--space-2); color: var(--muted); font-size: var(--fs-xs); line-height: 1.6; }
       .hv-person { margin: 0 0 var(--space-3); padding: var(--space-3) var(--space-4) var(--space-4); border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); }
       .hv-person legend { padding: 0 var(--space-1); color: var(--label); font-size: var(--fs-2xs); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
-      .hv-price { margin-top: var(--space-2); border-top-width: 2px; }
       .hv-intro { margin: 0 0 var(--space-2); color: var(--muted); font-size: var(--fs-xs); line-height: 1.6; }
       .hv-factor { padding: var(--space-3) 0; border-top: 1px solid var(--border); }
       .hv-line { display: grid; grid-template-columns: 104px minmax(0, 1fr) 72px; align-items: center; gap: var(--space-3); font-size: var(--fs-sm); }
@@ -159,10 +159,9 @@
       .hv-line input[type="range"] { width: 100%; accent-color: var(--pick); }
       .hv-line output { color: var(--text); font-size: var(--fs-xs); text-align: right; }
       .hv-hint { margin: var(--space-1) 0 0; color: var(--muted); font-size: var(--fs-xs); line-height: 1.5; }
-      .hv-must { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: var(--space-2); color: var(--muted); font-size: var(--fs-xs); }
-      .hv-must input { width: 72px; padding: 3px 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--soft); color: var(--text); font: inherit; }
-      .hv-must input.hv-wide { width: 90px; }
-      .hv-must input::placeholder { color: var(--muted); opacity: 0.7; }
+      .hv-target { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: var(--space-2); color: var(--muted); font-size: var(--fs-xs); }
+      .hv-target input { width: 90px; padding: 3px 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--soft); color: var(--text); font: inherit; }
+      .hv-target input::placeholder { color: var(--muted); opacity: 0.7; }
       .hv-buttons { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-4); }
       .hv-add[hidden] { display: none; }
       .hv-list { margin-top: var(--space-6); }
