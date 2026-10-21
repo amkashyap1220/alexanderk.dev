@@ -13,7 +13,7 @@ projects/<project>.html        One page per project: its GitHub README, then a "
 writing/                       Writing: list of posts + _template.html for new ones
 stats/index.html               GitHub Stats: live numbers, languages and activity from GitHub
 css/style.css                  All styling (colors, spacing and type sizes at the top)
-js/theme.js                    Light/dark toggle
+js/theme.js                    Light/dark: follows the visitor's system, toggle overrides
 js/gh.js                       Shared GitHub fetching + 30-minute cache
 js/github.js                   Fills in GitHub stats and READMEs
 js/stats.js                    Fetches and draws the Stats page
