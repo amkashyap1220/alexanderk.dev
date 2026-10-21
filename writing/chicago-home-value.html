@@ -78,10 +78,10 @@
         <div class="hv-grid">
           <figure class="hv-figure" aria-labelledby="hv-caption">
             <ul class="hv-legend" aria-label="Legend">
-              <li><span class="hv-key ramp"></span>Value score, low to high</li>
-              <li><span class="hv-key pick"></span>Top 20</li>
+              <li class="hv-scored"><span class="hv-key ramp"></span>Value score, low to high</li>
+              <li class="hv-scored"><span class="hv-key pick"></span>Top 20</li>
               <li><span class="hv-key list"></span>Niche's best places to live</li>
-              <li><span class="hv-key none"></span>Too little data</li>
+              <li class="hv-scored"><span class="hv-key none"></span>Too little data</li>
             </ul>
             <div id="hv-map" class="hv-map"></div>
             <figcaption id="hv-caption">Hover over or tap a zip for details. Prices: Redfin, June 2025 to May 2026. Rent: Census ACS 2020–2024.</figcaption>
@@ -109,7 +109,7 @@
         </ul>
         <p>The first five, weighted by your sliders, make the <b>quality</b> score. Then:</p>
         <blockquote>value = (1 − price share) × quality + price share × low price</blockquote>
-        <p>If you set a target, a zip that meets it scores 100 on that factor, and one that misses it scores lower the further it misses. Your top 20 are the highest value scores among zips with above-median quality, so a place can't win on price alone. By default everything counts the same and price is half the score. With a second person, "best for both" ranks zips by the lower of your two scores, so neither of you ends up somewhere you'd hate.</p>
+        <p>If you set a target, a zip that meets it scores 100 on that factor, and one that misses it scores lower the further it misses. Your top 20 are the highest value scores among zips with above-median quality, so a place can't win on price alone. Nothing is ranked until you set something; the sliders start in the middle (everything Normal, price at 50%). With a second person, "best for both" ranks zips by the lower of your two scores, so neither of you ends up somewhere you'd hate.</p>
         <p>The area is the 13 counties of the Chicago metro, 9 in Illinois and 4 in Northwest Indiana. For buying, a zip needs at least 20 sales in the past year (338 zips); for renting, at least 100 rented homes (347). A missing number, usually crime data a police department didn't report, counts as 50. Race and ethnicity, and stand-ins for them, aren't used anywhere: steering people by the makeup of a neighborhood is what fair-housing law forbids and what redlining did.</p>
 
         <h2>How your picks compare with Niche</h2>
@@ -141,6 +141,8 @@
       .hv-map svg { display: block; max-width: 100%; height: auto; overflow: visible; }
       .hv-legend { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-5); margin: 0 0 var(--space-3); padding: 0; list-style: none; color: var(--muted); font-size: var(--fs-xs); }
       .hv-legend li { display: flex; align-items: center; gap: 6px; }
+      .hv-unscored .hv-scored { display: none; }
+      .hv-summary .btn { vertical-align: baseline; }
       .hv-key { display: inline-block; width: 12px; height: 12px; border-radius: 2px; }
       .hv-key.ramp { width: 36px; background: linear-gradient(90deg, var(--hv-low), var(--hv-high)); }
       .hv-key.pick { background: var(--pick); }
