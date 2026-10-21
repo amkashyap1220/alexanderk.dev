@@ -2,74 +2,36 @@
    gh.js: the small toolkit every GitHub-powered page shares.
    Loaded before js/github.js and js/stats.js; exposes window.GH.
 
-   - GH.cached(key, fetcher): looks in /data/github.json first. The site's
-     Cloudflare script (worker/index.js) refreshes it every 5 minutes, so
-     visitors don't call GitHub at all (GitHub allows only 60 requests an
-     hour per visitor). Anything not in the file (say, a project added
-     since the last run) is fetched live, saved in the browser for 30
-     minutes, and shared between everyone on the page who asks for it.
-   - GH.api(path): fetch from api.github.com; throws on an error status.
-   - GH.repo / GH.commits / GH.languages / GH.readme: cached lookups, so
-     the Projects and Stats pages reuse each other's data.
+   All GitHub data comes from /data/github.json, which the site's Cloudflare
+   script (worker/index.js) refreshes from GitHub every 5 minutes. Visitors'
+   browsers never call GitHub themselves.
+
+   - GH.get(kind, name): one entry from that file, e.g. GH.get("repo",
+     "owner/name"). Rejects if the file or the entry is missing (a project
+     added in the last 5 minutes shows "--" until the next refresh).
+   - GH.repo / GH.commits / GH.languages / GH.readme: shortcuts for get().
    - GH.languageColor(name): the Tango color for a language, or null.
    - GH.timeAgo(date), GH.el(tag, class, text): display helpers.
    ========================================================================== */
 
 (function () {
-  const API = "https://api.github.com/";
-  const CACHE_MINUTES = 30;
-  const inFlight = {};   // one shared request per key, for this page view
-
-  // Served by worker/index.js; keys match the ones below
-  let savedFile;
-  const saved = () => savedFile = savedFile || fetch("/data/github.json")
-    .then((res) => (res.ok ? res.json() : {}))
-    .catch(() => ({}));   // no file yet: everything is fetched live
-
-  function cached(key, fetcher) {
-    key = key.toLowerCase();
-    return saved().then((file) => (key in file ? file[key] : live("gh:" + key, fetcher)));
-  }
-
-  function live(key, fetcher) {
-    try {
-      const stored = JSON.parse(localStorage.getItem(key));
-      if (stored && Date.now() - stored.time < CACHE_MINUTES * 60 * 1000) return Promise.resolve(stored.data);
-    } catch (e) { /* storage blocked: just fetch */ }
-
-    inFlight[key] = inFlight[key] || fetcher()
-      .then((data) => {
-        try { localStorage.setItem(key, JSON.stringify({ time: Date.now(), data })); } catch (e) { /* full or blocked */ }
-        return data;
-      })
-      .finally(() => { delete inFlight[key]; });   // a failed request can be tried again
-    return inFlight[key];
-  }
-
-  async function api(path, options) {
-    const res = await fetch(API + path, options);
-    if (!res.ok) throw new Error("GitHub error " + res.status);
-    return res;
-  }
-
-  // GitHub has no "total commits" field. Ask for 1 commit per page:
-  // the number of the last page in the Link header is the total.
-  const commits = (repo) => cached("commits:" + repo, async () => {
-    const res = await api("repos/" + repo + "/commits?per_page=1");
-    const last = (res.headers.get("Link") || "").match(/[?&]page=(\d+)>; rel="last"/);
-    return last ? Number(last[1]) : (await res.json()).length;
+  // Fetched once per page view and shared by everything that asks
+  let file;
+  const data = () => file = file || fetch("/data/github.json").then((res) => {
+    if (!res.ok) throw new Error("No GitHub data yet (" + res.status + ")");
+    return res.json();
   });
 
-  const repo = (name) => cached("repo:" + name, async () => {
-    const [info, total] = await Promise.all([api("repos/" + name).then((r) => r.json()), commits(name)]);
-    return { stars: info.stargazers_count, language: info.language, pushed: info.pushed_at, commits: total };
+  const get = (kind, name) => data().then((all) => {
+    const key = (kind + ":" + name).toLowerCase();
+    if (!(key in all)) throw new Error("Not in the GitHub data: " + key);
+    return all[key];
   });
 
-  const languages = (name) => cached("languages:" + name, () => api("repos/" + name + "/languages").then((r) => r.json()));
-
-  // GitHub returns the README already rendered (and sanitized) as HTML
-  const readme = (name) => cached("readme:" + name, () =>
-    api("repos/" + name + "/readme", { headers: { Accept: "application/vnd.github.html+json" } }).then((r) => r.text()));
+  const repo = (name) => get("repo", name);            // { stars, language, pushed, commits }
+  const commits = (name) => get("commits", name);
+  const languages = (name) => get("languages", name);  // { language: bytes }
+  const readme = (name) => get("readme", name);        // HTML, rendered and sanitized by GitHub
 
   // A Tango color per language (Tango = the default GNOME / Linux palette),
   // picked to echo each language's usual color. Used for the dots next to
@@ -105,5 +67,5 @@
     return e;
   }
 
-  window.GH = { cached, api, commits, repo, languages, readme, languageColor, timeAgo, el };
+  window.GH = { get, repo, commits, languages, readme, languageColor, timeAgo, el };
 })();

@@ -1,17 +1,17 @@
 /* ==========================================================================
    Stats page: everything comes from /data/github.json (refreshed every
-   5 minutes by worker/index.js), through the shared helpers in js/gh.js,
-   which fall back to GitHub's public API for anything missing.
+   5 minutes by worker/index.js, which already leaves out forks), through
+   the shared helpers in js/gh.js.
 
      1. EXTRACT    the profile, the repo list, languages and commit count per
                    repo, and the last 90 days of public activity
-     2. TRANSFORM  skip forks, add up languages, count commits, find the
+     2. TRANSFORM  add up languages, count commits, find the
                    busiest weekday and hour
      3. LOAD       draw the numbers, the language bars and the activity
    ========================================================================== */
 
 (function () {
-  const { cached, api, commits, languages, languageColor, timeAgo, el } = window.GH;
+  const { get, commits, languages, languageColor, timeAgo, el } = window.GH;
   const USER = "amkashyap1220";
   const TIME_ZONE = "America/Chicago";       // activity is bucketed in my time zone
 
@@ -32,31 +32,11 @@
 
 
   // ---------------------------------------------------------------- 1. extract
-  const json = (path) => api(path).then((r) => r.json());
-
-  const profile = () => cached("user:" + USER, () =>
-    json("users/" + USER).then((u) => ({ since: u.created_at })));
-
-  // Forks are skipped: they're mostly other people's code
-  const ownRepos = () => cached("repos:" + USER, () =>
-    json("users/" + USER + "/repos?per_page=100&type=owner").then((list) => list
-      .filter((r) => !r.fork)
-      .map((r) => ({ name: r.name, fullName: r.full_name, url: r.html_url, stars: r.stargazers_count, pushed: r.pushed_at }))));
-
-  // Public events only go back 90 days (max 300), 100 per page
-  const recentEvents = () => cached("events:" + USER, async () => {
-    const events = [];
-    for (let page = 1; page <= 3; page++) {
-      const batch = await json("users/" + USER + "/events/public?per_page=100&page=" + page);
-      events.push(...batch.map((e) => ({ type: e.type, repo: e.repo.name, at: e.created_at, ref: e.payload && e.payload.ref })));
-      if (batch.length < 100) break;
-    }
-    return events;
-  });
+  const recentEvents = () => get("events", USER);
 
   async function fetchAll() {
-    const [user, repos] = await Promise.all([profile(), ownRepos()]);
-    // Languages and commits for every repo at once; one failing repo doesn't sink the page
+    const [user, repos] = await Promise.all([get("user", USER), get("repos", USER)]);
+    // Languages and commits for every repo; one missing repo doesn't sink the page
     const details = await Promise.all(repos.map(async (r) => ({
       ...r,
       languages: await languages(r.fullName).catch(() => ({})),
