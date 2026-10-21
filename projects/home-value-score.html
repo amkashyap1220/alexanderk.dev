@@ -4,12 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Home Value Score · Alexander Kashyap</title>
-  <meta name="description" content="Home Value Score: a pre-registered study of whether high-quality Chicago-area zip codes sell for less than their quality predicts. Python, pandas and public data.">
+  <meta name="description" content="Home Value Score: an interactive map that ranks Chicago-area zip codes by value for buyers and renters, with your own weights and targets. Python, pandas and public data.">
   <!-- Link previews (iMessage, Discord, Slack, LinkedIn, ...) -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Alexander Kashyap">
   <meta property="og:title" content="Home Value Score · Alexander Kashyap">
-  <meta property="og:description" content="Home Value Score: a pre-registered study of whether high-quality Chicago-area zip codes sell for less than their quality predicts. Python, pandas and public data.">
+  <meta property="og:description" content="Home Value Score: an interactive map that ranks Chicago-area zip codes by value for buyers and renters, with your own weights and targets. Python, pandas and public data.">
   <meta property="og:url" content="https://alexanderk.dev/projects/home-value-score">
   <meta property="og:image" content="https://alexanderk.dev/og.png">
   <meta property="og:image:width" content="1200">
@@ -52,20 +52,20 @@
       <div class="narrow">
         <p class="eyebrow">Project</p>
         <h1>Home Value Score</h1>
-        <p class="tagline">Underpriced zip codes in the Chicago metro</p>
+        <p class="tagline">Best-value zip codes in the Chicago metro</p>
         <p class="pill">
           <span><span class="star">★</span> <b data-gh="amkashyap1220/Home-Value-Score" data-field="stars">--</b></span><span class="sep"></span>
           <span><b data-gh="amkashyap1220/Home-Value-Score" data-field="commits">--</b> commits</span><span class="sep"></span>
           <span><b data-gh="amkashyap1220/Home-Value-Score" data-field="language">--</b></span><span class="sep"></span>
           <span>updated <b data-gh="amkashyap1220/Home-Value-Score" data-field="updated">--</b></span>
         </p>
-        <p class="lead">A study of 338 Chicago-area zip codes: score each one on schools, safety, commute and walkability, account for what a home costs to run, and rank the zips that sell for less than their quality predicts.</p>
+        <p class="lead">Every Chicago-area zip code scored on schools, safety, commute, walkability, home age and price or rent. Readers set their own weights and targets, alone or with a partner, and a map shows their best-value areas next to the places Niche recommends.</p>
         <div class="actions">
           <a class="btn primary" href="/writing/chicago-home-value.html">Read the write-up</a>
           <a class="btn" href="https://github.com/amkashyap1220/Home-Value-Score" target="_blank" rel="noopener">View on GitHub</a>
           <a class="btn" href="/projects/">← All projects</a>
         </div>
-        <ul class="chips" aria-label="Tech"><li class="chip">Python</li><li class="chip">pandas</li><li class="chip">statsmodels</li><li class="chip">Census data</li><li class="chip">Observable Plot</li></ul>
+        <ul class="chips" aria-label="Tech"><li class="chip">Python</li><li class="chip">pandas</li><li class="chip">GeoPandas</li><li class="chip">Census data</li><li class="chip">Observable Plot</li></ul>
       </div>
     </section>
 
@@ -76,7 +76,7 @@
           <ul>
             <li><b>Method set first.</b> The hypothesis, definitions and pass/fail rule were <a href="https://github.com/amkashyap1220/Home-Value-Score/blob/main/docs/decisions.md">committed</a> before any price data was downloaded. Later changes are logged with a reason.</li>
             <li><b>Data from 10+ public sources</b>, joined at the zip level: Redfin, Census ACS and TIGER files, Illinois and Indiana school results, FBI crime data, the EPA walkability index, EIA gas prices and Niche rankings.</li>
-            <li><b>Result:</b> 16 best-value zips, 15 of them not on the "best places to live" list. The strongest leads are Woodstock, Joliet's east side, Schaumburg, Itasca and Sycamore. The <a href="/writing/chicago-home-value.html">write-up</a> covers how far to trust them.</li>
+            <li><b>Result:</b> with my weights, none of Niche's Illinois top 20 make my top 20 value areas for buying. The 7 that overlap are all Niche's Indiana picks, and the Illinois ones are places like Woodstock, Sycamore, Grayslake and Joliet's east side. Try your own in the <a href="/writing/chicago-home-value.html">write-up</a>.</li>
           </ul>
         </div>
       </div>
