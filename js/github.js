@@ -4,7 +4,6 @@
      <span data-gh="owner/repo" data-field="stars"></span>
    Fields: stars, commits, language, updated.
 
-   The terminal calls window.GH.fill(element) after printing something.
    Uses GitHub's public API (no key needed). Answers are saved in the
    browser for 30 minutes, because GitHub allows 60 requests an hour.
    ========================================================================== */
@@ -76,5 +75,5 @@
     });
   }
 
-  window.GH = { fill };
+  fill(document);
 })();

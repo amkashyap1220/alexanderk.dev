@@ -1,113 +1,86 @@
-/* ==========================================================================
-   alexanderk.dev — styles
-   The whole browser tab is a macOS-style zsh terminal.
-   Change the colors in :root to restyle everything.
-   ========================================================================== */
+/* alexanderk.dev — simple styles. Change the colors here. */
 
 :root {
-  color-scheme: dark;
-  --bg: #1e1e1e;          /* terminal background */
-  --text: #e4e4e4;        /* normal text */
-  --bright: #ffffff;
-  --dim: #8a8a8a;
-  --line: #3a3a3a;        /* borders and dividers */
-  --cursor: #d9d9d9;
+  --bg: #ffffff;
+  --text: #1f2328;
+  --muted: #656d76;
+  --line: #d8dee4;
+  --link: #0969da;
+}
 
-  /* ANSI colors, used through the one-letter classes below */
-  --red: #ff6b68;
-  --green: #5fd068;
-  --yellow: #e5c07b;
-  --blue: #6aa5ff;
-  --magenta: #d18cf0;
-  --cyan: #56c8d8;
-
-  --font: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Monaco, "JetBrains Mono", Consolas, monospace;
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --text: #e6edf3;
+    --muted: #8d96a0;
+    --line: #30363d;
+    --link: #4493f8;
+  }
 }
 
 * { box-sizing: border-box; }
 
 body {
-  margin: 0;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 20px;
   background: var(--bg);
   color: var(--text);
-  font-family: var(--font);
-  font-size: 14px;
-  line-height: 1.5;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
 }
 
-::selection { background: #3a5a8a; color: var(--bright); }
+a { color: var(--link); text-decoration: none; }
+a:hover { text-decoration: underline; }
 
+.muted { color: var(--muted); }
 
-/* The terminal fills the tab and scrolls by itself */
-.scroll {
-  position: fixed;
-  inset: 0;
-  overflow-y: auto;
-  padding: 6px 10px 24px;
-  cursor: text;
-  outline: none;
-  scrollbar-width: thin;
-  scrollbar-color: #555 transparent;
+/* Top bar */
+header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--line);
 }
-.term { max-width: 110ch; }
+header .name { color: var(--text); font-weight: 700; }
+nav a { margin-left: 20px; color: var(--muted); }
+nav a:first-child { margin-left: 0; }
+nav a[aria-current="page"] { color: var(--text); font-weight: 600; }
 
-/* One line of terminal output */
-.ln { white-space: pre-wrap; word-break: break-word; min-height: 1.5em; }
+/* Headings and sections */
+h1 { font-size: 2rem; margin: 32px 0 4px; line-height: 1.2; }
+h2 { font-size: 1.25rem; margin: 40px 0 16px; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+h3 { font-size: 1rem; margin: 0; }
+p { margin: 0 0 12px; }
 
-/* Color classes, like ANSI colors: <span class="g">green</span> */
-.r  { color: var(--red); }
-.g  { color: var(--green); }
-.y  { color: var(--yellow); }
-.bl { color: var(--blue); }
-.m  { color: var(--magenta); }
-.c  { color: var(--cyan); }
-.d  { color: var(--dim); }
-.w  { color: var(--bright); }
-.b  { font-weight: 700; }
+.links a { margin-right: 16px; }
 
+/* Experience / education entries */
+.entry { margin-bottom: 24px; }
+.entry-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0 16px; }
+.entry-head + p { margin: 0; font-size: 0.9rem; }
+ul { margin: 8px 0 0; padding-left: 20px; }
+li { margin-bottom: 4px; }
 
-/* ---------- The prompt line ----------
-   The real <input> is invisible and sits on top of the line. Spans show
-   the prompt, the text before the cursor, the block cursor, and the rest. */
-.ps .user   { color: var(--green); font-weight: 700; }
-.ps .path   { color: var(--blue); font-weight: 700; }
-.ps .git    { color: var(--magenta); }
-.ps .branch { color: var(--red); }
+/* Skills list */
+.skills { display: grid; grid-template-columns: 180px 1fr; gap: 6px 16px; margin: 0; }
+.skills dt { font-weight: 600; }
+.skills dd { margin: 0; }
 
-.cmdline { position: relative; min-height: 1.5em; word-break: break-all; }
-.cmdline span { white-space: pre-wrap; }
-.cmdline .cur { background: var(--cursor); color: var(--bg); }
-.cmdline:not(.focused) .cur { background: none; color: inherit; outline: 1px solid var(--cursor); outline-offset: -1px; }
-.cmdline input {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  opacity: 0;
-  font-size: 16px;     /* stops iPhones from zooming in when you tap */
-  border: 0;
-  padding: 0;
-}
-.cmdline.off { visibility: hidden; }
+/* Project cards */
+.project { padding: 16px 20px; margin: 24px 0; border: 1px solid var(--line); border-radius: 8px; }
+.project h2 { margin: 0 0 8px; padding: 0; border: 0; }
+.project .stats { font-size: 0.9rem; margin-bottom: 4px; }
+.project .tags { font-size: 0.85rem; color: var(--muted); margin: 0; }
 
+footer { margin: 48px 0 24px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 0.85rem; }
 
-/* ---------- ls output ---------- */
-.cols { display: flex; flex-wrap: wrap; gap: 0 4ch; }
-
-/* `ls -l` inside ~/projects: a table with solid lines */
-.tbl { width: max-content; max-width: 100%; margin: 2px 0 0.75em; overflow-x: auto; border: 1px solid #5a5a5a; border-radius: 6px; }
-.tbl table { border-collapse: collapse; font: inherit; }
-.tbl th, .tbl td { padding: 0 2ch; text-align: left; white-space: nowrap; border-left: 1px solid #5a5a5a; }
-.tbl th:first-child, .tbl td:first-child { border-left: 0; }
-.tbl th { color: var(--bright); border-bottom: 1px solid #5a5a5a; }
-.tbl .num { text-align: right; }
-
-
-/* ---------- Phones ---------- */
-@media (max-width: 640px) {
-  body { font-size: 12.5px; }
-  .scroll { padding: 6px 8px 24px; }
-
-  .tbl { font-size: 11.5px; }
-  .tbl th, .tbl td { padding: 0 1ch; }
-  .tbl .opt { display: none; }             /* drop the "about" column */
+/* Phones */
+@media (max-width: 560px) {
+  .skills { grid-template-columns: 1fr; gap: 0; }
+  .skills dd { margin-bottom: 8px; }
 }

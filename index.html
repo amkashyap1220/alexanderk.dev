@@ -2,62 +2,104 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>alexander@alexanderk-dev: ~</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Alexander Kashyap</title>
   <meta name="description" content="Alexander Kashyap - software developer building data-driven enterprise systems in C#, .NET, SQL, and Python.">
-  <meta name="theme-color" content="#1e1e1e">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-  <!-- The whole page is the terminal. js/terminal.js prints output into .out -->
-  <div class="scroll" tabindex="-1">
-    <main class="term">
-      <div class="out" aria-live="polite"></div>
+  <header>
+    <a class="name" href="/">Alexander Kashyap</a>
+    <nav>
+      <a href="/" aria-current="page">About</a>
+      <a href="/projects.html">Projects</a>
+    </nav>
+  </header>
 
-      <!-- The prompt line. The <input> is invisible; the spans draw the typed text and the block cursor. -->
-      <form class="cmdline off" autocomplete="off">
-        <span class="ps"></span><span class="before"></span><span class="cur"> </span><span class="after"></span>
-        <input type="text" spellcheck="false" autocapitalize="off" autocorrect="off" aria-label="Terminal command">
-      </form>
+  <main>
+    <section class="intro">
+      <h1>Alexander Kashyap</h1>
+      <p class="muted">Software developer · Chicago, IL Area</p>
+      <p>Software developer with ~2 years of experience building data-driven enterprise systems in C#, .NET, SQL, and Python. Comfortable working across the stack, from database design to API integrations, and skilled at turning business requirements into reliable solutions. Detail-oriented, quick to learn, and focused on building systems people can depend on.</p>
+      <p class="links">
+        <a href="https://www.linkedin.com/in/alexander-kashyap/" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://github.com/amkashyap1220" target="_blank" rel="noopener">GitHub</a>
+      </p>
+    </section>
 
-      <noscript><p>This site is a terminal and needs JavaScript to run.</p></noscript>
-    </main>
-  </div>
+    <section>
+      <h2>Experience</h2>
 
+      <div class="entry">
+        <div class="entry-head">
+          <h3>Application Developer, K-Rise Systems</h3>
+          <span class="muted">Jan 2025 – Present</span>
+        </div>
+        <p class="muted">Aurora, IL · Enterprise software company</p>
+        <ul>
+          <li>Worked on the rebuild of the company's AP Automation application for JD Edwards (primary project) in C# and .NET, adding new AI features and updates across the invoice pipeline, from scanned capture through validation and into JDE vouchers</li>
+          <li>Help implement AP Automation for clients, gathering requirements from their finance teams, customizing the solution to fit their workflows, and carrying improvements back into the base product</li>
+          <li>Wrote SQL to insert and update JD Edwards tables as invoices flowed through the pipeline, keeping accounts payable data accurate and in sync between systems</li>
+          <li>Built AP Automation reports and dashboards, writing the SQL queries and building the report pages in JavaScript and CSS to give clients visibility into automation performance and their invoice data</li>
+          <li>Integrated AI APIs to match addresses extracted from scanned invoices against address records in the database, reducing manual lookup</li>
+          <li>Supported development of EASYPay and EASYCommerce, the company's .NET payments and e-commerce applications, including SQL to keep payment and order data in sync with JD Edwards</li>
+        </ul>
+      </div>
 
-  <!-- The files you can `cat` are real Markdown files in files/ -->
+      <div class="entry">
+        <div class="entry-head">
+          <h3>AI Evaluator (Contract), Outlier</h3>
+          <span class="muted">May 2024 – Jan 2025</span>
+        </div>
+        <p class="muted">Remote · A Scale AI platform</p>
+        <ul>
+          <li>Evaluated and compared AI-generated code for correctness, clarity, and quality, writing feedback used as training data to improve large language models</li>
+          <li>Applied detailed scoring rubrics consistently to coding tasks, flagging bugs and logical errors</li>
+        </ul>
+      </div>
 
-  <!-- What `ls -l` shows inside ~/projects (live GitHub numbers fill the data-gh cells) -->
-  <template id="tpl-projects-table">
-    <div class="tbl">
-      <table>
-        <thead>
-          <tr><th>name</th><th class="num">★ stars</th><th class="num">commits</th><th>language</th><th class="opt">about</th></tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="bl b">switch-to-youtube/</td>
-            <td class="num y" data-gh="amkashyap1220/SwitchToYoutube" data-field="stars">--</td>
-            <td class="num g" data-gh="amkashyap1220/SwitchToYoutube" data-field="commits">--</td>
-            <td class="m" data-gh="amkashyap1220/SwitchToYoutube" data-field="language">--</td>
-            <td class="d opt">Spotify → YouTube Music</td>
-          </tr>
-          <tr>
-            <td class="bl b">alexanderk-dev/</td>
-            <td class="num y" data-gh="amkashyap1220/alexanderk.dev" data-field="stars">--</td>
-            <td class="num g" data-gh="amkashyap1220/alexanderk.dev" data-field="commits">--</td>
-            <td class="m" data-gh="amkashyap1220/alexanderk.dev" data-field="language">--</td>
-            <td class="d opt">this website</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </template>
+      <div class="entry">
+        <div class="entry-head">
+          <h3>Software Engineering Intern – Middleware, Chamberlain Group</h3>
+          <span class="muted">May 2022 – Jan 2023</span>
+        </div>
+        <p class="muted">Chicago, IL</p>
+        <ul>
+          <li>Built RESTful API endpoints in .NET 6 for the myQ connected-device platform</li>
+          <li>Helped migrate services from .NET Core 3.1 to .NET 6, improving performance and maintainability in an Agile/Scrum team</li>
+        </ul>
+      </div>
+    </section>
 
-  <script src="/js/github.js"></script>
-  <script src="/js/terminal.js"></script>
+    <section>
+      <h2>Education</h2>
+      <div class="entry">
+        <div class="entry-head">
+          <h3>B.S. in Computer Science, Northern Illinois University</h3>
+          <span class="muted">May 2024</span>
+        </div>
+        <ul>
+          <li>Relevant coursework: Databases, Probability &amp; Statistics, Data Structures, Algorithms, Software Engineering</li>
+          <li>Scholarship player, NIU Esports</li>
+          <li>Event Coordinator / Board Member, Association for Computing Machinery (ACM)</li>
+          <li>Transfer Merit Scholar</li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <h2>Skills &amp; Certifications</h2>
+      <dl class="skills">
+        <dt>Languages</dt><dd>SQL, Python, C#, JavaScript/TypeScript, C++</dd>
+        <dt>Databases</dt><dd>Microsoft SQL Server (T-SQL, SSMS), MySQL, NoSQL</dd>
+        <dt>Frameworks &amp; Tools</dt><dd>.NET / .NET Core, REST APIs, Git, Jira</dd>
+        <dt>Cloud</dt><dd>AWS, Azure</dd>
+        <dt>Enterprise Systems</dt><dd>JD Edwards (ERP)</dd>
+        <dt>Certifications</dt><dd>AWS Certified Cloud Practitioner (May 2024)</dd>
+      </dl>
+    </section>
+  </main>
+
+  <footer class="muted">© 2026 Alexander Kashyap</footer>
 </body>
 </html>
