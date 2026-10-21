@@ -95,6 +95,7 @@
         </div>
 
         <div class="prose hv-list"><table id="hv-table"></table></div>
+        <p class="hv-age"><b>How old the data is:</b> pulled Oct 21, 2026. Prices: Redfin, Jun 2025 to May 2026. Rent, home age and the Census commute: ACS 2020–2024. Crime: FBI, 2025 (2024 where 2025 is incomplete). Schools: 2024–25 tests (IL), 2025–26 (IN). Walkability: EPA, 2021. Niche: 2026 lists. Drive times: OpenStreetMap, Oct 2026.</p>
       </div>
 
       <article class="narrow prose">
@@ -125,18 +126,18 @@
       /* Score ramp, low to high: scarlet red 3, orange 2, butter 2, chameleon 1 (lighter as it gets better, so it reads without color too) */
       :root { --pick: #ce5c00; --hv-0: #a40000; --hv-1: #f57900; --hv-2: #edd400; --hv-3: #8ae234; --hv-none: #d3d7cf; }
       :root.dark { --pick: #fcaf3e; --hv-0: #ef2929; --hv-1: #f57900; --hv-2: #edd400; --hv-3: #8ae234; --hv-none: #4a4f50; }
-      .hv-hero { padding-bottom: var(--space-8); }
-      .hv-section { padding-top: var(--space-7); }
+      .hv-hero { padding-bottom: var(--space-7); }
+      .hv-section { padding-top: var(--space-6); }
       .hv { max-width: 1100px; margin: 0 auto var(--space-9); padding: 0 var(--space-5); }
       .hv-bar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-3); }
       .hv-toggle { display: flex; flex-wrap: wrap; gap: var(--space-2); }
       .hv-toggle[hidden] { display: none; }
-      .hv-summary { min-height: 3.2em; margin: var(--space-4) 0; font-size: var(--fs-md); line-height: 1.6; }
+      .hv-summary { min-height: 3.2em; margin: var(--space-4) 0 var(--space-5); font-size: var(--fs-md); line-height: 1.6; }
       .hv-grid { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: var(--space-6); align-items: start; }
       .hv-figure { margin: 0; }
       .hv-map { min-height: 300px; }
-      .hv-map svg { display: block; max-width: 100%; height: auto; overflow: visible; }
-      .hv-legend { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-5); margin: 0 0 var(--space-3); padding: 0; list-style: none; color: var(--muted); font-size: var(--fs-xs); }
+      .hv-map svg { display: block; max-width: 100%; height: auto; margin: 0 auto; overflow: visible; }   /* centered in its column */
+      .hv-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-1) var(--space-5); margin: 0 0 var(--space-3); padding: 0; list-style: none; color: var(--muted); font-size: var(--fs-xs); }
       .hv-legend li { display: flex; align-items: center; gap: 6px; }
       .hv-unscored .hv-scored { display: none; }
       .hv-summary .btn { vertical-align: baseline; }
@@ -145,7 +146,7 @@
       .hv-key.pick { border: 2.25px solid var(--text); }
       .hv-key.none { background: var(--hv-none); }
       .hv-key.list { width: 9px; height: 9px; border: 1.5px solid var(--text); border-radius: 1px; transform: rotate(45deg); }
-      .hv figcaption { margin-top: var(--space-2); color: var(--muted); font-size: var(--fs-xs); line-height: 1.6; }
+      .hv figcaption { margin-top: var(--space-2); text-align: center; color: var(--muted); font-size: var(--fs-xs); line-height: 1.6; }
       .hv-person { margin: 0 0 var(--space-3); padding: var(--space-3) var(--space-4) var(--space-4); border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); }
       .hv-person legend { padding: 0 var(--space-1); color: var(--label); font-size: var(--fs-2xs); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
       .hv-intro { margin: 0 0 var(--space-2); color: var(--muted); font-size: var(--fs-xs); line-height: 1.6; }
@@ -162,17 +163,24 @@
       .hv-target input.hv-work { width: 180px; }
       .hv-target input::placeholder { color: var(--muted); opacity: 0.7; }
       .hv-buttons { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-4); }
+      .hv-add { width: 100%; justify-content: center; }
       .hv-add[hidden] { display: none; }
-      .hv-list { margin-top: var(--space-6); }
-      .hv-list table { width: 100%; }
+      .hv-list { margin-top: var(--space-7); overflow-x: auto; }
+      .hv-list table { display: table; width: 100%; }   /* the full width of the tool, not the narrow .prose table */
+      .hv-list :is(th, td) { padding-right: var(--space-4); white-space: nowrap; }
+      .hv-list :is(th, td):nth-child(n+3) { text-align: right; }
+      .hv-list :is(th, td):last-child { padding-right: 0; }
       .hv-list a { white-space: nowrap; }
+      .hv-age { margin: var(--space-4) 0 0; color: var(--muted); font-size: var(--fs-xs); line-height: 1.6; }
       @media (max-width: 860px) {
         .hv-grid { grid-template-columns: minmax(0, 1fr); }
       }
       @media (max-width: 420px) {
         .hv { padding: 0 var(--space-4); }
         .hv-line { grid-template-columns: 92px minmax(0, 1fr) 64px; gap: var(--space-2); }
-        .hv-list :is(th, td):nth-child(3) { display: none; }   /* the zip column; the map's tooltip has it */
+        .hv-list :is(th, td):is(:nth-child(1), :nth-child(3)) { display: none; }   /* rank and zip; the order and the map tooltip carry them */
+        .hv-list :is(th, td) { padding-right: var(--space-2); font-size: var(--fs-xs); }
+        .hv-list td:nth-child(2), .hv-list td:nth-child(2) a { white-space: normal; }   /* long place names wrap so the table fits */
       }
     </style>
   </main>

@@ -321,9 +321,9 @@
     const scoreHead = (view === 2 && two ? "<th>Both</th>" : "<th>Score</th>") + (two ? "<th>You</th><th>Person 2</th>" : "");
     // A drive-time column for each person who named a workplace
     const works = ps().map((p, k) => (p.workplace ? k : null)).filter((k) => k != null);
-    const driveHead = works.map((k) => "<th>" + (two ? (k ? "Person 2" : "You") + " drive" : "Drive to work") + "</th>").join("");
-    const head = "<thead><tr><th>#</th><th>Place</th><th>Zip</th>" + scoreHead + driveHead + "<th>" + (mode === "buy" ? "Median sale" : "Rent per person") +
-      "</th><th>On Niche</th></tr></thead>";
+    const driveHead = works.map((k) => "<th>" + (two ? (k ? "Person 2" : "You") + " drive" : "Drive") + "</th>").join("");
+    const head = "<thead><tr><th>#</th><th>Place</th><th>Zip</th>" + scoreHead + driveHead + "<th>" + (mode === "buy" ? "Price" : "Rent each") +
+      "</th><th>Niche</th></tr></thead>";
     const body = rows.map((r, i) => "<tr><td>" + (i + 1) + "</td><td>" + listing(r) + "</td><td>" + r.zip + "</td><td><b>" + Math.round(score(r)) + "</b></td>" +
       (two ? "<td>" + Math.round(r.scores[0]) + "</td><td>" + Math.round(r.scores[1]) + "</td>" : "") +
       works.map((k) => "<td>" + Math.round(r.commutes[k]) + " min</td>").join("") +
