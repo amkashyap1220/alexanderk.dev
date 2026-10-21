@@ -110,12 +110,12 @@
 
           <h3>3. Styling and dark mode</h3>
           <p>Every color, space and font size is defined once, as a <b>CSS variable</b> at the top of <code>style.css</code>. The rest of the stylesheet only uses the variables. Dark mode is then just a second set of values for the same variables:</p>
-<pre><code>:root      { --bg: #eeeeec; --text: #2e3436; }   /* light */
+<pre><code class="language-css">:root      { --bg: #eeeeec; --text: #2e3436; }   /* light */
 :root.dark { --bg: #2e3436; --text: #eeeeec; }   /* dark */
 
 body { background: var(--bg); color: var(--text); }</code></pre>
           <p>Switching themes means adding or removing one class, <code>dark</code>, on the page. <code>theme.js</code> does that. It runs before the page is drawn, so there's no flash of the wrong theme. It uses the theme you picked with the toggle if you've picked one, and otherwise follows your device's light or dark setting:</p>
-<pre><code>const saved = localStorage.getItem("theme");          // "dark", "light" or nothing
+<pre><code class="language-js">const saved = localStorage.getItem("theme");          // "dark", "light" or nothing
 const deviceIsDark = matchMedia("(prefers-color-scheme: dark)").matches;
 const theme = saved || (deviceIsDark ? "dark" : "light");
 document.documentElement.classList.toggle("dark", theme === "dark");</code></pre>
@@ -124,7 +124,7 @@ document.documentElement.classList.toggle("dark", theme === "dark");</code></pre
           <h3>4. Live GitHub numbers</h3>
           <p>The stars, commits and languages on the project cards come from GitHub. The obvious approach is to have each visitor's browser ask GitHub directly. The catch: GitHub only allows <b>60 requests an hour</b> per visitor without a key, and the Stats page alone needs dozens. Reload a few times and the numbers stop loading.</p>
           <p>The fix is to have <b>one</b> program ask GitHub on everyone's behalf and share the answer. That program is a Cloudflare <b>Worker</b>, a small script that runs on Cloudflare's servers. Cloudflare starts it every 5 minutes:</p>
-<pre><code>// wrangler.jsonc
+<pre><code class="language-json">// wrangler.jsonc
 "triggers": { "crons": ["*/5 * * * *"] }</code></pre>
           <p>Each run, the Worker:</p>
           <ol>
@@ -133,7 +133,7 @@ document.documentElement.classList.toggle("dark", theme === "dark");</code></pre
             <li>Saves everything as one JSON file in Cloudflare's storage (KV), but only if something changed.</li>
           </ol>
           <p>When a browser asks for <code>/data/github.json</code>, the Worker hands back that saved file. Every other address is a normal file:</p>
-<pre><code>async fetch(request, env) {
+<pre><code class="language-js">async fetch(request, env) {
   const url = new URL(request.url);
   // any other address: a normal file
   if (url.pathname !== "/data/github.json") return env.ASSETS.fetch(request);
@@ -142,9 +142,9 @@ document.documentElement.classList.toggle("dark", theme === "dark");</code></pre
   return new Response(body, { headers: { "Content-Type": "application/json" } });
 }</code></pre>
           <p>On the pages, each number starts as a placeholder that says which repo and which number it wants:</p>
-<pre><code>&lt;b data-gh="amkashyap1220/SwitchToYoutube" data-field="stars"&gt;--&lt;/b&gt;</code></pre>
+<pre><code class="language-html">&lt;b data-gh="amkashyap1220/SwitchToYoutube" data-field="stars"&gt;--&lt;/b&gt;</code></pre>
           <p><code>github.js</code> finds every placeholder, looks the repo up in the data file, and fills in the number:</p>
-<pre><code>document.querySelectorAll("[data-gh]").forEach((el) =&gt; {
+<pre><code class="language-js">document.querySelectorAll("[data-gh]").forEach((el) =&gt; {
   repo(el.dataset.gh).then((data) =&gt; {
     el.textContent = data[el.dataset.field];
   });
@@ -159,7 +159,7 @@ document.documentElement.classList.toggle("dark", theme === "dark");</code></pre
             <li><b>Load:</b> draw the results: the number tiles, the language bars and the activity summary.</li>
           </ul>
           <p>For example, here's the transform step that totals up languages:</p>
-<pre><code>function languageTotals(repos) {
+<pre><code class="language-js">function languageTotals(repos) {
   const totals = {};
   repos.forEach((r) =&gt; {
     Object.entries(r.languages).forEach(([lang, bytes]) =&gt; {
@@ -174,7 +174,7 @@ document.documentElement.classList.toggle("dark", theme === "dark");</code></pre
           <h3>6. Shipping changes</h3>
           <p>The repo is connected to Cloudflare, so <b>every push to <code>main</code> deploys the site</b> automatically. Cloudflare runs <code>npx wrangler deploy</code>, which uploads the files and the Worker. It's live in under a minute.</p>
           <p>Changes don't go straight to <code>main</code>, though. Each one goes on its own branch with a pull request. Cloudflare builds a preview of the branch, and it gets merged once it looks right:</p>
-<pre><code>git checkout -b add-new-project     # new branch
+<pre><code class="language-bash">git checkout -b add-new-project     # new branch
 # ...make changes...
 git push -u origin add-new-project  # Cloudflare builds a preview
 # open a pull request, check the preview, merge → live</code></pre>
@@ -194,5 +194,8 @@ git push -u origin add-new-project  # Cloudflare builds a preview
   </footer>
   <script src="/js/gh.js"></script>
   <script src="/js/github.js"></script>
+  <!-- Code highlighting (Prism). The autoloader fetches each language as a page needs it. -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
 </body>
 </html>

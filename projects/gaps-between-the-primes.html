@@ -103,7 +103,7 @@
           <p>The whole program is one file, <code>primegaps.cpp</code>, about 40 lines. Here it is in pieces.</p>
 
           <p><b>Keeping track.</b> Five variables hold everything the program knows:</p>
-<pre><code>int current = 2, lastp = 2, currentp = 2, lgap = 0, sgap = 1000;</code></pre>
+<pre><code class="language-cpp">int current = 2, lastp = 2, currentp = 2, lgap = 0, sgap = 1000;</code></pre>
           <table>
             <thead><tr><th>Variable</th><th>What it holds</th></tr></thead>
             <tbody>
@@ -116,7 +116,7 @@
           </table>
 
           <p><b>Counting forever.</b> <code>while (true)</code> is a loop with no exit, so the program runs until you stop it. Each time around, <code>current++</code> moves to the next number:</p>
-<pre><code>while (true) {
+<pre><code class="language-cpp">while (true) {
     current++;
     if (isPrime(current)) {
         // found a prime: measure the gap (next piece)
@@ -124,7 +124,7 @@
 }</code></pre>
 
           <p><b>Measuring the gap.</b> When <code>current</code> is prime, the gap is the new prime minus the last one. Then we compare it to our records:</p>
-<pre><code>currentp = current;
+<pre><code class="language-cpp">currentp = current;
 int gap = currentp - lastp;
 if (gap &gt; lgap) {
     lgap = gap;          // new biggest gap
@@ -134,7 +134,7 @@ if (gap &gt; lgap) {
 lastp = currentp;        // this prime is the "last" one next time</code></pre>
 
           <p><b>Printing now and then.</b> Printing every number would flood the screen, so it only prints when <code>current</code> is a multiple of 12,345. The <code>%</code> operator gives the remainder of a division, and a remainder of 0 means "divides evenly". 12,345 isn't special; it's just a number that prints often enough to watch.</p>
-<pre><code>if (current % 12345 == 0) {
+<pre><code class="language-cpp">if (current % 12345 == 0) {
     cout &lt;&lt; "--Prime Gaps--" &lt;&lt; endl;
     cout &lt;&lt; "current prime: " &lt;&lt; currentp &lt;&lt; endl;
     cout &lt;&lt; "Lgap: " &lt;&lt; lgap &lt;&lt; endl;
@@ -142,7 +142,7 @@ lastp = currentp;        // this prime is the "last" one next time</code></pre>
 }</code></pre>
 
           <p><b>Checking for primes.</b> <code>isPrime</code> uses <b>trial division</b>: try dividing by every number from 2 up to <code>num - 1</code>. If any of them divides evenly, <code>num</code> isn't prime.</p>
-<pre><code>bool isPrime(int num) {
+<pre><code class="language-cpp">bool isPrime(int num) {
     bool flag = true;
     for (int i = 2; i &lt; num; i++) {
         if ((num % i) == 0) {
@@ -195,5 +195,8 @@ lastp = currentp;        // this prime is the "last" one next time</code></pre>
   <script src="/js/gh.js"></script>
   <script src="/js/github.js"></script>
   <script src="/js/gaps-between-the-primes.js"></script>
+  <!-- Code highlighting (Prism). The autoloader fetches each language as a page needs it. -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
 </body>
 </html>
