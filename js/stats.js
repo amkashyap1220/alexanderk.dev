@@ -22,6 +22,7 @@
     "466FinalProject": "/projects/atg-shop.html",
     "RateWillBot": "/projects/ratewillbot.html",
     "CSCI-240-Computer-Programming-in-Cpp": "/projects/csci-240.html",
+    "CosmiShapesFinal": "/projects/cosmishapes.html",
   };
 
 
