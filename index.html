@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Alexander Kashyap</title>
   <meta name="description" content="Alexander Kashyap - software developer building data-driven enterprise systems in C#, .NET, SQL, and Python.">
+  <meta name="theme-color" content="#f9f9f8" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#171820" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -12,26 +15,28 @@
   <script src="/js/theme.js"></script>
 </head>
 <body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
   <header class="site-header">
     <div class="wrap">
       <a class="name" href="/">Alexander Kashyap</a>
-      <nav>
+      <nav class="site-nav" aria-label="Main">
         <a href="/" aria-current="page">About</a>
         <a href="/projects/">Projects</a>
         <a href="/writing/">Writing</a>
         <a href="/stats/">Stats</a>
       </nav>
       <div class="header-actions">
-        <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle theme">
-          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
-          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Dark mode" aria-pressed="false">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
         </button>
         <a class="btn small" href="https://github.com/amkashyap1220" target="_blank" rel="noopener">GitHub</a>
       </div>
     </div>
   </header>
 
-  <main>
+  <main id="main" tabindex="-1">
     <section class="hero">
       <div class="narrow">
         <p class="eyebrow">Software developer · Chicago, IL Area</p>
@@ -47,15 +52,15 @@
 
     <section class="section">
       <div class="narrow">
-        <h2>Experience</h2>
-        <p class="intro">~2 years building enterprise software, mostly C#, .NET and SQL.</p>
+        <h2 class="section-title">Experience</h2>
+        <p class="section-intro">~2 years building enterprise software, mostly C#, .NET and SQL.</p>
 
-        <div class="entry">
+        <article class="entry">
           <div class="entry-head">
-            <h3>Application Developer</h3>
-            <span class="when">Jan 2025 – Present</span>
+            <h3 class="entry-title">Application Developer</h3>
+            <span class="when"><time datetime="2025-01">Jan 2025</time> – Present</span>
           </div>
-          <p class="where">K-Rise Systems · Aurora, IL · Enterprise software company</p>
+          <p class="entry-where">K-Rise Systems · Aurora, IL · Enterprise software company</p>
           <ul>
             <li>Worked on the rebuild of the company's AP Automation application for JD Edwards (primary project) in C# and .NET, adding new AI features and updates across the invoice pipeline, from scanned capture through validation and into JDE vouchers</li>
             <li>Help implement AP Automation for clients, gathering requirements from their finance teams, customizing the solution to fit their workflows, and carrying improvements back into the base product</li>
@@ -64,76 +69,94 @@
             <li>Integrated AI APIs to match addresses extracted from scanned invoices against address records in the database, reducing manual lookup</li>
             <li>Supported development of EASYPay and EASYCommerce, the company's .NET payments and e-commerce applications, including SQL to keep payment and order data in sync with JD Edwards</li>
           </ul>
-        </div>
+        </article>
 
-        <div class="entry">
+        <article class="entry">
           <div class="entry-head">
-            <h3>AI Evaluator (Contract)</h3>
-            <span class="when">May 2024 – Jan 2025</span>
+            <h3 class="entry-title">AI Evaluator (Contract)</h3>
+            <span class="when"><time datetime="2024-05">May 2024</time> – <time datetime="2025-01">Jan 2025</time></span>
           </div>
-          <p class="where">Outlier, a Scale AI platform · Remote</p>
+          <p class="entry-where">Outlier, a Scale AI platform · Remote</p>
           <ul>
             <li>Evaluated and compared AI-generated code for correctness, clarity, and quality, writing feedback used as training data to improve large language models</li>
             <li>Applied detailed scoring rubrics consistently to coding tasks, flagging bugs and logical errors</li>
           </ul>
-        </div>
+        </article>
 
-        <div class="entry">
+        <article class="entry">
           <div class="entry-head">
-            <h3>Software Engineering Intern – Middleware</h3>
-            <span class="when">May 2022 – Jan 2023</span>
+            <h3 class="entry-title">Software Engineering Intern – Middleware</h3>
+            <span class="when"><time datetime="2022-05">May 2022</time> – <time datetime="2023-01">Jan 2023</time></span>
           </div>
-          <p class="where">Chamberlain Group · Chicago, IL</p>
+          <p class="entry-where">Chamberlain Group · Chicago, IL</p>
           <ul>
             <li>Built RESTful API endpoints in .NET 6 for the myQ connected-device platform</li>
             <li>Helped migrate services from .NET Core 3.1 to .NET 6, improving performance and maintainability in an Agile/Scrum team</li>
           </ul>
-        </div>
+        </article>
       </div>
     </section>
 
     <section class="section">
       <div class="narrow">
-        <h2>Education</h2>
-        <div class="entry">
+        <h2 class="section-title">Education</h2>
+        <article class="entry">
           <div class="entry-head">
-            <h3>B.S. in Computer Science</h3>
-            <span class="when">May 2024</span>
+            <h3 class="entry-title">B.S. in Computer Science</h3>
+            <time class="when" datetime="2024-05">May 2024</time>
           </div>
-          <p class="where">Northern Illinois University</p>
+          <p class="entry-where">Northern Illinois University</p>
           <ul>
             <li>Relevant coursework: Databases, Probability &amp; Statistics, Data Structures, Algorithms, Software Engineering</li>
             <li>Scholarship player, NIU Esports</li>
             <li>Event Coordinator / Board Member, Association for Computing Machinery (ACM)</li>
             <li>Transfer Merit Scholar</li>
           </ul>
-        </div>
+        </article>
       </div>
     </section>
 
     <section class="section">
       <div class="wrap">
-        <h2>Skills &amp; Certifications</h2>
-        <p class="intro">What I work with day to day.</p>
-        <div class="grid">
-          <div class="card"><p class="label">Languages</p><h3>SQL, Python, C#, JavaScript/TypeScript, C++</h3></div>
-          <div class="card"><p class="label">Databases</p><h3>Microsoft SQL Server (T-SQL, SSMS), MySQL, NoSQL</h3></div>
-          <div class="card"><p class="label">Frameworks &amp; Tools</p><h3>.NET / .NET Core, REST APIs, Git, Jira</h3></div>
-          <div class="card"><p class="label">Cloud</p><h3>AWS, Azure</h3></div>
-          <div class="card"><p class="label">Enterprise Systems</p><h3>JD Edwards (ERP)</h3></div>
-          <div class="card"><p class="label">Certifications</p><h3>AWS Certified Cloud Practitioner (May 2024)</h3></div>
-        </div>
+        <h2 class="section-title">Skills &amp; Certifications</h2>
+        <p class="section-intro">What I work with day to day.</p>
+        <dl class="grid">
+          <div class="card">
+            <dt class="card-label">Languages</dt>
+            <dd class="card-title">SQL, Python, C#, JavaScript/TypeScript, C++</dd>
+          </div>
+          <div class="card">
+            <dt class="card-label">Databases</dt>
+            <dd class="card-title">Microsoft SQL Server (T-SQL, SSMS), MySQL, NoSQL</dd>
+          </div>
+          <div class="card">
+            <dt class="card-label">Frameworks &amp; Tools</dt>
+            <dd class="card-title">.NET / .NET Core, REST APIs, Git, Jira</dd>
+          </div>
+          <div class="card">
+            <dt class="card-label">Cloud</dt>
+            <dd class="card-title">AWS, Azure</dd>
+          </div>
+          <div class="card">
+            <dt class="card-label">Enterprise Systems</dt>
+            <dd class="card-title">JD Edwards (ERP)</dd>
+          </div>
+          <div class="card">
+            <dt class="card-label">Certifications</dt>
+            <dd class="card-title">AWS Certified Cloud Practitioner (May 2024)</dd>
+          </div>
+        </dl>
       </div>
     </section>
   </main>
 
   <footer class="site-footer">
     <div class="wrap">
-      <span>© 2026 Alexander Kashyap</span>
-      <span>
-        <a href="https://www.linkedin.com/in/alexander-kashyap/" target="_blank" rel="noopener">LinkedIn</a>
-        <a href="https://github.com/amkashyap1220" target="_blank" rel="noopener">GitHub</a>
-      </span>
+      <p>© 2026 Alexander Kashyap</p>
+      <ul class="footer-links">
+        <li><a href="https://www.linkedin.com/in/alexander-kashyap/" target="_blank" rel="noopener">LinkedIn</a></li>
+        <li><a href="https://github.com/amkashyap1220" target="_blank" rel="noopener">GitHub</a></li>
+      </ul>
     </div>
   </footer>
 </body>
