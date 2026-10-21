@@ -8,9 +8,9 @@
    The reader picks buying or renting, sets a target and a weight for each
    factor, can name where they work (commute becomes the drive time there,
    from /writing/chicago-home-value-drive.json, src/commute.py), and can add
-   a second person. Nothing is scored until every factor
-   that counts has a target. After that every change rescores and redraws the
-   map and the table. Colors come from the site's CSS variables, so the map
+   a second person. The form starts with sample values; a factor that counts
+   needs a target before anything is scored. Every change rescores and redraws
+   the map and the table, whose place names link to Zillow listings. Colors come from the site's CSS variables, so the map
    redraws when the theme or the width changes.
    ========================================================================== */
 
@@ -26,15 +26,15 @@
 
   // Each factor: what it measures and the units around its target box. Price depends on buying or renting.
   const FACTORS = [
-    { name: "Schools", hint: "District test scores as a percentile within the state: 80 means better than 80% of the state's districts.", before: "", after: "percentile", digits: 0 },
-    { name: "Safety", hint: "Crimes per 1,000 residents a year, from the local police department.", before: "", after: "crimes per 1,000", digits: 1 },
-    { name: "Commute", hint: "Average one-way trip to work (Census). Name where you work and it becomes the drive time from each zip to there instead.", before: "", after: "minutes", digits: 0 },
-    { name: "Walkability", hint: "EPA walkability index, from 1 (need a car for everything) to 20 (very walkable).", before: "", after: "out of 20", digits: 1 },
-    { name: "Home age", hint: "How old the typical (median) home is.", before: "", after: "years old", digits: 0 },
+    { name: "Schools", hint: "State test percentile: 80 beats 80% of districts.", before: "", after: "percentile", digits: 0 },
+    { name: "Safety", hint: "Crimes per 1,000 residents a year.", before: "", after: "crimes per 1,000", digits: 1 },
+    { name: "Commute", hint: "One-way minutes. Add where you work to use the drive time there.", before: "", after: "minutes", digits: 0 },
+    { name: "Walkability", hint: "1 (car for everything) to 20 (very walkable).", before: "", after: "out of 20", digits: 1 },
+    { name: "Home age", hint: "Age of the typical home.", before: "", after: "years old", digits: 0 },
   ];
   const PRICE = {
-    buy: { name: "Price", hint: "The median sale price over the past year (Redfin).", before: "$", after: "", digits: -3, example: "350k" },
-    rent: { name: "Rent", hint: "The median monthly rent, utilities included (Census).", before: "$", after: "a month", digits: 0, example: "1,400" },
+    buy: { name: "Price", hint: "Median sale price, past year.", before: "$", after: "", digits: -3, example: "350k" },
+    rent: { name: "Rent per person", hint: "Median rent divided by the average number of people in a rented home.", before: "$", after: "a month", digits: 0, example: "650" },
   };
   const factors = () => [...FACTORS, PRICE[mode]];
   // The weight slider runs 0 to 4; these are the weights and words for each step
@@ -56,7 +56,7 @@
   // digits < 0 rounds to tens, hundreds, thousands...
   const fmt = (x, digits) => (digits < 0 ? Math.round(x / 10 ** -digits) * 10 ** -digits : x)
     .toLocaleString(undefined, { maximumFractionDigits: Math.max(digits, 0) });
-  const priceText = (z) => money(z[mode][5]) + (mode === "buy" ? " median sale price" : " median rent a month");
+  const priceText = (z) => money(z[mode][5]) + (mode === "buy" ? " median sale price" : " rent per person a month");
 
   // ---- Controls: one fieldset per person, built here so both people get the same form
 
@@ -90,9 +90,8 @@
     fs.className = "hv-person";
     fs.innerHTML =
       '<legend>' + (k === 0 ? "You" : "Person 2") + '</legend>' +
-      '<p class="hv-intro">For each one, type the value you want (your target) and slide how much it matters (its weight). ' +
-      'A zip scores 100 when it matches all your targets, and less the further off it is.</p>' +
-      '<p class="hv-sample" data-sample><b>These are sample values.</b> Change them to yours one at a time, or press Clear to start empty.</p>' +
+      '<p class="hv-intro">Type the value you want, then slide how much it matters.</p>' +
+      '<p class="hv-sample" data-sample><b>Sample values.</b> Change them to yours.</p>' +
       [0, 1, 2, 3, 4, 5].map(row).join("") +
       '<div class="hv-buttons"><button class="btn small" type="button" data-fill>Use sample values</button>' +
       '<button class="btn small" type="button" data-clear>Clear</button>' +
@@ -170,8 +169,8 @@
     steps.forEach((st, i) => { f["w" + i].nextElementSibling.textContent = st.word; });
     const workplace = findWork(f.work.value);
     const note = fs.querySelector("[data-work]");
-    note.textContent = workplace ? "Commute is now the drive time to " + placeName(workplace) + ", without traffic." :
-      workplace === undefined ? "No zip in the Chicago area matches that. Try a zip code." : "";
+    note.textContent = workplace ? "Drive time to " + placeName(workplace) + ", no traffic." :
+      workplace === undefined ? "No match. Try a zip code." : "";
     return { weights: steps.map((st) => st.weight), targets: [0, 1, 2, 3, 4, 5].map((i) => parse(f["t" + i].value)), workplace };
   }
 
@@ -206,8 +205,7 @@
       result = null;
       draw();
       tableEl.innerHTML = "";
-      summaryEl.innerHTML = "<b>Nothing is scored yet.</b> " + gaps.join(" ") +
-        " To skip a factor, set its weight to Ignore. Not sure where to start? Press <i>Use sample values</i>.";
+      summaryEl.innerHTML = "<b>Not scored yet.</b> " + gaps.join(" ") + " Set a weight to Ignore to skip it.";
       return;
     }
     result = window.HVModel.run(data.zips, mode, people, data.top, drive);
@@ -229,14 +227,9 @@
     const onList = rows.filter((r) => r.list).length;
     const what = mode === "buy" ? "to buy" : "to rent";
     const best = rows[0];
-    const head = view === 2 && n > 1
-      ? "<b>The " + picks.size + " best areas " + what + " for both of you.</b> A zip's score for both is the lower of your two scores. The best is " +
-        name(best) + " at " + Math.round(score(best)) + " out of 100."
-      : "<b>" + (view === 1 ? "Person 2's " : "Your ") + picks.size + " best areas " + what + ".</b> The closest match is " +
-        name(best) + ", scoring " + Math.round(score(best)) + " out of 100.";
-    summaryEl.innerHTML = head + " <b>" + onList + "</b> of the " + picks.size + " " + (onList === 1 ? "is" : "are") +
-      " on Niche's list of the best places to live (the diamonds)." +
-      (peopleEl.querySelector("[data-sample]:not([hidden])") ? " <i>These come from sample values. Change them below to see yours.</i>" : "");
+    const who = view === 2 && n > 1 ? "Best " + picks.size + " " + what + " for both of you" : (view === 1 ? "Person 2's" : "Your") + " top " + picks.size + " " + what;
+    summaryEl.innerHTML = "<b>" + who + ".</b> Best match: " + name(best) + " (" + Math.round(score(best)) + "). " +
+      onList + " on Niche's list." + (peopleEl.querySelector("[data-sample]:not([hidden])") ? " <i>Using sample values.</i>" : "");
   }
 
   // ---- Map
@@ -329,13 +322,20 @@
     // A drive-time column for each person who named a workplace
     const works = ps().map((p, k) => (p.workplace ? k : null)).filter((k) => k != null);
     const driveHead = works.map((k) => "<th>" + (two ? (k ? "Person 2" : "You") + " drive" : "Drive to work") + "</th>").join("");
-    const head = "<thead><tr><th>#</th><th>Place</th><th>Zip</th>" + scoreHead + driveHead + "<th>" + (mode === "buy" ? "Median sale" : "Rent") +
+    const head = "<thead><tr><th>#</th><th>Place</th><th>Zip</th>" + scoreHead + driveHead + "<th>" + (mode === "buy" ? "Median sale" : "Rent per person") +
       "</th><th>On Niche</th></tr></thead>";
-    const body = rows.map((r, i) => "<tr><td>" + (i + 1) + "</td><td>" + name(r) + "</td><td>" + r.zip + "</td><td><b>" + Math.round(score(r)) + "</b></td>" +
+    const body = rows.map((r, i) => "<tr><td>" + (i + 1) + "</td><td>" + listing(r) + "</td><td>" + r.zip + "</td><td><b>" + Math.round(score(r)) + "</b></td>" +
       (two ? "<td>" + Math.round(r.scores[0]) + "</td><td>" + Math.round(r.scores[1]) + "</td>" : "") +
       works.map((k) => "<td>" + Math.round(r.commutes[k]) + " min</td>").join("") +
       "<td>" + money(r[mode][5]) + "</td><td>" + (r.list ? "Yes" : "No") + "</td></tr>").join("");
     tableEl.innerHTML = head + "<tbody>" + body + "</tbody>";
+  }
+
+  // A Zillow search for homes for sale (buying) or rentals (renting) in the zip, in a new tab
+  function listing(r) {
+    const url = "https://www.zillow.com/homes/for_" + (mode === "buy" ? "sale" : "rent") + "/" + r.zip + "_rb/";
+    return '<a href="' + url + '" target="_blank" rel="noopener" aria-label="' + name(r) + ", " + (mode === "buy" ? "homes for sale" : "rentals") +
+      ' on Zillow (new tab)">' + name(r) + " ↗</a>";
   }
 
   // ---- Buying / renting

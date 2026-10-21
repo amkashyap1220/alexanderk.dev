@@ -52,7 +52,7 @@
       <div class="narrow">
         <p class="eyebrow"><time datetime="2026-10-21">Oct 21, 2026</time></p>
         <h1>Where's the best home value in Chicagoland?</h1>
-        <p class="lead">Tell the map what you want in a place and how much each thing matters. It scores every Chicago-area zip code against your targets, with the places everyone recommends marked so you can compare.</p>
+        <p class="lead">Say what you want in a place. The map scores every Chicago-area zip against it.</p>
         <div class="actions">
           <a class="btn primary" href="https://github.com/amkashyap1220/Home-Value-Score" target="_blank" rel="noopener">Data and code</a>
           <a class="btn" href="/writing/">← All writing</a>
@@ -84,7 +84,7 @@
               <li class="hv-scored"><span class="hv-key none"></span>Too little data</li>
             </ul>
             <div id="hv-map" class="hv-map"></div>
-            <figcaption id="hv-caption">Hover over or tap a zip for details. Prices: Redfin, June 2025 to May 2026. Rent: Census ACS 2020–2024.</figcaption>
+            <figcaption id="hv-caption">Hover or tap a zip for details.</figcaption>
           </figure>
 
           <form class="hv-controls" aria-label="Your targets and weights" onsubmit="return false">
@@ -98,30 +98,25 @@
       </div>
 
       <article class="narrow prose">
-        <h2>How the score works</h2>
-        <p>You give each of six things a <b>target</b> (the value you want) and a <b>weight</b> (how much it matters):</p>
+        <h2>How it works</h2>
         <ul>
-          <li><b>Schools:</b> district test proficiency as a percentile, ranked within each state, since Illinois and Indiana use different tests (Illinois Report Card, Indiana DOE).</li>
-          <li><b>Safety:</b> crimes per 1,000 residents a year for the police department covering the zip (FBI Crime Data Explorer).</li>
-          <li><b>Commute:</b> average one-way time to work for people living in the zip (Census ACS). If you enter where you work, it becomes the drive time from each zip to your workplace instead, so two people can each have their own. Drive times are from OpenStreetMap roads (OSRM), from the middle of one zip to the middle of the other, at free-flow speeds: no traffic, no transit, so rush hour will be longer. Your workplace has to be a zip on the map.</li>
-          <li><b>Walkability:</b> the EPA's National Walkability Index, 1 to 20.</li>
-          <li><b>Home age:</b> how old the median home is (Census ACS).</li>
-          <li><b>Price:</b> median sale price over the past year (Redfin), or median monthly rent (Census ACS).</li>
+          <li>Give each factor a <b>target</b> and a <b>weight</b>.</li>
+          <li>A zip scores 100 when it hits every target, and less the further off it is. Beating a target for schools, safety or price counts as a hit.</li>
+          <li>With two people, "best for both" uses the lower of your two scores.</li>
+          <li>Diamonds are Niche's 2026 best places to live.</li>
+          <li>Click a place in the list to see what's for sale or rent there.</li>
         </ul>
-        <p>To compare minutes with dollars with crime rates, every value is turned into a percentile: where it falls among the metro's zips, from 0 to 100. A zip's closeness to a target is 100 minus the gap between their percentiles. It's 100 when the zip is exactly on target, and lower the further off it is. For schools, safety and price, beating your target (better schools, less crime, a lower price) also counts as 100. For commute, walkability and home age, being off in either direction lowers it, since you may want a longer commute for more space, or an older house. The score is the weighted average of the six:</p>
-        <blockquote>score = Σ (weight × closeness) ÷ Σ weight</blockquote>
-        <p>So if price is the only thing at Top and the rest are Low, a zip whose median price is exactly your target scores close to 100. Your top 20 are the 20 highest scores. With a second person, each of you gets a score, and "best for both" ranks zips by the lower of the two, so neither of you ends up somewhere far from what you wanted.</p>
-        <p>The area is the 13 counties of the Chicago metro, 9 in Illinois and 4 in Northwest Indiana. For buying, a zip needs at least 20 sales in the past year (338 zips); for renting, at least 100 rented homes (347). A missing number, usually crime data a police department didn't report, counts as 50. Race and ethnicity, and stand-ins for them, aren't used anywhere: steering people by the makeup of a neighborhood is what fair-housing law forbids and what redlining did.</p>
 
-        <h2>How your picks compare with Niche</h2>
-        <p>The diamonds on the map are the places people usually recommend: Niche's 2026 "Best Places to Live in Illinois" top 20, plus the Chicago-area places in the top 50 of its Indiana ranking, matched to their zip codes. They stay on the map whatever you set, so you can see how your targets line up with them, and the line above the map counts how many of your top 20 are among them.</p>
-
-        <h2>What to keep in mind</h2>
+        <h2>The data</h2>
         <ul>
-          <li>A zip code averages over very different streets. Treat a pick as a place worth a weekend drive, not proof of a bargain.</li>
-          <li>Percentiles only compare zips with each other, and lot size, flood risk, airport noise and home condition aren't in the data.</li>
-          <li>This replaces the regression in my <a href="https://github.com/amkashyap1220/Home-Value-Score/blob/main/docs/decisions.md">pre-registered plan</a>, which I set before looking at prices. That test also supported the idea of hidden value (16 underpriced, high-quality zips, 15 not on Niche's list). Why I changed it is logged in the decision file.</li>
+          <li><b>Schools:</b> district test scores, as a percentile within the state (Illinois Report Card, Indiana DOE).</li>
+          <li><b>Safety:</b> crimes per 1,000 residents a year (FBI).</li>
+          <li><b>Commute:</b> the Census average, or the drive time to where you work (OpenStreetMap, no traffic).</li>
+          <li><b>Walkability:</b> EPA index, 1 to 20.</li>
+          <li><b>Home age and rent:</b> Census ACS 2020–2024. Rent is per person: the median rent divided by the average number of people in a rented home.</li>
+          <li><b>Price:</b> median sale price, June 2025 to May 2026 (Redfin).</li>
         </ul>
+        <p>Covers the 13-county Chicago metro. Race and ethnicity aren't used. A zip averages very different streets, so treat a pick as a place worth a visit. Method and code are <a href="https://github.com/amkashyap1220/Home-Value-Score">on GitHub</a>.</p>
       </article>
     </section>
 
@@ -170,6 +165,7 @@
       .hv-add[hidden] { display: none; }
       .hv-list { margin-top: var(--space-6); }
       .hv-list table { width: 100%; }
+      .hv-list a { white-space: nowrap; }
       @media (max-width: 860px) {
         .hv-grid { grid-template-columns: minmax(0, 1fr); }
       }
