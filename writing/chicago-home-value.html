@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Is there a cheap good zip code in Chicagoland? · Alexander Kashyap</title>
+  <title>Where's the best home value in Chicagoland? · Alexander Kashyap</title>
   <meta name="description" content="I scored 338 Chicago-area zip codes on schools, safety, commute and walkability, counted what a home costs to run, and ranked where you get the most for your money.">
   <!-- Link previews (iMessage, Discord, Slack, LinkedIn, ...) -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Alexander Kashyap">
-  <meta property="og:title" content="Is there a cheap good zip code in Chicagoland? · Alexander Kashyap">
+  <meta property="og:title" content="Where's the best home value in Chicagoland? · Alexander Kashyap">
   <meta property="og:description" content="I scored 338 Chicago-area zip codes on schools, safety, commute and walkability, counted what a home costs to run, and ranked where you get the most for your money.">
   <meta property="og:url" content="https://alexanderk.dev/writing/chicago-home-value">
   <meta property="og:image" content="https://alexanderk.dev/og.png">
@@ -51,7 +51,7 @@
     <section class="hero">
       <div class="narrow">
         <p class="eyebrow"><time datetime="2026-10-21">Oct 21, 2026</time></p>
-        <h1>Is there a cheap good zip code in Chicagoland?</h1>
+        <h1>Where's the best home value in Chicagoland?</h1>
         <p class="lead">I scored 338 Chicago-area zip codes on quality and on what a home costs to run, ranked the best values, then checked them against the places everyone recommends.</p>
         <div class="actions">
           <a class="btn primary" href="https://github.com/amkashyap1220/Home-Value-Score" target="_blank" rel="noopener">Data and code</a>
@@ -82,10 +82,10 @@
           <li><b>Home age:</b> how old the typical house is, from the Census.</li>
         </ul>
         <p><b>The model.</b> A linear regression predicts each zip's median price per square foot from its quality score and those four costs. The <b>residual</b> is the actual price minus the predicted one. A negative residual means homes there sell for less than the model expects for what you get.</p>
-        <p><b>A value pick</b> is a zip with above-median quality whose residual is more than one standard deviation below zero. That works out to at least $56 per square foot cheaper than predicted.</p>
+        <p><b>A value pick</b> is a zip with above-median quality whose residual is more than one standard deviation below zero. That works out to at least $56 per square foot below its predicted price.</p>
 
         <h2>The best-value areas</h2>
-        <p>Each dot is a zip. Further right means higher quality, and lower means cheaper than the model predicts. The value picks are in the shaded corner. Hover over or tap a dot for details.</p>
+        <p>Each dot is a zip. Further right means higher quality, and lower means better value: homes sell for less than the model predicts. The value picks are in the shaded corner. Hover over or tap a dot for details.</p>
       </article>
 
       <figure class="wrap hv" aria-labelledby="hv-caption">
@@ -98,7 +98,7 @@
       </figure>
 
       <article class="narrow prose">
-        <p>Based on my model, these are the 16 best-value zip codes in the Chicago area, most underpriced first:</p>
+        <p>Based on my model, these are the 16 best-value zip codes in the Chicago area, best value first:</p>
         <table id="hv-table"></table>
         <p>12 are in Illinois and 4 in Indiana. Most are just above the quality median (scores in the 50s and 60s), not top-tier areas. That's what the model is built to find: solid places at a clear discount. Quality has the clearest effect, adding about $1.90 per square foot for every point. Energy bills and commuting fuel both pull prices down, as you'd expect. Once those are in, home age and the tax rate make no measurable difference.</p>
 
@@ -110,17 +110,51 @@
           <li><b>Some picks are data artifacts.</b> I checked the most underpriced zips by hand. Robbins scores well partly because its police department reports no crime data, so its score is the average of the other three ingredients. Small rural towns like Kentland and Rensselaer get great commute scores because people work locally, not because they're close to Chicago jobs. North Chicago's short commutes come from Naval Station Great Lakes.</li>
           <li><b>The model explains 41% of prices</b> (R² = 0.41). Lot size, the lake, home condition, flood risk and airport noise all matter and aren't in it.</li>
         </ul>
-        <p>The strongest leads are suburban, have complete data and hold up under the checks: <b>Woodstock</b> and <b>Joliet's east side (60433)</b> pass both, <b>Schaumburg (60173)</b> survives the recipe changes, and <b>Itasca</b> and <b>Sycamore</b> hold in the Illinois-only run. They're leads worth a weekend drive, not proof of a bargain. A zip code averages over very different streets, and a model this simple can't see what makes a particular block cheap.</p>
+        <p>The strongest leads are suburban, have complete data and hold up under the checks: <b>Woodstock</b> and <b>Joliet's east side (60433)</b> pass both, <b>Schaumburg (60173)</b> survives the recipe changes, and <b>Itasca</b> and <b>Sycamore</b> hold in the Illinois-only run. They're leads worth a weekend drive, not proof of a bargain. A zip code averages over very different streets, and a model this simple can't see what makes a particular block a good value.</p>
 
         <h2>Did I find hidden value?</h2>
         <p>Now for the comparison with word of mouth. For the reputation list I used Niche's 2026 "Best Places to Live in Illinois" top 20, plus the Chicago-area places in the top 50 of its Indiana ranking, matched to 32 zip codes.</p>
         <blockquote><b>15 of my 16 value picks are not on the list.</b> The only overlap is Valparaiso (46383).</blockquote>
         <p>Before seeing any prices, I wrote down the rule for calling this a yes: at least 3 value picks, with more than half of them off the reputation list. The result clears it easily. The list's own zips are well chosen but expensive. Their median quality is 62, against 49 everywhere else. They typically sell about $27 per square foot <i>above</i> what the model predicts, and 62% of them sit above the line. Part of what you pay for in those places is the name.</p>
 
+        <h2>Try your own weights</h2>
+        <p>My weights are a choice. Maybe schools matter twice as much to you, or you work from home and don't care about the commute. Set your own below. The page rebuilds the quality score, refits the model and finds your value picks, then checks them against the Niche list. With every weight at 1 and every cost switched on, you get the ranking above.</p>
+      </article>
+
+      <div class="wrap hv hv-explorer" id="hv-explorer">
+        <form class="hv-controls" id="hv-form" aria-label="Your weights">
+          <fieldset>
+            <legend>Quality: how much each counts</legend>
+            <label><span>Schools</span><input type="range" name="w0" min="0" max="3" step="0.5" value="1"><output>1</output></label>
+            <label><span>Safety</span><input type="range" name="w1" min="0" max="3" step="0.5" value="1"><output>1</output></label>
+            <label><span>Commute</span><input type="range" name="w2" min="0" max="3" step="0.5" value="1"><output>1</output></label>
+            <label><span>Walkability</span><input type="range" name="w3" min="0" max="3" step="0.5" value="1"><output>1</output></label>
+          </fieldset>
+          <fieldset>
+            <legend>Costs the model accounts for</legend>
+            <label class="hv-check"><input type="checkbox" name="tax" checked> Property tax rate</label>
+            <label class="hv-check"><input type="checkbox" name="energy" checked> Energy bills</label>
+            <label class="hv-check"><input type="checkbox" name="fuel" checked> Commuting fuel</label>
+            <label class="hv-check"><input type="checkbox" name="age" checked> Home age</label>
+            <button class="btn small" type="reset">Reset to my weights</button>
+          </fieldset>
+        </form>
+        <p class="hv-result" id="hv-x-summary" aria-live="polite"></p>
+        <ul class="hv-legend" aria-label="Legend">
+          <li><span class="hv-key pick"></span>Your value pick</li>
+          <li><span class="hv-key other"></span>Other zip</li>
+          <li><span class="hv-key list"></span>On the Niche list</li>
+        </ul>
+        <div id="hv-x-chart" class="hv-chart"></div>
+        <div class="prose"><table id="hv-x-table"></table></div>
+      </div>
+
+      <article class="narrow prose">
+
         <h2>Notes on the method</h2>
         <ul>
           <li><b>I set the method before looking.</b> It's easy to fool yourself with data like this: run the numbers, see something interesting, then decide that's what you were looking for. So I wrote down the question, every definition and the pass/fail rule, and <a href="https://github.com/amkashyap1220/Home-Value-Score/commit/935ee45">committed them</a> before downloading any price data. Scientists call this pre-registration.</li>
-          <li><b>One change came after the first run.</b> The pre-registered model only had quality and the tax rate. After running it, I added energy bills, commuting fuel and home age, because a buyer pays those costs on top of the price. Changing a model after seeing results is exactly what pre-registration exists to catch, so it's logged with the reason in <a href="https://github.com/amkashyap1220/Home-Value-Score/blob/main/docs/decisions.md#change-log">the decision file</a>. The first run also cleared the rule (16 picks, 11 off the list), but 9 of its picks were in Indiana. Cheaper gas and energy in Indiana explain part of that, and adding them cut Indiana's picks to 4.</li>
+          <li><b>One change came after the first run.</b> The pre-registered model only had quality and the tax rate. After running it, I added energy bills, commuting fuel and home age, because a buyer pays those costs on top of the price. Changing a model after seeing results is exactly what pre-registration exists to catch, so it's logged with the reason in <a href="https://github.com/amkashyap1220/Home-Value-Score/blob/main/docs/decisions.md#change-log">the decision file</a>. The first run also cleared the rule (16 picks, 11 off the list), but 9 of its picks were in Indiana. Lower gas and energy costs in Indiana explain part of that, and adding them cut Indiana's picks to 4.</li>
           <li><b>The cost numbers are rough.</b> Energy bills grow with house size, and the fuel estimate is built from commute time, which the quality score already includes.</li>
         </ul>
 
@@ -137,7 +171,20 @@
       .hv-key { display: inline-block; width: 10px; height: 10px; border-radius: 50%; }
       .hv-key.pick { background: var(--pick); }
       .hv-key.other { background: var(--other); opacity: 0.65; width: 7px; height: 7px; }
+      .hv-key.list { border: 1.5px solid var(--text); border-radius: 1px; transform: rotate(45deg) scale(0.8); }
       .hv-chart { min-height: 380px; }
+      .hv-explorer { margin-bottom: var(--space-8); }
+      .hv-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: var(--space-4); margin-bottom: var(--space-4); }
+      .hv-controls fieldset { margin: 0; padding: var(--space-3) var(--space-4) var(--space-4); border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); }
+      .hv-controls legend { padding: 0 var(--space-1); color: var(--label); font-size: var(--fs-2xs); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+      .hv-controls label { display: grid; grid-template-columns: 100px 1fr 32px; align-items: center; gap: var(--space-3); margin-top: var(--space-2); font-size: var(--fs-sm); }
+      .hv-controls input[type="range"] { width: 100%; accent-color: var(--pick); }
+      .hv-controls output { color: var(--muted); text-align: right; }
+      .hv-controls .hv-check { display: flex; gap: var(--space-2); }
+      .hv-controls input[type="checkbox"] { accent-color: var(--pick); }
+      .hv-controls button { margin-top: var(--space-4); }
+      .hv-result { margin-bottom: var(--space-3); font-size: var(--fs-md); line-height: 1.6; }
+      .hv-explorer .prose { margin-top: var(--space-5); }
       .hv-chart svg { display: block; max-width: 100%; height: auto; overflow: visible; }
       .hv figcaption { margin-top: var(--space-2); color: var(--muted); font-size: var(--fs-xs); line-height: 1.6; }
     </style>
@@ -155,6 +202,7 @@
   <!-- Chart: Observable Plot (needs d3), pinned versions -->
   <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6.16/dist/plot.umd.min.js"></script>
+  <script src="/js/chicago-home-value-model.js"></script>
   <script src="/js/chicago-home-value.js"></script>
 </body>
 </html>
