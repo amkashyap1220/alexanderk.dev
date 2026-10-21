@@ -8,7 +8,7 @@
    - GH.api(path): fetch from api.github.com; throws on an error status.
    - GH.repo / GH.commits / GH.languages / GH.readme: cached lookups, so
      the Projects and Stats pages reuse each other's data.
-   - GH.languageColor(name): GitHub's color for a language, or null.
+   - GH.languageColor(name): the Tango color for a language, or null.
    - GH.timeAgo(date), GH.el(tag, class, text): display helpers.
    ========================================================================== */
 
@@ -58,15 +58,19 @@
   const readme = (name) => cached("readme:" + name, () =>
     api("repos/" + name + "/readme", { headers: { Accept: "application/vnd.github.html+json" } }).then((r) => r.text()));
 
-  // GitHub's colors for common languages (from github-linguist), used for the
-  // dots next to language names and the bars on the Stats page
+  // A Tango color per language (Tango = the default GNOME / Linux palette),
+  // picked to echo each language's usual color. Used for the dots next to
+  // language names and the bars on the GitHub Stats page.
   const LANGUAGE_COLORS = {
-    "C": "#555555", "C#": "#178600", "C++": "#f34b7d", "CSS": "#563d7c", "Dart": "#00B4AB",
-    "Dockerfile": "#384d54", "Go": "#00ADD8", "HTML": "#e34c26", "Java": "#b07219",
-    "JavaScript": "#f1e05a", "Jupyter Notebook": "#DA5B0B", "Kotlin": "#A97BFF", "PHP": "#4F5D95",
-    "PLpgSQL": "#336790", "PowerShell": "#012456", "Python": "#3572A5", "R": "#198CE7",
-    "Ruby": "#701516", "Rust": "#dea584", "SCSS": "#c6538c", "Shell": "#89e051", "SQL": "#e38c00",
-    "Swift": "#F05138", "TSQL": "#e38c00", "TypeScript": "#3178c6", "Vue": "#41b883",
+    "Python": "#3465a4", "TypeScript": "#3465a4", "Go": "#729fcf", "R": "#729fcf", "Dart": "#729fcf",   // sky blue
+    "PowerShell": "#204a87", "Dockerfile": "#204a87", "PLpgSQL": "#204a87",
+    "JavaScript": "#edd400",                                                                          // butter
+    "HTML": "#f57900", "Swift": "#f57900", "Rust": "#ce5c00", "Jupyter Notebook": "#fcaf3e",           // orange
+    "CSS": "#75507b", "PHP": "#5c3566", "SCSS": "#ad7fa8", "Kotlin": "#ad7fa8",                         // plum
+    "C++": "#cc0000", "Ruby": "#a40000",                                                               // scarlet red
+    "C#": "#4e9a06", "Shell": "#73d216", "Vue": "#73d216",                                            // chameleon
+    "Java": "#c17d11", "SQL": "#8f5902", "TSQL": "#8f5902",                                           // chocolate
+    "C": "#888a85",                                                                                    // aluminium
   };
   const languageColor = (name) => LANGUAGE_COLORS[name] || null;
 

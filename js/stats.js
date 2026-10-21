@@ -117,7 +117,7 @@
       const link = el("a", null, repo.name);
       link.href = linkFor(repo);
       line.append(el("span", "muted", label + ": "), link, el("span", "muted", " · "));
-      if (icon) line.append(el("span", "star", icon));   // the gold star
+      if (icon) line.append(el("span", "star", icon));   // the star
       line.append(el("span", "muted", detail));
       highlights.append(line);
     });
@@ -150,7 +150,7 @@
       const bar = el("div", "bar");
       bar.style.width = Math.max(1, (value / biggest) * 100) + "%";   // longest bar = full width
       const color = lang.name === "Other" ? "var(--muted)" : languageColor(lang.name);
-      if (color) bar.style.setProperty("--lang", color);                // GitHub's color for the language
+      if (color) bar.style.setProperty("--lang", color);                // the language's Tango color
       track.setAttribute("aria-hidden", "true");                        // the text next to it says the same
       track.append(bar);
       row.append(el("span", "bar-name", lang.name), track, el("span", "bar-value", amount));

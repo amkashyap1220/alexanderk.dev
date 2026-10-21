@@ -1,6 +1,7 @@
 /* ==========================================================================
    alexanderk.dev — styles
-   Monospace "docs" look: Fira Code, warm off-white, green accent.
+   Monospace "docs" look in Fira Code. Light or dark mode, colored with Tango,
+   the default palette of GNOME and most Linux desktops and terminals.
 
    1. Tokens        colors, spacing, type, radius (light + dark)
    2. Base          reset, body, links, focus, utilities
@@ -14,15 +15,18 @@
 
 /* ---------- 1. Tokens ---------- */
 :root {
-  /* colors (light) — every text color passes WCAG AA on every surface it sits on */
-  --bg: #f9f9f8;
-  --text: #1c1e24;
-  --muted: #676b71;
-  --border: #dcddd9;
-  --card: rgba(255, 255, 255, 0.4);
-  --soft: #f0f1ef;            /* secondary buttons, code, bar tracks */
-  --accent: #2b7a4b;          /* green */
-  --gold: #b07d00;            /* GitHub stars */
+  /* colors (light): GNOME Terminal's "Tango Light", darkest Tango shades for
+     color. Every text color passes WCAG AA on every surface it sits on. */
+  --bg: #eeeeec;              /* aluminium 1 */
+  --text: #2e3436;            /* aluminium 6 */
+  --muted: #555753;           /* aluminium 5 */
+  --border: #d3d7cf;          /* aluminium 2 */
+  --card: rgba(255, 255, 255, 0.6);
+  --soft: #ffffff;            /* secondary buttons, code, bar tracks, pills */
+  --link: #204a87;            /* sky blue 3: links, focus ring, hovers */
+  --label: #8f5902;           /* chocolate 3: eyebrows, taglines, company names */
+  --mark: #4e9a06;            /* chameleon 3: bullets, quote bars */
+  --star: #ce5c00;            /* orange 3: GitHub stars */
   color-scheme: light;
 
   /* spacing scale */
@@ -63,14 +67,16 @@
    .dark on <html>). The site starts light for everyone, including with
    JavaScript off. */
 :root.dark {
-  --bg: #171820;
-  --text: #f4f1f2;
-  --muted: #8f93a3;
-  --border: #2d3140;
-  --card: rgba(29, 31, 40, 0.6);
-  --soft: #20232d;
-  --accent: #4ec98a;
-  --gold: #e3b341;
+  --bg: #2e3436;              /* GNOME Terminal's "Tango Dark" */
+  --text: #eeeeec;
+  --muted: #babdb6;           /* aluminium 3 */
+  --border: #555753;
+  --card: rgba(255, 255, 255, 0.04);
+  --soft: rgba(255, 255, 255, 0.07);
+  --link: #729fcf;            /* sky blue 1 */
+  --label: #e9b96e;           /* chocolate 1 */
+  --mark: #8ae234;            /* chameleon 1 */
+  --star: #fce94f;            /* butter 1 */
   color-scheme: dark;
 }
 
@@ -91,11 +97,11 @@ body {
 
 h1, h2, h3, p, ul, ol, dl, dd { margin: 0; }
 
-a { color: var(--accent); text-decoration: none; }
+a { color: var(--link); text-decoration: none; }
 a:hover { text-decoration: underline; text-underline-offset: 3px; }
 
 /* One clear focus ring for keyboard users, everywhere */
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: var(--radius-sm); }
+:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; border-radius: var(--radius-sm); }
 
 /* Inline code, wherever it appears */
 code { font-family: inherit; font-size: 0.9em; }
@@ -187,13 +193,13 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
 
 /* Hero: the centered intro at the top of every page */
 .hero { padding: var(--space-11) 0 72px; text-align: center; }
-.eyebrow { color: var(--accent); font-size: var(--fs-xs); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+.eyebrow { color: var(--label); font-size: var(--fs-xs); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
 .hero h1 { margin: var(--space-4) 0 6px; font-size: var(--fs-3xl); line-height: 1.1; letter-spacing: -0.025em; }
-.tagline { color: var(--accent); font-size: var(--fs-md); }
+.tagline { color: var(--label); font-size: var(--fs-md); }
 .lead { max-width: 560px; margin: 28px auto 0; color: var(--muted); line-height: 1.6; }
 .actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: var(--space-7); }
 
-/* Accent-tinted pill for live GitHub stats */
+/* Pill for live GitHub stats */
 .pill {
   display: inline-flex;
   flex-wrap: wrap;
@@ -202,16 +208,16 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
   gap: var(--space-1) 10px;
   margin-top: 14px;
   padding: var(--space-1) 14px;
-  border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+  border: 1px solid var(--border);
   border-radius: var(--space-4);      /* not fully round, so it still looks right if it wraps */
-  background: color-mix(in srgb, var(--accent) 7%, transparent);
+  background: var(--soft);
   color: var(--muted);
   font-size: var(--fs-xs);
 }
 .pill > span { white-space: nowrap; }
 .pill b { color: var(--text); font-weight: 500; }
-.star { color: var(--gold); }
-/* A language name gets a dot in GitHub's color for that language (set by js/github.js) */
+.star { color: var(--star); }
+/* A language name gets a dot in its Tango color (set by js/github.js) */
 [data-field="language"][style*="--lang"]::before {
   content: "";
   display: inline-block;
@@ -221,7 +227,7 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
   border-radius: 50%;
   background: var(--lang);
 }
-.pill .sep { width: 1px; height: 12px; background: color-mix(in srgb, var(--accent) 25%, transparent); }
+.pill .sep { width: 1px; height: 12px; background: var(--border); }
 
 /* Chips (tags) */
 .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 14px 0 0; padding: 0; list-style: none; }
@@ -246,7 +252,7 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
   border-radius: var(--radius-lg);
   background: var(--card);
 }
-.card-label { color: var(--accent); font-size: var(--fs-2xs); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+.card-label { color: var(--label); font-size: var(--fs-2xs); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
 .card-title { font-size: var(--fs-md); font-weight: 500; }
 .card-text { margin-top: 6px; color: var(--muted); font-size: var(--fs-xs); line-height: 1.6; }
 
@@ -262,8 +268,8 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
   align-content: start;
   padding: var(--space-5);
 }
-.project:hover { border-color: var(--accent); }
-.project:has(.card-link:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+.project:hover { border-color: var(--link); }
+.project:has(.card-link:focus-visible) { outline: 2px solid var(--link); outline-offset: 2px; }
 .card-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0 var(--space-3); }
 .project .card-title { font-size: var(--fs-base); font-weight: 600; }
 .project .card-text { font-size: var(--fs-sm); }
@@ -281,11 +287,11 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
 .entry + .entry { margin-top: var(--space-8); }
 .entry-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0 var(--space-4); }
 .entry-title { font-size: var(--fs-base); font-weight: 600; }
-.entry-where { margin-top: 2px; color: var(--accent); font-size: var(--fs-sm); }
+.entry-where { margin-top: 2px; color: var(--label); font-size: var(--fs-sm); }
 .entry ul { margin-top: var(--space-3); padding-left: 0; list-style: none; }
 .entry li { position: relative; padding-left: var(--space-5); color: var(--muted); font-size: var(--fs-md); line-height: 1.6; }
 .entry li + li { margin-top: var(--space-2); }
-.entry li::before { content: "›"; position: absolute; left: var(--space-1); color: var(--accent); }
+.entry li::before { content: "›"; position: absolute; left: var(--space-1); color: var(--mark); }
 
 /* Long-form text: blog posts and READMEs (.prose), plus GitHub-only bits (.readme) */
 .prose { font-size: 15px; line-height: 1.7; overflow-wrap: break-word; }   /* posts and walkthroughs */
@@ -298,7 +304,7 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
 .prose table { display: block; max-width: 100%; overflow-x: auto; border-collapse: collapse; font-size: var(--fs-sm); }   /* wide tables scroll in place */
 .prose th { color: var(--muted); font-size: var(--fs-2xs); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; text-align: left; }
 .prose th, .prose td { padding: var(--space-2) 14px var(--space-2) 0; border-bottom: 1px solid var(--border); }
-.prose blockquote { margin-inline: 0; margin-bottom: 0; padding-left: var(--space-4); border-left: 3px solid var(--accent); color: var(--muted); }
+.prose blockquote { margin-inline: 0; margin-bottom: 0; padding-left: var(--space-4); border-left: 3px solid var(--mark); color: var(--muted); }
 
 .readme { margin-top: var(--space-6); font-size: var(--fs-md); }   /* READMEs are a size smaller */
 .readme .anchor { display: none; }                        /* GitHub's link icons next to headings */
@@ -316,7 +322,7 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
 }
 .posts li:first-child .post-link { border-top: 1px solid var(--border); }
 .post-link:hover { text-decoration: none; }
-.post-link:hover .post-title { color: var(--accent); }
+.post-link:hover .post-title { color: var(--link); }
 .post-link time { color: var(--muted); font-size: var(--fs-sm); line-height: 1.9; }
 .post-title { font-size: var(--fs-base); font-weight: 600; }
 .post-summary { grid-column: 2; color: var(--muted); font-size: var(--fs-sm); }
@@ -337,7 +343,7 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
 .bar-row + .bar-row { margin-top: 10px; }
 .bar-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .bar-track { height: 10px; border-radius: var(--radius-pill); background: var(--soft); }
-.bar { height: 100%; border-radius: var(--radius-pill); background: var(--lang, var(--accent)); }   /* GitHub's color for the language */
+.bar { height: 100%; border-radius: var(--radius-pill); background: var(--lang, var(--muted)); }   /* the language's Tango color */
 .bar-value { color: var(--muted); text-align: right; }
 
 .activity-summary { font-size: var(--fs-md); }

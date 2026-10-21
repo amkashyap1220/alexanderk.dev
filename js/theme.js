@@ -18,7 +18,7 @@
     root.classList.toggle("dark", theme === "dark");
     root.classList.toggle("light", theme !== "dark");
     const bar = document.querySelector('meta[name="theme-color"]');
-    if (bar) bar.content = theme === "dark" ? "#171820" : "#f9f9f8";
+    if (bar) bar.content = theme === "dark" ? "#2e3436" : "#eeeeec";
   }
 
   apply(savedTheme() === "dark" ? "dark" : "light");
