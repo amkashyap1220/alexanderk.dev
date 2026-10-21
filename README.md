@@ -14,11 +14,10 @@ writing/                       Writing: list of posts + _template.html for new o
 stats/index.html               GitHub Stats: live numbers, languages and activity from GitHub
 css/style.css                  All styling (colors, spacing and type sizes at the top)
 js/theme.js                    Light/dark: follows the visitor's system, toggle overrides
-js/gh.js                       Shared GitHub fetching + 30-minute cache
+js/gh.js                       Shared GitHub fetching: reads /data/github.json, else live + 30-minute cache
 js/github.js                   Fills in GitHub stats and READMEs
 js/stats.js                    Fetches and draws the Stats page
-data/github.json               GitHub numbers + READMEs, saved by the Action below (made on first run)
-.github/                       Action that refreshes data/github.json every 5 minutes and on each push
+worker/index.js                Cloudflare script: refreshes GitHub data every 5 min, serves /data/github.json
 404.html, favicon*.svg         Not-found page and tab icons (light, dark)
 wrangler.jsonc                 Cloudflare settings
 .assetsignore                  Keeps README, config, and .git off the live site
@@ -35,3 +34,5 @@ wrangler.jsonc                 Cloudflare settings
 
 ## Deployment
 Connected to a Cloudflare Worker through Workers Builds. Every push to main runs npx wrangler deploy, which uploads the site.
+
+The GitHub data needs a `GITHUB_TOKEN` secret on the Worker (Settings > Variables and Secrets): a fine-grained GitHub token with read-only access to public repos.
