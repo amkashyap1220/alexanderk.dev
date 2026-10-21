@@ -11,7 +11,7 @@ index.html                     About: summary, experience, education, skills
 projects/index.html            Projects list 
 projects/<project>.html        One page per project: its GitHub README, then a "Walkthrough"
 writing/                       Writing: list of posts + _template.html for new ones
-stats/index.html               Stats: live numbers, languages and activity from GitHub
+stats/index.html               GitHub Stats: live numbers, languages and activity from GitHub
 css/style.css                  All styling (colors, spacing and type sizes at the top)
 js/theme.js                    Light/dark toggle
 js/gh.js                       Shared GitHub fetching + 30-minute cache

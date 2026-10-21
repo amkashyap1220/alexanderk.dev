@@ -1,6 +1,6 @@
 /* ==========================================================================
    alexanderk.dev — styles
-   Monospace "docs" look: Fira Code, warm off-white, brick-red accent.
+   Monospace "docs" look: Fira Code, warm off-white, green accent.
 
    1. Tokens        colors, spacing, type, radius (light + dark)
    2. Base          reset, body, links, focus, utilities
@@ -21,7 +21,7 @@
   --border: #dcddd9;
   --card: rgba(255, 255, 255, 0.4);
   --soft: #f0f1ef;            /* secondary buttons, code, bar tracks */
-  --accent: #b6463e;          /* brick red */
+  --accent: #2b7a4b;          /* green */
   color-scheme: light;
 
   /* spacing scale */
@@ -67,7 +67,7 @@
   --border: #2d3140;
   --card: rgba(29, 31, 40, 0.6);
   --soft: #20232d;
-  --accent: #e06c75;
+  --accent: #4ec98a;
   color-scheme: dark;
 }
 @media (prefers-color-scheme: dark) {
@@ -78,7 +78,7 @@
     --border: #2d3140;
     --card: rgba(29, 31, 40, 0.6);
     --soft: #20232d;
-    --accent: #e06c75;
+    --accent: #4ec98a;
     color-scheme: dark;
   }
 }
@@ -202,7 +202,7 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
 .lead { max-width: 560px; margin: 28px auto 0; color: var(--muted); line-height: 1.6; }
 .actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: var(--space-7); }
 
-/* Red-tinted pill for live GitHub stats */
+/* Accent-tinted pill for live GitHub stats */
 .pill {
   display: inline-flex;
   flex-wrap: wrap;
@@ -366,4 +366,5 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
   .wrap, .narrow { padding: 0 var(--space-4); }
   .site-header .wrap { gap: var(--space-2); }
   .site-nav a { padding: 6px; font-size: 12.5px; }
+  .nav-long { display: none; }   /* "GitHub Stats" -> "Stats" so the header fits */
 }
