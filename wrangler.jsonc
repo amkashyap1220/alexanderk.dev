@@ -4,5 +4,7 @@
   "compatibility_date": "2026-10-20",
   "assets": {
     "directory": "./"
-  }
+  },
+  // Lets branches other than main build a preview (npx wrangler preview)
+  "previews": {}
 }
