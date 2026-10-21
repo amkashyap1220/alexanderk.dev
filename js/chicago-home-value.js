@@ -37,7 +37,6 @@
   let mode = "buy";
   let view = 0;            // 0 = you, 1 = person 2, 2 = best for both
   let result = null;
-  const mine = {};         // my published top 20 per mode
 
   const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   const money = (x) => "$" + Math.round(x).toLocaleString();
@@ -65,7 +64,7 @@
       '<input type="range" name="ps" min="0" max="100" step="5" value="50" aria-label="How much a low price counts, as a share of the score">' +
       '<output>50%</output>' +
       '<input type="text" inputmode="decimal" name="budget" aria-label="' + BUDGET[mode].label + '" placeholder="' + BUDGET[mode].hint + '"></label>' +
-      '<div class="hv-buttons"><button class="btn small" type="button" data-reset>' + (k === 0 ? "Use my weights" : "Reset") + '</button>' +
+      '<div class="hv-buttons"><button class="btn small" type="button" data-reset>' + "Reset" + '</button>' +
       (k === 1 ? '<button class="btn small" type="button" data-remove>Remove person 2</button>' : "") + '</div>';
     fs.addEventListener("input", update);
     fs.querySelector("[data-reset]").addEventListener("click", () => {
@@ -136,7 +135,6 @@
     const { picks } = current();
     const rows = result.rows.filter((r) => picks.has(r.zip));
     const onList = rows.filter((r) => r.list).length;
-    const inMine = rows.filter((r) => mine[mode].has(r.zip)).length;
     const what = mode === "buy" ? "to buy" : "to rent";
     let head;
     if (view === 2 && n > 1) {
@@ -146,8 +144,7 @@
     } else {
       head = "<b>" + (view === 1 ? "Person 2's " : "Your ") + picks.size + " value areas " + what + ".</b>";
     }
-    summaryEl.innerHTML = head + " <b>" + onList + "</b> of them " + (onList === 1 ? "is" : "are") + " on the Niche list, and " +
-      inMine + " " + (inMine === 1 ? "is" : "are") + " in my top " + data.top + ".";
+    summaryEl.innerHTML = head + " <b>" + onList + "</b> of them " + (onList === 1 ? "is" : "are") + " on Niche's list of the best places to live (the diamonds).";
   }
 
   // ---- Map
@@ -174,7 +171,9 @@
         Plot.geo(feats.filter((f) => !scored.has(f.id)), { fill: css("--hv-none"), stroke: bg, strokeWidth: 0.5 }),
         Plot.geo(inSample, { fill: (f) => color(score(scored.get(f.id))), stroke: bg, strokeWidth: 0.5 }),
         Plot.geo(inSample.filter((f) => picks.has(f.id)), { fill: pick, stroke: bg, strokeWidth: 1 }),
-        Plot.dot(feats.filter((f) => byZip.get(f.id)?.list), Plot.centroid({ symbol: "diamond", r: 3.5, stroke: css("--text"), strokeWidth: 1.25, fill: "none" })),
+        // Niche's places, always shown: a diamond with a halo in the page color so it reads on any fill
+        Plot.dot(feats.filter((f) => byZip.get(f.id)?.list), Plot.centroid({ symbol: "diamond", r: 4, stroke: bg, strokeWidth: 3.5, fill: "none" })),
+        Plot.dot(feats.filter((f) => byZip.get(f.id)?.list), Plot.centroid({ symbol: "diamond", r: 4, stroke: css("--text"), strokeWidth: 1.5, fill: "none" })),
         Plot.tip(inSample, Plot.pointer(Plot.centroid({
           fill: bg, stroke: css("--border"),
           title: (f) => {
@@ -202,10 +201,10 @@
     const rows = result.rows.filter((r) => picks.has(r.zip)).sort((a, b) => score(b) - score(a));
     const scoreHead = view === 2 ? "<th>You</th><th>Person 2</th>" : "<th>Value</th>";
     const head = "<thead><tr><th>#</th><th>Place</th><th>Zip</th>" + scoreHead + "<th>" + (mode === "buy" ? "$/sq ft" : "Rent") +
-      "</th><th>Niche</th><th>Mine</th></tr></thead>";
+      "</th><th>On Niche</th></tr></thead>";
     const body = rows.map((r, i) => "<tr><td>" + (i + 1) + "</td><td>" + name(r) + "</td><td>" + r.zip + "</td>" +
       (view === 2 ? "<td>" + Math.round(r.scores[0]) + "</td><td>" + Math.round(r.scores[1]) + "</td>" : "<td>" + Math.round(score(r)) + "</td>") +
-      "<td>" + money(r[mode].v[5]) + "</td><td>" + (r.list ? "Yes" : "No") + "</td><td>" + (mine[mode].has(r.zip) ? "Yes" : "No") + "</td></tr>").join("");
+      "<td>" + money(r[mode].v[5]) + "</td><td>" + (r.list ? "Yes" : "No") + "</td></tr>").join("");
     tableEl.innerHTML = head + "<tbody>" + body + "</tbody>";
   }
 
@@ -246,8 +245,6 @@
       data = json;
       geo = shapes;
       byZip = new Map(data.zips.map((z) => [z.zip, z]));
-      const me = { weights: data.default.weights, priceShare: data.default.price_share, targets: [null, null, null, null, null], budget: null };
-      ["buy", "rent"].forEach((m) => { mine[m] = window.HVModel.run(data.zips, m, [me], data.top).picks[0]; });
       update();
     })
     .catch(() => { mapEl.innerHTML = '<p class="muted">The map could not load. The data is in the GitHub repo linked above.</p>'; });

@@ -52,7 +52,7 @@
       <div class="narrow">
         <p class="eyebrow"><time datetime="2026-10-21">Oct 21, 2026</time></p>
         <h1>Where's the best home value in Chicagoland?</h1>
-        <p class="lead">Tell the map what you care about and what you can spend. It ranks every Chicago-area zip code by value for you, then checks your picks against the places everyone recommends.</p>
+        <p class="lead">Tell the map what you care about and what you can spend. It ranks every Chicago-area zip code by value for you, with the places everyone recommends marked so you can compare.</p>
         <div class="actions">
           <a class="btn primary" href="https://github.com/amkashyap1220/Home-Value-Score" target="_blank" rel="noopener">Data and code</a>
           <a class="btn" href="/writing/">← All writing</a>
@@ -80,7 +80,7 @@
             <ul class="hv-legend" aria-label="Legend">
               <li><span class="hv-key ramp"></span>Value score, low to high</li>
               <li><span class="hv-key pick"></span>Top 20</li>
-              <li><span class="hv-key list"></span>On the Niche list</li>
+              <li><span class="hv-key list"></span>Niche's best places to live</li>
               <li><span class="hv-key none"></span>Too little data</li>
             </ul>
             <div id="hv-map" class="hv-map"></div>
@@ -90,7 +90,7 @@
           <form class="hv-controls" aria-label="Your weights and targets" onsubmit="return false">
             <div id="hv-people"></div>
             <button class="btn small hv-add" type="button" id="hv-add">+ Add a second person</button>
-            <p class="hv-note">In the table, "Niche" marks zips on the Niche list and "Mine" the ones in my own top 20. Targets are optional. Schools are a percentile within the state, safety is crimes per 1,000 residents a year, and walkability is the EPA's index from 1 to 20. A zip that meets a target gets full marks for it.</p>
+            <p class="hv-note">Targets are optional. Schools are a percentile within the state, safety is crimes per 1,000 residents a year, and walkability is the EPA's index from 1 to 20. A zip that meets a target gets full marks for it.</p>
           </form>
         </div>
 
@@ -110,15 +110,11 @@
         </ul>
         <p>The first five, weighted by your sliders, make the <b>quality</b> score. Then:</p>
         <blockquote>value = (1 − price share) × quality + price share × low price</blockquote>
-        <p>If you set a target, a zip that meets it scores 100 on that factor, and one that misses it scores lower the further it misses. Your top 20 are the highest value scores among zips with above-median quality, so a place can't win on price alone. With a second person, "best for both" ranks zips by the lower of your two scores, so neither of you ends up somewhere you'd hate.</p>
+        <p>If you set a target, a zip that meets it scores 100 on that factor, and one that misses it scores lower the further it misses. Your top 20 are the highest value scores among zips with above-median quality, so a place can't win on price alone. By default everything counts the same and price is half the score. With a second person, "best for both" ranks zips by the lower of your two scores, so neither of you ends up somewhere you'd hate.</p>
         <p>The area is the 13 counties of the Chicago metro, 9 in Illinois and 4 in Northwest Indiana. For buying, a zip needs at least 20 sales in the past year (338 zips); for renting, at least 100 rented homes (347). A missing number, usually crime data a police department didn't report, counts as 50. Race and ethnicity, and stand-ins for them, aren't used anywhere: steering people by the makeup of a neighborhood is what fair-housing law forbids and what redlining did.</p>
 
-        <h2>My results vs. Niche</h2>
-        <p>My own weights are the defaults: everything counts the same, and price is half the score. For the word-of-mouth list I used Niche's 2026 "Best Places to Live in Illinois" top 20, plus the Chicago-area places in the top 50 of its Indiana ranking.</p>
-        <blockquote><b>None of Niche's Illinois top 20 make my top 20 for buying.</b> 7 of my 20 are on the list, and all 7 are Niche's Indiana picks: Valparaiso (two zips), Chesterton, Munster, Dyer, Schererville and St. John.</blockquote>
-        <p>The Illinois places on my list are ones nobody brings up: Woodstock, Sycamore, Grayslake, Gilberts, Coal City, Mazon, Beecher, Joliet's east side (60433) and North Chicago. For renting it's similar: 5 of my 20 are on the list (St. John, Clarendon Hills, Valparaiso, Chesterton and Dyer), and 14 are in Illinois.</p>
-        <p>Why I think that is: Niche ranks how good a place is, not how good a deal it is. Its Illinois picks really are high quality (a median quality score of 66, against 52 for the rest of Illinois), but they sell for a median of $305 per square foot, against $206, so on value they land around 290th of 338. Part of what you pay for in Naperville or Hinsdale is the name. The Indiana towns are the exception because they're good <i>and</i> cheap: Niche's Indiana list draws from Northwest Indiana, where homes cost less across the board (a median of $175 per square foot for those towns).</p>
-        <p>Set the sliders to what you care about and the line above the map shows how many of your picks are on Niche's list and how many match mine. Push low price down to 0% and the map turns into a pure quality ranking, and Naperville, Buffalo Grove, Lincolnshire and Clarendon Hills come right back.</p>
+        <h2>How your picks compare with Niche</h2>
+        <p>The diamonds on the map are the places people usually recommend: Niche's 2026 "Best Places to Live in Illinois" top 20, plus the Chicago-area places in the top 50 of its Indiana ranking, matched to their zip codes. They stay on the map whatever you set, so you can see how your weights line up with them, and the line above the map counts how many of your top 20 are among them. Push low price down to 0% and the map becomes a pure quality ranking; raise it and watch which of Niche's places hold on.</p>
 
         <h2>What to keep in mind</h2>
         <ul>
