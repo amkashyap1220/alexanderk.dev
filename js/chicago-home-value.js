@@ -34,7 +34,7 @@
   ];
   const PRICE = {
     buy: { name: "Price", hint: "Median sale price, past year.", before: "$", after: "", digits: -3, example: "350k" },
-    rent: { name: "Rent per person", hint: "Median rent divided by the average number of people in a rented home.", before: "$", after: "a month", digits: 0, example: "650" },
+    rent: { name: "Rent per person", hint: "Median rent split by bedroom, so one roommate's share.", before: "$", after: "a month", digits: 0, example: "700" },
   };
   const factors = () => [...FACTORS, PRICE[mode]];
   // The weight slider runs 0 to 4; these are the weights and words for each step
