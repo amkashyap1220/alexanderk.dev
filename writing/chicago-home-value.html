@@ -89,6 +89,7 @@
 
           <form class="hv-controls" aria-label="Your targets and weights" onsubmit="return false">
             <div id="hv-people"></div>
+            <datalist id="hv-places"></datalist>
             <button class="btn small hv-add" type="button" id="hv-add">+ Add a second person</button>
           </form>
         </div>
@@ -102,7 +103,7 @@
         <ul>
           <li><b>Schools:</b> district test proficiency as a percentile, ranked within each state, since Illinois and Indiana use different tests (Illinois Report Card, Indiana DOE).</li>
           <li><b>Safety:</b> crimes per 1,000 residents a year for the police department covering the zip (FBI Crime Data Explorer).</li>
-          <li><b>Commute:</b> average one-way time to work (Census ACS).</li>
+          <li><b>Commute:</b> average one-way time to work for people living in the zip (Census ACS). If you enter where you work, it becomes the drive time from each zip to your workplace instead, so two people can each have their own. Drive times are from OpenStreetMap roads (OSRM), from the middle of one zip to the middle of the other, at free-flow speeds: no traffic, no transit, so rush hour will be longer. Your workplace has to be a zip on the map.</li>
           <li><b>Walkability:</b> the EPA's National Walkability Index, 1 to 20.</li>
           <li><b>Home age:</b> how old the median home is (Census ACS).</li>
           <li><b>Price:</b> median sale price over the past year (Redfin), or median monthly rent (Census ACS).</li>
@@ -158,9 +159,12 @@
       .hv-name { font-weight: 600; }
       .hv-line input[type="range"] { width: 100%; accent-color: var(--pick); }
       .hv-line output { color: var(--text); font-size: var(--fs-xs); text-align: right; }
+      .hv-sample { margin: 0 0 var(--space-2); padding: var(--space-1) var(--space-2); border-left: 3px solid var(--link); background: var(--soft); font-size: var(--fs-xs); }
+      .hv-sample[hidden] { display: none; }
       .hv-hint { margin: var(--space-1) 0 0; color: var(--muted); font-size: var(--fs-xs); line-height: 1.5; }
       .hv-target { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: var(--space-2); color: var(--muted); font-size: var(--fs-xs); }
       .hv-target input { width: 90px; padding: 3px 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--soft); color: var(--text); font: inherit; }
+      .hv-target input.hv-work { width: 180px; }
       .hv-target input::placeholder { color: var(--muted); opacity: 0.7; }
       .hv-buttons { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-4); }
       .hv-add[hidden] { display: none; }

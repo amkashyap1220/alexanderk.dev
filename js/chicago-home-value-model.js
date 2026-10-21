@@ -4,7 +4,9 @@
 
    1. The reader sets a target and a weight for six factors: schools,
       safety, commute, walkability, home age, and price (median sale price
-      for buyers, median rent for renters).
+      for buyers, median rent for renters). If they name a workplace zip,
+      commute is the drive time from each zip to it (no traffic) instead of
+      the Census average commute.
    2. Closeness is measured in percentile points, so minutes, dollars and
       crime rates are comparable. pct(x) is the share of the sample's zips
       below x (ties count half), and
@@ -33,28 +35,37 @@ window.HVModel = (function () {
     return ((below + equal / 2) / sorted.length) * 100;
   }
 
-  // person: { targets: [6 numbers], weights: [6 numbers] }
-  function score(rows, mode, person, sorted) {
+  // One person's six values for a zip. With a workplace, commute is the drive time to it instead of the Census average.
+  function values(z, mode, person, drive) {
+    const v = z[mode].slice();
+    if (person.workplace && drive) v[2] = drive(z.zip, person.workplace);
+    return v;
+  }
+
+  // person: { targets: [6 numbers], weights: [6 numbers], workplace: zip or null }
+  function score(rows, mode, person, drive) {
+    const vals = rows.map((z) => values(z, mode, person, drive));
+    const sorted = [0, 1, 2, 3, 4, 5].map((i) => vals.map((v) => v[i]).filter((x) => x != null).sort((a, b) => a - b));
     const wSum = person.weights.reduce((s, w) => s + w, 0);
     const tPct = person.targets.map((t, i) => pct(sorted[i], t));
-    return rows.map((z) => {
-      const close = z[mode].map((x, i) => {
+    return vals.map((v) => {
+      const close = v.map((x, i) => {
         if (x == null) return 50;
         const gap = pct(sorted[i], x) - tPct[i];
         return gap * DIRECTION[i] > 0 ? 100 : 100 - Math.abs(gap);   // better than the target counts as on target
       });
-      return { close, score: close.reduce((s, c, i) => s + c * person.weights[i], 0) / wSum };
+      return { close, commute: v[2], score: close.reduce((s, c, i) => s + c * person.weights[i], 0) / wSum };
     });
   }
 
-  // people: one or two person objects. Returns per-zip results and each top n (Sets of zip codes)
-  function run(zips, mode, people, n) {
+  // people: one or two person objects; drive(fromZip, toZip) gives drive minutes.
+  // Returns per-zip results and each top n (Sets of zip codes)
+  function run(zips, mode, people, n, drive) {
     const rows = zips.filter((z) => z[mode]);
-    const sorted = [0, 1, 2, 3, 4, 5].map((i) => rows.map((z) => z[mode][i]).filter((x) => x != null).sort((a, b) => a - b));
-    const runs = people.map((p) => score(rows, mode, p, sorted));
+    const runs = people.map((p) => score(rows, mode, p, drive));
     const out = rows.map((z, i) => {
       const scores = runs.map((r) => r[i].score);
-      return { ...z, scores, close: runs.map((r) => r[i].close), both: Math.min(...scores) };
+      return { ...z, scores, close: runs.map((r) => r[i].close), commutes: runs.map((r) => r[i].commute), both: Math.min(...scores) };
     });
     const top = (key) => new Set([...out].sort((a, b) => key(b) - key(a)).slice(0, n).map((r) => r.zip));
     return {
