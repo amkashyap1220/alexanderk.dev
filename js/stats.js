@@ -1,6 +1,7 @@
 /* ==========================================================================
-   Stats page: everything comes from GitHub's public API (no key), through
-   the shared, cached helpers in js/gh.js.
+   Stats page: everything comes from /data/github.json (refreshed every
+   5 minutes by worker/index.js), through the shared helpers in js/gh.js,
+   which fall back to GitHub's public API for anything missing.
 
      1. EXTRACT    the profile, the repo list, languages and commit count per
                    repo, and the last 90 days of public activity
