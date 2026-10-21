@@ -4,12 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Where's the best home value in Chicagoland? · Alexander Kashyap</title>
-  <meta name="description" content="I scored 338 Chicago-area zip codes on schools, safety, commute and walkability, counted what a home costs to run, and ranked where you get the most for your money.">
+  <meta name="description" content="Set your own weights and targets, for buying or renting, alone or with a partner, and see the best-value Chicago-area zip codes on a map, compared with the places everyone recommends.">
   <!-- Link previews (iMessage, Discord, Slack, LinkedIn, ...) -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Alexander Kashyap">
   <meta property="og:title" content="Where's the best home value in Chicagoland? · Alexander Kashyap">
-  <meta property="og:description" content="I scored 338 Chicago-area zip codes on schools, safety, commute and walkability, counted what a home costs to run, and ranked where you get the most for your money.">
+  <meta property="og:description" content="Set your own weights and targets, for buying or renting, alone or with a partner, and see the best-value Chicago-area zip codes on a map, compared with the places everyone recommends.">
   <meta property="og:url" content="https://alexanderk.dev/writing/chicago-home-value">
   <meta property="og:image" content="https://alexanderk.dev/og.png">
   <meta property="og:image:width" content="1200">
@@ -48,11 +48,11 @@
   </header>
 
   <main id="main" tabindex="-1">
-    <section class="hero">
+    <section class="hero hv-hero">
       <div class="narrow">
         <p class="eyebrow"><time datetime="2026-10-21">Oct 21, 2026</time></p>
         <h1>Where's the best home value in Chicagoland?</h1>
-        <p class="lead">I scored 338 Chicago-area zip codes on quality and on what a home costs to run, ranked the best values, then checked them against the places everyone recommends.</p>
+        <p class="lead">Tell the map what you care about and what you can spend. It ranks every Chicago-area zip code by value for you, with the places everyone recommends marked so you can compare.</p>
         <div class="actions">
           <a class="btn primary" href="https://github.com/amkashyap1220/Home-Value-Score" target="_blank" rel="noopener">Data and code</a>
           <a class="btn" href="/writing/">← All writing</a>
@@ -60,133 +60,115 @@
       </div>
     </section>
 
-    <section class="section">
-      <article class="narrow prose" id="post">
-        <p>Ask anyone where to buy a house around Chicago and you'll hear the same names: Naperville, Hinsdale, Evanston, the North Shore. I wanted to find the best value instead: places where you get the most for your money once you count what a home costs to own and run, not only its sale price. Then I wanted to check whether any of them are places nobody mentions.</p>
+    <section class="section hv-section">
+      <div class="hv" id="hv">
+        <div class="hv-bar">
+          <div class="hv-toggle" role="group" aria-label="Buying or renting">
+            <button class="btn small" type="button" data-mode="buy" aria-pressed="true">Buying</button>
+            <button class="btn small" type="button" data-mode="rent" aria-pressed="false">Renting</button>
+          </div>
+          <div class="hv-toggle" id="hv-view" role="group" aria-label="Whose results to show" hidden>
+            <button class="btn small" type="button" data-view="0" aria-pressed="false">You</button>
+            <button class="btn small" type="button" data-view="1" aria-pressed="false">Person 2</button>
+            <button class="btn small" type="button" data-view="2" aria-pressed="true">Best for both</button>
+          </div>
+        </div>
+        <p class="hv-summary" id="hv-summary" aria-live="polite">Loading the map…</p>
 
-        <h2>How I scored value</h2>
-        <p><b>The area.</b> The 13 counties of the Chicago metro, 9 in Illinois and 4 in Northwest Indiana. Zips with fewer than 20 sales in the past year were dropped, which left 338.</p>
-        <p><b>A quality score from 0 to 100.</b> Four things a homebuyer cares about, each turned into a percentile rank and averaged with equal weight:</p>
-        <ul>
-          <li><b>Schools:</b> district test proficiency, ranked within each state first, since Illinois and Indiana use different tests.</li>
-          <li><b>Safety:</b> crimes per 1,000 residents from the FBI's data, for the police department covering the zip.</li>
-          <li><b>Commute:</b> average time to work, from the Census.</li>
-          <li><b>Walkability:</b> the EPA's National Walkability Index.</li>
-        </ul>
-        <p>Nothing price-based goes into the score, since that would make the test circular. Race and ethnicity, and stand-ins for them, aren't used anywhere. Steering buyers by the makeup of a neighborhood is what fair-housing law forbids and what redlining did.</p>
-        <p><b>What a home costs to own and run.</b> Next to quality, the model accounts for four costs that come on top of the price:</p>
-        <ul>
-          <li><b>Property tax rate:</b> taxes paid as a share of home value, from the Census.</li>
-          <li><b>Home energy:</b> the typical monthly electricity and gas bill, from the Census.</li>
-          <li><b>Commuting fuel:</b> a yearly gasoline estimate from how many people drive, how long they drive, and the regional pump price (EIA).</li>
-          <li><b>Home age:</b> how old the typical house is, from the Census.</li>
-        </ul>
-        <p><b>The model.</b> A linear regression predicts each zip's median price per square foot from its quality score and those four costs. The <b>residual</b> is the actual price minus the predicted one. A negative residual means homes there sell for less than the model expects for what you get.</p>
-        <p><b>A value pick</b> is a zip with above-median quality whose residual is more than one standard deviation below zero. That works out to at least $56 per square foot below its predicted price.</p>
+        <div class="hv-grid">
+          <figure class="hv-figure" aria-labelledby="hv-caption">
+            <ul class="hv-legend" aria-label="Legend">
+              <li><span class="hv-key ramp"></span>Value score, low to high</li>
+              <li><span class="hv-key pick"></span>Top 20</li>
+              <li><span class="hv-key list"></span>Niche's best places to live</li>
+              <li><span class="hv-key none"></span>Too little data</li>
+            </ul>
+            <div id="hv-map" class="hv-map"></div>
+            <figcaption id="hv-caption">Hover over or tap a zip for details. Prices: Redfin, June 2025 to May 2026. Rent: Census ACS 2020–2024.</figcaption>
+          </figure>
 
-        <h2>The best-value areas</h2>
-        <p>Each dot is a zip. Further right means higher quality, and lower means better value: homes sell for less than the model predicts. The value picks are in the shaded corner. Hover over or tap a dot for details.</p>
-      </article>
+          <form class="hv-controls" aria-label="Your weights and targets" onsubmit="return false">
+            <div id="hv-people"></div>
+            <button class="btn small hv-add" type="button" id="hv-add">+ Add a second person</button>
+            <p class="hv-note">Targets are optional. Schools are a percentile within the state, safety is crimes per 1,000 residents a year, and walkability is the EPA's index from 1 to 20. A zip that meets a target gets full marks for it.</p>
+          </form>
+        </div>
 
-      <figure class="wrap hv" aria-labelledby="hv-caption">
-        <ul class="hv-legend" aria-label="Legend">
-          <li><span class="hv-key pick"></span>Value pick</li>
-          <li><span class="hv-key other"></span>Other zip</li>
-        </ul>
-        <div id="hv-chart" class="hv-chart"><p class="muted">Loading the chart…</p></div>
-        <figcaption id="hv-caption"><span id="hv-summary"></span> Prices: Redfin, June 2025 to May 2026.</figcaption>
-      </figure>
-
-      <article class="narrow prose">
-        <p>Based on my model, these are the 16 best-value zip codes in the Chicago area, best value first:</p>
-        <table id="hv-table"></table>
-        <p>12 are in Illinois and 4 in Indiana. Most are just above the quality median (scores in the 50s and 60s), not top-tier areas. That's what the model is built to find: solid places at a clear discount. Quality has the clearest effect, adding about $1.90 per square foot for every point. Energy bills and commuting fuel both pull prices down, as you'd expect. Once those are in, home age and the tax rate make no measurable difference.</p>
-
-        <h2>How much to trust the list</h2>
-        <p>Before looking at prices, I decided how I'd stress-test the result. Some picks hold up and some don't.</p>
-        <ul>
-          <li><b>Change the recipe.</b> I rebuilt the score four times, leaving out one ingredient each time. 7 of the 16 picks stayed picks in at least three of the four versions: Kentland, North Chicago, Joliet's east side (60433), Rensselaer, Woodstock, Valparaiso (46383) and Schaumburg (60173).</li>
-          <li><b>Illinois on its own.</b> Rerunning everything on Illinois zips alone gives 15 picks. Woodstock, Joliet 60433, Itasca and Sycamore are among them.</li>
-          <li><b>Some picks are data artifacts.</b> I checked the most underpriced zips by hand. Robbins scores well partly because its police department reports no crime data, so its score is the average of the other three ingredients. Small rural towns like Kentland and Rensselaer get great commute scores because people work locally, not because they're close to Chicago jobs. North Chicago's short commutes come from Naval Station Great Lakes.</li>
-          <li><b>The model explains 41% of prices</b> (R² = 0.41). Lot size, the lake, home condition, flood risk and airport noise all matter and aren't in it.</li>
-        </ul>
-        <p>The strongest leads are suburban, have complete data and hold up under the checks: <b>Woodstock</b> and <b>Joliet's east side (60433)</b> pass both, <b>Schaumburg (60173)</b> survives the recipe changes, and <b>Itasca</b> and <b>Sycamore</b> hold in the Illinois-only run. They're leads worth a weekend drive, not proof of a bargain. A zip code averages over very different streets, and a model this simple can't see what makes a particular block a good value.</p>
-
-        <h2>Did I find hidden value?</h2>
-        <p>Now for the comparison with word of mouth. For the reputation list I used Niche's 2026 "Best Places to Live in Illinois" top 20, plus the Chicago-area places in the top 50 of its Indiana ranking, matched to 32 zip codes.</p>
-        <blockquote><b>15 of my 16 value picks are not on the list.</b> The only overlap is Valparaiso (46383).</blockquote>
-        <p>Before seeing any prices, I wrote down the rule for calling this a yes: at least 3 value picks, with more than half of them off the reputation list. The result clears it easily. The list's own zips are well chosen but expensive. Their median quality is 62, against 49 everywhere else. They typically sell about $27 per square foot <i>above</i> what the model predicts, and 62% of them sit above the line. Part of what you pay for in those places is the name.</p>
-
-        <h2>Try your own weights</h2>
-        <p>My weights are a choice. Maybe schools matter twice as much to you, or you work from home and don't care about the commute. Set your own below. The page rebuilds the quality score, refits the model and finds your value picks, then checks them against the Niche list. With every weight at 1 and every cost switched on, you get the ranking above.</p>
-      </article>
-
-      <div class="wrap hv hv-explorer" id="hv-explorer">
-        <form class="hv-controls" id="hv-form" aria-label="Your weights">
-          <fieldset>
-            <legend>Quality: how much each counts</legend>
-            <label><span>Schools</span><input type="range" name="w0" min="0" max="3" step="0.5" value="1"><output>1</output></label>
-            <label><span>Safety</span><input type="range" name="w1" min="0" max="3" step="0.5" value="1"><output>1</output></label>
-            <label><span>Commute</span><input type="range" name="w2" min="0" max="3" step="0.5" value="1"><output>1</output></label>
-            <label><span>Walkability</span><input type="range" name="w3" min="0" max="3" step="0.5" value="1"><output>1</output></label>
-          </fieldset>
-          <fieldset>
-            <legend>Costs the model accounts for</legend>
-            <label class="hv-check"><input type="checkbox" name="tax" checked> Property tax rate</label>
-            <label class="hv-check"><input type="checkbox" name="energy" checked> Energy bills</label>
-            <label class="hv-check"><input type="checkbox" name="fuel" checked> Commuting fuel</label>
-            <label class="hv-check"><input type="checkbox" name="age" checked> Home age</label>
-            <button class="btn small" type="reset">Reset to my weights</button>
-          </fieldset>
-        </form>
-        <p class="hv-result" id="hv-x-summary" aria-live="polite"></p>
-        <ul class="hv-legend" aria-label="Legend">
-          <li><span class="hv-key pick"></span>Your value pick</li>
-          <li><span class="hv-key other"></span>Other zip</li>
-          <li><span class="hv-key list"></span>On the Niche list</li>
-        </ul>
-        <div id="hv-x-chart" class="hv-chart"></div>
-        <div class="prose"><table id="hv-x-table"></table></div>
+        <div class="prose hv-list"><table id="hv-table"></table></div>
       </div>
 
       <article class="narrow prose">
-
-        <h2>Notes on the method</h2>
+        <h2>How the value score works</h2>
+        <p>Each zip gets six numbers, each turned into a percentile from 0 (worst in the metro) to 100 (best):</p>
         <ul>
-          <li><b>I set the method before looking.</b> It's easy to fool yourself with data like this: run the numbers, see something interesting, then decide that's what you were looking for. So I wrote down the question, every definition and the pass/fail rule, and <a href="https://github.com/amkashyap1220/Home-Value-Score/commit/935ee45">committed them</a> before downloading any price data. Scientists call this pre-registration.</li>
-          <li><b>One change came after the first run.</b> The pre-registered model only had quality and the tax rate. After running it, I added energy bills, commuting fuel and home age, because a buyer pays those costs on top of the price. Changing a model after seeing results is exactly what pre-registration exists to catch, so it's logged with the reason in <a href="https://github.com/amkashyap1220/Home-Value-Score/blob/main/docs/decisions.md#change-log">the decision file</a>. The first run also cleared the rule (16 picks, 11 off the list), but 9 of its picks were in Indiana. Lower gas and energy costs in Indiana explain part of that, and adding them cut Indiana's picks to 4.</li>
-          <li><b>The cost numbers are rough.</b> Energy bills grow with house size, and the fuel estimate is built from commute time, which the quality score already includes.</li>
+          <li><b>Schools:</b> district test proficiency, ranked within each state first, since Illinois and Indiana use different tests (Illinois Report Card, Indiana DOE).</li>
+          <li><b>Safety:</b> crimes per 1,000 residents for the police department covering the zip (FBI Crime Data Explorer).</li>
+          <li><b>Commute:</b> average time to work (Census ACS).</li>
+          <li><b>Walkability:</b> the EPA's National Walkability Index.</li>
+          <li><b>Newer homes:</b> the median year the zip's homes were built (Census ACS).</li>
+          <li><b>Low price:</b> median sale price per square foot over the past year (Redfin), or median monthly rent (Census ACS).</li>
         </ul>
+        <p>The first five, weighted by your sliders, make the <b>quality</b> score. Then:</p>
+        <blockquote>value = (1 − price share) × quality + price share × low price</blockquote>
+        <p>If you set a target, a zip that meets it scores 100 on that factor, and one that misses it scores lower the further it misses. Your top 20 are the highest value scores among zips with above-median quality, so a place can't win on price alone. By default everything counts the same and price is half the score. With a second person, "best for both" ranks zips by the lower of your two scores, so neither of you ends up somewhere you'd hate.</p>
+        <p>The area is the 13 counties of the Chicago metro, 9 in Illinois and 4 in Northwest Indiana. For buying, a zip needs at least 20 sales in the past year (338 zips); for renting, at least 100 rented homes (347). A missing number, usually crime data a police department didn't report, counts as 50. Race and ethnicity, and stand-ins for them, aren't used anywhere: steering people by the makeup of a neighborhood is what fair-housing law forbids and what redlining did.</p>
 
+        <h2>How your picks compare with Niche</h2>
+        <p>The diamonds on the map are the places people usually recommend: Niche's 2026 "Best Places to Live in Illinois" top 20, plus the Chicago-area places in the top 50 of its Indiana ranking, matched to their zip codes. They stay on the map whatever you set, so you can see how your weights line up with them, and the line above the map counts how many of your top 20 are among them. Push low price down to 0% and the map becomes a pure quality ranking; raise it and watch which of Niche's places hold on.</p>
+
+        <h2>What to keep in mind</h2>
+        <ul>
+          <li>A zip code averages over very different streets. Treat a pick as a place worth a weekend drive, not proof of a bargain.</li>
+          <li>Percentiles only compare zips with each other, and lot size, flood risk, airport noise and home condition aren't in the data.</li>
+          <li>This replaces the regression in my <a href="https://github.com/amkashyap1220/Home-Value-Score/blob/main/docs/decisions.md">pre-registered plan</a>, which I set before looking at prices. That test also supported the idea of hidden value (16 underpriced, high-quality zips, 15 not on Niche's list). Why I changed it is logged in the decision file.</li>
+        </ul>
       </article>
     </section>
 
-    <!-- Styles for this post's chart only (scoped under .hv) -->
+    <!-- Styles for this post's map only (scoped under .hv) -->
     <style>
-      :root { --pick: #ce5c00; --other: #888a85; }   /* orange 3, aluminium 4 */
-      :root.dark { --pick: #fcaf3e; --other: #888a85; }   /* orange 1 */
-      .hv { max-width: 860px; margin: var(--space-7) auto; }
-      .hv-legend { display: flex; justify-content: flex-end; margin-bottom: var(--space-3); flex-wrap: wrap; gap: var(--space-1) var(--space-5); padding: 0; list-style: none; color: var(--muted); font-size: var(--fs-xs); }
+      :root { --pick: #ce5c00; --hv-low: #dbe4ee; --hv-high: #204a87; --hv-none: #d3d7cf; }   /* orange 3; sky blue 3; aluminium 2 */
+      :root.dark { --pick: #fcaf3e; --hv-low: #3e4850; --hv-high: #729fcf; --hv-none: #4a4f50; }   /* orange 1; sky blue 1 */
+      .hv-hero { padding-bottom: var(--space-8); }
+      .hv-section { padding-top: var(--space-7); }
+      .hv { max-width: 1100px; margin: 0 auto var(--space-9); padding: 0 var(--space-5); }
+      .hv-bar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-3); }
+      .hv-toggle { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+      .hv-toggle[hidden] { display: none; }
+      .hv-summary { min-height: 3.2em; margin: var(--space-4) 0; font-size: var(--fs-md); line-height: 1.6; }
+      .hv-grid { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: var(--space-6); align-items: start; }
+      .hv-figure { margin: 0; }
+      .hv-map { min-height: 300px; }
+      .hv-map svg { display: block; max-width: 100%; height: auto; overflow: visible; }
+      .hv-legend { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-5); margin: 0 0 var(--space-3); padding: 0; list-style: none; color: var(--muted); font-size: var(--fs-xs); }
       .hv-legend li { display: flex; align-items: center; gap: 6px; }
-      .hv-key { display: inline-block; width: 10px; height: 10px; border-radius: 50%; }
+      .hv-key { display: inline-block; width: 12px; height: 12px; border-radius: 2px; }
+      .hv-key.ramp { width: 36px; background: linear-gradient(90deg, var(--hv-low), var(--hv-high)); }
       .hv-key.pick { background: var(--pick); }
-      .hv-key.other { background: var(--other); opacity: 0.65; width: 7px; height: 7px; }
-      .hv-key.list { border: 1.5px solid var(--text); border-radius: 1px; transform: rotate(45deg) scale(0.8); }
-      .hv-chart { min-height: 380px; }
-      .hv-explorer { margin-bottom: var(--space-8); }
-      .hv-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: var(--space-4); margin-bottom: var(--space-4); }
-      .hv-controls fieldset { margin: 0; padding: var(--space-3) var(--space-4) var(--space-4); border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); }
-      .hv-controls legend { padding: 0 var(--space-1); color: var(--label); font-size: var(--fs-2xs); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
-      .hv-controls label { display: grid; grid-template-columns: 100px 1fr 32px; align-items: center; gap: var(--space-3); margin-top: var(--space-2); font-size: var(--fs-sm); }
-      .hv-controls input[type="range"] { width: 100%; accent-color: var(--pick); }
-      .hv-controls output { color: var(--muted); text-align: right; }
-      .hv-controls .hv-check { display: flex; gap: var(--space-2); }
-      .hv-controls input[type="checkbox"] { accent-color: var(--pick); }
-      .hv-controls button { margin-top: var(--space-4); }
-      .hv-result { margin-bottom: var(--space-3); font-size: var(--fs-md); line-height: 1.6; }
-      .hv-explorer .prose { margin-top: var(--space-5); }
-      .hv-chart svg { display: block; max-width: 100%; height: auto; overflow: visible; }
-      .hv figcaption { margin-top: var(--space-2); color: var(--muted); font-size: var(--fs-xs); line-height: 1.6; }
+      .hv-key.none { background: var(--hv-none); }
+      .hv-key.list { width: 9px; height: 9px; border: 1.5px solid var(--text); border-radius: 1px; transform: rotate(45deg); }
+      .hv figcaption, .hv-note { margin-top: var(--space-2); color: var(--muted); font-size: var(--fs-xs); line-height: 1.6; }
+      .hv-person { margin: 0 0 var(--space-3); padding: var(--space-3) var(--space-4) var(--space-4); border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); }
+      .hv-person legend { padding: 0 var(--space-1); color: var(--label); font-size: var(--fs-2xs); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+      .hv-row { display: grid; grid-template-columns: 92px minmax(0, 1fr) 34px 96px; align-items: center; gap: var(--space-2); margin-top: var(--space-2); font-size: var(--fs-sm); }
+      .hv-head { margin-top: 0; color: var(--muted); font-size: var(--fs-2xs); }
+      .hv-price { margin-top: var(--space-3); padding-top: var(--space-3); border-top: 1px solid var(--border); }
+      .hv-row input[type="range"] { width: 100%; accent-color: var(--pick); }
+      .hv-row output { color: var(--muted); text-align: right; }
+      .hv-row input[type="text"] { width: 100%; min-width: 0; padding: 4px 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--soft); color: var(--text); font: inherit; font-size: var(--fs-xs); }
+      .hv-row input[type="text"]::placeholder { color: var(--muted); opacity: 0.8; }
+      .hv-buttons { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-4); }
+      .hv-add[hidden] { display: none; }
+      .hv-list { margin-top: var(--space-6); }
+      .hv-list table { width: 100%; }
+      @media (max-width: 860px) {
+        .hv-grid { grid-template-columns: minmax(0, 1fr); }
+      }
+      @media (max-width: 420px) {
+        .hv { padding: 0 var(--space-4); }
+        .hv-row { grid-template-columns: 78px minmax(0, 1fr) 30px 84px; gap: 6px; }
+        .hv-list :is(th, td):nth-child(3) { display: none; }   /* the zip column; the map's tooltip has it */
+      }
     </style>
   </main>
 
@@ -199,7 +181,7 @@
       </ul>
     </div>
   </footer>
-  <!-- Chart: Observable Plot (needs d3), pinned versions -->
+  <!-- Map: Observable Plot (needs d3), pinned versions -->
   <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6.16/dist/plot.umd.min.js"></script>
   <script src="/js/chicago-home-value-model.js"></script>

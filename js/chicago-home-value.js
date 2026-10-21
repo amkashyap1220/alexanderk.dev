@@ -1,165 +1,251 @@
 /* ==========================================================================
-   Chicago home value: the charts and tables for the post.
-   Reads /writing/chicago-home-value.json (made by src/site_data.py in the
-   Home-Value-Score repo) and draws it with Observable Plot.
+   Chicago home value: the value map for the post.
+   Reads /writing/chicago-home-value.json (per-zip factors, made by
+   src/site_data.py in the Home-Value-Score repo) and
+   /writing/chicago-home-value-zips.json (zip shapes, src/map.py), scores the
+   zips with js/chicago-home-value-model.js and draws them with Observable Plot.
 
-   One dot per zip. Across: quality score. Up and down: how far the price per
-   sq ft is above or below what the model predicts (the residual). Value picks
-   sit in the shaded corner: above-median quality and more than one standard
-   deviation below the prediction.
-
-   Two charts: the published ranking, and "Try your own weights", which
-   refits the model with js/chicago-home-value-model.js every time a control
-   changes and marks the Niche-list zips. Colors come from the site's CSS
-   variables, so both redraw when the theme or the width changes.
+   The reader picks buying or renting, sets weights and optional targets, and
+   can add a second person. Every change rescores and redraws the map and the
+   table. Colors come from the site's CSS variables, so the map redraws when
+   the theme or the width changes.
    ========================================================================== */
 
 (function () {
-  const main = { chart: document.getElementById("hv-chart"), table: document.getElementById("hv-table") };
-  const mine = { chart: document.getElementById("hv-x-chart"), table: document.getElementById("hv-x-table") };
-  const form = document.getElementById("hv-form");
-  if (!main.chart || !window.Plot) return;
+  const root = document.getElementById("hv");
+  if (!root || !window.Plot || !window.HVModel) return;
+  const mapEl = document.getElementById("hv-map");
+  const tableEl = document.getElementById("hv-table");
+  const summaryEl = document.getElementById("hv-summary");
+  const peopleEl = document.getElementById("hv-people");
+  const addBtn = document.getElementById("hv-add");
+  const viewEl = document.getElementById("hv-view");
 
-  let data = null;
-  let published = null;   // the ranking in the post, as model results
-  let yours = null;       // the reader's own run
+  const FACTORS = [
+    { name: "Schools", hint: "≥ %ile", label: "Target: schools at least this percentile in the state (0 to 100)" },
+    { name: "Safety", hint: "≤ per 1k", label: "Target: at most this many crimes per 1,000 residents a year" },
+    { name: "Commute", hint: "≤ min", label: "Target: average commute at most this many minutes" },
+    { name: "Walkability", hint: "≥ 1–20", label: "Target: EPA walkability index at least this (1 to 20)" },
+    { name: "Newer homes", hint: "≤ years", label: "Target: typical home at most this many years old" },
+  ];
+  const BUDGET = {
+    buy: { hint: "≤ $", label: "Budget: median sale price at most this many dollars (350k works)" },
+    rent: { hint: "≤ $/mo", label: "Budget: median rent at most this many dollars a month" },
+  };
+
+  let data = null, geo = null, byZip = null;
+  let mode = "buy";
+  let view = 0;            // 0 = you, 1 = person 2, 2 = best for both
+  let result = null;
 
   const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   const money = (x) => "$" + Math.round(x).toLocaleString();
-  const name = (z) => (z.place || "Zip") + " " + z.zip + ", " + z.state;
+  const name = (z) => (z.place || "Zip " + z.zip) + ", " + z.state;
+  const priceText = (z) => mode === "buy"
+    ? money(z.buy.v[5]) + "/sq ft" + (z.buy.v[6] ? ", median sale " + money(z.buy.v[6]) : "")
+    : money(z.rent.v[5]) + "/month";
 
-  function draw(el, result, showList) {
-    const sd = result.residual_sd;
-    const median = result.quality_median;
-    const all = result.zips;
-    const pick = css("--pick");
-    const width = el.clientWidth;
-    if (width < 200) return;   // not laid out yet; the ResizeObserver draws it once it is
-    const small = width < 520;
-    const bottom = d3.min(all, (d) => d.residual) - 10;   // the shaded corner runs to the bottom of the chart
-    const list = (d) => showList && d.on_list;
+  // ---- Controls: one fieldset per person, built here so both people get the same form
 
-    const plot = Plot.plot({
-      width,
-      height: small ? 380 : 460,
-      marginLeft: 52,
-      marginBottom: 40,
-      style: { background: "transparent", color: css("--muted"), fontFamily: css("--font"), fontSize: "11px" },
-      x: { domain: [0, 100], label: "Quality score →", labelAnchor: "right", labelOffset: 34 },
-      y: { label: "↑ $/sq ft above the model's price", labelAnchor: "top", tickFormat: (d) => (d > 0 ? "+" : "") + d, grid: true },
-      symbol: { domain: [false, true], range: ["circle", "diamond"] },
-      marks: [
-        // The value-pick corner
-        Plot.rect([0], { x1: median, x2: 100, y1: -sd, y2: bottom, fill: pick, fillOpacity: 0.1 }),
-        Plot.text([0], { x: 99, y: bottom, text: () => "Value picks", textAnchor: "end", dy: -8, fill: pick, fontWeight: 600 }),
-        Plot.ruleY([0], { stroke: css("--text"), strokeOpacity: 0.6 }),
-        Plot.ruleY([-sd], { stroke: pick, strokeDasharray: "4,3" }),
-        Plot.ruleX([median], { stroke: css("--muted"), strokeDasharray: "4,3" }),
-        Plot.text([0], { x: median, frameAnchor: "top", text: () => "median quality", textAnchor: "start", dx: 4, dy: 4, fill: css("--muted") }),
-        // Every other zip first, so the picks draw on top
-        Plot.dot(all.filter((d) => !d.pick), {
-          x: "quality", y: "residual", symbol: list, r: (d) => (list(d) ? 4.5 : 3),
-          fill: (d) => (list(d) ? "none" : css("--other")), stroke: (d) => (list(d) ? css("--text") : "none"),
-          fillOpacity: 0.65, strokeWidth: 1.25,
-        }),
-        Plot.dot(all.filter((d) => d.pick), {
-          x: "quality", y: "residual", symbol: list, r: 5.5,
-          fill: pick, stroke: (d) => (list(d) ? css("--text") : css("--bg")), strokeWidth: 1.5,
-        }),
-        Plot.tip(all, Plot.pointer({
-          x: "quality", y: "residual",
-          fill: css("--bg"), stroke: css("--border"),
-          title: (d) => [
-            name(d),
-            "Quality " + Math.round(d.quality) + " of 100",
-            money(d.price) + "/sq ft, model says " + money(d.predicted),
-            (d.residual < 0 ? money(-d.residual) + " below" : money(d.residual) + " above") + " the model",
-            d.pick ? "Value pick" : null,
-            list(d) ? "On the Niche list (" + d.list_entry + ")" : null,
-          ].filter(Boolean).join("\n"),
-        })),
-      ],
+  function personForm(k) {
+    const fs = document.createElement("fieldset");
+    fs.className = "hv-person";
+    fs.dataset.k = k;
+    const rows = FACTORS.map((f, i) =>
+      '<label class="hv-row"><span>' + f.name + '</span>' +
+      '<input type="range" name="w' + i + '" min="0" max="3" step="0.5" value="1" aria-label="' + f.name + ' weight">' +
+      '<output>1</output>' +
+      '<input type="text" inputmode="decimal" name="t' + i + '" placeholder="' + f.hint + '" aria-label="' + f.label + '"></label>').join("");
+    fs.innerHTML =
+      '<legend>' + (k === 0 ? "You" : "Person 2") + '</legend>' +
+      '<div class="hv-row hv-head" aria-hidden="true"><span></span><span>How much it counts</span><span></span><span>Target</span></div>' +
+      rows +
+      '<label class="hv-row hv-price"><span>Low price</span>' +
+      '<input type="range" name="ps" min="0" max="100" step="5" value="50" aria-label="How much a low price counts, as a share of the score">' +
+      '<output>50%</output>' +
+      '<input type="text" inputmode="decimal" name="budget" aria-label="' + BUDGET[mode].label + '" placeholder="' + BUDGET[mode].hint + '"></label>' +
+      '<div class="hv-buttons"><button class="btn small" type="button" data-reset>' + "Reset" + '</button>' +
+      (k === 1 ? '<button class="btn small" type="button" data-remove>Remove person 2</button>' : "") + '</div>';
+    fs.addEventListener("input", update);
+    fs.querySelector("[data-reset]").addEventListener("click", () => {
+      fs.querySelectorAll("input[type=range]").forEach((el) => { el.value = el.name === "ps" ? 50 : 1; });
+      fs.querySelectorAll("input[type=text]").forEach((el) => { el.value = ""; });
+      update();
     });
-    plot.setAttribute("aria-label",
-      "Scatter plot of " + all.length + " Chicago-area zip codes: quality score across, price above or below the model's prediction up and down. " +
-      result.picks + " value picks sit in the lower right corner. The table below lists them.");
-    el.replaceChildren(plot);
+    const remove = fs.querySelector("[data-remove]");
+    if (remove) remove.addEventListener("click", () => { fs.remove(); addBtn.hidden = false; setView(0); });
+    return fs;
   }
 
-  function fillTable(el, result, showList) {
-    const picks = result.zips.filter((d) => d.pick).sort((a, b) => a.residual - b.residual);
-    const extra = showList ? "<th>Niche list</th><th>In my ranking</th>" : "";
-    const head = "<thead><tr><th>#</th><th>Zip</th><th>Place</th><th>Quality</th><th>$/sq ft</th><th>Model</th><th>Below by</th>" + extra + "</tr></thead>";
-    const mineSet = new Set(published.zips.filter((d) => d.pick).map((d) => d.zip));
-    const body = picks.map((d, i) => "<tr><td>" + (i + 1) + "</td><td>" + d.zip + "</td><td>" + d.place + ", " + d.state + "</td><td>" +
-      Math.round(d.quality) + "</td><td>" + money(d.price) + "</td><td>" + money(d.predicted) + "</td><td>" + money(-d.residual) + "</td>" +
-      (showList ? "<td>" + (d.on_list ? "Yes" : "No") + "</td><td>" + (mineSet.has(d.zip) ? "Yes" : "No") + "</td>" : "") + "</tr>").join("");
-    el.innerHTML = head + "<tbody>" + body + "</tbody>";
+  // "350k", "$1,500" and "30" all work
+  function parse(text) {
+    const s = text.trim().toLowerCase().replace(/[$,\s]/g, "");
+    if (!s) return null;
+    const x = parseFloat(s) * (s.endsWith("k") ? 1000 : 1);
+    return Number.isFinite(x) ? x : null;
   }
 
-  // The published ranking, from the numbers model.py saved
-  function publishedResult() {
+  function readPerson(fs) {
+    const f = fs.elements;
+    const weights = [0, 1, 2, 3, 4].map((i) => Number(f["w" + i].value));
+    [0, 1, 2, 3, 4].forEach((i) => { f["w" + i].nextElementSibling.textContent = f["w" + i].value; });
+    f.ps.nextElementSibling.textContent = f.ps.value + "%";
     return {
-      zips: data.zips.map((z) => ({ ...z, price: z.ppsf })),
-      n: data.n, r2: data.r2, residual_sd: data.residual_sd, quality_median: data.quality_median,
-      picks: data.picks, not_on_list: data.not_on_list,
+      weights,
+      priceShare: Number(f.ps.value) / 100,
+      targets: [0, 1, 2, 3, 4].map((i) => parse(f["t" + i].value)),
+      budget: parse(f.budget.value),
     };
   }
 
-  function readForm() {
-    const f = form.elements;
-    const weights = [0, 1, 2, 3].map((i) => Number(f["w" + i].value));
-    const costs = Object.fromEntries(window.HVModel.COSTS.map((c) => [c, f[c].checked]));
-    [0, 1, 2, 3].forEach((i) => { f["w" + i].nextElementSibling.textContent = f["w" + i].value; });
-    return { weights, costs };
+  function people() {
+    return [...peopleEl.querySelectorAll(".hv-person")].map(readPerson);
   }
 
-  function rerun() {
-    const { weights, costs } = readForm();
-    const summary = document.getElementById("hv-x-summary");
-    if (weights.every((w) => w === 0)) {
-      summary.textContent = "Give at least one quality indicator a weight above 0.";
+  function setView(v) {
+    view = v;
+    viewEl.hidden = peopleEl.querySelectorAll(".hv-person").length < 2;
+    viewEl.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(Number(b.dataset.view) === view)));
+    update();
+  }
+
+  // ---- Scoring
+
+  function update() {
+    if (!data) return;
+    const ps = people();
+    if (ps.some((p) => p.weights.every((w) => w === 0) && p.priceShare < 1)) {
+      summaryEl.textContent = "Give at least one thing a weight above 0, or set low price to 100%.";
       return;
     }
-    yours = window.HVModel.run(data.zips, weights, costs);
-    const both = yours.zips.filter((d) => d.pick && published.zips.find((p) => p.zip === d.zip && p.pick)).length;
-    summary.innerHTML = "<b>" + yours.picks + " value picks</b>, and <b>" + yours.not_on_list + " of them are not on the Niche list</b>. " +
-      both + " are also in my ranking. The model explains " + Math.round(yours.r2 * 100) + "% of prices, and a pick is at least " +
-      money(yours.residual_sd) + "/sq ft below its predicted price.";
-    draw(mine.chart, yours, true);
-    fillTable(mine.table, yours, true);
+    result = window.HVModel.run(data.zips, mode, ps, data.top);
+    if (view >= ps.length && view !== 2) view = 0;
+    draw();
+    fillTable();
+    summarize(ps.length);
   }
 
-  function drawAll() {
-    draw(main.chart, published, false);
-    if (yours) draw(mine.chart, yours, true);
+  function current() {
+    if (view === 2 && result.both) return { picks: result.both, score: (r) => r.both, label: "best for both" };
+    const k = Math.min(view, result.picks.length - 1);
+    return { picks: result.picks[k], score: (r) => r.scores[k], label: k === 0 ? "your" : "person 2's" };
   }
+
+  function summarize(n) {
+    const { picks } = current();
+    const rows = result.rows.filter((r) => picks.has(r.zip));
+    const onList = rows.filter((r) => r.list).length;
+    const what = mode === "buy" ? "to buy" : "to rent";
+    let head;
+    if (view === 2 && n > 1) {
+      const a = rows.filter((r) => result.picks[0].has(r.zip)).length;
+      const b = rows.filter((r) => result.picks[1].has(r.zip)).length;
+      head = "<b>The " + picks.size + " best areas " + what + " for both of you</b> (" + a + " are also in your own top " + data.top + ", " + b + " in person 2's).";
+    } else {
+      head = "<b>" + (view === 1 ? "Person 2's " : "Your ") + picks.size + " value areas " + what + ".</b>";
+    }
+    summaryEl.innerHTML = head + " <b>" + onList + "</b> of them " + (onList === 1 ? "is" : "are") + " on Niche's list of the best places to live (the diamonds).";
+  }
+
+  // ---- Map
+
+  function draw() {
+    const width = mapEl.clientWidth;
+    if (!result || width < 200) return;
+    const { picks, score, label } = current();
+    const scored = new Map(result.rows.map((r) => [r.zip, r]));
+    const values = result.rows.map(score);
+    const color = d3.scaleLinear().domain([d3.min(values), d3.max(values)]).range([css("--hv-low"), css("--hv-high")]).interpolate(d3.interpolateLab);
+    const rank = new Map([...result.rows].sort((a, b) => score(b) - score(a)).map((r, i) => [r.zip, i + 1]));
+    const pick = css("--pick"), bg = css("--bg");
+    const feats = geo.features;
+    const inSample = feats.filter((f) => scored.has(f.id));
+
+    const plot = Plot.plot({
+      width,
+      height: Math.round(width * 1.12),
+      margin: 4,
+      projection: { type: "mercator", domain: geo },
+      style: { background: "transparent", color: css("--muted"), fontFamily: css("--font"), fontSize: "11px" },
+      marks: [
+        Plot.geo(feats.filter((f) => !scored.has(f.id)), { fill: css("--hv-none"), stroke: bg, strokeWidth: 0.5 }),
+        Plot.geo(inSample, { fill: (f) => color(score(scored.get(f.id))), stroke: bg, strokeWidth: 0.5 }),
+        Plot.geo(inSample.filter((f) => picks.has(f.id)), { fill: pick, stroke: bg, strokeWidth: 1 }),
+        // Niche's places, always shown: a diamond with a halo in the page color so it reads on any fill
+        Plot.dot(feats.filter((f) => byZip.get(f.id)?.list), Plot.centroid({ symbol: "diamond", r: 4, stroke: bg, strokeWidth: 3.5, fill: "none" })),
+        Plot.dot(feats.filter((f) => byZip.get(f.id)?.list), Plot.centroid({ symbol: "diamond", r: 4, stroke: css("--text"), strokeWidth: 1.5, fill: "none" })),
+        Plot.tip(inSample, Plot.pointer(Plot.centroid({
+          fill: bg, stroke: css("--border"),
+          title: (f) => {
+            const r = scored.get(f.id);
+            return [
+              name(r) + " " + r.zip,
+              "Value " + Math.round(score(r)) + " (" + rank.get(r.zip) + " of " + result.rows.length + ")" + (picks.has(r.zip) ? ", in " + label + " top " + data.top : ""),
+              r.scores.length > 1 ? "You " + Math.round(r.scores[0]) + ", person 2 " + Math.round(r.scores[1]) : null,
+              priceText(r),
+              r.list ? "On the Niche list (" + r.list + ")" : null,
+            ].filter(Boolean).join("\n");
+          },
+        }))),
+      ],
+    });
+    plot.setAttribute("aria-label", "Map of " + result.rows.length + " Chicago-area zip codes colored by value score, stronger blue is better value. " +
+      "The top " + data.top + " are orange and listed in the table below. Diamonds mark the Niche list.");
+    mapEl.replaceChildren(plot);
+  }
+
+  // ---- Table
+
+  function fillTable() {
+    const { picks, score } = current();
+    const rows = result.rows.filter((r) => picks.has(r.zip)).sort((a, b) => score(b) - score(a));
+    const scoreHead = view === 2 ? "<th>You</th><th>Person 2</th>" : "<th>Value</th>";
+    const head = "<thead><tr><th>#</th><th>Place</th><th>Zip</th>" + scoreHead + "<th>" + (mode === "buy" ? "$/sq ft" : "Rent") +
+      "</th><th>On Niche</th></tr></thead>";
+    const body = rows.map((r, i) => "<tr><td>" + (i + 1) + "</td><td>" + name(r) + "</td><td>" + r.zip + "</td>" +
+      (view === 2 ? "<td>" + Math.round(r.scores[0]) + "</td><td>" + Math.round(r.scores[1]) + "</td>" : "<td>" + Math.round(score(r)) + "</td>") +
+      "<td>" + money(r[mode].v[5]) + "</td><td>" + (r.list ? "Yes" : "No") + "</td></tr>").join("");
+    tableEl.innerHTML = head + "<tbody>" + body + "</tbody>";
+  }
+
+  // ---- Buying / renting
+
+  function setMode(m) {
+    mode = m;
+    document.querySelectorAll("[data-mode]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.mode === mode)));
+    peopleEl.querySelectorAll("input[name=budget]").forEach((el) => {
+      el.value = "";
+      el.placeholder = BUDGET[mode].hint;
+      el.setAttribute("aria-label", BUDGET[mode].label);
+    });
+    document.querySelectorAll("[data-mode-text]").forEach((el) => { el.textContent = el.dataset[mode]; });
+    update();
+  }
+
+  document.querySelectorAll("[data-mode]").forEach((b) => b.addEventListener("click", () => setMode(b.dataset.mode)));
+  viewEl.querySelectorAll("button").forEach((b) => b.addEventListener("click", () => setView(Number(b.dataset.view))));
+  addBtn.addEventListener("click", () => {
+    peopleEl.append(personForm(1));
+    addBtn.hidden = true;
+    setView(2);
+  });
 
   // Redraw when the theme changes (js/theme.js swaps .light/.dark on <html>) or the width does
-  new MutationObserver(() => data && drawAll()).observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+  new MutationObserver(() => draw()).observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
   let lastWidth = 0;
   new ResizeObserver(() => {
-    if (!data || main.chart.clientWidth === lastWidth) return;
-    lastWidth = main.chart.clientWidth;
-    drawAll();
-  }).observe(main.chart);
-  if (mine.chart) new ResizeObserver(() => yours && mine.chart.clientWidth >= 200 && !mine.chart.firstElementChild?.matches("svg") && draw(mine.chart, yours, true)).observe(mine.chart);
+    if (mapEl.clientWidth === lastWidth) return;
+    lastWidth = mapEl.clientWidth;
+    draw();
+  }).observe(mapEl);
 
-  fetch("/writing/chicago-home-value.json")
-    .then((r) => r.json())
-    .then((json) => {
+  peopleEl.append(personForm(0));
+  Promise.all([fetch("/writing/chicago-home-value.json").then((r) => r.json()), fetch("/writing/chicago-home-value-zips.json").then((r) => r.json())])
+    .then(([json, shapes]) => {
       data = json;
-      published = publishedResult();
-      draw(main.chart, published, false);
-      fillTable(main.table, published, false);
-      document.getElementById("hv-summary").textContent =
-        data.picks + " value picks out of " + data.n + " zips. R² = " + data.r2.toFixed(2) +
-        ", one standard deviation = " + money(data.residual_sd) + "/sq ft.";
-      if (form && window.HVModel) {
-        form.addEventListener("input", rerun);
-        form.addEventListener("reset", () => setTimeout(rerun));   // after the browser resets the values
-        rerun();
-      }
+      geo = shapes;
+      byZip = new Map(data.zips.map((z) => [z.zip, z]));
+      update();
     })
-    .catch(() => { main.chart.innerHTML = '<p class="muted">The chart could not load. The data is in the GitHub repo linked above.</p>'; });
+    .catch(() => { mapEl.innerHTML = '<p class="muted">The map could not load. The data is in the GitHub repo linked above.</p>'; });
 })();
