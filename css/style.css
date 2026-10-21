@@ -1,98 +1,211 @@
-/* alexanderk.dev — simple styles. Change the colors here. */
+/* ==========================================================================
+   alexanderk.dev — styles
+   Monospace "docs" look: Fira Code, warm off-white, brick-red accent.
+   Colors live in the tokens below. Dark mode = the .dark class on <html>
+   (set by js/theme.js from the toggle, or from the system setting).
+   ========================================================================== */
 
 :root {
-  --bg: #ffffff;
-  --text: #1f2328;
-  --muted: #656d76;
-  --line: #d8dee4;
-  --link: #0969da;
-  --code-bg: #f6f8fa;
+  --bg: #f9f9f8;
+  --text: #1c1e24;
+  --muted: #6b6f76;
+  --border: #dcddd9;
+  --card: rgba(255, 255, 255, 0.4);
+  --soft: #f0f1ef;          /* secondary buttons, code blocks */
+  --accent: #c24a42;        /* brick red */
+  --header-bg: rgba(249, 249, 248, 0.9);
+  color-scheme: light;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0d1117;
-    --text: #e6edf3;
-    --muted: #8d96a0;
-    --line: #30363d;
-    --link: #4493f8;
-    --code-bg: #161b22;
-  }
+.dark {
+  --bg: #171820;
+  --text: #f4f1f2;
+  --muted: #8f93a3;
+  --border: #2d3140;
+  --card: rgba(29, 31, 40, 0.6);
+  --soft: #20232d;
+  --accent: #e06c75;
+  --header-bg: rgba(23, 24, 32, 0.9);
+  color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
 
+html { scroll-padding-top: 72px; }   /* #links don't hide under the sticky header */
+
 body {
-  max-width: 760px;
-  margin: 0 auto;
-  padding: 0 20px;
+  margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: "Fira Code", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 16px;
-  line-height: 1.6;
+  line-height: 1.5;
 }
 
-a { color: var(--link); text-decoration: none; }
-a:hover { text-decoration: underline; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+h1, h2, h3, p, ul, dl { margin: 0; }
 
 .muted { color: var(--muted); }
 
-/* Top bar */
-header {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
+/* Page widths: .wrap for header/grids, .narrow for reading text */
+.wrap   { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+.narrow { max-width: 680px; margin: 0 auto; padding: 0 20px; }
+
+
+/* ---------- Header (sticky, see-through) ---------- */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--header-bg);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+}
+.site-header .wrap { display: flex; align-items: center; gap: 16px; height: 46px; }
+.site-header .name { color: var(--text); font-size: 13px; font-weight: 600; }
+.site-header nav { display: flex; gap: 4px; margin: 0 auto; }
+.site-header nav a { padding: 6px 12px; border-radius: 6px; color: var(--muted); font-size: 14px; }
+.site-header nav a:hover { color: var(--text); background: var(--soft); text-decoration: none; }
+.site-header nav a[aria-current="page"] { color: var(--text); }
+.header-actions { display: flex; align-items: center; gap: 8px; }
+
+/* Buttons */
+.btn {
+  display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 20px 0;
-  border-bottom: 1px solid var(--line);
+  padding: 7px 16px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--soft);
+  color: var(--muted);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
 }
-header .name { color: var(--text); font-weight: 700; }
-nav a { margin-left: 20px; color: var(--muted); }
-nav a:first-child { margin-left: 0; }
-nav a[aria-current="page"] { color: var(--text); font-weight: 600; }
+.btn:hover { color: var(--text); text-decoration: none; }
+.btn.primary { background: transparent; border-color: var(--text); color: var(--text); }
+.btn.primary:hover { background: var(--text); color: var(--bg); }
+.btn.small { padding: 4px 10px; font-size: 12px; }
+.icon-btn { background: none; border: 0; padding: 6px; color: var(--text); cursor: pointer; display: inline-flex; }
+.icon-btn svg, .btn svg { width: 14px; height: 14px; }
 
-/* Headings and sections */
-h1 { font-size: 2rem; margin: 32px 0 4px; line-height: 1.2; }
-h2 { font-size: 1.25rem; margin: 40px 0 16px; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
-h3 { font-size: 1rem; margin: 0; }
-p { margin: 0 0 12px; }
 
-.links a { margin-right: 16px; }
+/* ---------- Hero ---------- */
+.hero { padding: 96px 0 72px; text-align: center; }
+.eyebrow {
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.hero h1 { margin: 16px 0 6px; font-size: 48px; line-height: 1.1; letter-spacing: -0.025em; }
+.hero .tagline { color: var(--accent); font-size: 14px; }
+.hero .lead { max-width: 560px; margin: 28px auto 0; color: var(--muted); line-height: 1.6; }
+.actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 32px; }
+
+/* Red-tinted pill for live GitHub stats */
+.pill {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 4px 10px;
+  margin-top: 14px;
+  padding: 4px 14px;
+  border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+  border-radius: 16px;      /* not fully round, so it still looks right if it wraps on a phone */
+  background: color-mix(in srgb, var(--accent) 7%, transparent);
+  color: var(--muted);
+  font-size: 12px;
+}
+.pill > span { white-space: nowrap; }
+.pill b { color: var(--text); font-weight: 500; }
+.pill .sep { width: 1px; height: 12px; background: color-mix(in srgb, var(--accent) 25%, transparent); }
+
+
+/* ---------- Sections ---------- */
+.section { padding: 80px 0; border-top: 1px solid var(--border); }
+.section h2 { margin-bottom: 12px; font-size: 30px; line-height: 1.2; letter-spacing: -0.025em; }
+.section .intro { margin-bottom: 36px; color: var(--muted); }
 
 /* Experience / education entries */
-.entry { margin-bottom: 24px; }
+.entry + .entry { margin-top: 40px; }
 .entry-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0 16px; }
-.entry-head + p { margin: 0; font-size: 0.9rem; }
-ul { margin: 8px 0 0; padding-left: 20px; }
-li { margin-bottom: 4px; }
+.entry h3 { font-size: 16px; font-weight: 600; }
+.entry .when { color: var(--muted); font-size: 13px; }
+.entry .where { margin-top: 2px; color: var(--accent); font-size: 13px; }
+.entry ul { margin-top: 12px; padding-left: 0; list-style: none; }
+.entry li { position: relative; padding-left: 20px; color: var(--muted); font-size: 14px; line-height: 1.6; }
+.entry li + li { margin-top: 8px; }
+.entry li::before { content: "›"; position: absolute; left: 4px; color: var(--accent); }
 
-/* Skills list */
-.skills { display: grid; grid-template-columns: 180px 1fr; gap: 6px 16px; margin: 0; }
-.skills dt { font-weight: 600; }
-.skills dd { margin: 0; }
-
-/* Project cards */
-.project { padding: 16px 20px; margin: 24px 0; border: 1px solid var(--line); border-radius: 8px; }
-.project h2 { margin: 0 0 8px; padding: 0; border: 0; }
-.project .stats { font-size: 0.9rem; margin-bottom: 4px; }
-.project .tags { font-size: 0.85rem; color: var(--muted); margin: 0; }
-
-/* A project's README from GitHub */
-.readme { overflow-wrap: break-word; }
-.readme h1, .readme h2, .readme h3 { font-size: 1.1rem; margin: 24px 0 8px; padding: 0; border: 0; }
-.readme > :first-child, .readme .markdown-heading:first-child h1 { margin-top: 0; }
-.readme .anchor { display: none; }           /* GitHub's little link icons next to headings */
-.readme img { max-width: 100%; }
-.readme pre { overflow-x: auto; padding: 12px; border-radius: 6px; background: var(--code-bg); }
-.readme code { font-size: 0.9em; }
-.readme :not(pre) > code { padding: 2px 5px; border-radius: 4px; background: var(--code-bg); }
-
-footer { margin: 48px 0 24px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 0.85rem; }
-
-/* Phones */
-@media (max-width: 560px) {
-  .skills { grid-template-columns: 1fr; gap: 0; }
-  .skills dd { margin-bottom: 8px; }
+/* Card grid */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
+.card {
+  display: block;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--text);
 }
+a.card:hover { border-color: var(--accent); text-decoration: none; }
+.card h3 { font-size: 14px; font-weight: 500; }
+.card p { margin-top: 6px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+.card .label { color: var(--accent); font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+.card .pill { margin-top: 14px; }
+.grid.two { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
+
+/* Project cards are a bit roomier */
+.project { padding: 20px; }
+.project h3 { font-size: 16px; font-weight: 600; }
+.project p { font-size: 13px; }
+
+/* Chips (tags) */
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+.chip { padding: 2px 10px; border: 1px solid var(--border); border-radius: 999px; color: var(--muted); font-size: 11px; }
+.hero .chips { justify-content: center; }
+
+
+/* ---------- A project's README from GitHub ---------- */
+.readme { font-size: 14px; line-height: 1.7; overflow-wrap: break-word; }
+.readme > * + * { margin-top: 14px; }
+.section .readme h1, .section .readme h2, .section .readme h3 { margin: 28px 0 8px; font-size: 18px; letter-spacing: -0.01em; }
+.readme .markdown-heading:first-child h1, .readme > :first-child { margin-top: 0; }
+.readme .anchor { display: none; }           /* GitHub's little link icons next to headings */
+.readme ul, .readme ol { padding-left: 22px; }
+.readme img { max-width: 100%; border-radius: 6px; }
+.readme pre { overflow-x: auto; padding: 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--soft); font-size: 13px; }
+.readme code { font-family: inherit; font-size: 0.9em; }
+.readme :not(pre) > code { padding: 1px 6px; border-radius: 4px; background: var(--soft); }
+.readme table { border-collapse: collapse; font-size: 13px; }
+.readme th { color: var(--muted); font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; text-align: left; }
+.readme th, .readme td { padding: 8px 14px 8px 0; border-bottom: 1px solid var(--border); }
+
+
+/* ---------- Footer ---------- */
+.site-footer { padding: 32px 0; border-top: 1px solid var(--border); color: var(--muted); font-size: 12px; }
+.site-footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; }
+.site-footer a { color: var(--muted); }
+.site-footer a + a { margin-left: 16px; }
+
+
+/* ---------- Phones ---------- */
+@media (max-width: 640px) {
+  .site-header nav a { padding: 6px 8px; }
+  .site-header .name { display: none; }
+  .site-header nav { margin: 0 auto 0 0; }
+  .hero { padding: 64px 0 48px; }
+  .hero h1 { font-size: 34px; }
+  .section { padding: 56px 0; }
+  .section h2 { font-size: 24px; }
+}
+
+/* Theme toggle: show the sun in light mode, the moon in dark mode */
+.icon-moon { display: none; }
+.dark .icon-sun { display: none; }
+.dark .icon-moon { display: inline; }
