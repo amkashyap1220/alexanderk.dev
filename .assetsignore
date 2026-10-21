@@ -5,3 +5,4 @@
 .assetsignore
 wrangler.jsonc
 README.md
+writing/_template.html

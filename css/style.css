@@ -182,20 +182,41 @@ a.card:hover { border-color: var(--accent); text-decoration: none; }
 .hero .chips { justify-content: center; }
 
 
-/* ---------- A project's README from GitHub ---------- */
-.readme { font-size: 14px; line-height: 1.7; overflow-wrap: break-word; }
-.readme > * + * { margin-top: 14px; }
-.section .readme h1, .section .readme h2, .section .readme h3 { margin: 28px 0 8px; font-size: 18px; letter-spacing: -0.01em; }
-.readme .markdown-heading:first-child h1, .readme > :first-child { margin-top: 0; }
+/* ---------- Long-form text: a project's README from GitHub, and blog posts (.prose) ---------- */
+.readme, .prose { font-size: 14px; line-height: 1.7; overflow-wrap: break-word; }
+.readme > * + *, .prose > * + * { margin-top: 14px; }
+.section .readme h1, .section .readme h2, .section .readme h3, .section .prose h1, .section .prose h2, .section .prose h3 { margin: 28px 0 8px; font-size: 18px; letter-spacing: -0.01em; }
+.readme .markdown-heading:first-child h1, .readme > :first-child, .prose > :first-child { margin-top: 0; }
 .readme .anchor { display: none; }           /* GitHub's little link icons next to headings */
-.readme ul, .readme ol { padding-left: 22px; }
-.readme img { max-width: 100%; border-radius: 6px; }
-.readme pre { overflow-x: auto; padding: 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--soft); font-size: 13px; }
-.readme code { font-family: inherit; font-size: 0.9em; }
-.readme :not(pre) > code { padding: 1px 6px; border-radius: 4px; background: var(--soft); }
-.readme table { border-collapse: collapse; font-size: 13px; }
-.readme th { color: var(--muted); font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; text-align: left; }
-.readme th, .readme td { padding: 8px 14px 8px 0; border-bottom: 1px solid var(--border); }
+.readme ul, .readme ol, .prose ul, .prose ol { padding-left: 22px; }
+.readme img, .prose img { max-width: 100%; border-radius: 6px; }
+.readme pre, .prose pre { overflow-x: auto; padding: 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--soft); font-size: 13px; }
+.readme code, .prose code { font-family: inherit; font-size: 0.9em; }
+.readme :not(pre) > code, .prose :not(pre) > code { padding: 1px 6px; border-radius: 4px; background: var(--soft); }
+.readme table, .prose table { border-collapse: collapse; font-size: 13px; }
+.readme th, .prose th { color: var(--muted); font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; text-align: left; }
+.readme th, .readme td, .prose th, .prose td { padding: 8px 14px 8px 0; border-bottom: 1px solid var(--border); }
+.prose { font-size: 15px; }
+.prose blockquote { margin-inline: 0; margin-bottom: 0; padding-left: 16px; border-left: 3px solid var(--accent); color: var(--muted); }
+
+
+/* ---------- Writing: list of posts ---------- */
+.posts { padding: 0; list-style: none; }
+.post-link {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: 2px 24px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+.posts li:first-child .post-link { border-top: 1px solid var(--border); }
+.post-link:hover { text-decoration: none; }
+.post-link:hover h3 { color: var(--accent); }
+.post-link time { color: var(--muted); font-size: 13px; line-height: 1.9; }
+.post-link h3 { font-size: 16px; font-weight: 600; }
+.post-link p { grid-column: 2; color: var(--muted); font-size: 13px; }
+.empty { padding: 32px; border: 1px dashed var(--border); border-radius: 8px; color: var(--muted); font-size: 14px; text-align: center; }
 
 
 /* ---------- Footer ---------- */
@@ -214,6 +235,8 @@ a.card:hover { border-color: var(--accent); text-decoration: none; }
   .hero h1 { font-size: 34px; }
   .section { padding: 56px 0; }
   .section h2 { font-size: 24px; }
+  .post-link { grid-template-columns: 1fr; }
+  .post-link p { grid-column: auto; }
 }
 
 /* Theme toggle: show the sun in light mode, the moon in dark mode */

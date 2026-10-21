@@ -10,6 +10,7 @@ My development site: Currently an about page with my info and a projects page.
 index.html                     About: summary, experience, education, skills
 projects/index.html            Projects list 
 projects/<project>.html        One page per project: its GitHub README, then "How it works"
+writing/                       Writing: list of posts + _template.html for new ones
 css/style.css                  All styling (colors at the top, light and dark)
 js/theme.js                    Light/dark toggle
 js/github.js                   Fills in GitHub stats and READMEs
@@ -23,6 +24,7 @@ wrangler.jsonc                 Cloudflare settings
 - **Add a project:**
   1. Copy an `<a class="card project">` in `projects/index.html`, change the repo name in each `data-gh="owner/repo"`, and link it to the new page.
   2. Copy a page in `projects/` (for example `switch-to-youtube.html`) and change the name and every `owner/repo`.
+- **New post:** copy `writing/_template.html`, then add it to the list in `writing/index.html`.
 - **WIP** each project page has a marked `#how-it-works`
 
 ## Deployment
