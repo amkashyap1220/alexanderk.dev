@@ -91,7 +91,7 @@
     fs.innerHTML =
       '<legend>' + (k === 0 ? "You" : "Person 2") + '</legend>' +
       '<p class="hv-intro">Type the value you want, then slide how much it matters.</p>' +
-      '<p class="hv-sample" data-sample><b>Sample values.</b> Change them to yours.</p>' +
+      '<p class="hv-sample" data-sample><span><b>Sample values.</b> Change them to yours.</span><span><b>Your values.</b> Edited from the sample.</span></p>' +
       [0, 1, 2, 3, 4, 5].map(row).join("") +
       '<div class="hv-buttons"><button class="btn small" type="button" data-fill>Use sample values</button>' +
       '<button class="btn small" type="button" data-clear>Clear</button>' +
@@ -148,11 +148,13 @@
     fs.elements.work.value = s.work;
   }
 
-  // Shows the "sample values" note while every field still holds its sample value
+  // The note says "sample values" while every field still holds its sample value. Both
+  // wordings sit in one grid cell, so the form doesn't jump when the note changes.
   function markSample(fs) {
     const s = data && sampleText();
-    fs.querySelector("[data-sample]").hidden = !s || fs.elements.work.value !== s.work ||
-      s.targets.some((t, i) => fs.elements["t" + i].value !== t) || s.sliders.some((v, i) => fs.elements["w" + i].value !== v);
+    const on = !!s && fs.elements.work.value === s.work &&
+      s.targets.every((t, i) => fs.elements["t" + i].value === t) && s.sliders.every((v, i) => fs.elements["w" + i].value === v);
+    fs.querySelector("[data-sample]").classList.toggle("on", on);
   }
 
   // "350k", "$1,500" and "30" all work
@@ -224,12 +226,10 @@
   function summarize(n) {
     const { picks, score } = current();
     const rows = result.rows.filter((r) => picks.has(r.zip)).sort((a, b) => score(b) - score(a));
-    const onList = rows.filter((r) => r.list).length;
     const what = mode === "buy" ? "to buy" : "to rent";
     const best = rows[0];
     const who = view === 2 && n > 1 ? "Best " + picks.size + " " + what + " for both of you" : (view === 1 ? "Person 2's" : "Your") + " top " + picks.size + " " + what;
-    summaryEl.innerHTML = "<b>" + who + ".</b> Best match: " + name(best) + " (" + Math.round(score(best)) + "). " +
-      onList + " on Niche's list." + (peopleEl.querySelector("[data-sample]:not([hidden])") ? " <i>Using sample values.</i>" : "");
+    summaryEl.innerHTML = "<b>" + who + ".</b> Best match: " + name(best) + " (" + Math.round(score(best)) + ").";
   }
 
   // ---- Map
@@ -253,18 +253,17 @@
     const bg = css("--bg");
     const feats = geo.features;
     if (!result) {
-      // Before the reader has set their targets: every zip in one neutral color, with Niche's places marked
+      // Before the reader has set their targets: every zip in one neutral color
       return frame(width, [
         Plot.geo(feats, { fill: css("--hv-none"), stroke: bg, strokeWidth: 0.5 }),
-        nicheMarks(feats, bg),
         Plot.tip(feats, Plot.pointer(Plot.centroid({
           fill: bg, stroke: css("--border"),
           title: (f) => {
             const z = byZip.get(f.id);
-            return z ? [name(z) + " " + z.zip, z.list ? "On the Niche list (" + z.list + ")" : null].filter(Boolean).join("\n") : "Zip " + f.id;
+            return z ? name(z) + " " + z.zip : "Zip " + f.id;
           },
         }))),
-      ], "Map of Chicago-area zip codes. Nothing is scored yet. Diamonds mark Niche's best places to live.");
+      ], "Map of Chicago-area zip codes. Nothing is scored yet.");
     }
 
     const { picks, score, label } = current();
@@ -281,9 +280,8 @@
     frame(width, [
       Plot.geo(feats.filter((f) => !scored.has(f.id)), { fill: css("--hv-none"), stroke: bg, strokeWidth: 0.5 }),
       Plot.geo(inSample, { fill: (f) => color(score(scored.get(f.id))), stroke: bg, strokeWidth: 0.5 }),
-      // The top areas get a thick outline in the text color
-      Plot.geo(inSample.filter((f) => picks.has(f.id)), { fill: "none", stroke: css("--text"), strokeWidth: 2.25 }),
-      nicheMarks(feats, bg),
+      // The top areas: a soft blue glow, a halo in the page color, then a crisp blue outline (Tango sky blue reads on red to green)
+      ...topMarks(inSample.filter((f) => picks.has(f.id)), bg),
       Plot.tip(inSample, Plot.pointer(Plot.centroid({
         fill: bg, stroke: css("--border"),
         title: (f) => {
@@ -295,20 +293,19 @@
             two ? "You " + Math.round(r.scores[0]) + ", person 2 " + Math.round(r.scores[1]) : null,
             ...ps().map((p, k) => p.workplace ? (two ? (k ? "Person 2" : "You") + ": " : "") + Math.round(r.commutes[k]) + " min drive to " + placeName(p.workplace) : null),
             priceText(r),
-            r.list ? "On the Niche list (" + r.list + ")" : null,
           ].filter(Boolean).join("\n");
         },
       }))),
     ], "Map of " + result.rows.length + " Chicago-area zip codes colored by score, red for low to green for high. " +
-      "The top " + data.top + " are outlined and listed in the table below. Diamonds mark Niche's best places to live.");
+      "The top " + data.top + " are outlined in blue and listed in the table below.");
   }
 
-  // Niche's places, always shown: a diamond with a halo in the page color so it reads on any fill
-  function nicheMarks(feats, bg) {
-    const listed = feats.filter((f) => byZip.get(f.id)?.list);
+  function topMarks(top, bg) {
+    const blue = css("--hv-top");
     return [
-      Plot.dot(listed, Plot.centroid({ symbol: "diamond", r: 4, stroke: bg, strokeWidth: 3.5, fill: "none" })),
-      Plot.dot(listed, Plot.centroid({ symbol: "diamond", r: 4, stroke: css("--text"), strokeWidth: 1.5, fill: "none" })),
+      Plot.geo(top, { fill: "none", stroke: blue, strokeWidth: 7, strokeOpacity: 0.28, strokeLinejoin: "round" }),
+      Plot.geo(top, { fill: "none", stroke: bg, strokeWidth: 3.5, strokeLinejoin: "round" }),
+      Plot.geo(top, { fill: "none", stroke: blue, strokeWidth: 2, strokeLinejoin: "round" }),
     ];
   }
 
@@ -323,11 +320,11 @@
     const works = ps().map((p, k) => (p.workplace ? k : null)).filter((k) => k != null);
     const driveHead = works.map((k) => "<th>" + (two ? (k ? "Person 2" : "You") + " drive" : "Drive") + "</th>").join("");
     const head = "<thead><tr><th>#</th><th>Place</th><th>Zip</th>" + scoreHead + driveHead + "<th>" + (mode === "buy" ? "Price" : "Rent each") +
-      "</th><th>Niche</th></tr></thead>";
+      "</th></tr></thead>";
     const body = rows.map((r, i) => "<tr><td>" + (i + 1) + "</td><td>" + listing(r) + "</td><td>" + r.zip + "</td><td><b>" + Math.round(score(r)) + "</b></td>" +
       (two ? "<td>" + Math.round(r.scores[0]) + "</td><td>" + Math.round(r.scores[1]) + "</td>" : "") +
       works.map((k) => "<td>" + Math.round(r.commutes[k]) + " min</td>").join("") +
-      "<td>" + money(r[mode][5]) + "</td><td>" + (r.list ? "Yes" : "No") + "</td></tr>").join("");
+      "<td>" + money(r[mode][5]) + "</td></tr>").join("");
     tableEl.innerHTML = head + "<tbody>" + body + "</tbody>";
   }
 

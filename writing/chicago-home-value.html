@@ -4,12 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Where is the best value in Chicagoland? · Alexander Kashyap</title>
-  <meta name="description" content="Set your own targets and weights, for buying or renting, alone or with a partner, and see how every Chicago-area zip code scores on a map, next to the places everyone recommends.">
+  <meta name="description" content="Set your own targets and weights, for buying or renting, alone or with a partner, and see how every Chicago-area zip code scores on a map.">
   <!-- Link previews (iMessage, Discord, Slack, LinkedIn, ...) -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Alexander Kashyap">
   <meta property="og:title" content="Where is the best value in Chicagoland? · Alexander Kashyap">
-  <meta property="og:description" content="Set your own targets and weights, for buying or renting, alone or with a partner, and see how every Chicago-area zip code scores on a map, next to the places everyone recommends.">
+  <meta property="og:description" content="Set your own targets and weights, for buying or renting, alone or with a partner, and see how every Chicago-area zip code scores on a map.">
   <meta property="og:url" content="https://alexanderk.dev/writing/chicago-home-value">
   <meta property="og:image" content="https://alexanderk.dev/og.png">
   <meta property="og:image:width" content="1200">
@@ -80,7 +80,6 @@
             <ul class="hv-legend" aria-label="Legend">
               <li class="hv-scored"><span class="hv-key ramp"></span>Score, low (red) to high (green)</li>
               <li class="hv-scored"><span class="hv-key pick"></span>Top 20</li>
-              <li><span class="hv-key list"></span>Niche's best places to live</li>
               <li class="hv-scored"><span class="hv-key none"></span>Too little data</li>
             </ul>
             <div id="hv-map" class="hv-map"></div>
@@ -95,7 +94,7 @@
         </div>
 
         <div class="prose hv-list"><table id="hv-table"></table></div>
-        <p class="hv-age"><b>How old the data is:</b> pulled Oct 21, 2026. Prices: Redfin, Jun 2025 to May 2026. Rent, home age and the Census commute: ACS 2020–2024. Crime: FBI, 2025 (2024 where 2025 is incomplete). Schools: 2024–25 tests (IL), 2025–26 (IN). Walkability: EPA, 2021. Niche: 2026 lists. Drive times: OpenStreetMap, Oct 2026.</p>
+        <p class="hv-age"><b>How old the data is:</b> pulled Oct 21, 2026. Prices: Redfin, Jun 2025 to May 2026. Rent, home age and the Census commute: ACS 2020–2024. Crime: FBI, 2025 (2024 where 2025 is incomplete). Schools: 2024–25 tests (IL), 2025–26 (IN). Walkability: EPA, 2021. Drive times: OpenStreetMap, Oct 2026.</p>
       </div>
 
       <article class="narrow prose">
@@ -104,7 +103,6 @@
           <li>Give each factor a <b>target</b> and a <b>weight</b>.</li>
           <li>A zip scores 100 when it hits every target, and less the further off it is. Beating a target for schools, safety or price counts as a hit.</li>
           <li>With two people, "best for both" uses the lower of your two scores.</li>
-          <li>Diamonds are Niche's 2026 best places to live.</li>
           <li>Click a place in the list to see what's for sale or rent there.</li>
         </ul>
 
@@ -124,8 +122,8 @@
     <!-- Styles for this post's map only (scoped under .hv) -->
     <style>
       /* Score ramp, low to high: scarlet red 3, orange 2, butter 2, chameleon 1 (lighter as it gets better, so it reads without color too) */
-      :root { --pick: #ce5c00; --hv-0: #a40000; --hv-1: #f57900; --hv-2: #edd400; --hv-3: #8ae234; --hv-none: #d3d7cf; }
-      :root.dark { --pick: #fcaf3e; --hv-0: #ef2929; --hv-1: #f57900; --hv-2: #edd400; --hv-3: #8ae234; --hv-none: #4a4f50; }
+      :root { --pick: #ce5c00; --hv-top: #204a87; --hv-0: #a40000; --hv-1: #f57900; --hv-2: #edd400; --hv-3: #8ae234; --hv-none: #d3d7cf; }
+      :root.dark { --pick: #fcaf3e; --hv-top: #729fcf; --hv-0: #ef2929; --hv-1: #f57900; --hv-2: #edd400; --hv-3: #8ae234; --hv-none: #4a4f50; }
       .hv-hero { padding-bottom: var(--space-7); }
       .hv-section { padding-top: var(--space-6); }
       .hv { max-width: 1100px; margin: 0 auto var(--space-9); padding: 0 var(--space-5); }
@@ -143,9 +141,8 @@
       .hv-summary .btn { vertical-align: baseline; }
       .hv-key { display: inline-block; width: 12px; height: 12px; border-radius: 2px; }
       .hv-key.ramp { width: 44px; background: linear-gradient(90deg, var(--hv-0), var(--hv-1), var(--hv-2), var(--hv-3)); }
-      .hv-key.pick { border: 2.25px solid var(--text); }
+      .hv-key.pick { border: 2px solid var(--hv-top); border-radius: 3px; box-shadow: 0 0 0 2px var(--bg), 0 0 6px 2px color-mix(in srgb, var(--hv-top) 45%, transparent); }
       .hv-key.none { background: var(--hv-none); }
-      .hv-key.list { width: 9px; height: 9px; border: 1.5px solid var(--text); border-radius: 1px; transform: rotate(45deg); }
       .hv figcaption { margin-top: var(--space-2); text-align: center; color: var(--muted); font-size: var(--fs-xs); line-height: 1.6; }
       .hv-person { margin: 0 0 var(--space-3); padding: var(--space-3) var(--space-4) var(--space-4); border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); }
       .hv-person legend { padding: 0 var(--space-1); color: var(--label); font-size: var(--fs-2xs); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
@@ -156,7 +153,10 @@
       .hv-line input[type="range"] { width: 100%; accent-color: var(--pick); }
       .hv-line output { color: var(--text); font-size: var(--fs-xs); text-align: right; }
       .hv-sample { margin: 0 0 var(--space-2); padding: var(--space-1) var(--space-2); border-left: 3px solid var(--link); background: var(--soft); font-size: var(--fs-xs); }
-      .hv-sample[hidden] { display: none; }
+      .hv-sample { display: grid; }
+      .hv-sample > span { grid-area: 1 / 1; }
+      .hv-sample.on > span + span, .hv-sample:not(.on) > span:first-child { visibility: hidden; }
+      .hv-sample:not(.on) { border-left-color: var(--border); background: none; color: var(--muted); }
       .hv-hint { margin: var(--space-1) 0 0; color: var(--muted); font-size: var(--fs-xs); line-height: 1.5; }
       .hv-target { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: var(--space-2); color: var(--muted); font-size: var(--fs-xs); }
       .hv-target input { width: 90px; padding: 3px 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--soft); color: var(--text); font: inherit; }
