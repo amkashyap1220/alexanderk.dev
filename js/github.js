@@ -1,10 +1,10 @@
 /* ==========================================================================
-   Live GitHub numbers and READMEs for the project pages (needs js/gh.js).
+   GitHub numbers and READMEs for the project pages (needs js/gh.js).
 
      <b data-gh="owner/repo" data-field="stars|commits|language|updated">--</b>
      <div data-readme="owner/repo">Loading…</div>
 
-   Anything left as "--" or "Loading…" means GitHub couldn't be reached.
+   Anything left as "--" means that repo isn't in /data/github.json (yet).
    ========================================================================== */
 
 (function () {
