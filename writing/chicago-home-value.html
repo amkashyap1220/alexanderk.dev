@@ -121,12 +121,9 @@
         <ul>
           <li><b>I set the method before looking.</b> It's easy to fool yourself with data like this: run the numbers, see something interesting, then decide that's what you were looking for. So I wrote down the question, every definition and the pass/fail rule, and <a href="https://github.com/amkashyap1220/Home-Value-Score/commit/935ee45">committed them</a> before downloading any price data. Scientists call this pre-registration.</li>
           <li><b>One change came after the first run.</b> The pre-registered model only had quality and the tax rate. After running it, I added energy bills, commuting fuel and home age, because a buyer pays those costs on top of the price. Changing a model after seeing results is exactly what pre-registration exists to catch, so it's logged with the reason in <a href="https://github.com/amkashyap1220/Home-Value-Score/blob/main/docs/decisions.md#change-log">the decision file</a>. The first run also cleared the rule (16 picks, 11 off the list), but 9 of its picks were in Indiana. Cheaper gas and energy in Indiana explain part of that, and adding them cut Indiana's picks to 4.</li>
-          <li><b>Missing data quietly flatters.</b> A town with no crime data looks safer than it is unless you flag it.</li>
           <li><b>The cost numbers are rough.</b> Energy bills grow with house size, and the fuel estimate is built from commute time, which the quality score already includes.</li>
         </ul>
 
-        <h2>Data and code</h2>
-        <p>Everything is in the <a href="https://github.com/amkashyap1220/Home-Value-Score">Home-Value-Score repo</a>: the decision file, the Python scripts (pandas and statsmodels), the data notes, and the <a href="https://github.com/amkashyap1220/Home-Value-Score/blob/main/docs/results.md">full results</a>. Sources: Redfin Data Center (prices), Zillow Research (trend context), Census ACS and TIGER files, Illinois Report Card and Indiana Department of Education (schools), FBI Crime Data Explorer, EPA Smart Location Database, EIA gasoline prices, and Niche's 2026 rankings. Each one's URL, pull date and license is in the README.</p>
       </article>
     </section>
 
