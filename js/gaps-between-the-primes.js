@@ -1,7 +1,8 @@
 /* ==========================================================================
    Gaps Between the Primes: in-browser demo for the project's Walkthrough.
-   Same idea as primegaps.cpp, with the faster isPrime from section 5,
-   and it stops at a limit instead of running forever.
+   Same idea as primegaps.cpp, with a faster isPrime (it stops at the
+   square root and at the first divisor), and it stops at a limit
+   instead of running forever.
    ========================================================================== */
 
 (function () {
@@ -31,7 +32,7 @@
       const gap = current - lastp;
       if (gap === 2) twins++;
       if (gap > lgap) { lgap = gap; records.push([gap, lastp, current]); }
-      if (gap < sgap) sgap = gap;              // two separate ifs: no missed gap of 1
+      if (gap < sgap) sgap = gap;              // separate ifs, so the gap of 1 (2 to 3) counts
       lastp = current;
     }
     return { count, lgap, sgap, twins, records, lastp };

@@ -66,7 +66,7 @@
     <section class="section" id="walkthrough">
       <div class="narrow">
         <h2>Walkthrough</h2>
-        <p class="intro">How this program works, piece by piece, and how to run it yourself. All you need to know going in is what a prime number is.</p>
+        <p class="intro">How this program works, piece by piece. All you need to know going in is what a prime number is.</p>
 
         <div class="prose">
           <h3>1. The question</h3>
@@ -136,54 +136,12 @@ lastp = currentp;        // this prime is the "last" one next time</code></pre>
     }
     return flag;
 }</code></pre>
-
-          <h3>4. Run it yourself</h3>
-          <p>You need a C++ compiler, which turns the code into a program your computer can run:</p>
-          <ul>
-            <li><b>Mac:</b> run <code>xcode-select --install</code> in Terminal.</li>
-            <li><b>Windows:</b> install <a href="https://learn.microsoft.com/windows/wsl/install">WSL</a> (Ubuntu), then run <code>sudo apt install g++</code> inside it.</li>
-            <li><b>Linux:</b> <code>sudo apt install g++</code>.</li>
-          </ul>
-          <p>Then download the code, compile it, and run it:</p>
-<pre><code>git clone https://github.com/amkashyap1220/Gaps-Between-The-Primes
-cd Gaps-Between-The-Primes
-g++ -O2 primegaps.cpp -o primegaps
-./primegaps</code></pre>
-          <p>Press <b>Ctrl+C</b> to stop it. The first two printouts look like this:</p>
-<pre><code>--Prime Gaps--
-current prime: 12343
-Lgap: 36
-Sgap: 2
---Prime Gaps--
-current prime: 24683
-Lgap: 52
-Sgap: 2</code></pre>
-          <p>Reading the first one: by the time we've counted to 12,345, the last prime found was 12,343. The biggest gap so far is 36 (between 9,551 and 9,587), and the smallest is 2.</p>
-
-          <h3>5. What I'd do differently</h3>
-          <p>I wrote this in 2020. Looking at it now, here's what I'd change, and each one is a good lesson.</p>
-
-          <p><b>It's much slower than it needs to be.</b> <code>isPrime</code> keeps checking even after it finds a divisor, and it checks every number up to <code>num</code>. But if a number has a factor, one of its factors is always at or below its square root (for example, 36 = 4 × 9 and 4 ≤ 6). So we can stop at the square root, and stop the moment we find a divisor:</p>
-<pre><code>bool isPrime(int num) {
-    if (num &lt; 2) return false;
-    for (int i = 2; i * i &lt;= num; i++) {
-        if (num % i == 0) return false;   // found a divisor: done
-    }
-    return true;
-}</code></pre>
-          <p>On my machine, counting the primes up to 100,000 took about <b>11 seconds</b> with the original and <b>under 0.01 seconds</b> with this version: over 1,000 times faster, with the same answer (9,592 primes).</p>
-
-          <p><b>The smallest gap misses 1.</b> The very first gap, 2 → 3, is 1. But <code>lgap</code> starts at 0, so 1 counts as a new <em>largest</em> gap, and because of the <code>else</code>, it never gets checked as a smallest gap. So the program reports 2 when the true smallest gap is 1. It only happens once (2 and 3 are the only primes 1 apart), but it's a classic <code>else if</code> trap. Two separate <code>if</code>s fix it:</p>
-<pre><code>if (gap &gt; lgap) lgap = gap;
-if (gap &lt; sgap) sgap = gap;</code></pre>
-
-          <p><b>It would eventually overflow.</b> An <code>int</code> tops out at 2,147,483,647. Counting past that is an overflow, which C++ doesn't define, so anything can happen. Using <code>long long</code> pushes the limit to about 9 quintillion. With the original <code>isPrime</code>, you'd never get close anyway.</p>
         </div>
 
-        <!-- Live demo: runs the improved isPrime in the browser (js/gaps-between-the-primes.js) -->
+        <!-- Live demo: the same program in the browser (js/gaps-between-the-primes.js) -->
         <div class="prose">
-          <h3>6. Try it in your browser</h3>
-          <p>This runs the faster version in JavaScript, right on this page. Pick a limit to see how many primes are below it and every time the record gap grew.</p>
+          <h3>4. Try it in your browser</h3>
+          <p>This runs the same idea in JavaScript, right on this page, with a faster prime check. Pick a limit to see how many primes are below it and every time the record gap grew.</p>
         </div>
         <div class="demo">
           <label for="gap-limit">Primes up to</label>
