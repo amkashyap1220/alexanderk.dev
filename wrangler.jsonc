@@ -3,7 +3,9 @@
   "name": "alexanderk-dev",
   "compatibility_date": "2026-10-20",
   "assets": {
-    "directory": "./"
+    "directory": "./",
+    // Unknown addresses get /404.html (with a real 404 status)
+    "not_found_handling": "404-page"
   },
   // Lets branches other than main build a preview (npx wrangler preview)
   "previews": {}
