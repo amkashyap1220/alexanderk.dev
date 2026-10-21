@@ -270,7 +270,8 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
 }
 .project:hover { border-color: var(--link); }
 .project:has(.card-link:focus-visible) { outline: 2px solid var(--link); outline-offset: 2px; }
-.card-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0 var(--space-3); }
+/* The date always sits top-right; a long title wraps beside it instead of pushing the date down */
+.card-head { display: grid; grid-template-columns: 1fr auto; align-items: baseline; gap: 0 var(--space-3); }
 .project .card-title { font-size: var(--fs-base); font-weight: 600; }
 .project .card-text { font-size: var(--fs-sm); }
 .project .when { font-size: var(--fs-xs); }
