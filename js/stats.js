@@ -24,6 +24,7 @@
     "CSCI-240-Computer-Programming-in-Cpp": "/projects/csci-240.html",
     "CosmiShapesFinal": "/projects/cosmishapes.html",
     "CNIT-255-Kashyap": "/projects/cnit-255.html",
+    "dotNET": "/projects/dotnet.html",
   };
 
 
