@@ -9,14 +9,19 @@
       crime rates are comparable. pct(x) is the share of the sample's zips
       below x (ties count half), and
         closeness = 100 - |pct(zip's value) - pct(target)|
-      It's 100 exactly on target and lower the further away, in either
-      direction. A missing value counts as 50.
+      It's 100 exactly on target and lower the further away. For schools,
+      safety and price, doing better than the target also counts as 100.
+      A missing value counts as 50.
    3. Score = weighted average of the six closeness values.
    4. Top areas = the 20 highest scores. For two people, "best for both"
       ranks by the lower of the two scores.
    ========================================================================== */
 
 window.HVModel = (function () {
+  // Which way is "better than the target": +1 higher is better, -1 lower is better, 0 no better side
+  // (schools, safety, commute, walkability, home age, price), the same as DIRECTION in src/value.py
+  const DIRECTION = [1, -1, 0, 0, 0, -1];
+
   // Share of the known values below x, ties counting half, as 0 to 100 (values sorted ascending)
   function pct(sorted, x) {
     let below = 0, equal = 0;
@@ -33,7 +38,11 @@ window.HVModel = (function () {
     const wSum = person.weights.reduce((s, w) => s + w, 0);
     const tPct = person.targets.map((t, i) => pct(sorted[i], t));
     return rows.map((z) => {
-      const close = z[mode].map((x, i) => (x == null ? 50 : 100 - Math.abs(pct(sorted[i], x) - tPct[i])));
+      const close = z[mode].map((x, i) => {
+        if (x == null) return 50;
+        const gap = pct(sorted[i], x) - tPct[i];
+        return gap * DIRECTION[i] > 0 ? 100 : 100 - Math.abs(gap);   // better than the target counts as on target
+      });
       return { close, score: close.reduce((s, c, i) => s + c * person.weights[i], 0) / wSum };
     });
   }
