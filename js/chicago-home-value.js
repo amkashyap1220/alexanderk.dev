@@ -34,7 +34,7 @@
   ];
   const PRICE = {
     buy: { name: "Price", hint: "Median sale price, past year.", before: "$", after: "", digits: -3, example: "350k" },
-    rent: { name: "Rent", hint: "Median monthly rent per home.", before: "$", after: "a month", digits: 0, example: "1,400" },
+    rent: { name: "Rent per person", hint: "Median rent divided by the average number of people in a rented home.", before: "$", after: "a month", digits: 0, example: "650" },
   };
   const factors = () => [...FACTORS, PRICE[mode]];
   // The weight slider runs 0 to 4; these are the weights and words for each step
@@ -56,7 +56,7 @@
   // digits < 0 rounds to tens, hundreds, thousands...
   const fmt = (x, digits) => (digits < 0 ? Math.round(x / 10 ** -digits) * 10 ** -digits : x)
     .toLocaleString(undefined, { maximumFractionDigits: Math.max(digits, 0) });
-  const priceText = (z) => money(z[mode][5]) + (mode === "buy" ? " median sale price" : " median rent a month");
+  const priceText = (z) => money(z[mode][5]) + (mode === "buy" ? " median sale price" : " rent per person a month");
 
   // ---- Controls: one fieldset per person, built here so both people get the same form
 
@@ -322,7 +322,7 @@
     // A drive-time column for each person who named a workplace
     const works = ps().map((p, k) => (p.workplace ? k : null)).filter((k) => k != null);
     const driveHead = works.map((k) => "<th>" + (two ? (k ? "Person 2" : "You") + " drive" : "Drive to work") + "</th>").join("");
-    const head = "<thead><tr><th>#</th><th>Place</th><th>Zip</th>" + scoreHead + driveHead + "<th>" + (mode === "buy" ? "Median sale" : "Rent") +
+    const head = "<thead><tr><th>#</th><th>Place</th><th>Zip</th>" + scoreHead + driveHead + "<th>" + (mode === "buy" ? "Median sale" : "Rent per person") +
       "</th><th>On Niche</th></tr></thead>";
     const body = rows.map((r, i) => "<tr><td>" + (i + 1) + "</td><td>" + listing(r) + "</td><td>" + r.zip + "</td><td><b>" + Math.round(score(r)) + "</b></td>" +
       (two ? "<td>" + Math.round(r.scores[0]) + "</td><td>" + Math.round(r.scores[1]) + "</td>" : "") +
