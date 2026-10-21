@@ -1,13 +1,13 @@
 /* ==========================================================================
    Chicago home value: the target map for the post.
-   Reads /writing/chicago-home-value.json (per-zip values, made by
+   Reads /research/chicago-home-value.json (per-zip values, made by
    src/site_data.py in the Home-Value-Score repo) and
-   /writing/chicago-home-value-zips.json (zip shapes, src/map.py), scores the
+   /research/chicago-home-value-zips.json (zip shapes, src/map.py), scores the
    zips with js/chicago-home-value-model.js and draws them with Observable Plot.
 
    The reader picks buying or renting, sets a target and a weight for each
    factor, can name where they work (commute becomes the drive time there,
-   from /writing/chicago-home-value-drive.json, src/commute.py), and can add
+   from /research/chicago-home-value-drive.json, src/commute.py), and can add
    a second person. The form starts with sample values; a factor that counts
    needs a target before anything is scored. Every change rescores and redraws
    the map and the table, whose place names link to Zillow listings. Colors come from the site's CSS variables, so the map
@@ -369,7 +369,7 @@
   }).observe(mapEl);
 
   peopleEl.append(personForm(0));
-  Promise.all(["", "-zips", "-drive"].map((f) => fetch("/writing/chicago-home-value" + f + ".json").then((r) => r.json())))
+  Promise.all(["", "-zips", "-drive"].map((f) => fetch("/research/chicago-home-value" + f + ".json").then((r) => r.json())))
     .then(([json, shapes, times]) => {
       data = json;
       geo = shapes;
