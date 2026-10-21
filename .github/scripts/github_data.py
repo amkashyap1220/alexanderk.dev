@@ -53,12 +53,19 @@ def site_repos(attr):
 def main():
     data = {}
     failed = []
+    try:
+        previous = json.loads(OUT.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        previous = {}
 
     def save(key, fetch):
+        key = key.lower()
         try:
-            data[key.lower()] = fetch()
+            data[key] = fetch()
         except Exception as e:   # one failed lookup shouldn't lose the rest
-            failed.append(f"{key}: {e}")   # left out, so the site fetches it live
+            failed.append(f"{key}: {e}")
+            if key in previous:
+                data[key] = previous[key]   # keep the last good value; otherwise the site fetches it live
 
     save(f"user:{USER}", lambda: {"since": get_json(f"users/{USER}")["created_at"]})
 
