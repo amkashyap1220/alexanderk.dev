@@ -160,12 +160,19 @@ a.card:hover { border-color: var(--accent); text-decoration: none; }
 .card .pill { margin-top: 14px; }
 .grid.two { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
 
-/* Project cards are a bit roomier */
-/* Every card in a row is the same height. Title and stats go first, so the
-   stats pills line up across cards; the tags sit at the bottom. */
-.project { display: flex; flex-direction: column; padding: 20px; }
-.project .pill { align-self: flex-start; margin: 10px 0 4px; }
-.project .chips { margin-top: auto; padding-top: 14px; }
+/* Project cards line up part by part across a row. Each card spans 4 rows
+   of the parent grid (title, stats, description, tags) and shares them through
+   subgrid, so each row is as tall as that part in the tallest card. */
+.project {
+  display: grid;
+  grid-row: span 4;
+  grid-template-rows: subgrid;
+  row-gap: 0;
+  align-content: start;
+  padding: 20px;
+}
+.project .pill { justify-self: start; margin: 10px 0 4px; }
+.project .chips { align-self: start; margin-top: 0; padding-top: 14px; }
 .project h3 { font-size: 16px; font-weight: 600; }
 .project p { font-size: 13px; }
 
