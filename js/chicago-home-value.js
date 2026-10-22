@@ -782,14 +782,14 @@
     const m = data.value_model;
     const pct = (x) => Math.round(x * 100) + "%";
     const val = (kind) => Object.entries(m.validation[kind]);
-    $("hv-validation").innerHTML = "<caption>Out-of-sample error, " + m.n + " zips. Lower error is better; R² is the share of the variation in log price per sq ft explained for zips the model didn't see.</caption>" +
+    $("hv-validation").innerHTML = "<caption>How well each model predicts zips it didn't see (" + m.n + " zips). Lower error is better. R² is the share of the variation in price it explains, from 0 to 1.</caption>" +
       "<thead><tr><th>Model</th><th>Typical error, random folds</th><th>R², random</th><th>Typical error, spatial folds</th><th>R², spatial</th></tr></thead><tbody>" +
       val("random_10_fold").map(([k, v]) => {
         const s = m.validation.spatial_10_fold[k];
         return "<tr" + (k.startsWith("This model:") ? ' class="hv-selected"' : "") + "><td>" + esc(k) + "</td><td>" + v.median_abs_pct_error.toFixed(1) + "%</td><td>" + v.r2_log.toFixed(2) +
           "</td><td>" + s.median_abs_pct_error.toFixed(1) + "%</td><td>" + s.r2_log.toFixed(2) + "</td></tr>";
       }).join("") + "</tbody>";
-    $("hv-coefs").innerHTML = "<caption>Coefficients on log price per sq ft (" + m.n_complete + " zips with every factor). Percent effect = change in price for one unit.</caption>" +
+    $("hv-coefs").innerHTML = "<caption>What each factor does to price per sq ft, holding the others fixed (" + m.n_complete + " zips with every factor). Effect = percent change in price for one more unit of the factor.</caption>" +
       "<thead><tr><th>Term</th><th>Effect</th><th>p (robust)</th><th>p (clustered by county)</th></tr></thead><tbody>" +
       m.coefficients.filter((c) => c.term !== "const").map((c) => "<tr><td>" + esc(c.label) + "</td><td>" + (c.pct_effect > 0 ? "+" : "") + c.pct_effect.toFixed(1) + "%</td><td>" +
         (c.p_hc1 < 0.001 ? "< 0.001" : c.p_hc1.toFixed(3)) + "</td><td>" + (c.p_county < 0.001 ? "< 0.001" : c.p_county.toFixed(3)) + "</td></tr>").join("") + "</tbody>";
