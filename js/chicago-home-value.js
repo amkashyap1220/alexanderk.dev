@@ -363,7 +363,7 @@
       if (p.weights[a] > 0 && p.weights[b] > 0 && Math.abs(corr.spearman[a][b]) >= 0.6)
         pairs.push(fs[a].name.toLowerCase() + " and " + fs[b].name.toLowerCase() + " (ρ = " + corr.spearman[a][b].toFixed(2).replace("-", "−") + ")");
     }
-    if (pairs.length) lines.push('<p class="hv-note">Related factors: ' + esc(listJoin(pairs)) + " go together across zips, so weighting both counts much the same thing twice. Consider weighting just one.</p>");
+    if (pairs.length) lines.push('<p class="hv-note hv-related">Related factors: ' + esc(listJoin(pairs)) + " go together across zips, so weighting both counts much the same thing twice. Consider weighting just one.</p>");
     if (changeNote) lines.push('<p class="hv-note">' + changeNote + "</p>");
     driversEl.innerHTML = lines.join("");
   }
