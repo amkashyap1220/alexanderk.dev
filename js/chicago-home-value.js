@@ -3,7 +3,8 @@
    Reads /research/chicago-home-value.json (per-zip values, made by
    src/site_data.py in the Home-Value-Score repo) and
    /research/chicago-home-value-zips.json (zip shapes, src/map.py), scores the
-   zips with js/chicago-home-value-model.js and draws them with Observable Plot.
+   zips with js/chicago-home-value-model.js and draws them with Observable Plot,
+   with the train stations from /research/chicago-home-value-stations.json on top.
 
    The reader picks buying or renting, sets a target and a weight for each
    factor, can name where they work (commute becomes the drive time there,
@@ -49,6 +50,7 @@
 
   let data = null, geo = null, byZip = null;
   let drive = null;        // drive(fromZip, toZip) in minutes, from chicago-home-value-drive.json
+  let stations = [];       // [lon, lat, name, agency], from chicago-home-value-stations.json
   let places = [];         // [{ zip, label }] for the workplace box
   let mode = "buy";
   let view = 0;            // 0 = you, 1 = person 2, 2 = best for both
@@ -260,6 +262,7 @@
       // Before the reader has set their targets: every zip in one neutral color
       return frame(width, [
         Plot.geo(feats, { fill: css("--hv-none"), stroke: bg, strokeWidth: 0.5 }),
+        stationDots(width, bg),
         ...zipTip(feats, width, {
           fill: bg, stroke: css("--border"),
           title: (f) => {
@@ -286,6 +289,7 @@
       Plot.geo(inSample, { fill: (f) => color(score(scored.get(f.id))), stroke: bg, strokeWidth: 0.5 }),
       // The top areas: a soft blue glow, a halo in the page color, then a crisp blue outline (Tango sky blue reads on red to green)
       ...topMarks(inSample.filter((f) => picks.has(f.id)), bg),
+      stationDots(width, bg),
       ...zipTip(inSample, width, {
         fill: bg, stroke: css("--border"),
         title: (f) => {
@@ -302,7 +306,7 @@
         },
       }),
     ], "Map of " + result.rows.length + " Chicago-area zip codes colored by score, red for low to green for high. " +
-      "The top " + data.top + " are outlined in blue and listed in the table below.");
+      "The top " + data.top + " are outlined in blue and listed in the table below. Small dark dots are train stations.");
   }
 
   // The detail box for the zip under the pointer. It sits next to the zip, but on a
@@ -316,6 +320,11 @@
       Plot.geo(feats, Plot.pointer({ ...at, fill: "none", stroke: css("--text"), strokeWidth: 2 })),
       Plot.tip(feats, Plot.pointer({ ...options, ...at, frameAnchor: "top-left", anchor: "top-left", pointerSize: 0 })),
     ];
+  }
+
+  // Metra, CTA 'L' and South Shore Line stations: small dots in the text color with a ring in the page color
+  function stationDots(width, bg) {
+    return Plot.dot(stations, { x: (d) => d[0], y: (d) => d[1], r: width < 560 ? 1.6 : 2.2, fill: css("--text"), stroke: bg, strokeWidth: 0.8 });
   }
 
   function topMarks(top, bg) {
@@ -387,10 +396,11 @@
   }).observe(mapEl);
 
   peopleEl.append(personForm(0));
-  Promise.all(["", "-zips", "-drive"].map((f) => fetch("/research/chicago-home-value" + f + ".json").then((r) => r.json())))
-    .then(([json, shapes, times]) => {
+  Promise.all(["", "-zips", "-drive", "-stations"].map((f) => fetch("/research/chicago-home-value" + f + ".json").then((r) => r.json())))
+    .then(([json, shapes, times, stops]) => {
       data = json;
       geo = shapes;
+      stations = stops;
       byZip = new Map(data.zips.map((z) => [z.zip, z]));
       // Drive times: an n x n grid of whole minutes, row = from, column = to
       const index = new Map(times.zips.map((z, i) => [z, i]));

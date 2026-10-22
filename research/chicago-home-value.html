@@ -81,6 +81,7 @@
               <li class="hv-scored"><span class="hv-key ramp"></span>Score, low (red) to high (green)</li>
               <li class="hv-scored"><span class="hv-key pick"></span>Top 20</li>
               <li class="hv-scored"><span class="hv-key none"></span>Too little data</li>
+              <li><span class="hv-key station"></span>Train station</li>
             </ul>
             <div id="hv-map" class="hv-map"></div>
             <figcaption id="hv-caption">Hover or tap a zip for details.</figcaption>
@@ -144,6 +145,7 @@
       .hv-key.ramp { width: 44px; background: linear-gradient(90deg, var(--hv-0), var(--hv-1), var(--hv-2), var(--hv-3)); }
       .hv-key.pick { border: 2px solid var(--hv-top); border-radius: 3px; box-shadow: 0 0 0 2px var(--bg), 0 0 6px 2px color-mix(in srgb, var(--hv-top) 45%, transparent); }
       .hv-key.none { background: var(--hv-none); }
+      .hv-key.station { width: 6px; height: 6px; border-radius: 50%; background: var(--text); box-shadow: 0 0 0 1px var(--bg); }
       .hv figcaption { margin-top: var(--space-2); text-align: center; color: var(--muted); font-size: var(--fs-xs); line-height: 1.6; }
       .hv-person { margin: 0 0 var(--space-3); padding: var(--space-3) var(--space-4) var(--space-4); border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); }
       .hv-person legend { padding: 0 var(--space-1); color: var(--label); font-size: var(--fs-2xs); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
