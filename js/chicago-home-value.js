@@ -36,7 +36,11 @@
     buy: { name: "Price", hint: "Median sale price, past year.", before: "$", after: "", digits: -3, example: "600k" },
     rent: { name: "Rent per person", hint: "Median rent split by bedroom, so one roommate's share.", before: "$", after: "a month", digits: 0, example: "1,200" },
   };
-  const factors = () => [...FACTORS, PRICE[mode]];
+  const TRAIN = { name: "Train station", hint: "Miles to the nearest Metra, CTA 'L' or South Shore Line station.", before: "", after: "miles", digits: 1 };
+  const factors = () => [...FACTORS, PRICE[mode], TRAIN];
+  const ALL = [0, 1, 2, 3, 4, 5, 6];
+  // The form shows the train station right after commute
+  const ORDER = [0, 1, 2, 6, 3, 4, 5];
   // The weight slider runs 0 to 4; these are the weights and words for each step
   const WEIGHTS = [
     { weight: 0, word: "Ignore" }, { weight: 0.5, word: "Low" }, { weight: 1, word: "Normal" },
@@ -92,7 +96,7 @@
       '<legend>' + (k === 0 ? "You" : "Person 2") + '</legend>' +
       '<p class="hv-intro">Type the value you want, then slide how much it matters.</p>' +
       '<p class="hv-sample" data-sample><span><b>Sample values.</b> Change them to yours.</span><span><b>Your values.</b> Edited from the sample.</span></p>' +
-      [0, 1, 2, 3, 4, 5].map(row).join("") +
+      ORDER.map(row).join("") +
       '<div class="hv-buttons"><button class="btn small" type="button" data-fill>Use sample values</button>' +
       '<button class="btn small" type="button" data-clear>Clear</button>' +
       (k === 1 ? '<button class="btn small" type="button" data-remove>Remove person 2</button>' : "") + '</div>';
@@ -167,13 +171,13 @@
 
   function readPerson(fs) {
     const f = fs.elements;
-    const steps = [0, 1, 2, 3, 4, 5].map((i) => WEIGHTS[Number(f["w" + i].value)]);
+    const steps = ALL.map((i) => WEIGHTS[Number(f["w" + i].value)]);
     steps.forEach((st, i) => { f["w" + i].nextElementSibling.textContent = st.word; });
     const workplace = findWork(f.work.value);
     const note = fs.querySelector("[data-work]");
     note.textContent = workplace ? "Drive time to " + placeName(workplace) + ", no traffic." :
       workplace === undefined ? "No match. Try a zip code." : "";
-    return { weights: steps.map((st) => st.weight), targets: [0, 1, 2, 3, 4, 5].map((i) => parse(f["t" + i].value)), workplace };
+    return { weights: steps.map((st) => st.weight), targets: ALL.map((i) => parse(f["t" + i].value)), workplace };
   }
 
   function setView(v) {
@@ -293,6 +297,7 @@
             two ? "You " + Math.round(r.scores[0]) + ", person 2 " + Math.round(r.scores[1]) : null,
             ...ps().map((p, k) => p.workplace ? (two ? (k ? "Person 2" : "You") + ": " : "") + Math.round(r.commutes[k]) + " min drive to " + placeName(p.workplace) : null),
             priceText(r),
+            r[mode][6] == null ? null : fmt(r[mode][6], 1) + " mi to a train station" + (r.station ? " (" + r.station + ")" : ""),
           ].filter(Boolean).join("\n");
         },
       }),
