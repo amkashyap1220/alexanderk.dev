@@ -7,3 +7,4 @@ worker
 wrangler.jsonc
 README.md
 research/_template.html
+tests

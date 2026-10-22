@@ -4,12 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Where is the best value in Chicagoland? · Alexander Kashyap</title>
-  <meta name="description" content="Set your own targets and weights, for buying or renting, alone or with a partner, and see how every Chicago-area zip code scores on a map.">
+  <meta name="description" content="Set your own targets and weights, for buying or renting, alone or with a partner, and see how every Chicago-area zip code fits on a map, and which sell for less or more than their measured features predict.">
   <!-- Link previews (iMessage, Discord, Slack, LinkedIn, ...) -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Alexander Kashyap">
   <meta property="og:title" content="Where is the best value in Chicagoland? · Alexander Kashyap">
-  <meta property="og:description" content="Set your own targets and weights, for buying or renting, alone or with a partner, and see how every Chicago-area zip code scores on a map.">
+  <meta property="og:description" content="Set your own targets and weights, for buying or renting, alone or with a partner, and see how every Chicago-area zip code fits on a map, and which sell for less or more than their measured features predict.">
   <meta property="og:url" content="https://alexanderk.dev/research/chicago-home-value">
   <meta property="og:image" content="https://alexanderk.dev/research/chicago-home-value.png">
   <meta property="og:image:width" content="1200">
@@ -50,9 +50,9 @@
   <main id="main" tabindex="-1">
     <section class="hero hv-hero">
       <div class="narrow">
-        <p class="eyebrow"><time datetime="2026-10-21">Oct 21, 2026</time></p>
+        <p class="eyebrow"><time datetime="2026-10-21">Oct 21, 2026</time> · updated <time datetime="2026-10-22">Oct 22, 2026</time></p>
         <h1>Where is the best value in Chicagoland?</h1>
-        <p class="lead">Say what you want in a place. The map scores every Chicago-area zip against it.</p>
+        <p class="lead">Say what you want in a place. The map scores every Chicago-area zip against it, and shows separately which zips sell for less, or more, than their measured features predict.</p>
         <div class="actions">
           <a class="btn primary" href="https://github.com/amkashyap1220/Home-Value-Score" target="_blank" rel="noopener">Data and code</a>
           <a class="btn" href="/research/">← All research</a>
@@ -61,11 +61,15 @@
     </section>
 
     <section class="section hv-section">
-      <div class="hv" id="hv">
+      <div class="hv hv-loading" id="hv">
         <div class="hv-bar">
           <div class="hv-toggle" role="group" aria-label="Buying or renting">
             <button class="btn small" type="button" data-mode="buy" aria-pressed="true">Buying</button>
             <button class="btn small" type="button" data-mode="rent" aria-pressed="false">Renting</button>
+          </div>
+          <div class="hv-toggle" id="hv-lens" role="group" aria-label="What the map shows">
+            <button class="btn small" type="button" data-lens="fit" aria-pressed="true">Fit to you</button>
+            <button class="btn small" type="button" data-lens="value" aria-pressed="false">Price vs expected</button>
           </div>
           <div class="hv-toggle" id="hv-view" role="group" aria-label="Whose results to show" hidden>
             <button class="btn small" type="button" data-view="0" aria-pressed="false">You</button>
@@ -73,19 +77,22 @@
             <button class="btn small" type="button" data-view="2" aria-pressed="true">Best for both</button>
           </div>
         </div>
+        <p class="hv-lens-note" id="hv-lens-note" hidden>“Price vs expected” covers sale prices only. Renters see the fit score.</p>
         <p class="hv-summary" id="hv-summary" aria-live="polite">Loading the map…</p>
+        <div class="hv-drivers" id="hv-drivers"></div>
 
         <div class="hv-grid">
-          <figure class="hv-figure" aria-labelledby="hv-caption">
-            <ul class="hv-legend" aria-label="Legend">
-              <li class="hv-scored"><span class="hv-key ramp"></span>Score, low (red) to high (green)</li>
-              <li class="hv-scored"><span class="hv-key pick"></span>Top 20</li>
-              <li class="hv-scored"><span class="hv-key none"></span>Too little data</li>
-              <li><span class="hv-key station"></span>Train station</li>
-            </ul>
-            <div id="hv-map" class="hv-map"></div>
-            <figcaption id="hv-caption">Hover or tap a zip for details.</figcaption>
-          </figure>
+          <div class="hv-main">
+            <figure class="hv-figure" aria-labelledby="hv-caption">
+              <ul class="hv-legend" id="hv-legend" aria-label="Legend"></ul>
+              <div id="hv-map" class="hv-map"><p class="hv-placeholder">Loading the map…</p></div>
+              <figcaption id="hv-caption">Hover or tap a zip for a summary; click it for details. Scores are for zip codes as a whole, not for streets or homes.</figcaption>
+            </figure>
+            <label class="hv-find"><span>Find a zip:</span>
+              <input id="hv-find" type="search" list="hv-places" placeholder="town or zip" autocomplete="off">
+              <span class="hv-hint" id="hv-find-note" aria-live="polite"></span></label>
+            <div class="hv-detail" id="hv-detail" aria-live="polite"></div>
+          </div>
 
           <form class="hv-controls" aria-label="Your targets and weights" onsubmit="return false">
             <div id="hv-people"></div>
@@ -94,59 +101,149 @@
           </form>
         </div>
 
-        <div class="prose hv-list"><table id="hv-table"></table></div>
-        <p class="hv-age"><b>How old the data is:</b> pulled Oct 21, 2026. Prices: Redfin, Jun 2025 to May 2026. Rent, home age and the Census commute: ACS 2020–2024. Crime: FBI, 2025 (2024 where 2025 is incomplete). Schools: 2024–25 tests (IL), 2025–26 (IN). Walkability: EPA, 2021. Drive times: OpenStreetMap, Oct 2026. Train stations: Metra, CTA and South Shore Line, Oct 2026.</p>
+        <figure class="hv-chart-box" id="hv-chart-box" hidden>
+          <h2 class="hv-h">Fit vs price</h2>
+          <p class="hv-hint">Two different questions: how well a zip matches what you want (across), and whether it sells for less or more than zips with the same measured features (up and down). Your best leads sit on the right; lower right is a good fit that also sells below its expected price.</p>
+          <div id="hv-chart" class="hv-chart"></div>
+          <figcaption id="hv-chart-note"></figcaption>
+        </figure>
+
+        <div class="hv-list">
+          <div class="hv-list-bar">
+            <h2 class="hv-h">The zips</h2>
+            <label>Show <select id="hv-list-show"><option value="top">Top 20 fits</option><option value="all">Every zip</option></select></label>
+            <label>Filter <input id="hv-list-filter" type="search" placeholder="place or zip" autocomplete="off"></label>
+          </div>
+          <div class="prose hv-table-wrap"><table id="hv-table"></table></div>
+        </div>
+        <p class="hv-age"><b>How old the data is:</b> pulled Oct 21–22, 2026. Prices: Redfin, Jun 2025 to May 2026 (earlier years for the checks). Rent, home age and the Census commute: ACS 2020–2024. Crime: FBI, 2025 (2024 where 2025 is incomplete); inside Chicago spread across zips with the city's 2025 incident data. Schools: 2024–25 tests (IL), 2025–26 (IN). Walkability: EPA, 2021. Drive times: OpenStreetMap, Oct 2026. Train stations: Metra, CTA and South Shore Line, Oct 2026.</p>
       </div>
 
       <article class="narrow prose">
-        <h2>How it works</h2>
+        <h2>Two scores, two questions</h2>
+        <p>The question behind this map is where in the Chicago area you can get the best mix of affordability, neighborhood quality and day-to-day practicality. That is really two questions, so the page answers them separately.</p>
         <ul>
-          <li>Give each factor a <b>target</b> and a <b>weight</b>.</li>
-          <li>A zip scores 100 when it hits every target, and less the further off it is. Beating a target for schools, safety, price or train station counts as a hit.</li>
-          <li>With two people, "best for both" uses the lower of your two scores.</li>
-          <li>Click a place in the list to see what's for sale or rent there.</li>
+          <li><b>Fit to you</b> (your preferences): how close a zip comes to the targets you set. It changes with every target and weight, and it says nothing about whether a place is cheap for what it is.</li>
+          <li><b>Price vs expected</b> (a fixed model): whether a zip sells for less or more per square foot than zips with the same measured schools, safety, commute, walkability, train access, home age and state. It is the same for everyone and ignores your targets.</li>
         </ul>
+        <p>A desirable zip isn't automatically good value, and a zip that's cheap for its features isn't automatically desirable. The chart above puts the two together.</p>
+
+        <h2>How the fit score works</h2>
+        <ul>
+          <li>Give each factor a <b>target</b> and a <b>weight</b>. The weights are your choice; everything else below is a fixed rule.</li>
+          <li>Each value is turned into a percentile among the area's zips, so minutes, dollars and crime rates can be compared. A factor's <b>match</b> is 100 minus the gap, in percentile points, between the zip and your target. Beating a target for schools, safety, price or train station counts as a match of 100; for commute, walkability and home age being off either way costs points.</li>
+          <li>The <b>fit score</b> is the weighted average of the matches, 0 to 100. The detail panel shows each factor's share of your weight and the points it costs, which add up to 100 minus the score.</li>
+          <li><b>Missing data</b> is left out, not guessed: the score uses the factors the zip has data for, and the panel and table say what's missing. A zip is shown but <b>not ranked</b> when the missing factors carry more than 20% of your weight. (Until Oct 22, 2026, a missing value counted as an average one, which flattered zips whose police didn't report.)</li>
+          <li>With two people, “best for both” uses the lower of the two scores.</li>
+          <li>Walkability and distance to a train station go together closely (ρ = −0.82 across zips), as do safety and schools to a lesser degree. Weighting both of a related pair counts much the same thing twice; the page points this out when it happens.</li>
+        </ul>
+
+        <h2>How “price vs expected” works</h2>
+        <p>A regression of log price per square foot on the six measured factors, plus terms for Indiana (different taxes and tests) and the city of Chicago (one school district): <code>log($/sq ft) = b0 + b1·schools + b2·log(1 + crime) + b3·commute + b4·walkability + b5·log(miles to station + 0.25) + b6·home age + b7·Indiana + b8·Chicago</code>. It explains <span data-stat="r2">0.67</span> of the variation across <span data-stat="n">338</span> zips. A zip's <b>expected</b> price comes from the model fitted without that zip, so its own price can't pull the estimate towards itself. Prices within ±<span data-stat="band">10%</span> of expected count as <b>in line</b>; <span data-stat="below">86</span> zips are below that and <span data-stat="above">99</span> above.</p>
+        <p><b>Confidence</b> is high, medium or low depending on how many of these doubts apply: fewer than 50 sales (a zip's median price per sq ft is typically off by about <span data-stat="se50">6%</span> at 50 sales and <span data-stat="se200">3%</span> at 200, estimated from how much it moves between years), a missing factor, a Chicago zip (the model can't see school differences inside the city), a different class in most of 12 other model versions, a different class with last year's prices, or a gap that price noise alone could erase. Currently <span data-stat="high">159</span> high, <span data-stat="medium">107</span> medium and <span data-stat="low">72</span> low.</p>
+        <p><b>What it does not mean.</b> “Below expected” is not “undervalued” and not a forecast. The gap holds whatever the model can't see: lot size, condition, taxes, flood risk, a lake view, school quality inside Chicago, or a town's finances. The zips furthest below expected are largely places with long-running disinvestment, such as Gary, Harvey and parts of Chicago's South and West Sides, which is exactly what the measured factors miss. The gaps are also very stable: they correlate at <span data-stat="persist">0.97</span> with the same model on last year's prices (<span data-stat="persist23">0.94</span> with 2023's), so they are lasting differences between places, not short-term mispricing waiting to close.</p>
+
+        <h2>Is the model any good?</h2>
+        <p>Each model below was fitted on nine tenths of the zips and tested on the rest, ten times. With <b>spatial folds</b> the held-out zips are clusters of neighbors, so a zip is never predicted from the zip next door; that's the honest test, because nearby zips share things no model measures. The error is the typical (median) miss in price per sq ft.</p>
+        <div class="hv-table-wrap"><table id="hv-validation"></table></div>
+        <p>The pre-registered model and its successor barely beat a flat average once neighbors are held out; letting each factor carry its own weight, on a log scale, cuts the spatial error by about a fifth and explains about half the variation in unseen areas. Adding the housing-stock mix (share of single-family homes, rooms) didn't help out of sample, so it's only a sensitivity check. The residuals are still spatially clustered (Moran's I = <span data-stat="moran">0.26</span>, down from <span data-stat="moranPre">0.59</span> for the pre-registered model), so the p-values below are optimistic; the county-clustered column is the more cautious one.</p>
+        <div class="hv-table-wrap"><table id="hv-coefs"></table></div>
 
         <h2>The data</h2>
         <ul>
-          <li><b>Schools:</b> district test scores, as a percentile within the state (Illinois Report Card, Indiana DOE).</li>
-          <li><b>Safety:</b> crimes per 1,000 residents a year (FBI).</li>
+          <li><b>Schools:</b> district test scores, as a percentile within the state (Illinois Report Card, Indiana DOE). Chicago is one district, so every city zip gets the same value.</li>
+          <li><b>Safety:</b> crimes per 1,000 residents a year: violent plus property offenses reported to the FBI by the zip's police agency. Inside Chicago, the city's FBI total is spread across zips by where the city's own incident data puts the same offenses, so city neighborhoods are no longer all the same. Offenses are counted where they happen, so downtown zips with few residents get very high rates.</li>
           <li><b>Commute:</b> the Census average, or the drive time to where you work (OpenStreetMap, no traffic).</li>
           <li><b>Train station:</b> straight-line miles to the nearest Metra, CTA 'L' or South Shore Line station, averaged over where people in the zip live (Census 2020 population centers).</li>
           <li><b>Walkability:</b> EPA index, 1 to 20.</li>
           <li><b>Home age and rent:</b> Census ACS 2020–2024. Rent is per person: the median rent divided by the average bedrooms of rented homes, so a $2,500 two-bedroom is $1,250 each.</li>
-          <li><b>Price:</b> median sale price, June 2025 to May 2026 (Redfin).</li>
+          <li><b>Price:</b> median sale price and price per sq ft, June 2025 to May 2026, all home types together (Redfin). Zips need at least 20 sales.</li>
         </ul>
-        <p>Covers the 13-county Chicago metro. Race and ethnicity aren't used. A zip averages very different streets, so treat a pick as a place worth a visit. Method and code are <a href="https://github.com/amkashyap1220/Home-Value-Score">on GitHub</a>.</p>
+
+        <h2>Limits</h2>
+        <ul>
+          <li>A zip averages very different streets, so treat a result as a place worth a visit, not a verdict.</li>
+          <li>The measured factors leave out a lot that people pay for: lot size, condition, taxes and fees, flood and noise risk, parks and the lake, and school quality within Chicago.</li>
+          <li>Crime counts depend on what each agency reports; 38 zips have no usable figure, and small towns' rates are noisy.</li>
+          <li>Prices are one year of medians, not individual sales, and mix condos and houses. There's no trend or forecast here: nothing on this page predicts appreciation.</li>
+          <li>Renters only get the fit score: ACS rents are five-year averages that include long-time tenants, too blunt for a “rent vs expected” estimate.</li>
+          <li>Race and ethnicity, and proxies for them, aren't used anywhere.</li>
+        </ul>
+        <p>The pre-registered test (a simpler price model, decided before prices were downloaded) and every later change, with dates and reasons, are in the <a href="https://github.com/amkashyap1220/Home-Value-Score">repo on GitHub</a>, along with the code behind every number here.</p>
       </article>
     </section>
 
     <!-- Styles for this post's map only (scoped under .hv) -->
     <style>
-      /* Score ramp, low to high: scarlet red 3, orange 2, butter 2, chameleon 1 (lighter as it gets better, so it reads without color too) */
-      :root { --pick: #ce5c00; --hv-top: #204a87; --hv-0: #a40000; --hv-1: #f57900; --hv-2: #edd400; --hv-3: #8ae234; --hv-none: #d3d7cf; }
-      :root.dark { --pick: #fcaf3e; --hv-top: #729fcf; --hv-0: #ef2929; --hv-1: #f57900; --hv-2: #edd400; --hv-3: #8ae234; --hv-none: #4a4f50; }
+      /* Fit ramp, low to high: scarlet red 3, orange 2, butter 2, chameleon 1 (lighter as it gets better, so it reads without color too).
+         Price vs expected, below to above: sky blue, aluminium, plum (a separate diverging scale, so the two lenses can't be confused). */
+      :root { --pick: #ce5c00; --hv-top: #204a87; --hv-0: #a40000; --hv-1: #f57900; --hv-2: #edd400; --hv-3: #8ae234; --hv-none: #d3d7cf;
+              --hv-below: #3465a4; --hv-mid: #f3f3f1; --hv-above: #75507b; }
+      :root.dark { --pick: #fcaf3e; --hv-top: #729fcf; --hv-0: #ef2929; --hv-1: #f57900; --hv-2: #edd400; --hv-3: #8ae234; --hv-none: #4a4f50;
+                   --hv-below: #729fcf; --hv-mid: #3b4143; --hv-above: #ad7fa8; }
       .hv-hero { padding-bottom: var(--space-7); }
       .hv-section { padding-top: var(--space-6); }
       .hv { max-width: 1100px; margin: 0 auto var(--space-9); padding: 0 var(--space-5); }
       .hv-bar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-3); }
       .hv-toggle { display: flex; flex-wrap: wrap; gap: var(--space-2); }
-      .hv-toggle[hidden] { display: none; }
-      .hv-summary { min-height: 3.2em; margin: var(--space-4) 0 var(--space-5); font-size: var(--fs-md); line-height: 1.6; }
+      .hv-toggle[hidden], .hv [hidden] { display: none; }
+      .hv .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+      .hv .btn:focus-visible, .hv button:focus-visible, .hv input:focus-visible, .hv select:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+      .hv-lens-note { margin: var(--space-2) 0 0; color: var(--muted); font-size: var(--fs-xs); }
+      .hv-summary { min-height: 3.2em; margin: var(--space-4) 0 var(--space-2); font-size: var(--fs-md); line-height: 1.6; }
+      .hv-drivers { margin: 0 0 var(--space-5); color: var(--muted); font-size: var(--fs-xs); line-height: 1.7; }
+      .hv-drivers p { margin: 0 0 var(--space-1); }
+      .hv-share { display: inline-flex; align-items: center; gap: 4px; margin-right: var(--space-3); white-space: nowrap; color: var(--text); }
+      .hv-share-bar { display: inline-block; height: 6px; border-radius: 3px; background: var(--pick); }
+      .hv-note { padding-left: var(--space-2); border-left: 3px solid var(--border); }
       .hv-grid { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: var(--space-6); align-items: start; }
+      .hv-main { min-width: 0; }
       .hv-figure { margin: 0; }
       .hv-map { min-height: 300px; }
-      .hv-map svg { display: block; max-width: 100%; height: auto; margin: 0 auto; overflow: visible; }   /* centered in its column */
+      .hv-loading .hv-map { display: grid; place-items: center; border-radius: var(--radius-lg); background: var(--soft); }
+      .hv-placeholder { color: var(--muted); font-size: var(--fs-sm); }
+      .hv-map svg, .hv-chart svg { display: block; max-width: 100%; height: auto; margin: 0 auto; overflow: visible; cursor: pointer; }
       .hv-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-1) var(--space-5); margin: 0 0 var(--space-3); padding: 0; list-style: none; color: var(--muted); font-size: var(--fs-xs); }
       .hv-legend li { display: flex; align-items: center; gap: 6px; }
-      .hv-unscored .hv-scored { display: none; }
-      .hv-summary .btn { vertical-align: baseline; }
+      .hv-num { color: var(--text); font-variant-numeric: tabular-nums; }
       .hv-key { display: inline-block; width: 12px; height: 12px; border-radius: 2px; }
-      .hv-key.ramp { width: 44px; background: linear-gradient(90deg, var(--hv-0), var(--hv-1), var(--hv-2), var(--hv-3)); }
+      .hv-key.ramp { width: 56px; background: linear-gradient(90deg, var(--hv-0), var(--hv-1), var(--hv-2), var(--hv-3)); }
+      .hv-key.diverge { width: 56px; background: linear-gradient(90deg, var(--hv-below), var(--hv-mid), var(--hv-above)); border: 1px solid var(--border); }
+      .hv-key.faded { background: var(--hv-below); opacity: 0.4; }
       .hv-key.pick { border: 2px solid var(--hv-top); border-radius: 3px; box-shadow: 0 0 0 2px var(--bg), 0 0 6px 2px color-mix(in srgb, var(--hv-top) 45%, transparent); }
       .hv-key.none { background: var(--hv-none); }
       .hv-key.station { width: 6px; height: 6px; border-radius: 50%; background: var(--text); box-shadow: 0 0 0 1px var(--bg); }
       .hv figcaption { margin-top: var(--space-2); text-align: center; color: var(--muted); font-size: var(--fs-xs); line-height: 1.6; }
+      .hv-find { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin: var(--space-4) 0 var(--space-3); font-size: var(--fs-xs); color: var(--muted); }
+      .hv input[type="search"], .hv select { padding: 3px 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--soft); color: var(--text); font: inherit; }
+      .hv-find input { width: 200px; }
+      /* Detail panel */
+      .hv-detail { padding: var(--space-3) var(--space-4); border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); font-size: var(--fs-sm); }
+      .hv-empty { margin: 0; color: var(--muted); font-size: var(--fs-xs); }
+      .hv-detail-head { display: flex; justify-content: space-between; align-items: center; gap: var(--space-2); }
+      .hv-detail h3 { margin: 0; font-size: var(--fs-base); }
+      .hv-detail h4 { margin: 0 0 var(--space-1); font-size: var(--fs-sm); display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; }
+      .hv-block { padding: var(--space-3) 0 0; margin-top: var(--space-3); border-top: 1px solid var(--border); }
+      .hv-block p { margin: 0 0 var(--space-2); line-height: 1.6; }
+      .hv-big { font-size: var(--fs-xl); font-weight: 700; }
+      .hv-small { font-size: var(--fs-xs); }
+      .hv-detail ul { margin: 0; padding-left: 1.2em; }
+      .hv-dl { display: grid; grid-template-columns: max-content 1fr; gap: 2px var(--space-3); margin: 0 0 var(--space-2); }
+      .hv-dl dt { color: var(--muted); }
+      .hv-dl dd { margin: 0; }
+      .hv-factors { width: 100%; border-collapse: collapse; margin: var(--space-2) 0; font-size: var(--fs-xs); }
+      .hv-factors :is(th, td) { padding: 3px var(--space-2) 3px 0; border-bottom: 1px solid var(--border); text-align: left; white-space: nowrap; }
+      .hv-factors thead th { color: var(--muted); font-size: var(--fs-2xs); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+      .hv-factors td:last-child, .hv-factors th:last-child { text-align: right; padding-right: 0; }
+      .hv-meter { display: inline-block; width: 56px; height: 7px; border-radius: 4px; background: var(--soft); border: 1px solid var(--border); vertical-align: middle; overflow: hidden; }
+      .hv-meter span { display: block; height: 100%; background: var(--mark); }
+      .hv-gap { padding: 1px 6px; border-radius: var(--radius-pill); font-size: var(--fs-2xs); font-weight: 600; white-space: nowrap; }
+      .hv-gap.hv-below { background: color-mix(in srgb, var(--hv-below) 22%, transparent); }
+      .hv-gap.hv-above { background: color-mix(in srgb, var(--hv-above) 22%, transparent); }
+      .hv-gap.hv-in_line { background: var(--soft); border: 1px solid var(--border); }
+      .hv-warn { color: var(--label); }
+      .hv-ok { color: var(--mark); }
+      /* Controls */
       .hv-person { margin: 0 0 var(--space-3); padding: var(--space-3) var(--space-4) var(--space-4); border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); }
       .hv-person legend { padding: 0 var(--space-1); color: var(--label); font-size: var(--fs-2xs); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
       .hv-intro { margin: 0 0 var(--space-2); color: var(--muted); font-size: var(--fs-xs); line-height: 1.6; }
@@ -164,26 +261,44 @@
       .hv-target { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: var(--space-2); color: var(--muted); font-size: var(--fs-xs); }
       .hv-target input { width: 90px; padding: 3px 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--soft); color: var(--text); font: inherit; }
       .hv-target input.hv-work { width: 180px; }
-      .hv-target input::placeholder { color: var(--muted); opacity: 0.7; }
+      .hv input::placeholder { color: var(--muted); opacity: 0.7; }
       .hv-buttons { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-4); }
       .hv-add { width: 100%; justify-content: center; }
       .hv-add[hidden] { display: none; }
-      .hv-list { margin-top: var(--space-7); overflow-x: auto; }
-      .hv-list table { display: table; width: 100%; }   /* the full width of the tool, not the narrow .prose table */
+      /* Chart and table */
+      .hv-h { margin: 0; font-size: var(--fs-lg); }
+      .hv-chart-box { margin: var(--space-8) 0 0; }
+      .hv-chart-box > .hv-hint { max-width: 760px; margin: var(--space-2) 0 var(--space-3); }
+      .hv-chart { min-height: 200px; }
+      .hv-list { margin-top: var(--space-8); }
+      .hv-list-bar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3) var(--space-5); margin-bottom: var(--space-3); font-size: var(--fs-xs); color: var(--muted); }
+      .hv-list-bar .hv-h { margin-right: auto; color: var(--text); }
+      .hv-list-bar input { width: 160px; }
+      .hv-table-wrap { overflow-x: auto; }
+      .hv-table-wrap table { display: table; width: 100%; }   /* the full width of the tool, not the narrow .prose table */
+      .hv-table-wrap caption { caption-side: top; padding-bottom: var(--space-2); color: var(--muted); font-size: var(--fs-xs); text-align: left; }
       .hv-list :is(th, td) { padding-right: var(--space-4); white-space: nowrap; }
       .hv-list :is(th, td):nth-child(n+3) { text-align: right; }
       .hv-list :is(th, td):last-child { padding-right: 0; }
-      .hv-list a { white-space: nowrap; }
+      .hv-list tr.hv-selected td, .prose tr.hv-selected td { background: var(--soft); }
+      .hv-list tr.hv-dim td { color: var(--muted); }
+      .hv-sort, .hv-link { padding: 0; border: 0; background: none; color: inherit; font: inherit; letter-spacing: inherit; text-transform: inherit; cursor: pointer; text-align: inherit; }
+      .hv-link { color: var(--link); }
+      .hv-link:hover, .hv-sort:hover { text-decoration: underline; }
       .hv-age { margin: var(--space-4) 0 0; color: var(--muted); font-size: var(--fs-xs); line-height: 1.6; }
+      .prose .hv-table-wrap { margin: var(--space-4) 0; }
+      .prose .hv-table-wrap td { font-variant-numeric: tabular-nums; }
       @media (max-width: 860px) {
         .hv-grid { grid-template-columns: minmax(0, 1fr); }
       }
       @media (max-width: 420px) {
         .hv { padding: 0 var(--space-4); }
         .hv-line { grid-template-columns: 92px minmax(0, 1fr) 64px; gap: var(--space-2); }
-        .hv-list :is(th, td):is(:nth-child(1), :nth-child(3)) { display: none; }   /* rank and zip; the order and the map tooltip carry them */
+        .hv-list :is(th, td):is(:nth-child(1), :nth-child(3)) { display: none; }   /* rank and zip; the order and the detail panel carry them */
         .hv-list :is(th, td) { padding-right: var(--space-2); font-size: var(--fs-xs); }
-        .hv-list td:nth-child(2), .hv-list td:nth-child(2) a { white-space: normal; }   /* long place names wrap so the table fits */
+        .hv-list td:nth-child(2) { white-space: normal; }   /* long place names wrap so the table fits */
+        .hv-factors :is(th, td) { white-space: normal; }
+        .hv-find input, .hv-list-bar input { width: 100%; }
       }
     </style>
   </main>
