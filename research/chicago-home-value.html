@@ -190,6 +190,8 @@
       .hv .btn:disabled { opacity: 0.45; cursor: not-allowed; }
       .hv .btn:focus-visible, .hv button:focus-visible, .hv input:focus-visible, .hv select:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
       .hv-lens-note { margin: var(--space-2) 0 0; color: var(--muted); font-size: var(--fs-xs); }
+      /* The page keeps the control being used in place itself (steady() in the script) */
+      .hv { overflow-anchor: none; }
       .hv-summary { min-height: 3.2em; margin: var(--space-4) 0 var(--space-2); font-size: var(--fs-md); line-height: 1.6; }
       .hv-drivers { margin: 0 0 var(--space-5); color: var(--muted); font-size: var(--fs-xs); line-height: 1.7; }
       .hv-drivers p { margin: 0 0 var(--space-1); }
@@ -299,6 +301,11 @@
         .hv-list td:nth-child(2) { white-space: normal; }   /* long place names wrap so the table fits */
         .hv-factors :is(th, td) { white-space: normal; }
         .hv-find input, .hv-list-bar input { width: 100%; }
+      }
+      /* iPhones zoom the page when an input under 16px gets focus (last, so it wins) */
+      @media (pointer: coarse) {
+        .hv input:not([type="range"]), .hv select { font-size: 16px; }
+        .hv-target input.hv-work { flex: 1 1 200px; width: auto; min-width: 0; }
       }
     </style>
   </main>

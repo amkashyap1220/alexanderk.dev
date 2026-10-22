@@ -144,15 +144,17 @@
       '<div class="hv-buttons"><button class="btn small" type="button" data-fill>Use sample values</button>' +
       '<button class="btn small" type="button" data-clear>Clear</button>' +
       (k === 1 ? '<button class="btn small" type="button" data-remove>Remove person 2</button>' : "") + '</div>';
-    fs.addEventListener("input", update);
-    fs.querySelector("[data-fill]").addEventListener("click", () => { fillSample(fs); update(); });
-    fs.querySelector("[data-clear]").addEventListener("click", () => {
+    fs.addEventListener("input", (e) => steady(e.target, update));
+    const fill = fs.querySelector("[data-fill]");
+    fill.addEventListener("click", () => steady(fill, () => { fillSample(fs); update(); }));
+    const clear = fs.querySelector("[data-clear]");
+    clear.addEventListener("click", () => steady(clear, () => {
       fs.querySelectorAll("input[type=range]").forEach((el) => { el.value = 2; });
       fs.querySelectorAll("input[type=text]").forEach((el) => { el.value = ""; });
       update();
-    });
+    }));
     const remove = fs.querySelector("[data-remove]");
-    if (remove) remove.addEventListener("click", () => { fs.remove(); addBtn.hidden = false; setView(0); });
+    if (remove) remove.addEventListener("click", () => steady(addBtn, () => { fs.remove(); addBtn.hidden = false; setView(0); }));
     label(fs);
     fillSample(fs);
     return fs;
@@ -254,6 +256,17 @@
     if (p.workplace === undefined) return w + " named a workplace the map doesn't know.";
     if (!need.length) return null;
     return w + " still need" + (w === "You" ? "" : "s") + " a target for " + listJoin(need) + ".";
+  }
+
+  // Runs fn without moving el on screen. The summary, the lines under it and the legend sit
+  // above the form on a phone and change height as the reader edits; Safari doesn't keep the
+  // scroll position anchored itself (and .hv turns that off elsewhere for consistency), so this
+  // scrolls back by however far el moved.
+  function steady(el, fn) {
+    const before = el.getBoundingClientRect().top;
+    fn();
+    const moved = el.getBoundingClientRect().top - before;
+    if (moved) window.scrollBy(0, moved);
   }
 
   function update() {
@@ -712,14 +725,14 @@
     setLens(lens);
   }
 
-  document.querySelectorAll("[data-mode]").forEach((b) => b.addEventListener("click", () => setMode(b.dataset.mode)));
-  lensEl.querySelectorAll("button").forEach((b) => b.addEventListener("click", () => setLens(b.dataset.lens)));
-  viewEl.querySelectorAll("button").forEach((b) => b.addEventListener("click", () => setView(Number(b.dataset.view))));
-  addBtn.addEventListener("click", () => {
+  document.querySelectorAll("[data-mode]").forEach((b) => b.addEventListener("click", () => steady(b, () => setMode(b.dataset.mode))));
+  lensEl.querySelectorAll("button").forEach((b) => b.addEventListener("click", () => steady(b, () => setLens(b.dataset.lens))));
+  viewEl.querySelectorAll("button").forEach((b) => b.addEventListener("click", () => steady(b, () => setView(Number(b.dataset.view)))));
+  addBtn.addEventListener("click", () => steady(peopleEl, () => {
     peopleEl.append(personForm(1));
     addBtn.hidden = true;
     setView(2);
-  });
+  }));
   listShow.addEventListener("change", () => { showEvery = false; if (result) fillTable(); });
   listFilter.addEventListener("input", () => result && fillTable());
   tableEl.addEventListener("click", (e) => {
