@@ -29,6 +29,7 @@
   const mapEl = $("hv-map"), chartEl = $("hv-chart"), tableEl = $("hv-table"), summaryEl = $("hv-summary");
   const driversEl = $("hv-drivers"), detailEl = $("hv-detail"), legendEl = $("hv-legend");
   const peopleEl = $("hv-people"), addBtn = $("hv-add"), viewEl = $("hv-view"), lensEl = $("hv-lens");
+  const sortPick = $("hv-list-sort");
   const listShow = $("hv-list-show"), listFilter = $("hv-list-filter"), findEl = $("hv-find"), findNote = $("hv-find-note");
 
   if (!window.Plot || !window.d3 || !window.HVModel) {
@@ -523,15 +524,19 @@
     const y = (r) => Math.max(-60, Math.min(60, r.value.gap * 100));
     const x0 = d3.min(rows, score);
     const bg = css("--bg");
-    frame(chartEl, width, Math.min(420, Math.round(width * 0.7)), [
+    const narrow = width < 560;   // phones: a taller chart and shorter labels, so nothing collides
+    // Labels get a halo in the page color so they stay readable over the dots
+    const halo = { stroke: bg, strokeWidth: 4, paintOrder: "stroke" };
+    frame(chartEl, width, Math.min(420, Math.round(width * (narrow ? 0.95 : 0.7))), [
       Plot.ruleY([0], { stroke: css("--border") }),
       Plot.rectY([0], { x1: x0, x2: 100, y1: -100 * data.value_model.in_line_band, y2: 100 * data.value_model.in_line_band, fill: css("--border"), fillOpacity: 0.35 }),
       Plot.ruleX([cut], { stroke: css("--hv-top"), strokeDasharray: "4,3" }),
       Plot.dot(rows, { x: score, y, r: (r) => (picks.has(r.zip) ? 5 : 3.5), fill: (r) => color(r.value.gap), fillOpacity: (r) => (r.value.conf === "low" ? 0.35 : 0.9),
         stroke: (r) => (r.zip === selected ? css("--text") : picks.has(r.zip) ? css("--hv-top") : css("--muted")), strokeWidth: (r) => (r.zip === selected || picks.has(r.zip) ? 2 : 0.5) }),
-      Plot.text([["Your top " + data.top + " →"]], { x: cut, frameAnchor: "top", dx: 6, dy: 4, textAnchor: "start", text: (d) => d[0], fill: css("--hv-top") }),
-      Plot.text(["Cheaper than its features predict"], { frameAnchor: "bottom-left", dx: 6, dy: -4, fill: css("--muted") }),
-      Plot.text(["Pricier than its features predict"], { frameAnchor: "top-left", dx: 6, dy: 4, fill: css("--muted") }),
+      // Left of the dashed line, pointing at it, so it never runs past the right edge
+      Plot.text([[(narrow ? "Top " : "Your top ") + data.top + " →"]], { x: cut, frameAnchor: "top", dx: -6, dy: 4, textAnchor: "end", text: (d) => d[0], fill: css("--hv-top"), ...halo }),
+      Plot.text([narrow ? "Cheaper than predicted" : "Cheaper than its features predict"], { frameAnchor: "bottom-left", dx: 6, dy: -4, fill: css("--muted"), ...halo }),
+      Plot.text([narrow ? "Pricier than predicted" : "Pricier than its features predict"], { frameAnchor: "top-left", dx: 6, dy: 4, fill: css("--muted"), ...halo }),
       Plot.tip(rows, Plot.pointer({ x: score, y, fill: bg, stroke: css("--border"),
         title: (r) => name(r) + " " + r.zip + "\nFit " + Math.round(score(r)) + (rank.has(r.zip) ? " (#" + rank.get(r.zip) + ")" : "") +
           "\n$" + Math.round(r.value.ppsf) + "/sq ft vs $" + Math.round(r.value.expected) + " expected: " + gapText(r.value.gap) +
@@ -577,15 +582,17 @@
       tableEl.innerHTML = '<caption>' + (q ? "No zip matches “" + esc(q) + "”." : "Nothing to list.") + "</caption>";
       return;
     }
+    // Phones hide the header row, so a small menu sorts instead
+    sortPick.innerHTML = cols.filter((c) => !c.nosort).map((c) => '<option value="' + c.key + '"' + (c.key === sortKey ? " selected" : "") + ">" + (c.key === "rank" ? "Rank" : c.head) + "</option>").join("");
     const head = "<thead><tr>" + cols.map((c) => c.nosort ? "<th>" + c.head + "</th>" :
       '<th aria-sort="' + (c.key === sortKey ? (sortDir > 0 ? "ascending" : "descending") : "none") + '"><button type="button" class="hv-sort" data-sort="' + c.key + '">' + c.head +
       (c.key === sortKey ? (sortDir > 0 ? " ▲" : " ▼") : "") + "</button></th>").join("") + "</tr></thead>";
     const total = rows.length;
     if (showAll && !showEvery) rows = rows.slice(0, PAGE);
     const body = rows.map((r) => '<tr' + (r.zip === selected ? ' class="hv-selected"' : "") + (!ranked(r) ? ' class="hv-dim"' : "") + ">" +
-      cols.map((c) => "<td>" + c.cell(r) + "</td>").join("") + "</tr>").join("");
+      cols.map((c) => '<td class="c-' + c.key + '" data-label="' + c.head + '">' + c.cell(r) + "</td>").join("") + "</tr>").join("");
     tableEl.innerHTML = "<caption>" + (showAll ? total + " zips" + (q ? " matching “" + esc(q) + "”" : "") + (rows.length < total ? ", showing the first " + rows.length : "") : "Top " + rows.length + " fits") +
-      ". Sort by any column; pick a place for its details.</caption>" + head + "<tbody>" + body + "</tbody>" +
+      ". Pick a place for its details.</caption>" + head + "<tbody>" + body + "</tbody>" +
       (rows.length < total ? '<tfoot><tr><td colspan="' + cols.length + '"><button class="btn small" type="button" data-more>Show all ' + total + "</button></td></tr></tfoot>" : "");
   }
 
@@ -734,6 +741,11 @@
     setView(2);
   }));
   listShow.addEventListener("change", () => { showEvery = false; if (result) fillTable(); });
+  sortPick.addEventListener("change", () => {
+    sortKey = sortPick.value;
+    sortDir = ["score", "s0", "s1"].includes(sortKey) ? -1 : 1;   // best fit first; everything else low to high
+    if (result) fillTable();
+  });
   listFilter.addEventListener("input", () => result && fillTable());
   tableEl.addEventListener("click", (e) => {
     const s = e.target.closest("[data-sort]");
