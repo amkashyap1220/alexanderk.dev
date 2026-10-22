@@ -94,14 +94,14 @@
         </div>
 
         <div class="prose hv-list"><table id="hv-table"></table></div>
-        <p class="hv-age"><b>How old the data is:</b> pulled Oct 21, 2026. Prices: Redfin, Jun 2025 to May 2026. Rent, home age and the Census commute: ACS 2020–2024. Crime: FBI, 2025 (2024 where 2025 is incomplete). Schools: 2024–25 tests (IL), 2025–26 (IN). Walkability: EPA, 2021. Drive times: OpenStreetMap, Oct 2026.</p>
+        <p class="hv-age"><b>How old the data is:</b> pulled Oct 21, 2026. Prices: Redfin, Jun 2025 to May 2026. Rent, home age and the Census commute: ACS 2020–2024. Crime: FBI, 2025 (2024 where 2025 is incomplete). Schools: 2024–25 tests (IL), 2025–26 (IN). Walkability: EPA, 2021. Drive times: OpenStreetMap, Oct 2026. Train stations: Metra, CTA and South Shore Line, Oct 2026.</p>
       </div>
 
       <article class="narrow prose">
         <h2>How it works</h2>
         <ul>
           <li>Give each factor a <b>target</b> and a <b>weight</b>.</li>
-          <li>A zip scores 100 when it hits every target, and less the further off it is. Beating a target for schools, safety or price counts as a hit.</li>
+          <li>A zip scores 100 when it hits every target, and less the further off it is. Beating a target for schools, safety, price or train station counts as a hit.</li>
           <li>With two people, "best for both" uses the lower of your two scores.</li>
           <li>Click a place in the list to see what's for sale or rent there.</li>
         </ul>
@@ -111,6 +111,7 @@
           <li><b>Schools:</b> district test scores, as a percentile within the state (Illinois Report Card, Indiana DOE).</li>
           <li><b>Safety:</b> crimes per 1,000 residents a year (FBI).</li>
           <li><b>Commute:</b> the Census average, or the drive time to where you work (OpenStreetMap, no traffic).</li>
+          <li><b>Train station:</b> straight-line miles to the nearest Metra, CTA 'L' or South Shore Line station, averaged over where people in the zip live (Census 2020 population centers).</li>
           <li><b>Walkability:</b> EPA index, 1 to 20.</li>
           <li><b>Home age and rent:</b> Census ACS 2020–2024. Rent is per person: the median rent divided by the average bedrooms of rented homes, so a $2,500 two-bedroom is $1,250 each.</li>
           <li><b>Price:</b> median sale price, June 2025 to May 2026 (Redfin).</li>
