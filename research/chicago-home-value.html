@@ -86,7 +86,7 @@
             <figure class="hv-figure" aria-labelledby="hv-caption">
               <ul class="hv-legend" id="hv-legend" aria-label="Legend"></ul>
               <div id="hv-map" class="hv-map"><p class="hv-placeholder">Loading the map…</p></div>
-              <figcaption id="hv-caption">Hover or tap a zip for a summary; click it for details. Scores are for zip codes as a whole, not for streets or homes.</figcaption>
+              <figcaption id="hv-caption">Tap a zip for details.</figcaption>
             </figure>
             <label class="hv-find"><span>Find a zip:</span>
               <input id="hv-find" type="search" list="hv-places" placeholder="town or zip" autocomplete="off">
@@ -103,7 +103,7 @@
 
         <figure class="hv-chart-box" id="hv-chart-box" hidden>
           <h2 class="hv-h">Fit vs price</h2>
-          <p class="hv-hint">Two different questions: how well a zip matches what you want (across), and whether it sells for less or more than zips with the same measured features (up and down). Your best leads sit on the right; lower right is a good fit that also sells below its expected price.</p>
+          <p class="hv-hint">Right is a better fit; lower is cheaper than expected.</p>
           <div id="hv-chart" class="hv-chart"></div>
           <figcaption id="hv-chart-note"></figcaption>
         </figure>
@@ -121,69 +121,14 @@
       </div>
 
       <article class="narrow prose">
-        <h2>Two scores, two questions</h2>
-        <p>The question behind this map is where in the Chicago area you can get the best mix of affordability, neighborhood quality and day-to-day practicality. That is really two questions, so the page answers them separately.</p>
+        <h2>How it works</h2>
         <ul>
-          <li><b>Fit to you</b> (your preferences): how close a zip comes to the targets you set. It changes with every target and weight, and it says nothing about whether a place is cheap for what it is.</li>
-          <li><b>Price vs expected</b> (a fixed model): whether a zip sells for less or more per square foot than zips with the same measured schools, safety, commute, walkability, train access, home age and state. It is the same for everyone and ignores your targets.</li>
+          <li><b>Fit score:</b> each factor scores 100 minus the percentile gap between the zip and your target, and the fit is their weighted average.</li>
+          <li><b>Price vs expected:</b> a regression on the same factors (<span data-stat="n">338</span> zips, R² <span data-stat="r2">0.67</span>) predicts each zip's price per sq ft from the other zips. Within ±<span data-stat="band">10%</span> counts as in line.</li>
         </ul>
-        <p>A desirable zip isn't automatically good value, and a zip that's cheap for its features isn't automatically desirable. The chart above puts the two together.</p>
-
-        <h2>How the fit score works</h2>
-        <ul>
-          <li>You give each factor a <b>target</b> (the value you want) and a <b>weight</b> (how much it matters). Those are your choices. Everything after that is a fixed rule.</li>
-          <li><b>Percentiles put every factor on the same scale.</b> Minutes, dollars and crime rates can't be compared directly, so each value is replaced by its percentile among the area's zips. A zip at the 70th percentile for price costs more than 70% of zips. Your target is converted the same way.</li>
-          <li><b>Match, 0 to 100.</b> A factor's match is 100 minus the gap, in percentile points, between the zip and your target. If your target is at the 40th percentile and the zip is at the 55th, the match is 85. For schools, safety, price and train station, doing better than your target counts as 100. For commute, walkability and home age, missing in either direction costs points.</li>
-          <li><b>Fit score, 0 to 100.</b> This is the weighted average of the matches: multiply each match by its weight, add them up, and divide by the total weight. A factor weighted 3 counts three times as much as one weighted 1. The detail panel shows the points each factor costs, and they add up to 100 minus the score.</li>
-          <li><b>Missing data is left out, not guessed.</b> The average uses only the factors the zip has data for. A zip is shown but <b>not ranked</b> when the missing factors carry more than 20% of your weight. (Until Oct 22, 2026, a missing value counted as an average one, which flattered zips whose police didn't report crime.)</li>
-          <li>With two people, “best for both” is the lower of the two scores, so a zip ranks high only if it suits both of you.</li>
-          <li><b>Related factors.</b> Walkability and distance to a train station move together closely: their correlation across zips is −0.82, on a scale from −1 to 1. Safety and schools move together less strongly. Weighting both factors in a related pair counts much the same thing twice, and the page warns you when that happens.</li>
-        </ul>
-
-        <h2>How “price vs expected” works</h2>
-        <p>This part is a <b>multiple linear regression</b>, which finds the straight-line formula that best predicts a zip's price per square foot from its measured factors. It uses the six factors plus two yes/no terms: one for Indiana (different taxes and tests) and one for the city of Chicago (one school district for the whole city).</p>
-        <p><code>log($/sq ft) = b0 + b1·schools + b2·log(1 + crime) + b3·commute + b4·walkability + b5·log(miles to station + 0.25) + b6·home age + b7·Indiana + b8·Chicago</code></p>
-        <p>Price is on a <b>log scale</b>, so each coefficient (b1, b2, …) works as a percent change. For example, the table below says one more percentile of school scores goes with prices about 0.5% higher, holding the other factors fixed. Crime and station distance are also logged, because going from 1 to 2 miles matters more than going from 10 to 11. The formula's <b>R²</b> is <span data-stat="r2">0.67</span>, meaning it explains about two thirds of the variation in price across <span data-stat="n">338</span> zips.</p>
-        <p>A zip's <b>expected</b> price is what the formula predicts for it. That prediction comes from a version of the model fitted without that zip, so the zip's own price can't pull the prediction toward itself. Prices within ±<span data-stat="band">10%</span> of expected count as <b>in line</b>. <span data-stat="below">86</span> zips are below that range and <span data-stat="above">99</span> above it.</p>
-        <p><b>Confidence</b> is high, medium or low, depending on how many of these doubts apply to a zip:</p>
-        <ul>
-          <li>It had fewer than 50 sales. A median from few sales is noisy: about ±<span data-stat="se50">6%</span> at 50 sales and ±<span data-stat="se200">3%</span> at 200, judged by how much a zip's median moves from year to year.</li>
-          <li>A factor is missing.</li>
-          <li>It is in Chicago, where the model can't see school differences between neighborhoods.</li>
-          <li>It lands in a different class (below, in line or above) in most of 12 other reasonable versions of the model, or with last year's prices.</li>
-          <li>The gap is small enough that price noise alone could erase it.</li>
-        </ul>
-        <p>Right now <span data-stat="high">159</span> zips are high confidence, <span data-stat="medium">107</span> medium and <span data-stat="low">72</span> low.</p>
-        <p><b>What it does not mean.</b> “Below expected” does not mean “undervalued”, and it is not a forecast. The gap is the <b>residual</b>, the part of the price the formula can't explain. It holds everything the model doesn't measure: lot size, condition, taxes, flood risk, a lake view, school quality inside Chicago, or a town's finances. The zips furthest below expected are mostly places with long-running disinvestment, such as Gary, Harvey and parts of Chicago's South and West Sides. That history is exactly what the measured factors miss. The gaps also barely change over time. They correlate at <span data-stat="persist">0.97</span> with the same model run on last year's prices (<span data-stat="persist23">0.94</span> with 2023's), so they are lasting differences between places, not bargains waiting to close.</p>
-
-        <h2>Is the model any good?</h2>
-        <p>A model always looks better on the data it was fitted to, so the fair test is to predict zips it hasn't seen. This is <b>cross-validation</b>: fit the model on 90% of the zips, predict the other 10%, and repeat ten times so every zip is predicted once. With <b>spatial folds</b>, the held-out 10% is a cluster of neighboring zips, so no zip is predicted with help from the zip next door. That's the stricter test, because neighbors share things no model measures. “Typical error” is the median miss in price per square foot. R² on held-out zips can be below zero, which means the model did worse than predicting the overall average for every zip.</p>
         <div class="hv-table-wrap"><table id="hv-validation"></table></div>
-        <p>The pre-registered model and the one after it barely beat a flat average once neighbors are held out. The current model cuts the spatial error by about a fifth and explains about half the variation in areas it hasn't seen. Adding the housing mix (share of single-family homes, number of rooms) didn't improve predictions, so it is kept only as a check.</p>
-        <p><b>Reading the p-values.</b> A p-value is the chance of seeing an effect at least this large if the factor truly had no effect. Small values, such as under 0.05, suggest the effect is real. The usual formula assumes each zip's residual is independent of the others, but neighboring zips still miss in the same direction. A measure of that clustering called Moran's I is <span data-stat="moran">0.26</span>, where 0 would mean no clustering (it was <span data-stat="moranPre">0.59</span> for the pre-registered model). So the “robust” p-values are too optimistic. The “clustered by county” column allows zips in the same county to be related and is the more cautious one to trust.</p>
         <div class="hv-table-wrap"><table id="hv-coefs"></table></div>
-
-        <h2>The data</h2>
-        <ul>
-          <li><b>Schools:</b> district test scores, as a percentile within the state (Illinois Report Card, Indiana DOE). Chicago is one district, so every city zip gets the same value.</li>
-          <li><b>Safety:</b> crimes per 1,000 residents a year: violent plus property offenses reported to the FBI by the zip's police agency. Inside Chicago, the city's FBI total is spread across zips by where the city's own incident data puts the same offenses, so city neighborhoods are no longer all the same. Offenses are counted where they happen, so downtown zips with few residents get very high rates.</li>
-          <li><b>Commute:</b> the Census average, or the drive time to where you work (OpenStreetMap, no traffic).</li>
-          <li><b>Train station:</b> straight-line miles to the nearest Metra, CTA 'L' or South Shore Line station, averaged over where people in the zip live (Census 2020 population centers).</li>
-          <li><b>Walkability:</b> EPA index, 1 to 20.</li>
-          <li><b>Home age and rent:</b> Census ACS 2020–2024. Rent is per person: the median rent divided by the average bedrooms of rented homes, so a $2,500 two-bedroom is $1,250 each.</li>
-          <li><b>Price:</b> median sale price and price per sq ft, June 2025 to May 2026, all home types together (Redfin). Zips need at least 20 sales.</li>
-        </ul>
-
-        <h2>Limits</h2>
-        <ul>
-          <li>A zip averages very different streets, so treat a result as a place worth a visit, not a verdict.</li>
-          <li>The measured factors leave out a lot that people pay for: lot size, condition, taxes and fees, flood and noise risk, parks and the lake, and school quality within Chicago.</li>
-          <li>Crime counts depend on what each agency reports; 38 zips have no usable figure, and small towns' rates are noisy.</li>
-          <li>Prices are one year of medians, not individual sales, and mix condos and houses. There's no trend or forecast here: nothing on this page predicts appreciation.</li>
-          <li>Renters only get the fit score: ACS rents are five-year averages that include long-time tenants, too blunt for a “rent vs expected” estimate.</li>
-          <li>Race and ethnicity, and proxies for them, aren't used anywhere.</li>
-        </ul>
-        <p>The pre-registered test (a simpler price model, decided before prices were downloaded) and every later change, with dates and reasons, are in the <a href="https://github.com/amkashyap1220/Home-Value-Score">repo on GitHub</a>, along with the code behind every number here.</p>
+        <p>Race and ethnicity aren't used. Full method, data and code are on <a href="https://github.com/amkashyap1220/Home-Value-Score">GitHub</a>.</p>
       </article>
     </section>
 
