@@ -80,8 +80,8 @@ h1 span { color: var(--torch); text-shadow: 3px 3px 0 var(--ember); }
 .track { display: grid; gap: 10px; margin-top: 8px; }
 .track-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
 .track-head strong { font-family: var(--f-display); font-size: 26px; font-variant-numeric: tabular-nums; }
-.lane { position: relative; padding-top: 40px; }
-#serf { position: absolute; top: 0; width: 32px; height: 32px; image-rendering: pixelated; transform: translateX(-50%); transition: left 1.6s steps(12); }
+.lane { position: relative; padding-top: 68px; }
+#serf { position: absolute; top: 0; width: 64px; height: 64px; image-rendering: pixelated; transform: translateX(-50%); transition: left 1.6s steps(12); }
 .cells { display: grid; grid-template-columns: repeat(28, 1fr); gap: 3px; }
 .cell { height: 18px; background: var(--slab-2); position: relative; }
 .cell.done { background: var(--moss); box-shadow: inset 0 -4px 0 #3f8a3a; }
@@ -111,7 +111,7 @@ h1 span { color: var(--torch); text-shadow: 3px 3px 0 var(--ember); }
   display: flex; gap: 14px; align-items: center;
   background: var(--stone); border: 2px dashed var(--torch); padding: 14px 16px;
 }
-.next img { flex: none; width: 48px; height: 48px; image-rendering: pixelated; }
+.next img { flex: none; width: 64px; height: 64px; image-rendering: pixelated; }
 .next strong { font-family: var(--f-display); font-size: 20px; color: var(--torch); display: block; }
 .slices { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 8px 20px; }
 .slices li { display: flex; gap: 10px; align-items: baseline; min-width: 0; }
@@ -191,7 +191,7 @@ a:focus-visible, button:focus-visible { outline: 3px solid var(--torch); outline
         <strong>12 / 28 phases</strong>
       </div>
       <div class="lane">
-        <img id="serf" src="/projects/serfdom/img/serf.png" width="32" height="32" alt="">
+        <img id="serf" src="/projects/serfdom/img/serf.png" width="64" height="64" alt="">
         <div class="cells" id="cells"></div>
       </div>
       <div class="ticks" id="ticks" aria-hidden="true"></div>
@@ -225,7 +225,7 @@ a:focus-visible, button:focus-visible { outline: 3px solid var(--torch); outline
       <li>Cursed runes and spirit braziers</li>
     </ul>
     <div class="next">
-      <img src="/projects/serfdom/img/lich.png" width="48" height="48" alt="">
+      <img src="/projects/serfdom/img/lich.png" width="64" height="64" alt="">
       <div>
         <span class="label">Up next</span>
         <strong>The Lich</strong>
