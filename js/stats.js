@@ -17,7 +17,6 @@
 
   // Repos that have a page on this site; everything else links to GitHub
   const PROJECT_PAGES = {
-    "Serfdom": "/projects/serfdom/",
     "SwitchToYoutube": "/projects/switch-to-youtube.html",
     "alexanderk.dev": "/projects/alexanderk-dev.html",
     "Gaps-Between-The-Primes": "/projects/gaps-between-the-primes.html",
