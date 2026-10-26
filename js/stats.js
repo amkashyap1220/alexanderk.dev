@@ -164,19 +164,21 @@
       el("p", "muted", "Busiest day: " + day + ". Busiest hour: " + clock(hour) + "–" + clock((hour + 1) % 24) + " (Chicago time).")
     );
 
-    // Last 5 pushes
-    events.filter((e) => e.type === "PushEvent").slice(0, 5).forEach((e) => {
-      const item = el("li");
-      const repo = el("a", null, e.repo.split("/")[1]);
-      repo.href = "https://github.com/" + e.repo;
-      repo.target = "_blank";
-      repo.rel = "noopener";
-      const when = el("time", null, timeAgo(e.at));
-      when.dateTime = e.at;
-      item.append(el("span", "muted", "Pushed to "), el("code", null, (e.ref || "").replace("refs/heads/", "")),
-        el("span", "muted", " in "), repo, el("span", "muted", " · "), when);
-      feed.append(item);
-    });
+    // Last 5 pushes, newest first (sorted here too, so the order never depends on how the data arrived)
+    events.filter((e) => e.type === "PushEvent")
+      .sort((x, y) => new Date(y.at) - new Date(x.at))
+      .slice(0, 5).forEach((e) => {
+        const item = el("li");
+        const repo = el("a", null, e.repo.split("/")[1]);
+        repo.href = "https://github.com/" + e.repo;
+        repo.target = "_blank";
+        repo.rel = "noopener";
+        const when = el("time", null, timeAgo(e.at));
+        when.dateTime = e.at;
+        item.append(el("span", "muted", "Pushed to "), el("code", null, (e.ref || "").replace("refs/heads/", "")),
+          el("span", "muted", " in "), repo, el("span", "muted", " · "), when);
+        feed.append(item);
+      });
   }
 
   // Activity handles its own errors; this covers the numbers and languages

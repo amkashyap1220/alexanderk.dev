@@ -131,15 +131,16 @@ async function refresh(env) {
 
   // 4. Public activity: only goes back 90 days (300 events at most)
   try {
-    const events = [];
+    const events = new Map();   // by event id: new events can shift the pages while we read them, repeating some
     for (let page = 1; page <= 3; page++) {
       const r = await github(`users/${USER}/events/public?per_page=100&page=${page}`);
       if (!r.ok) throw new Error(String(r.status));
       const batch = await r.json();
-      events.push(...batch.map((e) => ({ type: e.type, repo: e.repo.name, at: e.created_at, ref: (e.payload && e.payload.ref) || null })));
+      batch.forEach((e) => events.set(e.id, { type: e.type, repo: e.repo.name, at: e.created_at, ref: (e.payload && e.payload.ref) || null }));
       if (batch.length < 100) break;
     }
-    data[`events:${USER}`.toLowerCase()] = events;
+    // Newest first. GitHub's order isn't guaranteed, so sort by time
+    data[`events:${USER}`.toLowerCase()] = [...events.values()].sort((x, y) => (x.at < y.at ? 1 : x.at > y.at ? -1 : 0));
   } catch (e) {
     keep(`events:${USER}`.toLowerCase());
   }
