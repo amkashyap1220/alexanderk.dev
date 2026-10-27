@@ -32,10 +32,13 @@
     ];
   });
 
+  // The column the table sorts by: the one picked, or rank while that column isn't shown
+  // (it comes back when the column does, e.g. buying again after renting)
+  const sortCol = $derived(cols.find((c) => c.key === sortKey && !c.nosort) || cols[0]);
   const list = $derived.by(() => {
     if (!result) return null;
     const q = filter.trim().toLowerCase();
-    const col = cols.find((c) => c.key === sortKey) || cols[0];
+    const col = sortCol;
     const rows = result.rows.filter((r) => show === "all" || cur.picks.has(r.zip))
       .filter((r) => !q || (name(r) + " " + r.zip).toLowerCase().includes(q))
       .sort((a, b) => { const x = col.val(a), y = col.val(b); return (x < y ? -1 : x > y ? 1 : 0) * sortDir; });
@@ -64,7 +67,7 @@
   <div class="hv-list-bar">
     <h2 class="hv-h">The zips</h2>
     <!-- Phones hide the header row, so a small menu sorts instead -->
-    <label class="hv-sort-pick">Sort <select id="hv-list-sort" value={sortKey} onchange={(e) => { sortKey = e.currentTarget.value; sortDir = firstDir(sortKey); }}>
+    <label class="hv-sort-pick">Sort <select id="hv-list-sort" value={sortCol?.key} onchange={(e) => { sortKey = e.currentTarget.value; sortDir = firstDir(sortKey); }}>
       {#each cols.filter((c) => !c.nosort) as c}<option value={c.key}>{c.key === "rank" ? "Rank" : c.head}</option>{/each}
     </select></label>
     <label>Show <select id="hv-list-show" bind:value={show} onchange={() => (showEvery = false)}><option value="top">Top 20 fits</option><option value="all">Every zip</option></select></label>

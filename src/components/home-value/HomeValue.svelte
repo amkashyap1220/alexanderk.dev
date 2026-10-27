@@ -234,14 +234,14 @@
       <label class="hv-find"><span>Find a zip:</span>
         <input id="hv-find" type="search" list="hv-places" placeholder="town or zip" autocomplete="off" bind:value={find} onchange={onfind}>
         <span class="hv-hint" id="hv-find-note" aria-live="polite">{findNote}</span></label>
-      <ZipDetail {data} {byZip} {result} {cur} {rank} {mode} {view} {ps} {factors} {selected} onclose={() => (selected = null)} />
+      <ZipDetail {failed} {data} {byZip} {result} {cur} {rank} {mode} {view} {ps} {factors} {selected} onclose={() => (selected = null)} />
     </div>
 
     <form class="hv-controls" aria-label="Your targets and weights" onsubmit={(e) => e.preventDefault()}>
       <div id="hv-people" bind:this={peopleEl}>
-        {#each people as _, k}
+        {#if failed !== "blocked"}{#each people as _, k}
           <PersonForm bind:person={people[k]} {k} {mode} {data} {factors} {sample} workplace={ps[k].workplace} {placeName} {hold} {steady} {fillSample} onremove={removePerson} />
-        {/each}
+        {/each}{/if}
       </div>
       <datalist id="hv-places">
         {#each places as p}<option value={p.label}></option>{/each}

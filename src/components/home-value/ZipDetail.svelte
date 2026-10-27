@@ -2,7 +2,7 @@
 <script>
   import { CLASS, CONF, ISSUES, ORDER, factorText, gapText, listJoin, money, name, signed, who, zillow } from "./hv.js";
 
-  let { data, byZip, result, cur, rank, mode, view, ps, factors, selected, onclose } = $props();
+  let { failed, data, byZip, result, cur, rank, mode, view, ps, factors, selected, onclose } = $props();
 
   const z = $derived(selected && data ? byZip.get(selected) : null);
   const r = $derived(z && result ? result.rows.find((x) => x.zip === selected) : null);
@@ -34,7 +34,9 @@
 {#snippet listing(zip, zipName)}<a href={zillow(mode, zip)} target="_blank" rel="noopener" aria-label="{zipName}, {mode === 'buy' ? 'homes for sale' : 'rentals'} on Zillow (new tab)">Zillow ↗</a>{/snippet}
 
 <div class="hv-detail" id="hv-detail" aria-live="polite">
-  {#if !z}
+  {#if failed === "blocked"}
+    <!-- Without the model there is nothing to pick: the summary says why -->
+  {:else if !z}
     <p class="hv-empty">Pick a zip on the map, the chart or the table (or search for one above) to see why it scores what it does.</p>
   {:else}
     <div class="hv-detail-head"><h3 tabindex="-1">{name(z)} {z.zip}</h3><button class="btn small" type="button" data-close aria-label="Close details" onclick={onclose}>×</button></div>
