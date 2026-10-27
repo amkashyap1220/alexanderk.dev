@@ -46,9 +46,9 @@ test("the right username and password set a secure session cookie and go back to
   assert.equal(res.status, 303);
   assert.equal(res.headers.get("Location"), "/private/notes.html");
   const [sessionCookie, hintCookie] = cookies(res);
-  assert.match(sessionCookie, /^session=\d+\.[\w-]+; Path=\/; Max-Age=604800; HttpOnly; Secure; SameSite=Lax$/);
+  assert.match(sessionCookie, /^session=\d+\.[\w-]+; Path=\/; Max-Age=31536000; HttpOnly; Secure; SameSite=Lax$/);
   // the display hint for the Private tab: readable by scripts, so NOT HttpOnly
-  assert.equal(hintCookie, "signed_in=1; Path=/; Max-Age=604800; Secure; SameSite=Lax");
+  assert.equal(hintCookie, "signed_in=1; Path=/; Max-Age=31536000; Secure; SameSite=Lax");
 });
 
 test("logged in, private pages are served and never cached", async () => {
@@ -71,7 +71,7 @@ test("a wrong password or username doesn't log in", async () => {
 test("forged, edited and expired cookies are rejected", async () => {
   const e = env();
   const [, sig] = (await logIn(e)).split(".");
-  const later = Date.now() + 365 * 86400000;
+  const later = Date.now() + 5 * 365 * 86400000;   // a different expiry than the real one
   for (const cookie of ["session=" + later + "." + sig, "session=" + later + ".AAAA", "session=1000." + sig, "session=junk"]) {
     const res = await handleAuth(get("/private/", cookie), e);
     assert.equal(res.status, 303, cookie);
@@ -134,3 +134,24 @@ test("the rest of the site isn't affected", async () => {
   const res = await worker.fetch(get("/research/"), e, { waitUntil() {} });
   assert.equal(await res.text(), "file /research/");
 });
+
+test("opening a private page renews the login and the Private tab, so you stay logged in", async () => {
+  const e = env();
+  const cookie = await logIn(e);
+  const res = await handleAuth(get("/private/fitness-tracking.html", cookie), e);
+  assert.equal(res.status, 200);
+  const [renewed, tab] = cookies(res);
+  assert.match(renewed, /^session=\d+\.[\w-]+; Path=\/; Max-Age=31536000; HttpOnly/);
+  assert.equal(tab, "signed_in=1; Path=/; Max-Age=31536000; Secure; SameSite=Lax");
+  // the renewed session works on its own
+  assert.equal((await handleAuth(get("/private/", renewed.split(";")[0]), e)).status, 200);
+});
+
+test("logged in without the tab hint (e.g. from before it existed), the login page restores it", async () => {
+  const e = env();
+  const cookie = await logIn(e);   // session only, no signed_in cookie sent back
+  const res = await handleAuth(get("/login", cookie), e);
+  assert.equal(res.status, 303);
+  assert.ok(cookies(res).includes("signed_in=1; Path=/; Max-Age=31536000; Secure; SameSite=Lax"));
+});
+

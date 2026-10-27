@@ -7,7 +7,8 @@
 
    - GET  /login    the login page (login.html)
    - POST /login    checks the username and password; on success sets a
-                    signed "session" cookie for 7 days
+                    signed "session" cookie for a year, renewed each
+                    time you open a private page
    - POST /logout   clears the cookie
    - /private/...   only served with a valid session; otherwise redirects
                     to /login, which sends you back after you log in
@@ -25,7 +26,7 @@
    ========================================================================== */
 
 const COOKIE = "session";
-const SESSION_DAYS = 7;
+const SESSION_DAYS = 365;   // and renewed every time a private page opens, so you stay logged in
 const enc = new TextEncoder();
 
 const configured = (env) => Boolean(env.LOGIN_USERNAME && env.LOGIN_PASSWORD);
@@ -71,6 +72,12 @@ const MAX_AGE = SESSION_DAYS * 86400;
 const hint = (on) => `signed_in=${on ? 1 : ""}; Path=/; Max-Age=${on ? MAX_AGE : 0}; Secure; SameSite=Lax`;
 const session = (value) => `${COOKIE}=${value}; Path=/; Max-Age=${value ? MAX_AGE : 0}; HttpOnly; Secure; SameSite=Lax`;
 
+// A new session (and the Private tab hint), good for another SESSION_DAYS from now
+async function freshCookies(env) {
+  const expires = Date.now() + SESSION_DAYS * 86400000;
+  return [session(`${expires}.${await signature(env, expires)}`), hint(true)];
+}
+
 const loginUrl = (next, error) => "/login?" + new URLSearchParams({ next, ...(error ? { error } : {}) });
 
 // Private pages are never cached by browsers or shared caches, and never indexed
@@ -88,13 +95,16 @@ export async function handleAuth(request, env) {
 
   if (path === "/private" || path.startsWith("/private/")) {
     if (!(await loggedIn(request, env))) return redirect(loginUrl(nextPath(path)), [hint(false)]);   // expired: hide the tab too
-    return privateResponse(await env.ASSETS.fetch(request));
+    // Logged in: renew the session and the tab hint, so you stay logged in as long as you keep visiting
+    const res = privateResponse(await env.ASSETS.fetch(request));
+    (await freshCookies(env)).forEach((c) => res.headers.append("Set-Cookie", c));
+    return res;
   }
 
   if (path === "/login" || path === "/login.html") {
     const next = nextPath(url.searchParams.get("next"));
     if (request.method === "GET" || request.method === "HEAD") {
-      if (await loggedIn(request, env)) return redirect(next);
+      if (await loggedIn(request, env)) return redirect(next, await freshCookies(env));   // also restores a missing tab hint
       return privateResponse(await env.ASSETS.fetch(new Request(new URL("/login", url), request)));
     }
     if (request.method !== "POST") return new Response("Method not allowed", { status: 405, headers: { Allow: "GET, POST" } });
@@ -115,8 +125,7 @@ export async function handleAuth(request, env) {
     ]);
     if (!userOk || !passOk) return redirect(loginUrl(sentNext, "wrong"));
 
-    const expires = Date.now() + SESSION_DAYS * 86400000;
-    return redirect(sentNext, [session(`${expires}.${await signature(env, expires)}`), hint(true)]);
+    return redirect(sentNext, await freshCookies(env));
   }
 
   if (path === "/logout") {
