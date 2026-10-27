@@ -8,7 +8,7 @@ import Walkthrough from "../../components/Walkthrough.astro";
 
       <div class="prose">
         <h3>1. The big picture</h3>
-        <p>What your browser downloads is <b>plain files</b>: HTML pages, one CSS file and a few JavaScript files. Most pages run no framework (like React) in the browser; the exception is my private fitness dashboard, which keeps growing, so it's built from <b>Svelte</b> components that redraw themselves when the data changes.</p>
+        <p>What your browser downloads is <b>plain files</b>: HTML pages, one CSS file and a few JavaScript files. Most pages run no framework (like React) in the browser. The two exceptions are the most interactive ones, the <a href="/research/chicago-home-value">Chicago home value map</a> and my private fitness dashboard: they're built from <b>Svelte</b> components that redraw themselves when the data changes, and only those pages load them.</p>
         <p>The pages are written with <b>Astro</b>, a static site generator. The header, footer and page shell live in one layout file, and each project and research post is an entry in a small data file. When the site is built, Astro stitches those together into one finished HTML file per page. So a change to the header is one edit, not twenty.</p>
         <p>The one exception is a small script that runs on Cloudflare and keeps the GitHub numbers up to date. Here's how a visit works:</p>
 <pre is:raw><code>your browser ──asks for a page──► Cloudflare ──► the HTML, CSS and JS files
@@ -24,7 +24,7 @@ import Walkthrough from "../../components/Walkthrough.astro";
             <tr><td><code>src/layouts/</code></td><td>The page shell (head, header, footer) and the project and post layouts</td></tr>
             <tr><td><code>src/pages/</code></td><td>One file per page: About, Projects, Research, Stats</td></tr>
             <tr><td><code>src/data/</code></td><td>The list of projects and research posts that the pages and cards are built from</td></tr>
-            <tr><td><code>src/components/</code></td><td>Pieces shared by several pages, and the Svelte components behind the fitness dashboard</td></tr>
+            <tr><td><code>src/components/</code></td><td>Pieces shared by several pages, and the Svelte components behind the home value map and the fitness dashboard</td></tr>
             <tr><td><code>public/css/style.css</code></td><td>All the styling for every page</td></tr>
             <tr><td><code>public/js/theme.js</code></td><td>Light and dark mode</td></tr>
             <tr><td><code>public/js/gh.js</code>, <code>github.js</code>, <code>stats.js</code></td><td>Fill in the GitHub numbers, READMEs and the Stats page</td></tr>
