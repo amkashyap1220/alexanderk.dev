@@ -74,7 +74,7 @@ const session = (value) => `${COOKIE}=${value}; Path=/; Max-Age=${value ? MAX_AG
 const loginUrl = (next, error) => "/login?" + new URLSearchParams({ next, ...(error ? { error } : {}) });
 
 // Private pages are never cached by browsers or shared caches, and never indexed
-function privateResponse(res) {
+export function privateResponse(res) {
   const out = new Response(res.body, res);
   out.headers.set("Cache-Control", "private, no-store");
   out.headers.set("X-Robots-Tag", "noindex, nofollow");
