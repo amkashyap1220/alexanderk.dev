@@ -14,8 +14,6 @@
      POST /private/api/fitness/preferences  { rankings, never }
      POST /private/api/fitness/request      { text } ask for a new lift, or
                                             { cancel: n } take one back
-     POST /private/api/fitness/weight       { date, weight } a weigh-in in lb,
-                                            or { date, remove: true }
 
    Only reached when logged in (worker/index.js checks first). Needs a
    FITNESS_GITHUB_TOKEN secret: a fine-grained GitHub token with access to
@@ -64,10 +62,9 @@ async function readRaw(env, path) {
   return res.text();
 }
 
-// A JSON file and its sha (needed to save it back); `empty` if it isn't there yet
-async function readWithSha(env, path, empty) {
+// A JSON file and its sha (needed to save it back)
+async function readWithSha(env, path) {
   const res = await github(env, "contents/" + path);
-  if (res.status === 404 && empty !== undefined) return { data: empty, sha: undefined };
   if (!res.ok) throw new GitHubError(res.status, path);
   const file = await res.json();
   const bytes = Uint8Array.from(atob(file.content.replace(/\n/g, "")), (c) => c.charCodeAt(0));
@@ -128,13 +125,6 @@ export function checkPreferences(body, program, exercises) {
   return null;
 }
 
-export function checkWeight(body) {
-  if (!body || typeof body.date !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(body.date) || isNaN(Date.parse(body.date))) return "Pick a date.";
-  if (body.remove === true) return null;
-  if (typeof body.weight !== "number" || !(body.weight >= 50 && body.weight <= 700)) return "Enter your weight in lb (50 to 700).";
-  return null;
-}
-
 /* ---------- the routes ---------- */
 export async function handleFitness(request, env) {
   const path = new URL(request.url).pathname.replace(/^\/private\/api\/fitness\//, "");
@@ -148,24 +138,11 @@ export async function handleFitness(request, env) {
       return new Response(code, { headers: { "Content-Type": "text/javascript; charset=utf-8" } });
     }
 
-    if (request.method === "POST" && (path === "preferences" || path === "request" || path === "weight")) {
+    if (request.method === "POST" && (path === "preferences" || path === "request")) {
       // Only the dashboard itself can save (the login cookie is SameSite=Lax as well)
       if (request.headers.get("Origin") !== new URL(request.url).origin) return fail(403, "Wrong origin.");
       const body = await request.json().catch(() => null);
       const conflict = () => fail(409, "Changed somewhere else meanwhile. Reload and try again.");
-
-      if (path === "weight") {
-        const problem = checkWeight(body);
-        if (problem) return fail(400, problem);
-        const file = await readWithSha(env, "bodyweight.json", {});
-        const all = { ...file.data };
-        if (body.remove) delete all[body.date];
-        else all[body.date] = Math.round(body.weight * 10) / 10;
-        const next = Object.fromEntries(Object.entries(all).sort(([a], [b]) => (a < b ? -1 : 1)));
-        const message = body.remove ? `Remove weigh-in for ${body.date}` : `Weigh-in ${body.date}: ${next[body.date]} lb`;
-        const saved = await write(env, "bodyweight.json", next, file.sha, message);
-        return saved === "ok" ? json({ bodyweight: next }) : conflict();
-      }
 
       const prefs = await readWithSha(env, "preferences.json");
 
