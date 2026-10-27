@@ -171,3 +171,15 @@ test("a save that loses a race with another change asks to reload", async () => 
   const res = await call(r, e, "preferences", postJson(await cookie(e), { rankings: {}, never: [] }));
   assert.equal(res.status, 409);
 });
+
+test("when GitHub won't show the repo to the token, the page says what to fix", async () => {
+  const r = repo(), e = env();
+  r.fetch = async () => new Response("", { status: 404 });
+  const res = await call(r, e, "data", { headers: { Cookie: await cookie(e) } });
+  assert.equal(res.status, 502);
+  assert.match((await res.json()).error, /can't see amkashyap1220\/fitness-data/);
+  const bad = repo();
+  bad.fetch = async () => new Response("", { status: 401 });
+  const res2 = await call(bad, e, "engine.js", { headers: { Cookie: await cookie(e) } });
+  assert.match((await res2.json()).error, /rejected FITNESS_GITHUB_TOKEN/);
+});

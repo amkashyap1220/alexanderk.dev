@@ -32,7 +32,7 @@ function github(env, path, init = {}) {
   return fetch(`https://api.github.com/repos/${REPO}/${path}`, {
     ...init,
     headers: {
-      Authorization: "Bearer " + env.FITNESS_GITHUB_TOKEN,
+      Authorization: "Bearer " + env.FITNESS_GITHUB_TOKEN.trim(),   // a pasted secret can carry a newline
       "User-Agent": "alexanderk.dev",
       Accept: "application/vnd.github+json",
       ...init.headers,
@@ -40,18 +40,30 @@ function github(env, path, init = {}) {
   });
 }
 
+// What went wrong, in words that say what to fix (shown on the page)
+class GitHubError extends Error {
+  constructor(status, path) {
+    super({
+      401: "GitHub rejected FITNESS_GITHUB_TOKEN (401): it's mistyped, expired or revoked. Make a new one and update the secret.",
+      403: "GitHub refused FITNESS_GITHUB_TOKEN (403): give it the Contents permission (Read and write) on fitness-data.",
+      404: `GitHub can't see ${REPO} with FITNESS_GITHUB_TOKEN (404 on ${path}): the token's resource owner must be amkashyap1220 and its repository access must include fitness-data.`,
+    }[status] || `GitHub answered ${status} for ${path}. Try again in a minute.`);
+    this.status = status;
+  }
+}
+
 // A file's text, or null if it isn't there
 async function readRaw(env, path) {
   const res = await github(env, "contents/" + path, { headers: { Accept: "application/vnd.github.raw+json" } });
   if (res.status === 404) return null;
-  if (!res.ok) throw new Error(`GitHub ${res.status} reading ${path}`);
+  if (!res.ok) throw new GitHubError(res.status, path);
   return res.text();
 }
 
 // A JSON file and its sha (needed to save it back)
 async function readWithSha(env, path) {
   const res = await github(env, "contents/" + path);
-  if (!res.ok) throw new Error(`GitHub ${res.status} reading ${path}`);
+  if (!res.ok) throw new GitHubError(res.status, path);
   const file = await res.json();
   const bytes = Uint8Array.from(atob(file.content.replace(/\n/g, "")), (c) => c.charCodeAt(0));
   return { data: JSON.parse(dec.decode(bytes)), sha: file.sha };
@@ -72,7 +84,7 @@ async function write(env, path, data, sha, message) {
     body: JSON.stringify({ message, sha, content: base64(JSON.stringify(data, null, 2) + "\n") }),
   });
   if (res.status === 409 || res.status === 422) return "conflict";
-  if (!res.ok) throw new Error(`GitHub ${res.status} saving ${path}`);
+  if (!res.ok) throw new GitHubError(res.status, path);
   return "ok";
 }
 
@@ -81,7 +93,8 @@ async function readAll(env) {
     readRaw(env, "program.json"), readRaw(env, "exercises.json"), readRaw(env, "preferences.json"),
     readRaw(env, "state.json"), github(env, "contents/workouts"),
   ]);
-  if (!program || !exercises || !preferences) throw new Error("fitness-data is missing program.json, exercises.json or preferences.json");
+  // A private repo the token can't see looks exactly like a missing file
+  if (!program || !exercises || !preferences) throw new GitHubError(404, "program.json");
   const files = listing.ok ? (await listing.json()).map((f) => f.name).filter((n) => /^\d{4}\.json$/.test(n)).sort() : [];
   const years = await Promise.all(files.map((f) => readRaw(env, "workouts/" + f)));
   const workouts = Object.assign({}, ...years.filter(Boolean).map((t) => JSON.parse(t)));
@@ -151,7 +164,7 @@ export async function handleFitness(request, env) {
     if (request.method === "GET" && path === "data") return json(await readAll(env));
     if (request.method === "GET" && path === "engine.js") {
       const code = await readRaw(env, "engine/engine.js");
-      if (!code) return fail(404, "engine/engine.js not found");
+      if (!code) throw new GitHubError(404, "engine/engine.js");
       return new Response(code, { headers: { "Content-Type": "text/javascript; charset=utf-8" } });
     }
 
@@ -197,6 +210,6 @@ export async function handleFitness(request, env) {
     return fail(404, "Not found");
   } catch (err) {
     console.error("fitness:", err.message);
-    return fail(502, "Couldn't reach the fitness data. Try again in a minute.");
+    return fail(502, err instanceof GitHubError ? err.message : "Couldn't reach the fitness data. Try again in a minute.");
   }
 }
