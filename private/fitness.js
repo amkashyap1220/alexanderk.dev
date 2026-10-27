@@ -2,15 +2,15 @@
    Fitness dashboard (private/fitness-tracking.html).
 
    The data comes from /private/api/fitness/data (worker/fitness.js reads the
-   private fitness-data repo), and the plan engine itself from
+   fitness-data repo), and the plan engine itself from
    /private/api/fitness/engine.js: the same code the daily Claude session
    runs, so "Up next" here always matches what the session will suggest,
    including ranking changes you haven't saved into a session yet.
 
      1. LOAD     fetch the data and the engine
-     2. DRAW     up next, stats, weak areas, strength, calendar, volume,
-                 cardio, history (charts are plain SVG)
-     3. EDIT     rank lifts, mark "never", ask for a new lift (plain
+     2. DRAW     up next, stats, body weight, weak areas, strength,
+                 calendar, volume, cardio, history (charts are plain SVG)
+     3. EDIT     log a weigh-in, rank lifts, mark "never", ask for a new lift (plain
                  text the next daily session turns into a catalog entry);
                  saved through the Worker into fitness-data
    ========================================================================== */
@@ -97,6 +97,8 @@ async function load() {
     status.hidden = true;
     $("fit-app").hidden = false;
     drawAll();
+    onWidthChange(drawCardio);
+    setUpWeight();
     setUpEditor();
   } catch (err) {
     status.textContent = "Couldn't load your workouts: " + err.message;
@@ -106,9 +108,21 @@ async function load() {
 
 
 /* ================================================================ 2. draw */
+// The wide charts are drawn at the page's real width, so their text stays readable on a phone
+let width = window.innerWidth, timer;
+const redraws = [];
+const onWidthChange = (fn) => redraws.push(fn);
+window.addEventListener("resize", () => {
+  if (window.innerWidth === width) return;   // phones fire resize when the address bar hides
+  width = window.innerWidth;
+  clearTimeout(timer);
+  timer = setTimeout(() => redraws.forEach((fn) => fn()), 150);
+});
+
 function drawAll() {
   drawNext();
   drawStats();
+  drawWeight();
   drawWeak();
   drawLiftPicker();
   drawCalendar();
@@ -170,6 +184,89 @@ function drawWeak() {
   box.replaceChildren(...(cards.length ? cards : [el("p", { class: "empty", text: "No weak spots right now: every muscle is in its target and every lift is still moving." })]));
 }
 
+/* ---------- body weight: weigh-ins and their 7-day average ---------- */
+function drawWeight() {
+  const box = $("fit-weight-chart");
+  const { points, latest, change7, change30 } = E.weightTrend(D.bodyweight || {}, today);
+  if (!latest) { box.replaceChildren(el("p", { class: "empty", text: "Add a weigh-in to start the graph." })); return; }
+  const signed = (v) => (v === null ? "–" : `${v > 0 ? "+" : v < 0 ? "−" : "±"}${Math.abs(v)} lb`);
+  const stats = el("div", { class: "fit-weight-stats" },
+    el("span", {}, el("b", { text: `${latest.weight} lb` }), el("span", { class: "muted", text: ` on ${fmtDate(latest.date)}` })),
+    el("span", {}, el("b", { text: signed(change7) }), el("span", { class: "muted", text: " past 7 days" })),
+    el("span", {}, el("b", { text: signed(change30) }), el("span", { class: "muted", text: " past 30 days" })));
+  const table = tableView(["Date", "Weigh-in (lb)", "7-day average (lb)"], [...points].reverse().map((p) => [p.date, String(p.weight), String(p.trend)]));
+  if (points.length < 2) { box.replaceChildren(stats, el("p", { class: "empty", text: "The graph starts with your second weigh-in." }), table); return; }
+
+  const W = Math.max(300, box.clientWidth || 760), H = 240, L = 44, R = 72, T = 16, B = 32;
+  const t = (d) => Date.parse(d);
+  const x0 = t(points[0].date), x1 = Math.max(t(latest.date), x0 + 7 * 864e5);
+  const vals = points.flatMap((p) => [p.weight, p.trend]);
+  const yt = ticks(Math.min(...vals) - 1, Math.max(...vals) + 1);
+  const X = (d) => L + ((t(d) - x0) / (x1 - x0)) * (W - L - R);
+  const Y = (v) => T + (1 - (v - yt[0]) / (yt.at(-1) - yt[0])) * (H - T - B);
+  const svg = el("svg:svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "Body weight over time: weigh-ins and 7-day average", "data-chart": "" });
+  yt.forEach((v) => svg.append(
+    el("svg:line", { x1: L, x2: W - R, y1: Y(v), y2: Y(v), stroke: "var(--border)" }),
+    el("svg:text", { x: L - 8, y: Y(v) + 4, "text-anchor": "end", "font-size": 11, fill: "var(--muted)", text: v })));
+  const months = [];
+  for (let d = new Date(x0); d.getTime() <= x1; d.setUTCDate(d.getUTCDate() + 1)) if (d.getUTCDate() === 1) months.push(d.toISOString().slice(0, 10));
+  const labels = months.length ? months : [points[0].date, latest.date];
+  labels.forEach((d) => svg.append(el("svg:text", { x: X(d), y: H - 10, "text-anchor": "middle", "font-size": 11, fill: "var(--muted)", text: fmtDate(d, months.length ? { month: "short" } : undefined) })));
+  points.forEach((p) => svg.append(el("svg:circle", { cx: X(p.date), cy: Y(p.weight), r: 3, fill: "var(--bg)", stroke: "var(--muted)", "stroke-width": 1.5 })));
+  svg.append(el("svg:polyline", { points: points.map((p) => `${X(p.date)},${Y(p.trend)}`).join(" "), fill: "none", stroke: "var(--s1)", "stroke-width": 2.5, "stroke-linejoin": "round" }));
+  svg.append(el("svg:text", { x: X(latest.date) + 10, y: Y(latest.trend) + 4, "font-size": 12, fill: "var(--text)", text: `${latest.trend} lb` }));
+  const cross = el("svg:line", { y1: T, y2: H - B, stroke: "var(--muted)", "stroke-dasharray": "3 3", visibility: "hidden" });
+  const hit = el("svg:rect", { x: L, y: T, width: W - L - R, height: H - T - B, fill: "transparent" });
+  svg.append(cross, hit);
+  hit.addEventListener("pointermove", (e) => {
+    const r = svg.getBoundingClientRect();
+    const sx = ((e.clientX - r.left) / r.width) * W;
+    const p = points.reduce((a, b) => (Math.abs(X(b.date) - sx) < Math.abs(X(a.date) - sx) ? b : a));
+    cross.setAttribute("x1", X(p.date)); cross.setAttribute("x2", X(p.date)); cross.setAttribute("visibility", "visible");
+    showTip(e.clientX, e.clientY, fmtDate(p.date, { month: "short", day: "numeric", year: "numeric" }), [`Weigh-in ${p.weight} lb`, `7-day average ${p.trend} lb`]);
+  });
+  hit.addEventListener("pointerleave", () => { cross.setAttribute("visibility", "hidden"); hideTip(); });
+  const legend = el("ul", { class: "fit-legend" },
+    el("li", {}, el("span", { class: "fit-swatch", style: "--c:var(--s1)" }), "7-day average"),
+    el("li", {}, el("span", { class: "fit-swatch skip" }), "Weigh-in"));
+  box.replaceChildren(stats, svg, legend, table);
+}
+
+function setUpWeight() {
+  const form = $("fit-weight"), status = $("fit-weight-status");
+  const { lb, day } = form.elements;
+  day.value = day.max = today;
+  // Picking a day that already has a weigh-in shows it, so saving replaces it
+  const remove = $("fit-weight-remove");
+  const fill = () => {
+    const v = (D.bodyweight || {})[day.value];
+    lb.value = v === undefined ? "" : v;
+    remove.hidden = v === undefined;
+    status.textContent = v === undefined ? "" : "Already logged for that day; saving replaces it.";
+  };
+  day.addEventListener("change", fill);
+  fill();
+  const send = async (body, done) => {
+    status.textContent = "Saving…";
+    try {
+      D.bodyweight = (await post("weight", body)).bodyweight;
+      drawWeight();
+      remove.hidden = D.bodyweight[day.value] === undefined;
+      status.textContent = done;
+    } catch (err) {
+      status.textContent = "Not saved: " + err.message;
+    }
+  };
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    send({ date: day.value, weight: Number(lb.value) }, `Saved ${Math.round(lb.value * 10) / 10} lb for ${fmtDate(day.value)}.`);
+  });
+  remove.addEventListener("click", () => {
+    send({ date: day.value, remove: true }, `Removed the weigh-in for ${fmtDate(day.value)}.`).then(() => { if (D.bodyweight[day.value] === undefined) lb.value = ""; });
+  });
+  onWidthChange(drawWeight);
+}
+
 /* ---------- strength: one lift at a time ---------- */
 function drawLiftPicker() {
   const select = $("fit-lift");
@@ -183,14 +280,7 @@ function drawLiftPicker() {
   select.replaceChildren(...ids.map((id) => el("option", { value: id, text: `${nameOf(id)} (${A.strength[id].length})` })));
   select.onchange = () => drawStrength(select.value);
   drawStrength(ids[0]);
-  // The two wide charts are drawn at the page's real width, so their text stays readable on a phone
-  let width = window.innerWidth, timer;
-  window.addEventListener("resize", () => {
-    if (window.innerWidth === width) return;   // phones fire resize when the address bar hides
-    width = window.innerWidth;
-    clearTimeout(timer);
-    timer = setTimeout(() => { drawStrength(select.value); drawCardio(); }, 150);
-  });
+  onWidthChange(() => drawStrength(select.value));
 }
 
 function drawStrength(id) {

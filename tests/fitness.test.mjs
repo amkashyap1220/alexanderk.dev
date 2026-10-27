@@ -28,7 +28,7 @@ function repo() {
     const path = decodeURIComponent(new URL(url).pathname.replace("/repos/amkashyap1220/fitness-data/contents/", ""));
     calls.push({ path, method: init.method || "GET", auth: init.headers.Authorization, body: init.body });
     if (path === "workouts") return Response.json(Object.keys(files).filter((p) => p.startsWith("workouts/")).map((p) => ({ name: p.slice(9) })).concat([{ name: "README.md" }]));
-    if (!(path in files)) return new Response("", { status: 404 });
+    if (!(path in files) && init.method !== "PUT") return new Response("", { status: 404 });
     if (init.method === "PUT") {
       const body = JSON.parse(init.body);
       if (body.sha !== shas[path]) return new Response("", { status: 409 });
@@ -181,4 +181,27 @@ test("when GitHub won't show the repo to the token, the page says what to fix", 
   bad.fetch = async () => new Response("", { status: 401 });
   const res2 = await call(bad, e, "engine.js", { headers: { Cookie: await cookie(e) } });
   assert.match((await res2.json()).error, /rejected FITNESS_GITHUB_TOKEN/);
+});
+
+test("weigh-ins: saved by date, replaced on the same day, removable", async () => {
+  const r = repo(), e = env(), c = await cookie(e);
+  assert.deepEqual((await (await call(r, e, "data", { headers: { Cookie: c } })).json()).bodyweight, {});   // no file yet
+  assert.equal((await call(r, e, "weight", postJson(c, { date: "2026-10-27", weight: 182.44 }))).status, 200);   // creates the file
+  await call(r, e, "weight", postJson(c, { date: "2026-10-20", weight: 184 }));
+  await call(r, e, "weight", postJson(c, { date: "2026-10-27", weight: 181.6 }));
+  assert.deepEqual(r.files["bodyweight.json"], { "2026-10-20": 184, "2026-10-27": 181.6 });
+  await call(r, e, "weight", postJson(c, { date: "2026-10-20", remove: true }));
+  assert.deepEqual(r.files["bodyweight.json"], { "2026-10-27": 181.6 });
+  const data = await (await call(r, e, "data", { headers: { Cookie: c } })).json();
+  assert.deepEqual(data.bodyweight, { "2026-10-27": 181.6 });
+});
+
+test("bad weigh-ins are refused", async () => {
+  const r = repo(), e = env(), c = await cookie(e);
+  for (const body of [{ date: "2026-10-27" }, { date: "2026-10-27", weight: "180" }, { date: "2026-10-27", weight: 5 }, { date: "yesterday", weight: 180 }, { weight: 180 }, null]) {
+    const res = await call(r, e, "weight", postJson(c, body));
+    assert.equal(res.status, 400, JSON.stringify(body));
+  }
+  assert.equal((await call(r, e, "weight", postJson(c, { date: "2026-10-27", weight: 180 }, "https://evil.example"))).status, 403);
+  assert.ok(!r.calls.some((x) => x.method === "PUT"));
 });

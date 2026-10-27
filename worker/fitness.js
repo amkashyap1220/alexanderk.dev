@@ -1,8 +1,8 @@
 /* ==========================================================================
    Fitness tracker API for the private dashboard (private/fitness-tracking).
 
-   The workout log lives in the PRIVATE repo amkashyap1220/fitness-data,
-   never in this public one. A daily Claude session commits workouts there;
+   The workout log lives in the repo amkashyap1220/fitness-data, never in
+   this one. A daily Claude session commits workouts there;
    this file reads it for the dashboard and saves what the dashboard can
    change: lift rankings, and requests for new lifts (plain text; the next
    daily session works out the lift's slot and muscles and adds it).
@@ -14,6 +14,8 @@
      POST /private/api/fitness/preferences  { rankings, never }
      POST /private/api/fitness/request      { text } ask for a new lift, or
                                             { cancel: n } take one back
+     POST /private/api/fitness/weight       { date, weight } a weigh-in in lb,
+                                            or { date, remove: true }
 
    Only reached when logged in (worker/index.js checks first). Needs a
    FITNESS_GITHUB_TOKEN secret: a fine-grained GitHub token with access to
@@ -62,9 +64,10 @@ async function readRaw(env, path) {
   return res.text();
 }
 
-// A JSON file and its sha (needed to save it back)
-async function readWithSha(env, path) {
+// A JSON file and its sha (needed to save it back); `empty` if it isn't there yet
+async function readWithSha(env, path, empty) {
   const res = await github(env, "contents/" + path);
+  if (res.status === 404 && empty !== undefined) return { data: empty, sha: undefined };
   if (!res.ok) throw new GitHubError(res.status, path);
   const file = await res.json();
   const bytes = Uint8Array.from(atob(file.content.replace(/\n/g, "")), (c) => c.charCodeAt(0));
@@ -91,9 +94,9 @@ async function write(env, path, data, sha, message) {
 }
 
 async function readAll(env) {
-  const [program, exercises, preferences, state, listing] = await Promise.all([
+  const [program, exercises, preferences, state, bodyweight, listing] = await Promise.all([
     readRaw(env, "program.json"), readRaw(env, "exercises.json"), readRaw(env, "preferences.json"),
-    readRaw(env, "state.json"), github(env, "contents/workouts"),
+    readRaw(env, "state.json"), readRaw(env, "bodyweight.json"), github(env, "contents/workouts"),
   ]);
   // A private repo the token can't see looks exactly like a missing file
   if (!program || !exercises || !preferences) throw new GitHubError(404, "program.json");
@@ -102,7 +105,7 @@ async function readAll(env) {
   const workouts = Object.assign({}, ...years.filter(Boolean).map((t) => JSON.parse(t)));
   return {
     program: JSON.parse(program), exercises: JSON.parse(exercises), preferences: JSON.parse(preferences),
-    state: state ? JSON.parse(state) : null, workouts,
+    state: state ? JSON.parse(state) : null, workouts, bodyweight: bodyweight ? JSON.parse(bodyweight) : {},
   };
 }
 
@@ -125,6 +128,13 @@ export function checkPreferences(body, program, exercises) {
   return null;
 }
 
+export function checkWeight(body) {
+  if (!body || typeof body.date !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(body.date) || isNaN(Date.parse(body.date))) return "Pick a date.";
+  if (body.remove === true) return null;
+  if (typeof body.weight !== "number" || !(body.weight >= 50 && body.weight <= 700)) return "Enter your weight in lb (50 to 700).";
+  return null;
+}
+
 /* ---------- the routes ---------- */
 export async function handleFitness(request, env) {
   const path = new URL(request.url).pathname.replace(/^\/private\/api\/fitness\//, "");
@@ -138,12 +148,26 @@ export async function handleFitness(request, env) {
       return new Response(code, { headers: { "Content-Type": "text/javascript; charset=utf-8" } });
     }
 
-    if (request.method === "POST" && (path === "preferences" || path === "request")) {
+    if (request.method === "POST" && (path === "preferences" || path === "request" || path === "weight")) {
       // Only the dashboard itself can save (the login cookie is SameSite=Lax as well)
       if (request.headers.get("Origin") !== new URL(request.url).origin) return fail(403, "Wrong origin.");
       const body = await request.json().catch(() => null);
-      const prefs = await readWithSha(env, "preferences.json");
       const conflict = () => fail(409, "Changed somewhere else meanwhile. Reload and try again.");
+
+      if (path === "weight") {
+        const problem = checkWeight(body);
+        if (problem) return fail(400, problem);
+        const file = await readWithSha(env, "bodyweight.json", {});
+        const all = { ...file.data };
+        if (body.remove) delete all[body.date];
+        else all[body.date] = Math.round(body.weight * 10) / 10;
+        const next = Object.fromEntries(Object.entries(all).sort(([a], [b]) => (a < b ? -1 : 1)));
+        const message = body.remove ? `Remove weigh-in for ${body.date}` : `Weigh-in ${body.date}: ${next[body.date]} lb`;
+        const saved = await write(env, "bodyweight.json", next, file.sha, message);
+        return saved === "ok" ? json({ bodyweight: next }) : conflict();
+      }
+
+      const prefs = await readWithSha(env, "preferences.json");
 
       if (path === "preferences") {
         const [program, exercises] = await Promise.all([readRaw(env, "program.json").then(JSON.parse), readRaw(env, "exercises.json").then(JSON.parse)]);
