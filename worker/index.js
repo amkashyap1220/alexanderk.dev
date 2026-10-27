@@ -1,5 +1,6 @@
 /* ==========================================================================
-   Cloudflare Worker: keeps the site's GitHub numbers fresh.
+   Cloudflare Worker: keeps the site's GitHub numbers fresh, and guards the
+   private section (login: see worker/auth.js).
 
    Every 5 minutes (Cron Trigger in wrangler.jsonc) it asks GitHub for every
    repo's stars, commit count, languages and last push, the 90-day activity
@@ -19,6 +20,8 @@
    the file as is.
    ========================================================================== */
 
+import { handleAuth } from "./auth.js";
+
 const USER = "amkashyap1220";
 const DATA_KEY = "github.json";
 const MAX_READMES_PER_RUN = 30;   // stays under 50 requests even on the first run
@@ -27,6 +30,8 @@ const NAME = /^[\w.-]+$/;
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+    const auth = await handleAuth(request, env);   // /login, /logout and /private/...
+    if (auth) return auth;
     if (url.pathname !== "/data/github.json") return env.ASSETS.fetch(request);
 
     const body = await env.GITHUB_DATA.get(DATA_KEY);
