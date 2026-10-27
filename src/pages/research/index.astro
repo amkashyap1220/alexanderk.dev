@@ -22,7 +22,7 @@ import { posts, formatDate } from "../../data/research";
       <ul class="posts">
         {posts.map((p) => (
           <li>
-            <a class="post-card" href={`/research/${p.slug}.html`}>
+            <a class="post-card" href={`/research/${p.slug}`}>
               {p.image && (
                 <span class="post-thumb">
                   <img class="thumb-light" src={`/research/${p.slug}.png`} alt={p.image.alt} width="1200" height="630" loading="lazy">

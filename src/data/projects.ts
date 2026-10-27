@@ -13,7 +13,6 @@ export interface Project {
   when: { start: string; end?: string };   // "2021", "2020-12"; end "present" for ongoing
   readme: boolean;           // show the repo's README on the page
   writeup?: { label: string; href: string };   // a main button before "View on GitHub"
-  card?: { text?: string; chips?: string[] };  // the Projects card, when it differs
 }
 
 export const projects: Project[] = [
@@ -24,11 +23,10 @@ export const projects: Project[] = [
     summary: "Every Chicago-area zip code scored on schools, safety, commute, train access, walkability, home age and price or rent. Readers set their own weights and targets, alone or with a partner, and a map shows their best-value areas.",
     description: "Home Value Score: an interactive map that ranks Chicago-area zip codes by value for buyers and renters, with your own weights and targets. Python, pandas and public data.",
     repo: "amkashyap1220/Home-Value-Score",
-    chips: ["Python", "pandas", "GeoPandas", "Census data", "Observable Plot"],
+    chips: ["Python", "pandas", "GeoPandas", "statsmodels", "DuckDB", "Census data", "Observable Plot"],
     when: {"start": "2026"},
     readme: true,
-    writeup: {"label": "Read the write-up", "href": "/research/chicago-home-value.html"},
-    card: {"text": "An interactive map of the best-value Chicago-area zip codes to buy or rent, built from a dozen public data sources.", "chips": ["Python", "pandas", "statsmodels", "Census data"]},
+    writeup: {"label": "Read the write-up", "href": "/research/chicago-home-value"},
   },
   {
     slug: "switch-to-youtube",
@@ -44,9 +42,9 @@ export const projects: Project[] = [
     slug: "alexanderk-dev",
     name: "alexanderk.dev",
     tagline: "This website",
-    summary: "This website. Plain HTML, CSS, and JavaScript. Hosted on Cloudflare.",
+    summary: "This website. Built with Astro into plain HTML, CSS and JavaScript, and hosted on Cloudflare.",
     repo: "amkashyap1220/alexanderk.dev",
-    chips: ["HTML", "CSS", "JavaScript", "GitHub API", "Cloudflare"],
+    chips: ["Astro", "HTML", "CSS", "JavaScript", "GitHub API", "Cloudflare"],
     when: {"start": "2026", "end": "present"},
     readme: true,
   },

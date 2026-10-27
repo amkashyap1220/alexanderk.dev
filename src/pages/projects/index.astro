@@ -27,7 +27,7 @@ const year = (date: string) => date.slice(0, 4);
         {projects.map((p) => (
           <article class="card project">
             <div class="card-head">
-              <h2 class="card-title"><a class="card-link" href={`/projects/${p.slug}.html`}>{p.name}</a></h2>
+              <h2 class="card-title"><a class="card-link" href={`/projects/${p.slug}`}>{p.name}</a></h2>
               {!p.when.end ? (
                 <time class="when" datetime={p.when.start}>{year(p.when.start)}</time>
               ) : p.when.end === "present" ? (
@@ -37,8 +37,8 @@ const year = (date: string) => date.slice(0, 4);
               )}
             </div>
             <RepoStats repo={p.repo} />
-            <p class="card-text">{p.card?.text ?? p.summary}</p>
-            <Chips items={p.card?.chips ?? p.chips} />
+            <p class="card-text">{p.summary}</p>
+            <Chips items={p.chips} />
           </article>
         ))}
       </div>

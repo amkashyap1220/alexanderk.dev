@@ -50,9 +50,10 @@ const github = `https://github.com/${p.repo}`;
     <slot name="scripts" />
     {highlight && (
       <>
-        {/* Code highlighting (Prism). The autoloader fetches each language as a page needs it. */}
-        <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/prism.min.js"></script>
-        <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        {/* Code highlighting (Prism, from jsDelivr like the site's other libraries).
+            The autoloader fetches each language as a page needs it. */}
+        <script is:inline src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script is:inline src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
       </>
     )}
   </Fragment>

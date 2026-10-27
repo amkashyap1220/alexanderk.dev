@@ -4,7 +4,7 @@ My personal site: about me, my projects, my research, and stats from my GitHub.
 
 **Live:** [alexanderk.dev](https://alexanderk.dev)
 
-Plain HTML, CSS and JavaScript, built with [Astro](https://astro.build) and hosted on Cloudflare.
+Built with [Astro](https://astro.build) into plain HTML, CSS and JavaScript, and hosted on Cloudflare.
 
 ## Building
 

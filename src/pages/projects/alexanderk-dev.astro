@@ -8,7 +8,8 @@ import Walkthrough from "../../components/Walkthrough.astro";
 
       <div class="prose">
         <h3>1. The big picture</h3>
-        <p>The site is almost entirely <b>plain files</b>: HTML pages, one CSS file and a few JavaScript files. There's no framework (like React) and no build step, so the files in the repo are exactly what your browser downloads.</p>
+        <p>What your browser downloads is <b>plain files</b>: HTML pages, one CSS file and a few JavaScript files. There's no framework (like React) running in the browser.</p>
+        <p>The pages are written with <b>Astro</b>, a static site generator. The header, footer and page shell live in one layout file, and each project and research post is an entry in a small data file. When the site is built, Astro stitches those together into one finished HTML file per page. So a change to the header is one edit, not twenty.</p>
         <p>The one exception is a small script that runs on Cloudflare and keeps the GitHub numbers up to date. Here's how a visit works:</p>
 <pre is:raw><code>your browser ──asks for a page──► Cloudflare ──► the HTML, CSS and JS files
      │
@@ -20,14 +21,14 @@ import Walkthrough from "../../components/Walkthrough.astro";
         <table>
           <thead><tr><th>File</th><th>What it does</th></tr></thead>
           <tbody>
-            <tr><td><code>index.html</code></td><td>The About page</td></tr>
-            <tr><td><code>projects/</code></td><td>The Projects list, plus one page per project</td></tr>
-            <tr><td><code>stats/</code>, <code>research/</code></td><td>The GitHub Stats and Research pages</td></tr>
-            <tr><td><code>css/style.css</code></td><td>All the styling for every page</td></tr>
-            <tr><td><code>js/theme.js</code></td><td>Light and dark mode</td></tr>
-            <tr><td><code>js/gh.js</code>, <code>js/github.js</code>, <code>js/stats.js</code></td><td>Fill in the GitHub numbers, READMEs and the Stats page</td></tr>
+            <tr><td><code>src/layouts/</code></td><td>The page shell (head, header, footer) and the project and post layouts</td></tr>
+            <tr><td><code>src/pages/</code></td><td>One file per page: About, Projects, Research, Stats</td></tr>
+            <tr><td><code>src/data/</code></td><td>The list of projects and research posts that the pages and cards are built from</td></tr>
+            <tr><td><code>public/css/style.css</code></td><td>All the styling for every page</td></tr>
+            <tr><td><code>public/js/theme.js</code></td><td>Light and dark mode</td></tr>
+            <tr><td><code>public/js/gh.js</code>, <code>github.js</code>, <code>stats.js</code></td><td>Fill in the GitHub numbers, READMEs and the Stats page</td></tr>
             <tr><td><code>worker/index.js</code></td><td>The Cloudflare script that fetches from GitHub</td></tr>
-            <tr><td><code>wrangler.jsonc</code></td><td>Cloudflare settings</td></tr>
+            <tr><td><code>wrangler.jsonc</code>, <code>astro.config.mjs</code></td><td>Cloudflare and Astro settings</td></tr>
           </tbody>
         </table>
 
@@ -95,7 +96,7 @@ document.documentElement.classList.toggle("dark", theme === "dark");</code></pre
 }</code></pre>
 
         <h3>6. Shipping changes</h3>
-        <p>The repo is connected to Cloudflare, so <b>every push to <code>main</code> deploys the site</b> automatically. Cloudflare runs <code>npx wrangler deploy</code>, which uploads the files and the Worker. It's live in under a minute.</p>
+        <p>The repo is connected to Cloudflare, so <b>every push to <code>main</code> deploys the site</b> automatically. Cloudflare runs <code>npx wrangler deploy</code>, which builds the pages with Astro and uploads them along with the Worker. It's live in under a minute.</p>
         <p>Changes don't go straight to <code>main</code>, though. Each one goes on its own branch with a pull request. Cloudflare builds a preview of the branch, and it gets merged once it looks right:</p>
 <pre is:raw><code class="language-bash">git checkout -b add-new-project     # new branch
 # ...make changes...
