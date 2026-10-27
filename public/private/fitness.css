@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Fitness dashboard (private/fitness-tracking.html). Uses the site's tokens
+   Fitness dashboard (src/components/fitness/). Uses the site's tokens
    from css/style.css; only what this page adds is here.
 
    Series colors: Push / Pull / Legs and treadmill / bike / elliptical share

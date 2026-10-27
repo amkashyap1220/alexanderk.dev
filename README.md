@@ -4,7 +4,7 @@ My personal site: about me, my projects, my research, and stats from my GitHub.
 
 **Live:** [alexanderk.dev](https://alexanderk.dev)
 
-Built with [Astro](https://astro.build) into plain HTML, CSS and JavaScript, and hosted on Cloudflare.
+Built with [Astro](https://astro.build) into plain HTML, CSS and JavaScript, and hosted on Cloudflare. The fitness dashboard is built from [Svelte](https://svelte.dev) components.
 
 ## Building
 
@@ -16,6 +16,7 @@ Built with [Astro](https://astro.build) into plain HTML, CSS and JavaScript, and
 | `src/pages/` | One file per page; its path is the page's address |
 | `src/data/` | The projects and research posts; their pages and the Projects and Research cards are built from these |
 | `src/components/`, `src/styles/` | Small shared pieces (README, chips, GitHub numbers) and page-only styles |
+| `src/components/fitness/` | The fitness dashboard: one Svelte component per panel, loaded only on that page |
 | `public/` | Copied to the site as is: `css/style.css`, the browser scripts in `js/`, images and data files |
 | `worker/` | The Cloudflare Worker: GitHub data, login and the fitness API (never uploaded as a file) |
 
@@ -29,5 +30,5 @@ I used AI to help write the text on this site.
 
 ## Fitness tracking (private)
 
-`/private/fitness-tracking` is a dashboard for my workouts. The data is in a separate private repo (`fitness-data`), never in this one: `worker/fitness.js` reads it through the GitHub API, behind the login. It needs one more Worker secret, `FITNESS_GITHUB_TOKEN`: a fine-grained GitHub token with access to `fitness-data` only, Contents read and write.
+`/private/fitness-tracking` is a dashboard for my workouts, built from the Svelte components in `src/components/fitness/` (`Dashboard.svelte` loads the data and lays out the panels). The data is in a separate private repo (`fitness-data`), never in this one: `worker/fitness.js` reads it through the GitHub API, behind the login. It needs one more Worker secret, `FITNESS_GITHUB_TOKEN`: a fine-grained GitHub token with access to `fitness-data` only, Contents read and write.
 

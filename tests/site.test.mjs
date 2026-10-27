@@ -56,7 +56,8 @@ test("link previews point at the page's own address", () => {
 
 test("every link and file a page uses exists, at its clean address", () => {
   for (const { file, html } of pages) {
-    for (const ref of all(html, /(?:href|src)="(\/(?!\/)[^"]*)"/g)) {
+    // component-url and renderer-url: the scripts behind a Svelte component (astro-island)
+    for (const ref of all(html, /(?:href|src|component-url|renderer-url)="(\/(?!\/)[^"]*)"/g)) {
       if (DYNAMIC.test(ref.split(/[?#]/)[0])) continue;
       assert.ok(fileFor(ref), `${file}: ${ref} doesn't exist`);
       assert.doesNotMatch(ref, /\.html([?#]|$)/, `${file}: link to ${ref} without .html`);
