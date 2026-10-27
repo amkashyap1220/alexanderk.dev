@@ -4,8 +4,10 @@
   "compatibility_date": "2026-10-20",
   // Small script that keeps the GitHub numbers fresh (see worker/index.js)
   "main": "worker/index.js",
+  // Astro builds the pages into dist/ before every deploy (and wrangler dev)
+  "build": { "command": "npm run build" },
   "assets": {
-    "directory": "./",
+    "directory": "./dist",
     "binding": "ASSETS",
     // Unknown addresses get /404.html (with a real 404 status)
     "not_found_handling": "404-page",
