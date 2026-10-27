@@ -9,13 +9,17 @@
     "binding": "ASSETS",
     // Unknown addresses get /404.html (with a real 404 status)
     "not_found_handling": "404-page",
-    // Only /data/... goes to the script; every other page is a plain file
-    "run_worker_first": ["/data/*"]
+    // These go to the script first: the GitHub data, the login, and the
+    // private section (checked before any private file is sent).
+    // Every other page is a plain file.
+    "run_worker_first": ["/data/*", "/login", "/login.html", "/logout", "/private", "/private/*"]
   },
   // Refresh the GitHub data every 5 minutes
   "triggers": { "crons": ["*/5 * * * *"] },
   // Where the GitHub data is saved. Cloudflare creates it on the first deploy.
   "kv_namespaces": [{ "binding": "GITHUB_DATA" }],
+  // Slows down password guessing: 5 login tries a minute per connection
+  "ratelimits": [{ "name": "LOGIN_LIMITER", "namespace_id": "1001", "simple": { "limit": 5, "period": 60 } }],
   // Lets branches other than main build a preview (npx wrangler preview)
   "previews": {}
 }
