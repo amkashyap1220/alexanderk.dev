@@ -4,7 +4,7 @@ My personal site: about me, my projects, my research, and stats from my GitHub.
 
 **Live:** [alexanderk.dev](https://alexanderk.dev)
 
-Plain HTML, CSS and JavaScript, built with [Astro](https://astro.build) and hosted on Cloudflare.
+Built with [Astro](https://astro.build) into plain HTML, CSS and JavaScript, and hosted on Cloudflare.
 
 ## Building
 
@@ -12,7 +12,9 @@ Plain HTML, CSS and JavaScript, built with [Astro](https://astro.build) and host
 
 The page shell (head, header, footer) lives once in `src/layouts/BaseLayout.astro`. Pages in `src/pages/` use it; the rest are still plain files in `public/`, copied to `dist/` as is, and move over a few at a time.
 
-To add a project: add an entry to `src/data/projects.ts` (it feeds the Projects page card and the page's header, live GitHub numbers and README), then copy one of the pages in `src/pages/projects/` to `<slug>.astro` and write its sections. The Worker (`worker/`), the tests and `templates/` are never uploaded.
+To add a project: add an entry to `src/data/projects.ts` (it feeds the Projects page card and the page's header, live GitHub numbers and README), then copy one of the pages in `src/pages/projects/` to `<slug>.astro` and write its sections. To add a research post, follow the steps at the top of `src/pages/research/_template.astro`.
+
+The Worker (`worker/`) and the tests are never uploaded.
 
 I used AI to help write the text on this site.
 

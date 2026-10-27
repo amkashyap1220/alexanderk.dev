@@ -9,11 +9,13 @@ interface Props {
   path?: string;              // set on public pages: adds the link-preview tags for this URL
   ogTitle?: string;           // link preview title (defaults to title)
   ogDescription?: string;     // link preview text (defaults to description)
+  ogImage?: { src: string; alt: string };   // link preview image, 1200 x 630 (defaults to /og.png)
   noindex?: boolean;          // keep search engines off (login, private pages)
   current?: "about" | "projects" | "research" | "stats" | "private";   // highlighted nav tab
 }
 
 const { title, description, path, ogTitle = title, ogDescription = description, noindex = false, current } = Astro.props;
+const ogImage = Astro.props.ogImage ?? { src: "/og.png", alt: "Alexander Kashyap, software developer: C#, .NET, SQL & Python" };
 const here = (tab: Props["current"]) => (current === tab ? "page" : undefined);
 ---
 <!doctype html>
@@ -32,10 +34,10 @@ const here = (tab: Props["current"]) => (current === tab ? "page" : undefined);
       <meta property="og:title" content={ogTitle}>
       <meta property="og:description" content={ogDescription}>
       <meta property="og:url" content={new URL(path, "https://alexanderk.dev").href}>
-      <meta property="og:image" content="https://alexanderk.dev/og.png">
+      <meta property="og:image" content={new URL(ogImage.src, "https://alexanderk.dev").href}>
       <meta property="og:image:width" content="1200">
       <meta property="og:image:height" content="630">
-      <meta property="og:image:alt" content="Alexander Kashyap, software developer: C#, .NET, SQL & Python">
+      <meta property="og:image:alt" content={ogImage.alt}>
       <meta name="twitter:card" content="summary_large_image">
     </>
   )}
@@ -80,7 +82,7 @@ const here = (tab: Props["current"]) => (current === tab ? "page" : undefined);
 
   <footer class="site-footer">
     <div class="wrap">
-      <p>© 2026 Alexander Kashyap</p>
+      <p>© {new Date().getFullYear()} Alexander Kashyap</p>
       <ul class="footer-links">
         <li><a href="https://www.linkedin.com/in/alexander-kashyap/" target="_blank" rel="noopener">LinkedIn</a></li>
         <li><a href="https://github.com/amkashyap1220" target="_blank" rel="noopener">GitHub</a></li>

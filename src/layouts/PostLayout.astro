@@ -1,0 +1,49 @@
+---
+// A research post: the hero (date, title, lead, links) comes from
+// src/data/research.ts; the page adds the post itself inside
+// <PostLayout slug="...">. Page-only scripts go in slot="scripts".
+import BaseLayout from "./BaseLayout.astro";
+import { post, formatDate } from "../data/research";
+
+interface Props {
+  slug: string;
+  highlight?: boolean;   // load Prism for code blocks (<pre><code class="language-...">)
+  heroClass?: string;    // an extra class on the hero, for a post's own styles
+}
+
+const { slug, highlight = false, heroClass } = Astro.props;
+const p = post(slug);
+---
+<BaseLayout
+  title={`${p.title} · Alexander Kashyap`}
+  description={p.description}
+  path={`/research/${p.slug}`}
+  ogImage={p.image && { src: `/research/${p.slug}.png`, alt: p.image.previewAlt ?? p.image.alt }}
+  current="research"
+>
+  <section class={heroClass ? `hero ${heroClass}` : "hero"}>
+    <div class="narrow">
+      <p class="eyebrow"><time datetime={p.date}>{formatDate(p.date)}</time>{p.updated && <> · updated <time datetime={p.updated}>{formatDate(p.updated)}</time></>}</p>
+      <h1>{p.title}</h1>
+      <p class="lead">{p.lead}</p>
+      <div class="actions">
+        {p.link && <a class="btn primary" href={p.link.href} target="_blank" rel="noopener">{p.link.label}</a>}
+        <a class="btn" href="/research/">← All research</a>
+      </div>
+    </div>
+  </section>
+
+  <slot />
+
+  <Fragment slot="scripts">
+    <slot name="scripts" />
+    {highlight && (
+      <>
+        {/* Code highlighting (Prism, from jsDelivr like the site's other libraries).
+            The autoloader fetches each language as a page needs it. */}
+        <script is:inline src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js"></script>
+        <script is:inline src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+      </>
+    )}
+  </Fragment>
+</BaseLayout>

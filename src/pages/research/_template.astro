@@ -1,0 +1,26 @@
+---
+// POST TEMPLATE. To add a post:
+//   1. Add it to the TOP of src/data/research.ts (title, date, summary, ...).
+//   2. Copy this file to src/pages/research/<slug>.astro (lowercase-with-hyphens),
+//      set slug below to match, and write the article.
+//   3. Optional preview image: public/research/<slug>.png and <slug>-dark.png,
+//      1200 x 630, plus image.alt in research.ts.
+// Files starting with _ aren't pages, so this one is never published.
+import PostLayout from "../../layouts/PostLayout.astro";
+---
+<PostLayout slug="your-slug" highlight>
+  <section class="section">
+    <article class="narrow prose">
+      <p>Opening paragraph. Plain HTML: <code>&lt;p&gt;</code> for paragraphs,
+         <code>&lt;h2&gt;</code> for headings, <code>&lt;ul&gt;</code> for lists.</p>
+
+      <h2>A heading</h2>
+      <p>More text, with <a href="https://example.com">a link</a> and <code>inline code</code>.</p>
+
+      <blockquote>A pull quote or the main point you want to stand out.</blockquote>
+
+      <pre is:raw><code class="language-js">// a code block
+console.log("hello");</code></pre>
+    </article>
+  </section>
+</PostLayout>

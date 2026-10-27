@@ -9,7 +9,7 @@ const pages = execSync("git ls-files '*.html' '*.astro'", { encoding: "utf8" }).
   .filter((f) => fs.readFileSync(f, "utf8").includes('class="site-nav"'));
 
 test("every page's header has the Private tab, the signed-in script and Log in", () => {
-  assert.ok(pages.length > 5, "found the site's pages");
+  assert.ok(pages.includes("src/layouts/BaseLayout.astro"), "found the shared layout");
   for (const f of pages) {
     const html = fs.readFileSync(f, "utf8");
     assert.match(html, /<a class="nav-private" href="\/private\/"/, f + ": Private tab");
@@ -24,6 +24,6 @@ const astroPages = execSync("git ls-files 'src/pages/*.astro' 'src/pages/**/*.as
 test("every src/pages page uses the site layout", () => {
   assert.ok(astroPages.length > 10, "found the Astro pages");
   for (const f of astroPages) {
-    assert.match(fs.readFileSync(f, "utf8"), /<(BaseLayout|ProjectLayout)\b/, f);
+    assert.match(fs.readFileSync(f, "utf8"), /<\w+Layout\b/, f);
   }
 });

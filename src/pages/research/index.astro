@@ -1,0 +1,44 @@
+---
+// The Research page: one card per post in src/data/research.ts
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { posts, formatDate } from "../../data/research";
+---
+<BaseLayout
+  title="Research · Alexander Kashyap"
+  description="Research by Alexander Kashyap: data projects and what I found."
+  path="/research/"
+  current="research"
+>
+  <section class="hero">
+    <div class="narrow">
+      <p class="eyebrow">Research</p>
+      <h1>Research</h1>
+      <p class="lead">Data projects and what I found: the question, the method and the results.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="narrow">
+      <ul class="posts">
+        {posts.map((p) => (
+          <li>
+            <a class="post-card" href={`/research/${p.slug}`}>
+              {p.image && (
+                <span class="post-thumb">
+                  <img class="thumb-light" src={`/research/${p.slug}.png`} alt={p.image.alt} width="1200" height="630" loading="lazy">
+                  <img class="thumb-dark" src={`/research/${p.slug}-dark.png`} alt={p.image.alt} width="1200" height="630" loading="lazy">
+                </span>
+              )}
+              <span class="post-body">
+                <time datetime={p.date}>{formatDate(p.date)}</time>
+                <h2 class="post-title">{p.title}</h2>
+                <span class="post-summary">{p.summary}</span>
+                <span class="chips">{p.chips.map((chip) => <span class="chip">{chip}</span>)}</span>
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</BaseLayout>
