@@ -61,7 +61,7 @@
       <p class="sub">Your ranking</p>
       {#if ranked(slot).length}
         <ol>
-          {#each ranked(slot) as id, i}
+          {#each ranked(slot) as id, i (id)}
             <li>
               <span class="rank">#{i + 1}</span><span class="name"><LiftLink name={nameOf(D, id)} /></span>
               {#if i > 0}<button class="btn small" type="button" aria-label="Move {nameOf(D, id)} up" onclick={() => move(slot, i, -1)}>↑</button>{/if}
@@ -75,7 +75,7 @@
       {/if}
       <p class="sub">Other lifts</p>
       <ul>
-        {#each lifts.filter((e) => !ranked(slot).includes(e.id)) as e}
+        {#each lifts.filter((e) => !ranked(slot).includes(e.id)) as e (e.id)}
           <li class={never.has(e.id) ? "never" : ""}>
             <span class="name"><LiftLink name={e.name} /></span>
             {#if never.has(e.id)}

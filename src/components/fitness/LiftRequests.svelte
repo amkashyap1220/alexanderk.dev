@@ -33,7 +33,7 @@
 </form>
 <p class="muted fit-request-status" id="fit-request-status" role="status">{status}</p>
 <ul class="fit-requests" id="fit-requests" aria-label="Waiting for your next session">
-  {#each requests as r, i}
+  {#each requests as r, i (r)}
     <li>
       <span class="name">{r.text}</span>
       <span class="muted">next session</span>

@@ -23,6 +23,8 @@
   const months = $derived(monthStarts(x0, x1));
 
   let svg, cross = $state(null), crossOn = $state(false);
+  // A new set of points (another lift) starts without the crosshair
+  $effect.pre(() => { points; crossOn = false; });
   function onpointermove(e) {
     const r = svg.getBoundingClientRect();
     const sx = ((e.clientX - r.left) / r.width) * W;

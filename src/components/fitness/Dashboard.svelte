@@ -53,46 +53,49 @@
 
 <p class="fit-status" id="fit-status" class:error role="status" hidden={!!D}>{error || "Loading your workouts…"}</p>
 
+<!-- If one panel can't be drawn, it says so and the others still work -->
+{#snippet broken(err)}<p class="fit-status error">Couldn't draw this part: {err.message}</p>{/snippet}
+
 {#if D}
   <div id="fit-app">
     <h2 class="section-title">Up next</h2>
-    <UpNext {D} {E} {today} />
+    <svelte:boundary failed={broken}><UpNext {D} {E} {today} /></svelte:boundary>
 
-    <Stats {D} {E} {A} {today} />
+    <svelte:boundary failed={broken}><Stats {D} {E} {A} {today} /></svelte:boundary>
 
     <h2 class="section-title fit-h">Body weight</h2>
     <p class="section-intro">From the weigh-ins you give your daily session. They swing a few pounds with water and food, so the line is the 7-day average.</p>
-    <BodyWeight {D} {E} {today} />
+    <svelte:boundary failed={broken}><BodyWeight {D} {E} {today} /></svelte:boundary>
 
     <h2 class="section-title fit-h">Weak areas</h2>
     <p class="section-intro">Muscles under the weekly set target, lifts that stopped improving, and push vs pull balance, over the last 4 weeks. The fifth lift of each session goes to the biggest gap.</p>
-    <WeakAreas {D} {E} {A} />
+    <svelte:boundary failed={broken}><WeakAreas {D} {E} {A} /></svelte:boundary>
 
     <h2 class="section-title fit-h">Strength</h2>
     <p class="section-intro">Estimated 1-rep max per session (best set, Epley formula). Bigger dots are new bests.</p>
-    <Strength {D} {A} />
+    <svelte:boundary failed={broken}><Strength {D} {A} /></svelte:boundary>
 
     <h2 class="section-title fit-h">Consistency</h2>
-    <Calendar {D} {E} {A} {today} />
+    <svelte:boundary failed={broken}><Calendar {D} {E} {A} {today} /></svelte:boundary>
 
     <h2 class="section-title fit-h">Weekly sets per muscle</h2>
     <p class="section-intro">Average over the last 4 weeks. Main muscles count a full set, helpers half. The shaded band is the 10 to 20 set target.</p>
-    <Volume {D} {A} />
+    <svelte:boundary failed={broken}><Volume {D} {A} /></svelte:boundary>
 
     <h2 class="section-title fit-h">Cardio</h2>
     <p class="section-intro">Minutes per week by machine. The tick on each week is 25 minutes for every workout you finished.</p>
-    <Cardio {D} {A} />
+    <svelte:boundary failed={broken}><Cardio {D} {A} /></svelte:boundary>
 
     <h2 class="section-title fit-h">Previous workouts</h2>
-    <History {D} {E} {A} />
+    <svelte:boundary failed={broken}><History {D} {E} {A} /></svelte:boundary>
 
     <h2 class="section-title fit-h" id="my-lifts">My lifts</h2>
     <p class="section-intro">Rank the lifts you like in each slot; your #1 is suggested first, and what you actually log counts too. "Never" keeps a lift out of your plans. Saving updates the fitness-data repo, and the next plan uses it.</p>
-    <LiftRankings {D} onsave={setPreferences} />
+    <svelte:boundary failed={broken}><LiftRankings {D} onsave={setPreferences} /></svelte:boundary>
 
     <h3 class="fit-h3">Add a lift</h3>
     <p class="fit-why">Type a lift you want in your plans, in your own words. Your next daily session works out where it fits, adds it, and tells you.</p>
-    <LiftRequests {D} onchange={(requests) => setPreferences({ ...D.preferences, requests })} />
+    <svelte:boundary failed={broken}><LiftRequests {D} onchange={(requests) => setPreferences({ ...D.preferences, requests })} /></svelte:boundary>
   </div>
 {/if}
 
