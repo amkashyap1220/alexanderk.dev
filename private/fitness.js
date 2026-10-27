@@ -38,6 +38,8 @@ function el(tag, attrs = {}, ...children) {
 
 const fmtDate = (d, opts = { month: "short", day: "numeric" }) => new Date(d + "T12:00:00Z").toLocaleDateString("en-US", { ...opts, timeZone: "UTC" });
 const nameOf = (id) => (D.exercises.exercises.find((e) => e.id === id) || { name: id }).name;
+// A lift's name as a link to its Google results (opens in a new tab)
+const liftLink = (name) => el("a", { class: "fit-link", href: "https://www.google.com/search?q=" + encodeURIComponent(name), target: "_blank", rel: "noopener noreferrer", text: name });
 const dayName = (d) => (D.program.days[d] ? D.program.days[d].name : d || "Workout");
 const liftsOf = (s) => (s.lifts || []).filter((l) => (l.sets || []).length);
 const cardioOf = (s) => (Array.isArray(s.cardio) ? s.cardio : s.cardio ? [s.cardio] : []);
@@ -148,7 +150,7 @@ function drawNext() {
     const w = l.weight === null ? "pick a weight" : l.weight === 0 ? "bodyweight" : `${l.weight} lb`;
     const logged = done(l.exercise);
     items.push(el("li", {},
-      el("div", { class: "fit-lift" }, el("b", { text: l.name }), el("span", { text: `${l.sets} × ${l.reps[0]}–${l.reps[1]} @ ${w}` })),
+      el("div", { class: "fit-lift" }, el("b", {}, liftLink(l.name)), el("span", { text: `${l.sets} × ${l.reps[0]}–${l.reps[1]} @ ${w}` })),
       el("div", { class: "fit-why", text: logged ? `Logged today: ${setsText(logged.sets)}` : `${l.note}. ${l.flex ? "Fifth lift" : l.slotName}: ${l.why}.` })));
   });
   box.replaceChildren(head, el("ol", {}, items), ...plan.notes.map((n) => el("p", { class: "fit-notes", text: n })));
@@ -380,7 +382,7 @@ function drawHistory(limit = 15) {
       el("span", {}, s.day && s.status !== "rest" ? el("span", { class: "fit-day", style: `--c:${DAY_COLOR[s.day]}` }) : null, label),
       el("span", { class: "muted", text: [liftsOf(s).length ? `${liftsOf(s).length} lifts` : "", cardioOf(s).length ? `${cardioOf(s).reduce((t, c) => t + c.minutes, 0)} min cardio` : "", minutes ? `${minutes} min total` : ""].filter(Boolean).join(" · ") }));
     const items = [
-      ...liftsOf(s).map((l) => el("li", {}, `${nameOf(l.exercise)}: ${setsText(l.sets)}`, prs.has(`${s.date}|${l.exercise}`) ? el("span", { class: "pr", text: "  new best" }) : null)),
+      ...liftsOf(s).map((l) => el("li", {}, liftLink(nameOf(l.exercise)), `: ${setsText(l.sets)}`, prs.has(`${s.date}|${l.exercise}`) ? el("span", { class: "pr", text: "  new best" }) : null)),
       ...cardioOf(s).map((c) => el("li", { text: `${c.machine}: ${c.minutes} min${c.notes ? ` (${c.notes})` : ""}` })),
       ...(s.notes ? [el("li", { text: `Notes: ${s.notes}` })] : []),
     ];
@@ -426,13 +428,13 @@ function drawSlots() {
       el("h3", { text: D.program.slots[slot].name + (p.flex.includes(slot) && !p.core.includes(slot) ? " (fifth lift)" : "") }),
       el("p", { class: "sub", text: "Your ranking" }),
       ranked.length ? el("ol", {}, ranked.map((id, i) => el("li", {},
-        el("span", { class: "rank", text: `#${i + 1}` }), el("span", { class: "name", text: nameOf(id) }),
+        el("span", { class: "rank", text: `#${i + 1}` }), el("span", { class: "name" }, liftLink(nameOf(id))),
         i > 0 ? btn("↑", `Move ${nameOf(id)} up`, () => move(i, -1)) : null,
         i < ranked.length - 1 ? btn("↓", `Move ${nameOf(id)} down`, () => move(i, 1)) : null,
         btn("✕", `Unrank ${nameOf(id)}`, () => { ranked.splice(i, 1); change(); })))) : el("p", { class: "fit-why", text: "Nothing ranked: picks follow what you log." }),
       el("p", { class: "sub", text: "Other lifts" }),
       el("ul", {}, others.map((e) => el("li", { class: never.has(e.id) ? "never" : "" },
-        el("span", { class: "name", text: e.name }),
+        el("span", { class: "name" }, liftLink(e.name)),
         never.has(e.id)
           ? btn("Allow", `Allow ${e.name} again`, () => { draft.never = draft.never.filter((x) => x !== e.id); change(); })
           : [btn("Rank", `Rank ${e.name}`, () => { ranked.push(e.id); change(); }), btn("Never", `Never suggest ${e.name}`, () => { draft.never.push(e.id); change(); })]))));

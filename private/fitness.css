@@ -48,6 +48,8 @@
 .fit-lift b { font-weight: 600; }
 .fit-why { margin-top: 2px; color: var(--muted); font-size: var(--fs-xs); }
 .fit-notes { margin-top: var(--space-3); color: var(--label); font-size: var(--fs-sm); }
+.fit-link { color: inherit; text-decoration: underline; text-decoration-color: var(--border); text-underline-offset: 3px; }
+.fit-link:hover { text-decoration-color: currentColor; }
 .fit-day { display: inline-block; width: 0.7em; height: 0.7em; margin-right: 0.4em; border-radius: 2px; background: var(--c); }
 
 /* Weak areas */
@@ -90,7 +92,7 @@
 .fit-slot ol, .fit-slot ul { margin: var(--space-1) 0 0; padding: 0; list-style: none; }
 .fit-slot li { display: flex; align-items: center; gap: var(--space-2); padding: 5px 0; border-bottom: 1px solid var(--border); font-size: var(--fs-sm); }
 .fit-slot li .name { flex: 1; min-width: 0; }
-.fit-slot li.never .name { color: var(--muted); text-decoration: line-through; }
+.fit-slot li.never .name, .fit-slot li.never .fit-link { color: var(--muted); text-decoration: line-through; }
 .fit-slot .rank { width: 1.6em; color: var(--mark); font-weight: 600; }
 .fit-slot .btn.small { padding: 2px 7px; }
 .fit-save { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); margin-top: var(--space-5); }
