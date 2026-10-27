@@ -5,6 +5,7 @@ import { defineConfig } from "astro/config";
 
 export default defineConfig({
   site: "https://alexanderk.dev",
-  // login.astro -> login.html (not login/index.html), so every URL stays the same
-  build: { format: "file" },
+  // Files land where they sit in src/pages, so URLs stay the same:
+  // login.astro -> login.html, projects/index.astro -> projects/index.html
+  build: { format: "preserve" },
 });
