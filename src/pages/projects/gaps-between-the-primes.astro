@@ -1,6 +1,7 @@
 ---
 import ProjectLayout from "../../layouts/ProjectLayout.astro";
 import Walkthrough from "../../components/Walkthrough.astro";
+import "../../styles/gaps-between-the-primes.css";
 ---
 <ProjectLayout slug="gaps-between-the-primes" highlight>
   <Walkthrough>
@@ -88,21 +89,6 @@ lastp = currentp;        // this prime is the "last" one next time</code></pre>
       </div>
       <div class="prose" id="gap-result" aria-live="polite"></div>
   </Walkthrough>
-
-  <!-- Styles for this page's demo only (scoped under #walkthrough) -->
-  <style is:inline>
-    #walkthrough .prose + .prose { margin-top: var(--space-7); }
-    #walkthrough .demo { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); margin: var(--space-4) 0 var(--space-5); font-size: var(--fs-md); }
-    #walkthrough .demo input {
-      width: 140px;
-      padding: 6px var(--space-3);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      background: var(--card);
-      color: var(--text);
-      font: inherit;
-    }
-  </style>
 
   <script is:inline slot="scripts" src="/js/gaps-between-the-primes.js"></script>
 </ProjectLayout>
