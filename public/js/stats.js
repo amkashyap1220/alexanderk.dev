@@ -15,20 +15,9 @@
   const USER = "amkashyap1220";
   const TIME_ZONE = "America/Chicago";       // activity is bucketed in my time zone
 
-  // Repos that have a page on this site; everything else links to GitHub
-  const PROJECT_PAGES = {
-    "SwitchToYoutube": "/projects/switch-to-youtube.html",
-    "alexanderk.dev": "/projects/alexanderk-dev.html",
-    "Gaps-Between-The-Primes": "/projects/gaps-between-the-primes.html",
-    "466FinalProject": "/projects/atg-shop.html",
-    "RateWillBot": "/projects/ratewillbot.html",
-    "CSCI-240-Computer-Programming-in-Cpp": "/projects/csci-240.html",
-    "CosmiShapesFinal": "/projects/cosmishapes.html",
-    "CNIT-255-Kashyap": "/projects/cnit-255.html",
-    "dotNET": "/projects/dotnet.html",
-    "CSCI-330-UNIX-and-Network-Programming": "/projects/csci-330.html",
-    "CSCI-241-Intermediate-Programming": "/projects/csci-241.html",
-  };
+  // Repos that have a page on this site (repo name -> page), from src/data/projects.ts
+  // via the stats page; everything else links to GitHub
+  const PROJECT_PAGES = JSON.parse(document.getElementById("project-pages").textContent);
 
 
   // ---------------------------------------------------------------- 1. extract

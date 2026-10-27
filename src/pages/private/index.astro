@@ -1,0 +1,39 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+---
+<BaseLayout
+  title="Private projects · Alexander Kashyap"
+  description="Private section."
+  noindex
+  current="private"
+>
+  <section class="hero">
+    <div class="narrow">
+      <p class="eyebrow">Private</p>
+      <h1>Private projects</h1>
+      <form method="post" action="/logout" class="actions">
+        <button class="btn" type="submit">Log out</button>
+      </form>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      {/* To add a private project: copy one <article> here and add its page next to
+          src/pages/private/fitness-tracking.astro. Everything under /private/ needs the
+          login on the site, but the repo is public on GitHub: never put passwords, keys
+          or anything sensitive in these files. */}
+      <div class="grid two">
+        <article class="card project">
+          <div class="card-head">
+            <h2 class="card-title"><a class="card-link" href="/private/fitness-tracking.html">Fitness Tracking</a></h2>
+            <time class="when" datetime="2026">2026</time>
+          </div>
+          <p class="pill"><span>Private</span></p>
+          <p class="card-text">Workout log, Push / Pull / Legs plan, strength and volume charts, and lift rankings.</p>
+          <ul class="chips" aria-label="Tech"></ul>
+        </article>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

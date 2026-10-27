@@ -1,0 +1,62 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { projects } from "../../data/projects";
+
+// Which repos have a page here, for js/stats.js: { "RateWillBot": "/projects/ratewillbot.html", ... }
+const projectPages = Object.fromEntries(projects.map((p) => [p.repo.split("/")[1], `/projects/${p.slug}.html`]));
+---
+<BaseLayout
+  title="GitHub Stats · Alexander Kashyap"
+  description="Live stats from Alexander Kashyap's public GitHub repos: languages, commits and recent activity."
+  path="/stats/"
+  current="stats"
+>
+  <section class="hero">
+    <div class="narrow">
+      <p class="eyebrow">GitHub Stats</p>
+      <h1>By the numbers</h1>
+      <p class="lead">From my public GitHub repos (forks left out), updated every 5 minutes.</p>
+    </div>
+  </section>
+
+  <!-- Each box below starts with a loading message; js/stats.js replaces it. -->
+  <section class="section">
+    <div class="wrap">
+      <h2 class="sr-only">Overview</h2>
+      <p class="muted" id="numbers-status" role="status">Loading from GitHub…</p>
+      <dl class="stat-grid" id="numbers"></dl>
+      <div class="highlights" id="highlights"></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="narrow">
+      <h2 class="section-title">Languages</h2>
+      <p class="section-intro">Across all my repos, measured by how many repos use each language, or by how much code is in it.</p>
+      <div class="toggle" role="group" aria-label="Measure languages by">
+        <button class="btn small" type="button" data-language-mode="repos" aria-pressed="true">By repos</button>
+        <button class="btn small" type="button" data-language-mode="bytes" aria-pressed="false">By code size</button>
+      </div>
+      <div id="languages" aria-live="polite" aria-busy="true">
+        <p class="muted">Loading…</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="narrow">
+      <h2 class="section-title">Activity</h2>
+      <p class="section-intro">Public activity over the last 90 days: pushes, new repos, pull requests.</p>
+      <div class="activity-summary" id="activity-summary" aria-live="polite" aria-busy="true">
+        <p class="muted">Loading…</p>
+      </div>
+      <ul class="latest" id="latest"></ul>
+    </div>
+  </section>
+
+  <Fragment slot="scripts">
+    <script is:inline type="application/json" id="project-pages" set:html={JSON.stringify(projectPages)}></script>
+    <script is:inline src="/js/gh.js"></script>
+    <script is:inline src="/js/stats.js"></script>
+  </Fragment>
+</BaseLayout>
