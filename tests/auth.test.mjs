@@ -24,7 +24,8 @@ const post = (path, fields, cookie) => new Request(SITE + path, {
   headers: { "Content-Type": "application/x-www-form-urlencoded", ...(cookie ? { Cookie: cookie } : {}) },
   body: new URLSearchParams(fields),
 });
-const cookieFrom = (res) => (res.headers.get("Set-Cookie") || "").split(";")[0];
+const cookies = (res) => res.headers.getSetCookie();
+const cookieFrom = (res) => (cookies(res).find((c) => c.startsWith("session=")) || "").split(";")[0];
 
 async function logIn(e, next = "/private/") {
   const res = await handleAuth(post("/login", { username: "alex", password: "correct horse", next }), e);
@@ -44,8 +45,10 @@ test("the right username and password set a secure session cookie and go back to
   const res = await handleAuth(post("/login", { username: "alex", password: "correct horse", next: "/private/notes.html" }), e);
   assert.equal(res.status, 303);
   assert.equal(res.headers.get("Location"), "/private/notes.html");
-  const setCookie = res.headers.get("Set-Cookie");
-  assert.match(setCookie, /^session=\d+\.[\w-]+; Path=\/; Max-Age=604800; HttpOnly; Secure; SameSite=Lax$/);
+  const [sessionCookie, hintCookie] = cookies(res);
+  assert.match(sessionCookie, /^session=\d+\.[\w-]+; Path=\/; Max-Age=604800; HttpOnly; Secure; SameSite=Lax$/);
+  // the display hint for the Private tab: readable by scripts, so NOT HttpOnly
+  assert.equal(hintCookie, "signed_in=1; Path=/; Max-Age=604800; Secure; SameSite=Lax");
 });
 
 test("logged in, private pages are served and never cached", async () => {
@@ -61,7 +64,7 @@ test("a wrong password or username doesn't log in", async () => {
   for (const fields of [{ username: "alex", password: "nope" }, { username: "bob", password: "correct horse" }, {}]) {
     const res = await handleAuth(post("/login", { next: "/private/", ...fields }), env());
     assert.equal(res.headers.get("Location"), "/login?next=%2Fprivate%2F&error=wrong");
-    assert.equal(res.headers.get("Set-Cookie"), null);
+    assert.deepEqual(cookies(res), []);
   }
 });
 
@@ -91,7 +94,7 @@ test("after logging in, it only ever sends you into the private section", async 
 test("too many tries are turned away before the password is checked", async () => {
   const res = await handleAuth(post("/login", { username: "alex", password: "correct horse", next: "/private/" }), env({ allow: false }));
   assert.equal(res.headers.get("Location"), "/login?next=%2Fprivate%2F&error=slow");
-  assert.equal(res.headers.get("Set-Cookie"), null);
+  assert.deepEqual(cookies(res), []);
 });
 
 test("without the secrets set, nothing private opens", async () => {
@@ -111,10 +114,18 @@ test("the login page is served, or skipped when already logged in", async () => 
   assert.equal(skip.headers.get("Location"), "/private/notes.html");
 });
 
-test("logging out clears the cookie", async () => {
+test("logging out clears the session and hides the Private tab", async () => {
   const res = await handleAuth(post("/logout", {}), env());
   assert.equal(res.headers.get("Location"), "/");
-  assert.match(res.headers.get("Set-Cookie"), /^session=; Path=\/; Max-Age=0/);
+  const [s, h] = cookies(res);
+  assert.match(s, /^session=; Path=\/; Max-Age=0/);
+  assert.match(h, /^signed_in=; Path=\/; Max-Age=0/);
+});
+
+test("the Private tab hint alone opens nothing, and an expired login clears it", async () => {
+  const res = await handleAuth(get("/private/fitness-tracking.html", "signed_in=1"), env());
+  assert.equal(res.status, 303);
+  assert.match(cookies(res)[0], /^signed_in=; Path=\/; Max-Age=0/);
 });
 
 test("the rest of the site isn't affected", async () => {

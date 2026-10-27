@@ -164,6 +164,9 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
 .site-nav a { padding: 6px var(--space-3); border-radius: var(--radius); color: var(--muted); font-size: var(--fs-md); white-space: nowrap; }
 .site-nav a:hover { color: var(--text); background: var(--soft); text-decoration: none; }
 .site-nav a[aria-current="page"] { color: var(--text); }
+/* Private tab: only when logged in (js/signed-in.js); "Log in" hides then */
+.nav-private, :root.signed-in .login-link { display: none; }
+:root.signed-in .nav-private { display: inline-block; }
 .header-actions { display: flex; align-items: center; gap: var(--space-2); }
 
 /* Theme toggle: the sun shows in light mode, the moon in dark mode */
@@ -427,6 +430,19 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
 @media (max-width: 360px) {
   .wrap, .narrow { padding: 0 var(--space-3); }
   .site-nav a { padding: 6px var(--space-1); font-size: 11.5px; }
+}
+/* Signed in there's a fifth tab (Private), so make room. The public header is unchanged. */
+@media (max-width: 1000px) {
+  :root.signed-in .nav-long { display: none; }    /* "GitHub Stats" becomes "Stats" */
+}
+@media (max-width: 720px) {
+  :root.signed-in .header-actions .btn { display: none; }   /* LinkedIn and GitHub are in the footer */
+}
+@media (max-width: 480px) {
+  :root.signed-in .site-nav a { padding: 6px 5px; font-size: 12px; }
+}
+@media (max-width: 360px) {
+  :root.signed-in .site-nav a { padding: 6px 3px; font-size: 11px; }
 }
 .site-nav { overflow-x: auto; scrollbar-width: none; }
 .site-nav::-webkit-scrollbar { display: none; }

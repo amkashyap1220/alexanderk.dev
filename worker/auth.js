@@ -15,7 +15,9 @@
    The cookie is "<expiry>.<signature>": an HMAC of the expiry, keyed by the
    username and password. It can't be forged without the password, and
    changing the password logs out every device. HttpOnly, so page scripts
-   can't read it.
+   can't read it. A second cookie, signed_in=1, is readable by the pages
+   only so they can show the Private tab (js/signed-in.js); it unlocks
+   nothing by itself.
 
    Wrong guesses are slowed by the LOGIN_LIMITER rate limiter (5 tries a
    minute per connection). It doesn't use KV, so it can't use up the KV
@@ -56,7 +58,18 @@ function nextPath(value) {
   return typeof value === "string" && /^\/private(\/[\w\-./]*)?$/.test(value) && !value.includes("..") ? value : "/private/";
 }
 
-const redirect = (to, headers = {}) => new Response(null, { status: 303, headers: { Location: to, "Cache-Control": "no-store", ...headers } });
+// A redirect, optionally setting cookies (each Set-Cookie must be its own header)
+function redirect(to, cookies = []) {
+  const headers = new Headers({ Location: to, "Cache-Control": "no-store" });
+  cookies.forEach((c) => headers.append("Set-Cookie", c));
+  return new Response(null, { status: 303, headers });
+}
+
+// "signed_in=1" is only a display hint: it tells the pages' scripts to show the Private tab.
+// It grants nothing; the HttpOnly session cookie is what the Worker checks.
+const MAX_AGE = SESSION_DAYS * 86400;
+const hint = (on) => `signed_in=${on ? 1 : ""}; Path=/; Max-Age=${on ? MAX_AGE : 0}; Secure; SameSite=Lax`;
+const session = (value) => `${COOKIE}=${value}; Path=/; Max-Age=${value ? MAX_AGE : 0}; HttpOnly; Secure; SameSite=Lax`;
 
 const loginUrl = (next, error) => "/login?" + new URLSearchParams({ next, ...(error ? { error } : {}) });
 
@@ -74,7 +87,7 @@ export async function handleAuth(request, env) {
   const path = url.pathname;
 
   if (path === "/private" || path.startsWith("/private/")) {
-    if (!(await loggedIn(request, env))) return redirect(loginUrl(nextPath(path)));
+    if (!(await loggedIn(request, env))) return redirect(loginUrl(nextPath(path)), [hint(false)]);   // expired: hide the tab too
     return privateResponse(await env.ASSETS.fetch(request));
   }
 
@@ -103,13 +116,12 @@ export async function handleAuth(request, env) {
     if (!userOk || !passOk) return redirect(loginUrl(sentNext, "wrong"));
 
     const expires = Date.now() + SESSION_DAYS * 86400000;
-    const cookie = `${COOKIE}=${expires}.${await signature(env, expires)}; Path=/; Max-Age=${SESSION_DAYS * 86400}; HttpOnly; Secure; SameSite=Lax`;
-    return redirect(sentNext, { "Set-Cookie": cookie });
+    return redirect(sentNext, [session(`${expires}.${await signature(env, expires)}`), hint(true)]);
   }
 
   if (path === "/logout") {
     if (request.method !== "POST") return redirect("/");
-    return redirect("/", { "Set-Cookie": `${COOKIE}=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax` });
+    return redirect("/", [session(""), hint(false)]);
   }
 
   return null;
