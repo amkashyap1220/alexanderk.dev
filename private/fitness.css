@@ -102,6 +102,13 @@
 .fit-requests li { display: flex; align-items: center; gap: var(--space-2); padding: 6px 0; border-bottom: 1px solid var(--border); font-size: var(--fs-sm); }
 .fit-requests li .name { flex: 1; min-width: 0; }
 
+/* Body weight */
+.fit-weight { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--space-3); margin-top: var(--space-4); }
+.fit-weight input[type="number"] { width: 7.5em; }
+.fit-weight [hidden] { display: none; }
+.fit-weight-stats { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-6); margin-top: var(--space-4); font-size: var(--fs-sm); }
+.fit-weight-stats b { font-size: var(--fs-lg); }
+
 /* Tooltip shared by every chart */
 .fit-tip { position: fixed; z-index: 30; max-width: 260px; padding: var(--space-2) var(--space-3); border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); font-size: var(--fs-xs); pointer-events: none; }
 .fit-tip b { display: block; margin-bottom: 2px; }
