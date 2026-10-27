@@ -10,7 +10,7 @@
      1. LOAD     fetch the data and the engine
      2. DRAW     up next, stats, body weight, weak areas, strength,
                  calendar, volume, cardio, history (charts are plain SVG)
-     3. EDIT     log a weigh-in, rank lifts, mark "never", ask for a new lift (plain
+     3. EDIT     rank lifts, mark "never", ask for a new lift (plain
                  text the next daily session turns into a catalog entry);
                  saved through the Worker into fitness-data
    ========================================================================== */
@@ -98,7 +98,7 @@ async function load() {
     $("fit-app").hidden = false;
     drawAll();
     onWidthChange(drawCardio);
-    setUpWeight();
+    onWidthChange(drawWeight);
     setUpEditor();
   } catch (err) {
     status.textContent = "Couldn't load your workouts: " + err.message;
@@ -188,7 +188,7 @@ function drawWeak() {
 function drawWeight() {
   const box = $("fit-weight-chart");
   const { points, latest, change7, change30 } = E.weightTrend(D.bodyweight || {}, today);
-  if (!latest) { box.replaceChildren(el("p", { class: "empty", text: "Add a weigh-in to start the graph." })); return; }
+  if (!latest) { box.replaceChildren(el("p", { class: "empty", text: "Tell your daily session your weight to start the graph." })); return; }
   const signed = (v) => (v === null ? "–" : `${v > 0 ? "+" : v < 0 ? "−" : "±"}${Math.abs(v)} lb`);
   const stats = el("div", { class: "fit-weight-stats" },
     el("span", {}, el("b", { text: `${latest.weight} lb` }), el("span", { class: "muted", text: ` on ${fmtDate(latest.date)}` })),
@@ -230,41 +230,6 @@ function drawWeight() {
     el("li", {}, el("span", { class: "fit-swatch", style: "--c:var(--s1)" }), "7-day average"),
     el("li", {}, el("span", { class: "fit-swatch skip" }), "Weigh-in"));
   box.replaceChildren(stats, svg, legend, table);
-}
-
-function setUpWeight() {
-  const form = $("fit-weight"), status = $("fit-weight-status");
-  const { lb, day } = form.elements;
-  day.value = day.max = today;
-  // Picking a day that already has a weigh-in shows it, so saving replaces it
-  const remove = $("fit-weight-remove");
-  const fill = () => {
-    const v = (D.bodyweight || {})[day.value];
-    lb.value = v === undefined ? "" : v;
-    remove.hidden = v === undefined;
-    status.textContent = v === undefined ? "" : "Already logged for that day; saving replaces it.";
-  };
-  day.addEventListener("change", fill);
-  fill();
-  const send = async (body, done) => {
-    status.textContent = "Saving…";
-    try {
-      D.bodyweight = (await post("weight", body)).bodyweight;
-      drawWeight();
-      remove.hidden = D.bodyweight[day.value] === undefined;
-      status.textContent = done;
-    } catch (err) {
-      status.textContent = "Not saved: " + err.message;
-    }
-  };
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    send({ date: day.value, weight: Number(lb.value) }, `Saved ${Math.round(lb.value * 10) / 10} lb for ${fmtDate(day.value)}.`);
-  });
-  remove.addEventListener("click", () => {
-    send({ date: day.value, remove: true }, `Removed the weigh-in for ${fmtDate(day.value)}.`).then(() => { if (D.bodyweight[day.value] === undefined) lb.value = ""; });
-  });
-  onWidthChange(drawWeight);
 }
 
 /* ---------- strength: one lift at a time ---------- */
