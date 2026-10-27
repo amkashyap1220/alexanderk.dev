@@ -24,6 +24,7 @@
   --warn: #fab219;
 }
 
+.fit-page { padding-top: var(--space-7); border-top: 0; }   /* no hero above: start right under the header */
 .fit-status { color: var(--muted); font-size: var(--fs-md); text-align: center; }
 .fit-status.error { color: var(--bad); }
 .fit-h { margin-top: var(--space-9); }
@@ -94,14 +95,12 @@
 .fit-slot .btn.small { padding: 2px 7px; }
 .fit-save { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); margin-top: var(--space-5); }
 
-.fit-form { display: grid; gap: var(--space-3); }
-.fit-form label { display: grid; gap: var(--space-1); color: var(--muted); font-size: var(--fs-xs); }
-.fit-form fieldset { margin: 0; padding: 0; border: 0; }
-.fit-form legend { margin-bottom: var(--space-1); color: var(--muted); font-size: var(--fs-xs); }
-.fit-checks { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-4); }
-.fit-form .fit-checks label, .fit-form .fit-inline { display: inline-flex; align-items: center; gap: 6px; color: var(--text); font-size: var(--fs-sm); }
-.fit-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: var(--space-3); }
-.fit-form .fit-save { margin-top: 0; }
+.fit-request { display: flex; gap: var(--space-2); margin-top: var(--space-3); }
+.fit-request .fit-input { flex: 1; min-width: 0; }
+.fit-request-status { margin-top: var(--space-2); font-size: var(--fs-sm); }
+.fit-requests { margin: var(--space-2) 0 0; padding: 0; list-style: none; }
+.fit-requests li { display: flex; align-items: center; gap: var(--space-2); padding: 6px 0; border-bottom: 1px solid var(--border); font-size: var(--fs-sm); }
+.fit-requests li .name { flex: 1; min-width: 0; }
 
 /* Tooltip shared by every chart */
 .fit-tip { position: fixed; z-index: 30; max-width: 260px; padding: var(--space-2) var(--space-3); border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); font-size: var(--fs-xs); pointer-events: none; }

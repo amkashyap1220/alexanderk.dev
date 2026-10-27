@@ -3,15 +3,17 @@
 
    The workout log lives in the PRIVATE repo amkashyap1220/fitness-data,
    never in this public one. A daily Claude session commits workouts there;
-   this file reads it for the dashboard and saves the two things the
-   dashboard can change: lift rankings and the lift catalog.
+   this file reads it for the dashboard and saves what the dashboard can
+   change: lift rankings, and requests for new lifts (plain text; the next
+   daily session works out the lift's slot and muscles and adds it).
 
      GET  /private/api/fitness/data         everything the dashboard draws
      GET  /private/api/fitness/engine.js    the repo's plan engine, so the
                                             page computes plans with the
                                             same code as the daily session
      POST /private/api/fitness/preferences  { rankings, never }
-     POST /private/api/fitness/exercise     { exercise } add or edit a lift
+     POST /private/api/fitness/request      { text } ask for a new lift, or
+                                            { cancel: n } take one back
 
    Only reached when logged in (worker/index.js checks first). Needs a
    FITNESS_GITHUB_TOKEN secret: a fine-grained GitHub token with access to
@@ -19,7 +21,7 @@
    ========================================================================== */
 
 const REPO = "amkashyap1220/fitness-data";
-const ID = /^[a-z0-9-]{1,64}$/;
+const MAX_REQUESTS = 50;
 const enc = new TextEncoder();
 const dec = new TextDecoder();
 
@@ -32,7 +34,7 @@ function github(env, path, init = {}) {
   return fetch(`https://api.github.com/repos/${REPO}/${path}`, {
     ...init,
     headers: {
-      Authorization: "Bearer " + env.FITNESS_GITHUB_TOKEN,
+      Authorization: "Bearer " + env.FITNESS_GITHUB_TOKEN.trim(),   // a pasted secret can carry a newline
       "User-Agent": "alexanderk.dev",
       Accept: "application/vnd.github+json",
       ...init.headers,
@@ -40,18 +42,30 @@ function github(env, path, init = {}) {
   });
 }
 
+// What went wrong, in words that say what to fix (shown on the page)
+class GitHubError extends Error {
+  constructor(status, path) {
+    super({
+      401: "GitHub rejected FITNESS_GITHUB_TOKEN (401): it's mistyped, expired or revoked. Make a new one and update the secret.",
+      403: "GitHub refused FITNESS_GITHUB_TOKEN (403): give it the Contents permission (Read and write) on fitness-data.",
+      404: `GitHub can't see ${REPO} with FITNESS_GITHUB_TOKEN (404 on ${path}): the token's resource owner must be amkashyap1220 and its repository access must include fitness-data.`,
+    }[status] || `GitHub answered ${status} for ${path}. Try again in a minute.`);
+    this.status = status;
+  }
+}
+
 // A file's text, or null if it isn't there
 async function readRaw(env, path) {
   const res = await github(env, "contents/" + path, { headers: { Accept: "application/vnd.github.raw+json" } });
   if (res.status === 404) return null;
-  if (!res.ok) throw new Error(`GitHub ${res.status} reading ${path}`);
+  if (!res.ok) throw new GitHubError(res.status, path);
   return res.text();
 }
 
 // A JSON file and its sha (needed to save it back)
 async function readWithSha(env, path) {
   const res = await github(env, "contents/" + path);
-  if (!res.ok) throw new Error(`GitHub ${res.status} reading ${path}`);
+  if (!res.ok) throw new GitHubError(res.status, path);
   const file = await res.json();
   const bytes = Uint8Array.from(atob(file.content.replace(/\n/g, "")), (c) => c.charCodeAt(0));
   return { data: JSON.parse(dec.decode(bytes)), sha: file.sha };
@@ -72,7 +86,7 @@ async function write(env, path, data, sha, message) {
     body: JSON.stringify({ message, sha, content: base64(JSON.stringify(data, null, 2) + "\n") }),
   });
   if (res.status === 409 || res.status === 422) return "conflict";
-  if (!res.ok) throw new Error(`GitHub ${res.status} saving ${path}`);
+  if (!res.ok) throw new GitHubError(res.status, path);
   return "ok";
 }
 
@@ -81,7 +95,8 @@ async function readAll(env) {
     readRaw(env, "program.json"), readRaw(env, "exercises.json"), readRaw(env, "preferences.json"),
     readRaw(env, "state.json"), github(env, "contents/workouts"),
   ]);
-  if (!program || !exercises || !preferences) throw new Error("fitness-data is missing program.json, exercises.json or preferences.json");
+  // A private repo the token can't see looks exactly like a missing file
+  if (!program || !exercises || !preferences) throw new GitHubError(404, "program.json");
   const files = listing.ok ? (await listing.json()).map((f) => f.name).filter((n) => /^\d{4}\.json$/.test(n)).sort() : [];
   const years = await Promise.all(files.map((f) => readRaw(env, "workouts/" + f)));
   const workouts = Object.assign({}, ...years.filter(Boolean).map((t) => JSON.parse(t)));
@@ -110,38 +125,6 @@ export function checkPreferences(body, program, exercises) {
   return null;
 }
 
-export function checkExercise(e, program, exercises) {
-  if (!e || typeof e !== "object") return "Expected { exercise }.";
-  const name = typeof e.name === "string" ? e.name.trim() : "";
-  if (!name || name.length > 60) return "The name must be 1 to 60 characters.";
-  if (e.id !== undefined && !ID.test(e.id)) return "Bad lift id.";
-  if (!program.slots[e.slot]) return "Pick a slot.";
-  const muscles = (list) => Array.isArray(list) && list.every((m) => program.muscles[m]);
-  if (!muscles(e.primary) || !e.primary.length) return "Pick at least one main muscle.";
-  if (e.secondary !== undefined && !muscles(e.secondary)) return "Unknown secondary muscle.";
-  if (!["compound", "isolation"].includes(e.type)) return "Type must be compound or isolation.";
-  if (!Array.isArray(e.reps) || e.reps.length !== 2 || !e.reps.every((r) => Number.isInteger(r) && r >= 1 && r <= 50) || e.reps[0] > e.reps[1]) return "Reps must be a low and high number, 1 to 50.";
-  if (![2.5, 5, 10].includes(e.increment)) return "Increment must be 2.5, 5 or 10 lb.";
-  const id = e.id || name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-  if (!ID.test(id)) return "That name doesn't make a usable id.";
-  if (!e.id && exercises.exercises.some((x) => x.id === id)) return `There's already a lift called "${id}".`;
-  if (e.id && !exercises.exercises.some((x) => x.id === id)) return `No lift "${id}" to edit.`;
-  return null;
-}
-
-// Only the fields a lift has, nothing else the page might send
-function cleanExercise(e, id, old = {}) {
-  const { bodyweight, ...kept } = old;
-  return {
-    ...kept,
-    id, name: e.name.trim(), slot: e.slot, primary: e.primary, secondary: e.secondary || [],
-    equipment: typeof e.equipment === "string" && e.equipment ? e.equipment.slice(0, 20) : old.equipment || "other",
-    type: e.type, reps: e.reps, increment: e.increment,
-    ...(e.bodyweight ? { bodyweight: true } : {}),
-    ...(old.id ? {} : { custom: true }),
-  };
-}
-
 /* ---------- the routes ---------- */
 export async function handleFitness(request, env) {
   const path = new URL(request.url).pathname.replace(/^\/private\/api\/fitness\//, "");
@@ -151,52 +134,49 @@ export async function handleFitness(request, env) {
     if (request.method === "GET" && path === "data") return json(await readAll(env));
     if (request.method === "GET" && path === "engine.js") {
       const code = await readRaw(env, "engine/engine.js");
-      if (!code) return fail(404, "engine/engine.js not found");
+      if (!code) throw new GitHubError(404, "engine/engine.js");
       return new Response(code, { headers: { "Content-Type": "text/javascript; charset=utf-8" } });
     }
 
-    if (request.method === "POST" && (path === "preferences" || path === "exercise")) {
+    if (request.method === "POST" && (path === "preferences" || path === "request")) {
       // Only the dashboard itself can save (the login cookie is SameSite=Lax as well)
       if (request.headers.get("Origin") !== new URL(request.url).origin) return fail(403, "Wrong origin.");
       const body = await request.json().catch(() => null);
-      const [program, exercises] = await Promise.all([readRaw(env, "program.json").then(JSON.parse), readWithSha(env, "exercises.json")]);
+      const prefs = await readWithSha(env, "preferences.json");
+      const conflict = () => fail(409, "Changed somewhere else meanwhile. Reload and try again.");
 
       if (path === "preferences") {
-        const problem = checkPreferences(body, program, exercises.data);
+        const [program, exercises] = await Promise.all([readRaw(env, "program.json").then(JSON.parse), readRaw(env, "exercises.json").then(JSON.parse)]);
+        const problem = checkPreferences(body, program, exercises);
         if (problem) return fail(400, problem);
-        const prefs = await readWithSha(env, "preferences.json");
         const rankings = Object.fromEntries(Object.entries(body.rankings).filter(([, ids]) => ids.length));
         const next = { ...prefs.data, rankings, never: body.never };
         const saved = await write(env, "preferences.json", next, prefs.sha, "Update lift rankings from the dashboard");
-        return saved === "ok" ? json({ preferences: next }) : fail(409, "Changed somewhere else meanwhile. Reload and try again.");
+        return saved === "ok" ? json({ preferences: next }) : conflict();
       }
 
-      const e = body && body.exercise;
-      const problem = checkExercise(e, program, exercises.data);
-      if (problem) return fail(400, problem);
-      const list = exercises.data.exercises;
-      const id = e.id || e.name.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-      const at = list.findIndex((x) => x.id === id);
-      const lift = cleanExercise(e, id, at >= 0 ? list[at] : {});
-      const movedFrom = at >= 0 && list[at].slot !== lift.slot ? list[at].slot : null;
-      if (at >= 0) list[at] = lift; else list.push(lift);
-      const saved = await write(env, "exercises.json", exercises.data, exercises.sha, `${at >= 0 ? "Edit" : "Add"} ${lift.name} from the dashboard`);
-      if (saved !== "ok") return fail(409, "Changed somewhere else meanwhile. Reload and try again.");
-      // A lift moved to another slot leaves its old slot's ranking
-      if (movedFrom) {
-        const prefs = await readWithSha(env, "preferences.json");
-        const ranked = (prefs.data.rankings || {})[movedFrom];
-        if (ranked && ranked.includes(id)) {
-          prefs.data.rankings[movedFrom] = ranked.filter((x) => x !== id);
-          await write(env, "preferences.json", prefs.data, prefs.sha, `Unrank ${lift.name} from its old slot`);
-        }
+      // A new lift is just words; the daily session turns them into a catalog entry
+      const requests = prefs.data.requests || [];
+      let message;
+      if (body && Number.isInteger(body.cancel)) {
+        if (!requests[body.cancel]) return fail(400, "No such request.");
+        const [gone] = requests.splice(body.cancel, 1);
+        message = `Cancel lift request "${gone.text}"`;
+      } else {
+        const text = body && typeof body.text === "string" ? body.text.trim().replace(/\s+/g, " ") : "";
+        if (!text || text.length > 200) return fail(400, "Type the lift (up to 200 characters).");
+        if (requests.length >= MAX_REQUESTS) return fail(400, "That's a lot of waiting requests. Let a session add them first.");
+        requests.push({ text, at: new Date().toISOString() });
+        message = `Request lift "${text}" from the dashboard`;
       }
-      return json({ exercise: lift });
+      const next = { ...prefs.data, requests };
+      const saved = await write(env, "preferences.json", next, prefs.sha, message);
+      return saved === "ok" ? json({ preferences: next }) : conflict();
     }
 
     return fail(404, "Not found");
   } catch (err) {
     console.error("fitness:", err.message);
-    return fail(502, "Couldn't reach the fitness data. Try again in a minute.");
+    return fail(502, err instanceof GitHubError ? err.message : "Couldn't reach the fitness data. Try again in a minute.");
   }
 }

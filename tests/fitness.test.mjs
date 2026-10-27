@@ -129,36 +129,35 @@ test("good rankings are saved, keeping the other settings", async () => {
   assert.deepEqual(r.files["preferences.json"], { units: "lb", timezone: "America/Chicago", rankings: { h_press: ["db-bench-press", "bench-press"] }, never: ["ohp"] });
 });
 
-test("a new lift is added to the catalog, and only its own fields", async () => {
-  const r = repo(), e = env();
-  const lift = { name: "Landmine press", slot: "v_press", primary: ["front_delts"], secondary: ["triceps"], type: "compound", reps: [8, 12], increment: 5, equipment: "barbell", admin: true };
-  const res = await call(r, e, "exercise", postJson(await cookie(e), { exercise: lift }));
-  assert.equal(res.status, 200);
-  const added = r.files["exercises.json"].exercises.at(-1);
-  assert.equal(added.id, "landmine-press");
-  assert.equal(added.custom, true);
-  assert.equal(added.admin, undefined);
-  // Same name again is refused
-  const again = await call(r, e, "exercise", postJson(await cookie(e), { exercise: lift }));
-  assert.equal(again.status, 400);
-});
-
-test("bad lifts are refused", async () => {
+test("a new lift is saved as a plain-text request for the next session", async () => {
   const r = repo(), e = env(), c = await cookie(e);
-  const ok = { name: "Cable press", slot: "h_press", primary: ["chest"], type: "compound", reps: [8, 12], increment: 5 };
-  for (const bad of [{ name: "" }, { slot: "nowhere" }, { primary: [] }, { primary: ["wings"] }, { reps: [12, 8] }, { increment: 3 }, { type: "other" }, { id: "missing" }]) {
-    const res = await call(r, e, "exercise", postJson(c, { exercise: { ...ok, ...bad } }));
-    assert.equal(res.status, 400, JSON.stringify(bad));
-  }
+  const res = await call(r, e, "request", postJson(c, { text: "  landmine press,   love it for shoulders " }));
+  assert.equal(res.status, 200);
+  const prefs = r.files["preferences.json"];
+  assert.equal(prefs.requests.length, 1);
+  assert.equal(prefs.requests[0].text, "landmine press, love it for shoulders");
+  assert.match(prefs.requests[0].at, /^\d{4}-\d{2}-\d{2}T/);
+  assert.deepEqual(prefs.rankings, { h_press: ["bench-press"] });   // nothing else touched
+  // and it can be taken back
+  const back = await call(r, e, "request", postJson(c, { cancel: 0 }));
+  assert.equal(back.status, 200);
+  assert.deepEqual(r.files["preferences.json"].requests, []);
 });
 
-test("moving a lift to another slot takes it out of the old slot's ranking", async () => {
-  const r = repo(), e = env();
-  const edit = { id: "bench-press", name: "Barbell bench press", slot: "v_press", primary: ["chest"], type: "compound", reps: [6, 10], increment: 5 };
-  const res = await call(r, e, "exercise", postJson(await cookie(e), { exercise: edit }));
-  assert.equal(res.status, 200);
-  assert.equal(r.files["exercises.json"].exercises.find((x) => x.id === "bench-press").slot, "v_press");
-  assert.deepEqual(r.files["preferences.json"].rankings.h_press, []);
+test("empty, huge or bogus requests are refused", async () => {
+  const r = repo(), e = env(), c = await cookie(e);
+  for (const body of [{ text: "" }, { text: "   " }, { text: "x".repeat(201) }, { text: 5 }, { cancel: 3 }, {}]) {
+    const res = await call(r, e, "request", postJson(c, body));
+    assert.equal(res.status, 400, JSON.stringify(body));
+  }
+  assert.ok(!r.calls.some((x) => x.method === "PUT"));
+});
+
+test("saving rankings keeps waiting lift requests", async () => {
+  const r = repo(), e = env(), c = await cookie(e);
+  await call(r, e, "request", postJson(c, { text: "landmine press" }));
+  await call(r, e, "preferences", postJson(c, { rankings: {}, never: [] }));
+  assert.equal(r.files["preferences.json"].requests[0].text, "landmine press");
 });
 
 test("a save that loses a race with another change asks to reload", async () => {
@@ -170,4 +169,16 @@ test("a save that loses a race with another change asks to reload", async () => 
   };
   const res = await call(r, e, "preferences", postJson(await cookie(e), { rankings: {}, never: [] }));
   assert.equal(res.status, 409);
+});
+
+test("when GitHub won't show the repo to the token, the page says what to fix", async () => {
+  const r = repo(), e = env();
+  r.fetch = async () => new Response("", { status: 404 });
+  const res = await call(r, e, "data", { headers: { Cookie: await cookie(e) } });
+  assert.equal(res.status, 502);
+  assert.match((await res.json()).error, /can't see amkashyap1220\/fitness-data/);
+  const bad = repo();
+  bad.fetch = async () => new Response("", { status: 401 });
+  const res2 = await call(bad, e, "engine.js", { headers: { Cookie: await cookie(e) } });
+  assert.match((await res2.json()).error, /rejected FITNESS_GITHUB_TOKEN/);
 });

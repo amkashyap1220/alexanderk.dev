@@ -10,8 +10,9 @@
      1. LOAD     fetch the data and the engine
      2. DRAW     up next, stats, weak areas, strength, calendar, volume,
                  cardio, history (charts are plain SVG)
-     3. EDIT     rank lifts, mark "never", add or edit a lift; saved
-                 through the Worker into fitness-data
+     3. EDIT     rank lifts, mark "never", ask for a new lift (plain
+                 text the next daily session turns into a catalog entry);
+                 saved through the Worker into fitness-data
    ========================================================================== */
 
 const API = "/private/api/fitness/";
@@ -351,7 +352,7 @@ function setUpEditor() {
   $("fit-save").onclick = save;
   window.addEventListener("beforeunload", (e) => { if (dirty()) e.preventDefault(); });
   drawSlots();
-  setUpForm();
+  setUpRequests();
 }
 
 function drawSlots() {
@@ -373,15 +374,13 @@ function drawSlots() {
         el("span", { class: "rank", text: `#${i + 1}` }), el("span", { class: "name", text: nameOf(id) }),
         i > 0 ? btn("↑", `Move ${nameOf(id)} up`, () => move(i, -1)) : null,
         i < ranked.length - 1 ? btn("↓", `Move ${nameOf(id)} down`, () => move(i, 1)) : null,
-        btn("✕", `Unrank ${nameOf(id)}`, () => { ranked.splice(i, 1); change(); }),
-        btn("Edit", `Edit ${nameOf(id)}`, () => editLift(id))))) : el("p", { class: "fit-why", text: "Nothing ranked: picks follow what you log." }),
+        btn("✕", `Unrank ${nameOf(id)}`, () => { ranked.splice(i, 1); change(); })))) : el("p", { class: "fit-why", text: "Nothing ranked: picks follow what you log." }),
       el("p", { class: "sub", text: "Other lifts" }),
       el("ul", {}, others.map((e) => el("li", { class: never.has(e.id) ? "never" : "" },
         el("span", { class: "name", text: e.name }),
         never.has(e.id)
           ? btn("Allow", `Allow ${e.name} again`, () => { draft.never = draft.never.filter((x) => x !== e.id); change(); })
-          : [btn("Rank", `Rank ${e.name}`, () => { ranked.push(e.id); change(); }), btn("Never", `Never suggest ${e.name}`, () => { draft.never.push(e.id); change(); })],
-        btn("Edit", `Edit ${e.name}`, () => editLift(e.id))))));
+          : [btn("Rank", `Rank ${e.name}`, () => { ranked.push(e.id); change(); }), btn("Never", `Never suggest ${e.name}`, () => { draft.never.push(e.id); change(); })]))));
   }));
 }
 
@@ -409,70 +408,39 @@ async function save() {
   }
 }
 
-/* ---------- add or edit a lift ---------- */
-function setUpForm() {
-  const form = $("fit-form"), f = form.elements;
-  f.slot.replaceChildren(...D.program.rotation.map((d) => el("optgroup", { label: dayName(d) },
-    Object.entries(D.program.slots).filter(([, s]) => s.day === d).map(([id, s]) => el("option", { value: id, text: s.name })))));
-  form.querySelectorAll("[data-muscles]").forEach((box) => box.replaceChildren(...Object.entries(D.program.muscles).map(([id, name]) =>
-    el("label", {}, el("input", { type: "checkbox", name: box.dataset.muscles, value: id }), name))));
-  form.addEventListener("reset", () => {
-    $("fit-form-title").textContent = "Add a lift";
-    $("fit-form-status").textContent = "";
-    setTimeout(() => { f.liftId.value = ""; });   // a hidden input keeps its value through a reset
-  });
+/* ---------- ask for a new lift ---------- */
+function drawRequests() {
+  const list = D.preferences.requests || [];
+  $("fit-requests").replaceChildren(...list.map((r, i) => el("li", {},
+    el("span", { class: "name", text: r.text }),
+    el("span", { class: "muted", text: "next session" }),
+    el("button", { class: "btn small", type: "button", text: "✕", "aria-label": `Cancel "${r.text}"`, onclick: () => sendRequest({ cancel: i }, "Cancelled.") }))));
+}
+
+async function sendRequest(body, done) {
+  const status = $("fit-request-status");
+  status.textContent = "Saving…";
+  try {
+    const out = await post("request", body);
+    D.preferences = { ...D.preferences, requests: out.preferences.requests };
+    status.textContent = done;
+    drawRequests();
+    return true;
+  } catch (err) {
+    status.textContent = "Not saved: " + err.message;
+    return false;
+  }
+}
+
+function setUpRequests() {
+  const form = $("fit-request");
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const status = $("fit-form-status");
-    const checked = (n) => [...form.querySelectorAll(`input[name="${n}"]:checked`)].map((i) => i.value);
-    const exercise = {
-      ...(f.liftId.value ? { id: f.liftId.value } : {}),
-      name: f.liftName.value.trim(), slot: f.slot.value, primary: checked("primary"), secondary: checked("secondary"),
-      type: f.type.value, equipment: f.equipment.value, reps: [Number(f.lo.value), Number(f.hi.value)],
-      increment: Number(f.increment.value), bodyweight: f.bodyweight.checked,
-    };
-    status.textContent = "Saving…";
-    try {
-      const out = await post("exercise", { exercise });
-      const list = D.exercises.exercises;
-      const at = list.findIndex((x) => x.id === out.exercise.id);
-      const moved = at >= 0 && list[at].slot !== out.exercise.slot ? list[at].slot : null;
-      if (at >= 0) list[at] = out.exercise; else list.push(out.exercise);
-      if (moved) [D.preferences.rankings, draft.rankings].forEach((r) => { if (r && r[moved]) r[moved] = r[moved].filter((x) => x !== out.exercise.id); });
-      if (at < 0) form.reset();
-      status.textContent = `Saved ${out.exercise.name}.`;
-      day = D.program.slots[out.exercise.slot].day;
-      setUpEditorDays();
-      drawSlots();
-      drawNext();
-    } catch (err) {
-      status.textContent = "Not saved: " + err.message;
-    }
+    const text = form.elements.text.value.trim();
+    if (!text) return;
+    if (await sendRequest({ text }, "Added. Your next daily session will put it in your plans.")) form.reset();
   });
-}
-
-function setUpEditorDays() {
-  $("fit-days").querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b.textContent === dayName(day))));
-}
-
-function editLift(id) {
-  const e = D.exercises.exercises.find((x) => x.id === id);
-  const form = $("fit-form"), f = form.elements;
-  f.liftId.value = e.id;
-  f.liftName.value = e.name;
-  f.slot.value = e.slot;
-  form.querySelectorAll('input[name="primary"]').forEach((i) => { i.checked = (e.primary || []).includes(i.value); });
-  form.querySelectorAll('input[name="secondary"]').forEach((i) => { i.checked = (e.secondary || []).includes(i.value); });
-  f.type.value = e.type;
-  f.equipment.value = e.equipment || "other";
-  f.lo.value = e.reps[0];
-  f.hi.value = e.reps[1];
-  f.increment.value = String(e.increment);
-  f.bodyweight.checked = Boolean(e.bodyweight);
-  $("fit-form-title").textContent = `Edit ${e.name}`;
-  $("fit-form-status").textContent = "";
-  $("fit-form-title").scrollIntoView({ behavior: "smooth", block: "start" });
-  f.liftName.focus({ preventScroll: true });
+  drawRequests();
 }
 
 load();

@@ -43,19 +43,10 @@
   </header>
 
   <main id="main" tabindex="-1">
-    <section class="hero">
-      <div class="narrow">
-        <p class="eyebrow">Private project</p>
-        <h1>Fitness Tracking</h1>
-        <p class="lead">Push / Pull / Legs, logged by a daily Claude session. Every workout, how strength is moving, and where the gaps are.</p>
-        <div class="actions">
-          <a class="btn" href="/private/">← All private projects</a>
-        </div>
-      </div>
-    </section>
 
-    <section class="section">
+    <section class="section fit-page">
       <div class="wrap">
+        <h1 class="sr-only">Fitness Tracking</h1>
         <!-- Everything below is drawn by private/fitness.js from /private/api/fitness/data
              (worker/fitness.js), which reads the private fitness-data repo. No workout data
              is in this file or this repo. -->
@@ -100,27 +91,14 @@
             <span class="muted" id="fit-save-status" role="status"></span>
           </div>
 
-          <h3 class="fit-h3" id="fit-form-title">Add a lift</h3>
-          <form id="fit-form" class="fit-form card" novalidate>
-            <input type="hidden" name="liftId">
-            <label>Name <input class="fit-input" name="liftName" maxlength="60" required></label>
-            <label>Slot <select class="fit-input" name="slot" required></select></label>
-            <fieldset><legend>Main muscles</legend><div class="fit-checks" data-muscles="primary"></div></fieldset>
-            <fieldset><legend>Helper muscles</legend><div class="fit-checks" data-muscles="secondary"></div></fieldset>
-            <div class="fit-row">
-              <label>Type <select class="fit-input" name="type"><option value="compound">Compound</option><option value="isolation">Isolation</option></select></label>
-              <label>Equipment <select class="fit-input" name="equipment"><option>barbell</option><option>dumbbell</option><option>machine</option><option>cable</option><option>bodyweight</option><option>other</option></select></label>
-              <label>Reps low <input class="fit-input" name="lo" type="number" min="1" max="50" value="8"></label>
-              <label>Reps high <input class="fit-input" name="hi" type="number" min="1" max="50" value="12"></label>
-              <label>Step up (lb) <select class="fit-input" name="increment"><option value="2.5">2.5</option><option value="5" selected>5</option><option value="10">10</option></select></label>
-            </div>
-            <label class="fit-inline"><input type="checkbox" name="bodyweight"> Bodyweight lift (weight logged is added weight)</label>
-            <div class="fit-save">
-              <button class="btn primary" type="submit">Save lift</button>
-              <button class="btn" type="reset">Clear</button>
-              <span class="muted" id="fit-form-status" role="status"></span>
-            </div>
+          <h3 class="fit-h3">Add a lift</h3>
+          <p class="fit-why">Type a lift you want in your plans, in your own words. Your next daily session works out where it fits, adds it, and tells you.</p>
+          <form id="fit-request" class="fit-request">
+            <input class="fit-input" name="text" maxlength="200" required autocomplete="off" placeholder="e.g. landmine press, love it for shoulders" aria-label="Lift to add">
+            <button class="btn primary" type="submit">Add</button>
           </form>
+          <p class="muted fit-request-status" id="fit-request-status" role="status"></p>
+          <ul class="fit-requests" id="fit-requests" aria-label="Waiting for your next session"></ul>
         </div>
       </div>
     </section>
