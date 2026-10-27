@@ -52,12 +52,17 @@
 .fit-link:hover { text-decoration-color: currentColor; }
 .fit-day { display: inline-block; width: 0.7em; height: 0.7em; margin-right: 0.4em; border-radius: 2px; background: var(--c); }
 
+/* 8×8 muscle figures (private/fitness-pixels.js) */
+.fit-px { flex: none; width: 24px; height: 24px; image-rendering: pixelated; }
+.fit-muscle { display: flex; align-items: center; gap: var(--space-2); min-width: 0; }
+.fit-bar-row .fit-px { width: 16px; height: 16px; }
+
 /* Weak areas */
 .fit-weak .card-label.bad { color: var(--bad); }
 .fit-weak .card-label.warn { color: var(--warn); }
 
 /* Volume bars: name | bar with target band | value */
-.fit-bar-row { display: grid; grid-template-columns: 110px 1fr 120px; align-items: center; gap: 14px; font-size: var(--fs-sm); }
+.fit-bar-row { display: grid; grid-template-columns: 140px 1fr 120px; align-items: center; gap: 14px; font-size: var(--fs-sm); }
 .fit-bar-row + .fit-bar-row { margin-top: 10px; }
 .fit-track { position: relative; height: 12px; border-radius: var(--radius-pill); background: var(--soft); }
 .fit-track .band { position: absolute; top: -3px; bottom: -3px; background: var(--band); border-left: 1px dashed var(--muted); border-right: 1px dashed var(--muted); }
@@ -113,5 +118,5 @@
 .fit-tip b { display: block; margin-bottom: 2px; }
 
 @media (max-width: 640px) {
-  .fit-bar-row { grid-template-columns: 76px minmax(0, 1fr) auto; gap: 8px; }
+  .fit-bar-row { grid-template-columns: 108px minmax(0, 1fr) auto; gap: 8px; }
 }

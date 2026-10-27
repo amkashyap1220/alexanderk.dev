@@ -15,6 +15,8 @@
                  saved through the Worker into fitness-data
    ========================================================================== */
 
+import { muscleIcon } from "/private/fitness-pixels.js";
+
 const API = "/private/api/fitness/";
 const DAY_COLOR = { push: "var(--s1)", pull: "var(--s2)", legs: "var(--s3)" };
 const MACHINE_COLOR = { treadmill: "var(--s1)", bike: "var(--s2)", elliptical: "var(--s3)" };
@@ -181,7 +183,7 @@ function drawWeak() {
     const level = w.kind === "volume" ? (A.volume.find((v) => v.muscle === w.muscle).status === "low" ? "bad" : "warn") : "warn";
     const label = { volume: "Low volume", stall: "Stalled", imbalance: "Imbalance" }[w.kind];
     return el("article", { class: "card fit-weak" }, el("p", { class: `card-label ${level}`, text: label }),
-      el("h3", { class: "card-title", text: w.label }), el("p", { class: "card-text", text: w.detail }));
+      el("h3", { class: "card-title fit-muscle" }, w.kind === "volume" ? muscleIcon(w.muscle, DAY_COLOR) : null, w.label), el("p", { class: "card-text", text: w.detail }));
   });
   box.replaceChildren(...(cards.length ? cards : [el("p", { class: "empty", text: "No weak spots right now: every muscle is in its target and every lift is still moving." })]));
 }
@@ -326,7 +328,7 @@ function drawVolume() {
   $("fit-volume").replaceChildren(...[...A.volume].sort((a, b) => a.avgWeekly - b.avgWeekly).map((v) => {
     const [cls, word] = label[v.status];
     return el("div", { class: "fit-bar-row", "data-tip": `${v.name}\n${v.avgWeekly} sets a week (target ${ws.target}–${ws.high})` },
-      el("span", { text: v.name }),
+      el("span", { class: "fit-muscle" }, muscleIcon(v.muscle, DAY_COLOR), v.name),
       el("div", { class: "fit-track" }, el("div", { class: "band", style: `left:${pct(ws.target)};width:calc(${pct(ws.high)} - ${pct(ws.target)})` }), el("div", { class: "fill", style: `width:${pct(v.avgWeekly)}` })),
       el("span", { class: "fit-bar-value" }, `${v.avgWeekly} sets `, word ? el("span", { class: cls, text: word }) : null));
   }));
