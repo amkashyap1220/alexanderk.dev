@@ -4,7 +4,7 @@ My personal site: about me, my projects, my research, and stats from my GitHub.
 
 **Live:** [alexanderk.dev](https://alexanderk.dev)
 
-Built with [Astro](https://astro.build) into plain HTML, CSS and JavaScript, and hosted on Cloudflare. The fitness dashboard is built from [Svelte](https://svelte.dev) components.
+Built with [Astro](https://astro.build) into plain HTML, CSS and JavaScript, and hosted on Cloudflare. The two most interactive pages, the Chicago home value map and the fitness dashboard, are built from [Svelte](https://svelte.dev) components.
 
 ## Building
 
@@ -16,6 +16,7 @@ Built with [Astro](https://astro.build) into plain HTML, CSS and JavaScript, and
 | `src/pages/` | One file per page; its path is the page's address |
 | `src/data/` | The projects and research posts; their pages and the Projects and Research cards are built from these |
 | `src/components/`, `src/styles/` | Small shared pieces (README, chips, GitHub numbers) and page-only styles |
+| `src/components/home-value/` | The Chicago home value map, chart, table and form (Svelte), loaded only on that post |
 | `src/components/fitness/` | The fitness dashboard: one Svelte component per panel, loaded only on that page |
 | `public/` | Copied to the site as is: `css/style.css`, the browser scripts in `js/`, images and data files |
 | `worker/` | The Cloudflare Worker: GitHub data, login and the fitness API (never uploaded as a file) |
@@ -26,7 +27,7 @@ I used AI to help write the text on this site.
 
 ## Tests
 
-`npm test` runs the tests in `tests/` (after `npm install`). They build the site and check every page (title, description, header, footer, link previews) and that every internal link and file exists at its clean address. They also cover the login and private section, the fitness dashboard's API, and the Chicago home value scoring in `public/js/chicago-home-value-model.js`, checking it ranks the sample values exactly as the Python in [Home-Value-Score](https://github.com/amkashyap1220/Home-Value-Score) does.
+`npm test` runs the tests in `tests/` (after `npm install`). They build the site and check every page (title, description, header, footer, link previews) and that every internal link and file exists at its clean address. They also cover the login and private section, the fitness dashboard's API, and the Chicago home value scoring in `public/js/chicago-home-value-model.js` (plain JavaScript the map's components call), checking it ranks the sample values exactly as the Python in [Home-Value-Score](https://github.com/amkashyap1220/Home-Value-Score) does.
 
 ## Fitness tracking (private)
 
