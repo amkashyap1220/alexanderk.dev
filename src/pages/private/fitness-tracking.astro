@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import Dashboard from "../../components/fitness/Dashboard.svelte";
 ---
 <BaseLayout
   title="Fitness Tracking · Alexander Kashyap"
@@ -9,69 +10,14 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 >
   <Fragment slot="head">
     <link rel="stylesheet" href="/private/fitness.css">
-    <script is:inline type="module" src="/private/fitness.js"></script>
   </Fragment>
   <section class="section fit-page">
     <div class="wrap">
       <h1 class="sr-only">Fitness Tracking</h1>
-      <!-- Everything below is drawn by private/fitness.js from /private/api/fitness/data
-           (worker/fitness.js), which reads the fitness-data repo. No workout data
-           is in this file or this repo. -->
-      <p class="fit-status" id="fit-status" role="status">Loading your workouts…</p>
-
-      <div id="fit-app" hidden>
-        <h2 class="section-title">Up next</h2>
-        <div id="fit-next" class="card fit-next"></div>
-
-        <dl class="stat-grid fit-stats" id="fit-stats"></dl>
-
-        <h2 class="section-title fit-h">Body weight</h2>
-        <p class="section-intro">From the weigh-ins you give your daily session. They swing a few pounds with water and food, so the line is the 7-day average.</p>
-        <div id="fit-weight-chart" class="fit-chart"></div>
-
-        <h2 class="section-title fit-h">Weak areas</h2>
-        <p class="section-intro">Muscles under the weekly set target, lifts that stopped improving, and push vs pull balance, over the last 4 weeks. The fifth lift of each session goes to the biggest gap.</p>
-        <div id="fit-weak" class="grid two"></div>
-
-        <h2 class="section-title fit-h">Strength</h2>
-        <p class="section-intro">Estimated 1-rep max per session (best set, Epley formula). Bigger dots are new bests.</p>
-        <label class="fit-label" for="fit-lift">Lift</label>
-        <select id="fit-lift" class="fit-input"></select>
-        <div id="fit-strength" class="fit-chart"></div>
-
-        <h2 class="section-title fit-h">Consistency</h2>
-        <div id="fit-calendar" class="fit-chart"></div>
-
-        <h2 class="section-title fit-h">Weekly sets per muscle</h2>
-        <p class="section-intro">Average over the last 4 weeks. Main muscles count a full set, helpers half. The shaded band is the 10 to 20 set target.</p>
-        <div id="fit-volume"></div>
-
-        <h2 class="section-title fit-h">Cardio</h2>
-        <p class="section-intro">Minutes per week by machine. The tick on each week is 25 minutes for every workout you finished.</p>
-        <div id="fit-cardio" class="fit-chart"></div>
-
-        <h2 class="section-title fit-h">Previous workouts</h2>
-        <div id="fit-history"></div>
-
-        <h2 class="section-title fit-h" id="my-lifts">My lifts</h2>
-        <p class="section-intro">Rank the lifts you like in each slot; your #1 is suggested first, and what you actually log counts too. "Never" keeps a lift out of your plans. Saving updates the fitness-data repo, and the next plan uses it.</p>
-        <div class="toggle" id="fit-days" role="group" aria-label="Day"></div>
-        <div id="fit-slots" class="grid two"></div>
-        <div class="fit-save">
-          <button class="btn primary" type="button" id="fit-save" disabled>Save rankings</button>
-          <span class="muted" id="fit-save-status" role="status"></span>
-        </div>
-
-        <h3 class="fit-h3">Add a lift</h3>
-        <p class="fit-why">Type a lift you want in your plans, in your own words. Your next daily session works out where it fits, adds it, and tells you.</p>
-        <form id="fit-request" class="fit-request">
-          <input class="fit-input" name="text" maxlength="200" required autocomplete="off" placeholder="e.g. landmine press, love it for shoulders" aria-label="Lift to add">
-          <button class="btn primary" type="submit">Add</button>
-        </form>
-        <p class="muted fit-request-status" id="fit-request-status" role="status"></p>
-        <ul class="fit-requests" id="fit-requests" aria-label="Waiting for your next session"></ul>
-      </div>
+      <!-- The dashboard (src/components/fitness/) draws everything from
+           /private/api/fitness/data (worker/fitness.js), which reads the
+           fitness-data repo. No workout data is in this file or this repo. -->
+      <Dashboard client:load />
     </div>
   </section>
-  <div class="fit-tip" id="fit-tip" role="tooltip" hidden></div>
 </BaseLayout>
