@@ -1,0 +1,122 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+<BaseLayout
+  title="Alexander Kashyap"
+  description="Alexander Kashyap - software developer building data-driven enterprise systems in C#, .NET, SQL, and Python."
+  ogDescription="Software developer building data-driven enterprise systems in C#, .NET, SQL, and Python."
+  path="/"
+  current="about"
+>
+  <section class="hero">
+    <div class="narrow">
+      <p class="eyebrow">Software developer · Chicago, IL Area</p>
+      <h1>Alexander Kashyap</h1>
+      <p class="tagline">C#, .NET, SQL &amp; Python</p>
+      <p class="lead">Software developer with ~2 years of experience building data-driven enterprise systems in C#, .NET, SQL, and Python. Comfortable working across the stack, from database design to API integrations, and skilled at turning business requirements into reliable solutions. Detail-oriented, quick to learn, and focused on building systems people can depend on.</p>
+      <div class="actions">
+        <a class="btn primary" href="/projects/">View projects</a>
+        <a class="btn" href="https://www.linkedin.com/in/alexander-kashyap/" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="narrow">
+      <h2 class="section-title">Experience</h2>
+      <p class="section-intro">~2 years building enterprise software, mostly C#, .NET and SQL.</p>
+
+      <article class="entry">
+        <div class="entry-head">
+          <h3 class="entry-title">Application Developer</h3>
+          <span class="when"><time datetime="2025-01">Jan 2025</time> – Present</span>
+        </div>
+        <p class="entry-where">K-Rise Systems · Aurora, IL · Enterprise software company</p>
+        <ul>
+          <li>Worked on the rebuild of the company's AP Automation application for JD Edwards (primary project) in C# and .NET, adding new AI features and updates across the invoice pipeline, from scanned capture through validation and into JDE vouchers</li>
+          <li>Help implement AP Automation for clients, gathering requirements from their finance teams, customizing the solution to fit their workflows, and carrying improvements back into the base product</li>
+          <li>Wrote SQL to insert and update JD Edwards tables as invoices flowed through the pipeline, keeping accounts payable data accurate and in sync between systems</li>
+          <li>Built AP Automation reports and dashboards, writing the SQL queries and building the report pages in JavaScript and CSS to give clients visibility into automation performance and their invoice data</li>
+          <li>Integrated AI APIs to match addresses extracted from scanned invoices against address records in the database, reducing manual lookup</li>
+          <li>Supported development of EASYPay and EASYCommerce, the company's .NET payments and e-commerce applications, including SQL to keep payment and order data in sync with JD Edwards</li>
+        </ul>
+      </article>
+
+      <article class="entry">
+        <div class="entry-head">
+          <h3 class="entry-title">AI Evaluator (Contract)</h3>
+          <span class="when"><time datetime="2024-05">May 2024</time> – <time datetime="2025-01">Jan 2025</time></span>
+        </div>
+        <p class="entry-where">Outlier, a Scale AI platform · Remote</p>
+        <ul>
+          <li>Evaluated and compared AI-generated code for correctness, clarity, and quality, writing feedback used as training data to improve large language models</li>
+          <li>Applied detailed scoring rubrics consistently to coding tasks, flagging bugs and logical errors</li>
+        </ul>
+      </article>
+
+      <article class="entry">
+        <div class="entry-head">
+          <h3 class="entry-title">Software Engineering Intern – Middleware</h3>
+          <span class="when"><time datetime="2022-05">May 2022</time> – <time datetime="2023-01">Jan 2023</time></span>
+        </div>
+        <p class="entry-where">Chamberlain Group · Chicago, IL</p>
+        <ul>
+          <li>Built RESTful API endpoints in .NET 6 for the myQ connected-device platform</li>
+          <li>Helped migrate services from .NET Core 3.1 to .NET 6, improving performance and maintainability in an Agile/Scrum team</li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="narrow">
+      <h2 class="section-title">Education</h2>
+      <article class="entry">
+        <div class="entry-head">
+          <h3 class="entry-title">B.S. in Computer Science</h3>
+          <time class="when" datetime="2024-05">May 2024</time>
+        </div>
+        <p class="entry-where">Northern Illinois University</p>
+        <ul>
+          <li>Relevant coursework: Databases, Probability &amp; Statistics, Data Structures, Algorithms, Software Engineering</li>
+          <li>Scholarship player, NIU Esports</li>
+          <li>Event Coordinator / Board Member, Association for Computing Machinery (ACM)</li>
+          <li>Transfer Merit Scholar</li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <h2 class="section-title">Skills &amp; Certifications</h2>
+      <p class="section-intro">What I work with day to day.</p>
+      <dl class="grid">
+        <div class="card">
+          <dt class="card-label">Languages</dt>
+          <dd class="card-title">SQL, Python, C#, JavaScript/TypeScript, C++</dd>
+        </div>
+        <div class="card">
+          <dt class="card-label">Databases</dt>
+          <dd class="card-title">Microsoft SQL Server (T-SQL, SSMS), MySQL, NoSQL</dd>
+        </div>
+        <div class="card">
+          <dt class="card-label">Frameworks &amp; Tools</dt>
+          <dd class="card-title">.NET / .NET Core, REST APIs, Git, Jira</dd>
+        </div>
+        <div class="card">
+          <dt class="card-label">Cloud</dt>
+          <dd class="card-title">AWS, Azure</dd>
+        </div>
+        <div class="card">
+          <dt class="card-label">Enterprise Systems</dt>
+          <dd class="card-title">JD Edwards (ERP)</dd>
+        </div>
+        <div class="card">
+          <dt class="card-label">Certifications</dt>
+          <dd class="card-title">AWS Certified Cloud Practitioner (May 2024)</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+</BaseLayout>
