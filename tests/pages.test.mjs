@@ -4,7 +4,8 @@ import assert from "node:assert/strict";
 import { execSync } from "node:child_process";
 import fs from "node:fs";
 
-const pages = execSync("git ls-files '*.html'", { encoding: "utf8" }).split("\n").filter(Boolean)
+// The plain pages in public/ and the shared layout the src/ pages use
+const pages = execSync("git ls-files '*.html' '*.astro'", { encoding: "utf8" }).split("\n").filter(Boolean)
   .filter((f) => fs.readFileSync(f, "utf8").includes('class="site-nav"'));
 
 test("every page's header has the Private tab, the signed-in script and Log in", () => {
@@ -12,7 +13,7 @@ test("every page's header has the Private tab, the signed-in script and Log in",
   for (const f of pages) {
     const html = fs.readFileSync(f, "utf8");
     assert.match(html, /<a class="nav-private" href="\/private\/"/, f + ": Private tab");
-    assert.match(html, /<script src="\/js\/signed-in\.js"><\/script>/, f + ": signed-in.js");
+    assert.match(html, /<script (is:inline )?src="\/js\/signed-in\.js"><\/script>/, f + ": signed-in.js");
     assert.match(html, /class="btn small login-link" href="\/login"/, f + ": Log in button");
   }
 });

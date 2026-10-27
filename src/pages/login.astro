@@ -1,0 +1,46 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+<BaseLayout
+  title="Log in · Alexander Kashyap"
+  description="Log in to the private section."
+  noindex
+>
+  <section class="hero">
+    <div class="narrow">
+      <p class="eyebrow">Private</p>
+      <h1>Log in</h1>
+
+      <!-- Checked by the Cloudflare Worker (worker/auth.js); there's no sign-up -->
+      <form class="login-form" method="post" action="/login">
+        <p class="login-error" id="login-error" role="alert" hidden></p>
+        <input type="hidden" name="next" id="login-next" value="/private/">
+        <label for="username">Username</label>
+        <input id="username" name="username" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" required>
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" required>
+        <button class="btn primary" type="submit">Log in</button>
+      </form>
+    </div>
+  </section>
+
+  <script is:inline slot="scripts">
+    // Where to go after logging in, and why the last try didn't work
+    (function () {
+      const params = new URLSearchParams(location.search);
+      if (params.get("next")) document.getElementById("login-next").value = params.get("next");
+      const messages = {
+        wrong: "That username and password don't match.",
+        slow: "Too many tries. Wait a minute, then try again.",
+        setup: "Login isn't set up yet.",
+      };
+      const error = messages[params.get("error")];
+      if (error) {
+        const box = document.getElementById("login-error");
+        box.textContent = error;
+        box.hidden = false;
+        document.getElementById("password").focus();
+      }
+    })();
+  </script>
+</BaseLayout>
