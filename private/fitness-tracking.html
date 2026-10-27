@@ -14,6 +14,8 @@
   <link rel="stylesheet" href="/css/style.css">
   <script src="/js/theme.js"></script>
   <script src="/js/signed-in.js"></script>
+  <link rel="stylesheet" href="/private/fitness.css">
+  <script type="module" src="/private/fitness.js"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -45,6 +47,7 @@
       <div class="narrow">
         <p class="eyebrow">Private project</p>
         <h1>Fitness Tracking</h1>
+        <p class="lead">Push / Pull / Legs, logged by a daily Claude session. Every workout, how strength is moving, and where the gaps are.</p>
         <div class="actions">
           <a class="btn" href="/private/">← All private projects</a>
         </div>
@@ -52,15 +55,76 @@
     </section>
 
     <section class="section">
-      <div class="narrow">
-        <!-- ============================================================
-             YOUR SECTION. Put your own HTML here. For styles and scripts
-             that only this page uses, add them below (in <style> and
-             <script> tags) or link your own files.
-             ============================================================ -->
-        <p class="muted">Work in progress.</p>
+      <div class="wrap">
+        <!-- Everything below is drawn by private/fitness.js from /private/api/fitness/data
+             (worker/fitness.js), which reads the private fitness-data repo. No workout data
+             is in this file or this repo. -->
+        <p class="fit-status" id="fit-status" role="status">Loading your workouts…</p>
+
+        <div id="fit-app" hidden>
+          <h2 class="section-title">Up next</h2>
+          <div id="fit-next" class="card fit-next"></div>
+
+          <dl class="stat-grid fit-stats" id="fit-stats"></dl>
+
+          <h2 class="section-title fit-h">Weak areas</h2>
+          <p class="section-intro">Muscles under the weekly set target, lifts that stopped improving, and push vs pull balance, over the last 4 weeks. The fifth lift of each session goes to the biggest gap.</p>
+          <div id="fit-weak" class="grid two"></div>
+
+          <h2 class="section-title fit-h">Strength</h2>
+          <p class="section-intro">Estimated 1-rep max per session (best set, Epley formula). Bigger dots are new bests.</p>
+          <label class="fit-label" for="fit-lift">Lift</label>
+          <select id="fit-lift" class="fit-input"></select>
+          <div id="fit-strength" class="fit-chart"></div>
+
+          <h2 class="section-title fit-h">Consistency</h2>
+          <div id="fit-calendar" class="fit-chart"></div>
+
+          <h2 class="section-title fit-h">Weekly sets per muscle</h2>
+          <p class="section-intro">Average over the last 4 weeks. Main muscles count a full set, helpers half. The shaded band is the 10 to 20 set target.</p>
+          <div id="fit-volume"></div>
+
+          <h2 class="section-title fit-h">Cardio</h2>
+          <p class="section-intro">Minutes per week by machine. The tick on each week is 25 minutes for every workout you finished.</p>
+          <div id="fit-cardio" class="fit-chart"></div>
+
+          <h2 class="section-title fit-h">Previous workouts</h2>
+          <div id="fit-history"></div>
+
+          <h2 class="section-title fit-h" id="my-lifts">My lifts</h2>
+          <p class="section-intro">Rank the lifts you like in each slot; your #1 is suggested first, and what you actually log counts too. "Never" keeps a lift out of your plans. Saving updates the fitness-data repo, and the next plan uses it.</p>
+          <div class="toggle" id="fit-days" role="group" aria-label="Day"></div>
+          <div id="fit-slots" class="grid two"></div>
+          <div class="fit-save">
+            <button class="btn primary" type="button" id="fit-save" disabled>Save rankings</button>
+            <span class="muted" id="fit-save-status" role="status"></span>
+          </div>
+
+          <h3 class="fit-h3" id="fit-form-title">Add a lift</h3>
+          <form id="fit-form" class="fit-form card" novalidate>
+            <input type="hidden" name="liftId">
+            <label>Name <input class="fit-input" name="liftName" maxlength="60" required></label>
+            <label>Slot <select class="fit-input" name="slot" required></select></label>
+            <fieldset><legend>Main muscles</legend><div class="fit-checks" data-muscles="primary"></div></fieldset>
+            <fieldset><legend>Helper muscles</legend><div class="fit-checks" data-muscles="secondary"></div></fieldset>
+            <div class="fit-row">
+              <label>Type <select class="fit-input" name="type"><option value="compound">Compound</option><option value="isolation">Isolation</option></select></label>
+              <label>Equipment <select class="fit-input" name="equipment"><option>barbell</option><option>dumbbell</option><option>machine</option><option>cable</option><option>bodyweight</option><option>other</option></select></label>
+              <label>Reps low <input class="fit-input" name="lo" type="number" min="1" max="50" value="8"></label>
+              <label>Reps high <input class="fit-input" name="hi" type="number" min="1" max="50" value="12"></label>
+              <label>Step up (lb) <select class="fit-input" name="increment"><option value="2.5">2.5</option><option value="5" selected>5</option><option value="10">10</option></select></label>
+            </div>
+            <label class="fit-inline"><input type="checkbox" name="bodyweight"> Bodyweight lift (weight logged is added weight)</label>
+            <div class="fit-save">
+              <button class="btn primary" type="submit">Save lift</button>
+              <button class="btn" type="reset">Clear</button>
+              <span class="muted" id="fit-form-status" role="status"></span>
+            </div>
+          </form>
+        </div>
       </div>
     </section>
+    <div class="fit-tip" id="fit-tip" role="tooltip" hidden></div>
   </main>
 
 

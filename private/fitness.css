@@ -1,0 +1,112 @@
+/* ==========================================================================
+   Fitness dashboard (private/fitness-tracking.html). Uses the site's tokens
+   from css/style.css; only what this page adds is here.
+
+   Series colors: Push / Pull / Legs and treadmill / bike / elliptical share
+   three slots, checked for color-blind separation on both page colors.
+   Charts always carry a legend or labels too, never color alone.
+   ========================================================================== */
+
+:root {
+  --s1: #2a78d6;   /* push, treadmill */
+  --s2: #eb6834;   /* pull, bike */
+  --s3: #1baf7a;   /* legs, elliptical */
+  --band: rgba(46, 52, 54, 0.07);
+  --bad: #d03b3b;
+  --warn: #b97a00;
+}
+:root.dark {
+  --s1: #3987e5;
+  --s2: #d95926;
+  --s3: #199e70;
+  --band: rgba(238, 238, 236, 0.08);
+  --bad: #e66767;
+  --warn: #fab219;
+}
+
+.fit-status { color: var(--muted); font-size: var(--fs-md); text-align: center; }
+.fit-status.error { color: var(--bad); }
+.fit-h { margin-top: var(--space-9); }
+.fit-h3 { margin: var(--space-8) 0 var(--space-3); font-size: var(--fs-lg); }
+.fit-label { display: block; margin-bottom: var(--space-1); color: var(--muted); font-size: var(--fs-xs); }
+.fit-input { padding: 6px 10px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--soft); color: var(--text); font: inherit; font-size: var(--fs-sm); }
+.fit-chart { position: relative; margin-top: var(--space-4); }
+.fit-chart svg { display: block; width: 100%; height: auto; overflow: visible; font-family: var(--font); }
+.fit-stats { margin-top: var(--space-5); }
+
+/* Up next */
+.fit-next { padding: var(--space-5); }
+.fit-next-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-2); align-items: baseline; }
+.fit-next-title { font-size: var(--fs-lg); font-weight: 600; }
+.fit-next ol { margin: var(--space-4) 0 0; padding: 0; list-style: none; counter-reset: lift; }
+.fit-next li { position: relative; padding: var(--space-3) 0 var(--space-3) 28px; border-top: 1px solid var(--border); counter-increment: lift; }
+.fit-next li::before { content: counter(lift); position: absolute; left: 0; color: var(--mark); font-weight: 600; }
+.fit-next li.cardio { counter-increment: none; }
+.fit-next li.cardio::before { content: "♥"; }
+.fit-lift { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0 var(--space-3); font-size: var(--fs-md); }
+.fit-lift b { font-weight: 600; }
+.fit-why { margin-top: 2px; color: var(--muted); font-size: var(--fs-xs); }
+.fit-notes { margin-top: var(--space-3); color: var(--label); font-size: var(--fs-sm); }
+.fit-day { display: inline-block; width: 0.7em; height: 0.7em; margin-right: 0.4em; border-radius: 2px; background: var(--c); }
+
+/* Weak areas */
+.fit-weak .card-label.bad { color: var(--bad); }
+.fit-weak .card-label.warn { color: var(--warn); }
+
+/* Volume bars: name | bar with target band | value */
+.fit-bar-row { display: grid; grid-template-columns: 110px 1fr 120px; align-items: center; gap: 14px; font-size: var(--fs-sm); }
+.fit-bar-row + .fit-bar-row { margin-top: 10px; }
+.fit-track { position: relative; height: 12px; border-radius: var(--radius-pill); background: var(--soft); }
+.fit-track .band { position: absolute; top: -3px; bottom: -3px; background: var(--band); border-left: 1px dashed var(--muted); border-right: 1px dashed var(--muted); }
+.fit-track .fill { position: absolute; top: 0; bottom: 0; left: 0; border-radius: 0 4px 4px 0; background: var(--s1); }
+.fit-bar-value { color: var(--muted); text-align: right; white-space: nowrap; }
+.fit-bar-value .bad { color: var(--bad); }
+.fit-bar-value .warn { color: var(--warn); }
+
+/* Legends */
+.fit-legend { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-5); margin-top: var(--space-3); padding: 0; list-style: none; color: var(--muted); font-size: var(--fs-xs); }
+.fit-swatch { display: inline-block; width: 10px; height: 10px; margin-right: 6px; border-radius: 2px; background: var(--c); vertical-align: -1px; }
+.fit-swatch.skip { background: none; border: 1px solid var(--muted); }
+.fit-swatch.rest { background: var(--border); }
+
+/* Table views under charts */
+.fit-table { margin-top: var(--space-3); font-size: var(--fs-xs); }
+.fit-table summary { color: var(--muted); cursor: pointer; }
+.fit-table table { margin-top: var(--space-2); border-collapse: collapse; }
+.fit-table th, .fit-table td { padding: 4px 14px 4px 0; border-bottom: 1px solid var(--border); text-align: left; }
+
+/* History */
+.fit-session { border-top: 1px solid var(--border); }
+.fit-session summary { display: flex; flex-wrap: wrap; gap: 0 var(--space-4); padding: var(--space-3) 0; cursor: pointer; font-size: var(--fs-md); }
+.fit-session summary .muted { font-size: var(--fs-sm); }
+.fit-session ul { margin: 0 0 var(--space-4); padding-left: var(--space-5); color: var(--muted); font-size: var(--fs-sm); }
+.fit-session .pr { color: var(--mark); font-weight: 600; }
+.fit-more { margin-top: var(--space-4); }
+
+/* My lifts */
+.fit-slot h3 { font-size: var(--fs-md); font-weight: 600; }
+.fit-slot .sub { margin-top: var(--space-3); color: var(--muted); font-size: var(--fs-2xs); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+.fit-slot ol, .fit-slot ul { margin: var(--space-1) 0 0; padding: 0; list-style: none; }
+.fit-slot li { display: flex; align-items: center; gap: var(--space-2); padding: 5px 0; border-bottom: 1px solid var(--border); font-size: var(--fs-sm); }
+.fit-slot li .name { flex: 1; min-width: 0; }
+.fit-slot li.never .name { color: var(--muted); text-decoration: line-through; }
+.fit-slot .rank { width: 1.6em; color: var(--mark); font-weight: 600; }
+.fit-slot .btn.small { padding: 2px 7px; }
+.fit-save { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); margin-top: var(--space-5); }
+
+.fit-form { display: grid; gap: var(--space-3); }
+.fit-form label { display: grid; gap: var(--space-1); color: var(--muted); font-size: var(--fs-xs); }
+.fit-form fieldset { margin: 0; padding: 0; border: 0; }
+.fit-form legend { margin-bottom: var(--space-1); color: var(--muted); font-size: var(--fs-xs); }
+.fit-checks { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-4); }
+.fit-form .fit-checks label, .fit-form .fit-inline { display: inline-flex; align-items: center; gap: 6px; color: var(--text); font-size: var(--fs-sm); }
+.fit-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: var(--space-3); }
+.fit-form .fit-save { margin-top: 0; }
+
+/* Tooltip shared by every chart */
+.fit-tip { position: fixed; z-index: 30; max-width: 260px; padding: var(--space-2) var(--space-3); border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); font-size: var(--fs-xs); pointer-events: none; }
+.fit-tip b { display: block; margin-bottom: 2px; }
+
+@media (max-width: 640px) {
+  .fit-bar-row { grid-template-columns: 76px minmax(0, 1fr) auto; gap: 8px; }
+}
