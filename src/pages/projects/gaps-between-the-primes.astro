@@ -1,0 +1,108 @@
+---
+import ProjectLayout from "../../layouts/ProjectLayout.astro";
+import Walkthrough from "../../components/Walkthrough.astro";
+---
+<ProjectLayout slug="gaps-between-the-primes" highlight>
+  <Walkthrough>
+      <p class="section-intro">How this program works, piece by piece. All you need to know going in is what a prime number is.</p>
+
+      <div class="prose">
+        <h3>1. The question</h3>
+        <p>A <b>prime</b> is a whole number bigger than 1 that only divides evenly by 1 and itself: 2, 3, 5, 7, 11, 13, and so on. The <b>gap</b> between two primes in a row is just how far apart they are:</p>
+<pre is:raw><code>2 ─1─ 3 ─2─ 5 ─2─ 7 ─4─ 11 ─2─ 13 ─4─ 17 ─2─ 19 ─4─ 23 ─6─ 29</code></pre>
+        <p>This program counts upward forever and keeps asking two questions: <b>what's the biggest gap we've seen so far, and what's the smallest?</b> I got the idea from Terry Tao's lecture on prime gaps (linked in the README above). The big gaps keep growing, because primes get rarer as numbers get bigger. The small gaps are a famous unsolved problem.</p>
+
+        <h3>2. The plan</h3>
+        <p>Before writing any code, here's the idea in plain English:</p>
+        <ol>
+          <li>Start at 2 and count up by 1, forever.</li>
+          <li>For each number, check whether it's prime.</li>
+          <li>If it is, subtract the previous prime to get the gap.</li>
+          <li>If that gap is a new record (biggest or smallest), remember it.</li>
+          <li>Every so often, print what we've found.</li>
+        </ol>
+
+        <h3>3. The code</h3>
+        <p>The whole program is one file, <code>primegaps.cpp</code>, about 40 lines. Here it is in pieces.</p>
+
+        <p><b>Keeping track.</b> Five variables hold everything the program knows:</p>
+<pre is:raw><code class="language-cpp">int current = 2, lastp = 2, currentp = 2, lgap = 0, sgap = 1000;</code></pre>
+        <table>
+          <thead><tr><th>Variable</th><th>What it holds</th></tr></thead>
+          <tbody>
+            <tr><td><code>current</code></td><td>The number we're checking right now</td></tr>
+            <tr><td><code>lastp</code></td><td>The previous prime we found</td></tr>
+            <tr><td><code>currentp</code></td><td>The newest prime we found</td></tr>
+            <tr><td><code>lgap</code></td><td>Largest gap so far. Starts at 0 so the first real gap beats it.</td></tr>
+            <tr><td><code>sgap</code></td><td>Smallest gap so far. Starts at 1000, a "big enough" number so a real gap will be smaller.</td></tr>
+          </tbody>
+        </table>
+
+        <p><b>Counting forever.</b> <code>while (true)</code> is a loop with no exit, so the program runs until you stop it. Each time around, <code>current++</code> moves to the next number:</p>
+<pre is:raw><code class="language-cpp">while (true) {
+    current++;
+    if (isPrime(current)) {
+        // found a prime: measure the gap (next piece)
+    }
+}</code></pre>
+
+        <p><b>Measuring the gap.</b> When <code>current</code> is prime, the gap is the new prime minus the last one. Then we compare it to our records:</p>
+<pre is:raw><code class="language-cpp">currentp = current;
+int gap = currentp - lastp;
+if (gap &gt; lgap) {
+    lgap = gap;          // new biggest gap
+} else if (gap &lt; sgap) {
+    sgap = gap;          // new smallest gap
+}
+lastp = currentp;        // this prime is the "last" one next time</code></pre>
+
+        <p><b>Printing now and then.</b> Printing every number would flood the screen, so it only prints when <code>current</code> is a multiple of 12,345. The <code>%</code> operator gives the remainder of a division, and a remainder of 0 means "divides evenly". 12,345 isn't special; it's just a number that prints often enough to watch.</p>
+<pre is:raw><code class="language-cpp">if (current % 12345 == 0) {
+    cout &lt;&lt; "--Prime Gaps--" &lt;&lt; endl;
+    cout &lt;&lt; "current prime: " &lt;&lt; currentp &lt;&lt; endl;
+    cout &lt;&lt; "Lgap: " &lt;&lt; lgap &lt;&lt; endl;
+    cout &lt;&lt; "Sgap: " &lt;&lt; sgap &lt;&lt; endl;
+}</code></pre>
+
+        <p><b>Checking for primes.</b> <code>isPrime</code> uses <b>trial division</b>: try dividing by every number from 2 up to <code>num - 1</code>. If any of them divides evenly, <code>num</code> isn't prime.</p>
+<pre is:raw><code class="language-cpp">bool isPrime(int num) {
+    bool flag = true;
+    for (int i = 2; i &lt; num; i++) {
+        if ((num % i) == 0) {
+            flag = false;
+        }
+    }
+    return flag;
+}</code></pre>
+      </div>
+
+      <!-- Live demo: the same program in the browser (js/gaps-between-the-primes.js) -->
+      <div class="prose">
+        <h3>4. Try it in your browser</h3>
+        <p>This runs the same idea in JavaScript, right on this page, with a faster prime check. Pick a limit to see how many primes are below it and every time the record gap grew.</p>
+      </div>
+      <div class="demo">
+        <label for="gap-limit">Primes up to</label>
+        <input id="gap-limit" type="number" min="10" max="5000000" step="1000" value="100000">
+        <button class="btn primary" id="gap-run" type="button">Run</button>
+      </div>
+      <div class="prose" id="gap-result" aria-live="polite"></div>
+  </Walkthrough>
+
+  <!-- Styles for this page's demo only (scoped under #walkthrough) -->
+  <style is:inline>
+    #walkthrough .prose + .prose { margin-top: var(--space-7); }
+    #walkthrough .demo { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); margin: var(--space-4) 0 var(--space-5); font-size: var(--fs-md); }
+    #walkthrough .demo input {
+      width: 140px;
+      padding: 6px var(--space-3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--card);
+      color: var(--text);
+      font: inherit;
+    }
+  </style>
+
+  <script is:inline slot="scripts" src="/js/gaps-between-the-primes.js"></script>
+</ProjectLayout>

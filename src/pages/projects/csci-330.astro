@@ -1,0 +1,26 @@
+---
+import ProjectLayout from "../../layouts/ProjectLayout.astro";
+import Walkthrough from "../../components/Walkthrough.astro";
+---
+<ProjectLayout slug="csci-330">
+  <!-- Written here on purpose: the repo's README is not used for this project -->
+  <section class="section">
+    <div class="narrow">
+      <h2 class="section-title">About the course</h2>
+      <div class="prose">
+        <p>I took CSCI 330 at NIU in spring 2021. It covered using UNIX, shell scripting, and system-level and network programming in C++. This repo has assignments 3 through 9.</p>
+        <ul>
+          <li><strong>Assignment 3:</strong> part of the <code>cat</code> command, rebuilt with system calls.</li>
+          <li><strong>Assignment 4:</strong> a program that appends a message from the command line to the end of a file.</li>
+          <li><strong>Assignment 5:</strong> a bigger <code>cat</code> that can print a file as hex or binary, or encoded with a Caesar cipher or a byte rotation, with options for buffer size and how many bytes to read.</li>
+          <li><strong>Assignment 6:</strong> recreating <code>command1 | command2</code> with fork, pipe, and dup.</li>
+          <li><strong>Assignment 7:</strong> a Bash script that manages a small text database: create, insert, display, delete, and count records.</li>
+          <li><strong>Assignment 8:</strong> an awk report on a sales database.</li>
+          <li><strong>Assignment 9:</strong> a TCP server in C++ that sends back the files and directory listings it's asked for from a given folder.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <Walkthrough />
+</ProjectLayout>

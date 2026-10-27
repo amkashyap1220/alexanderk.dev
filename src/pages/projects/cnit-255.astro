@@ -1,0 +1,24 @@
+---
+import ProjectLayout from "../../layouts/ProjectLayout.astro";
+import Walkthrough from "../../components/Walkthrough.astro";
+---
+<ProjectLayout slug="cnit-255">
+  <!-- Written here on purpose: the repo's README is not used for this project -->
+  <section class="section">
+    <div class="narrow">
+      <h2 class="section-title">About the labs</h2>
+      <div class="prose">
+        <p>I took CNIT 255 at Purdue in spring 2019. It was my first Java programming class outside of high school, and this repo collects labs 2 through 6 from it.</p>
+        <ul>
+          <li><strong>Lab 2:</strong> string handling in a simple, single-class program.</li>
+          <li><strong>Lab 3:</strong> a basic chat system split across multiple classes.</li>
+          <li><strong>Lab 4:</strong> building on Lab 3 by breaking it into more classes for addresses, contacts, and names.</li>
+          <li><strong>Lab 5:</strong> a calculator with a GUI, built in NetBeans with Swing.</li>
+          <li><strong>Lab 6:</strong> inheritance and interfaces, with student and grad student classes extending a person class, plus a Swing GUI.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <Walkthrough />
+</ProjectLayout>

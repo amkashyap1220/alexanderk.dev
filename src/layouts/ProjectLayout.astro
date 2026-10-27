@@ -1,0 +1,59 @@
+---
+// A project page: the hero (name, live GitHub numbers, summary, links)
+// comes from src/data/projects.ts; the page adds its own sections inside
+// <ProjectLayout slug="...">. Sections meant to come before the README go
+// in slot="intro"; the README section is added when the project has one.
+import BaseLayout from "./BaseLayout.astro";
+import RepoStats from "../components/RepoStats.astro";
+import Chips from "../components/Chips.astro";
+import Readme from "../components/Readme.astro";
+import { project } from "../data/projects";
+
+interface Props {
+  slug: string;
+  highlight?: boolean;   // load Prism for code blocks (<pre><code class="language-...">)
+}
+
+const { slug, highlight = false } = Astro.props;
+const p = project(slug);
+const github = `https://github.com/${p.repo}`;
+---
+<BaseLayout
+  title={`${p.name} · Alexander Kashyap`}
+  description={p.description ?? `${p.name}: ${p.summary}`}
+  path={`/projects/${p.slug}`}
+  current="projects"
+>
+  <section class="hero">
+    <div class="narrow">
+      <p class="eyebrow">Project</p>
+      <h1>{p.name}</h1>
+      <p class="tagline">{p.tagline}</p>
+      <RepoStats repo={p.repo} updated />
+      <p class="lead">{p.summary}</p>
+      <div class="actions">
+        {p.writeup && <a class="btn primary" href={p.writeup.href}>{p.writeup.label}</a>}
+        <a class={p.writeup ? "btn" : "btn primary"} href={github} target="_blank" rel="noopener">View on GitHub</a>
+        <a class="btn" href="/projects/">← All projects</a>
+      </div>
+      <Chips items={p.chips} />
+    </div>
+  </section>
+
+  <slot name="intro" />
+  {p.readme && <Readme repo={p.repo} />}
+  <slot />
+
+  <Fragment slot="scripts">
+    <script is:inline src="/js/gh.js"></script>
+    <script is:inline src="/js/github.js"></script>
+    <slot name="scripts" />
+    {highlight && (
+      <>
+        {/* Code highlighting (Prism). The autoloader fetches each language as a page needs it. */}
+        <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/prism.min.js"></script>
+        <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+      </>
+    )}
+  </Fragment>
+</BaseLayout>

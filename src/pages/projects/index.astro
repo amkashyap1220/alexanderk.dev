@@ -1,0 +1,52 @@
+---
+// The Projects page: one card per project in src/data/projects.ts
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import RepoStats from "../../components/RepoStats.astro";
+import Chips from "../../components/Chips.astro";
+import { projects } from "../../data/projects";
+
+const year = (date: string) => date.slice(0, 4);
+---
+<BaseLayout
+  title="Projects · Alexander Kashyap"
+  description="Projects by Alexander Kashyap."
+  path="/projects/"
+  current="projects"
+>
+  <section class="hero">
+    <div class="narrow">
+      <p class="eyebrow">Projects</p>
+      <h1>Things I've built</h1>
+      <p class="lead">Open-source work with live stats from GitHub. Click a project for its README and a walkthrough of the code.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="grid two">
+        {projects.map((p) => (
+          <article class="card project">
+            <div class="card-head">
+              <h2 class="card-title"><a class="card-link" href={`/projects/${p.slug}.html`}>{p.name}</a></h2>
+              {!p.when.end ? (
+                <time class="when" datetime={p.when.start}>{year(p.when.start)}</time>
+              ) : p.when.end === "present" ? (
+                <span class="when"><time datetime={p.when.start}>{year(p.when.start)}</time> – Present</span>
+              ) : (
+                <span class="when"><time datetime={p.when.start}>{year(p.when.start)}</time> – <time datetime={p.when.end}>{year(p.when.end)}</time></span>
+              )}
+            </div>
+            <RepoStats repo={p.repo} />
+            <p class="card-text">{p.card?.text ?? p.summary}</p>
+            <Chips items={p.card?.chips ?? p.chips} />
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <Fragment slot="scripts">
+    <script is:inline src="/js/gh.js"></script>
+    <script is:inline src="/js/github.js"></script>
+  </Fragment>
+</BaseLayout>
