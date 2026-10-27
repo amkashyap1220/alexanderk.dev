@@ -24,6 +24,7 @@
   --warn: #fab219;
 }
 
+.fit-page { padding-top: var(--space-7); border-top: 0; }   /* no hero above: start right under the header */
 .fit-status { color: var(--muted); font-size: var(--fs-md); text-align: center; }
 .fit-status.error { color: var(--bad); }
 .fit-h { margin-top: var(--space-9); }
