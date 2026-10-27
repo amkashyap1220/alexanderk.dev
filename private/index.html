@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Private · Alexander Kashyap</title>
+  <title>Private projects · Alexander Kashyap</title>
   <meta name="description" content="Private section.">
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#eeeeec">
@@ -13,6 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
   <script src="/js/theme.js"></script>
+  <script src="/js/signed-in.js"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -25,6 +26,7 @@
         <a href="/projects/">Projects</a>
         <a href="/research/">Research</a>
         <a href="/stats/"><span class="nav-long">GitHub </span>Stats</a>
+        <a class="nav-private" href="/private/" aria-current="page">Private</a>
       </nav>
       <div class="header-actions">
         <button class="icon-btn" type="button" data-theme-toggle aria-label="Dark mode" aria-pressed="false">
@@ -33,7 +35,7 @@
         </button>
         <a class="btn small" href="https://www.linkedin.com/in/alexander-kashyap/" target="_blank" rel="noopener">LinkedIn</a>
         <a class="btn small" href="https://github.com/amkashyap1220" target="_blank" rel="noopener">GitHub</a>
-        <a class="btn small" href="/login">Log in</a>
+        <a class="btn small login-link" href="/login">Log in</a>
       </div>
     </div>
   </header>
@@ -42,8 +44,7 @@
     <section class="hero">
       <div class="narrow">
         <p class="eyebrow">Private</p>
-        <h1>Private</h1>
-        <p class="lead">Only you can see this. Everything in the private/ folder is behind the login.</p>
+        <h1>Private projects</h1>
         <form method="post" action="/logout" class="actions">
           <button class="btn" type="submit">Log out</button>
         </form>
@@ -51,11 +52,21 @@
     </section>
 
     <section class="section">
-      <div class="narrow prose">
-        <!-- To add a private page: put an HTML file in private/ (copy this one), and link it here.
-             Never put passwords or keys in these files: they're private on the site, but the
-             repo is public on GitHub. -->
-        <p class="muted">Nothing here yet.</p>
+      <div class="wrap">
+        <!-- To add a private project: copy one <article> here and copy fitness-tracking.html
+             in this folder. Everything in private/ needs the login on the site, but the repo is
+             public on GitHub: never put passwords, keys or anything sensitive in these files. -->
+        <div class="grid two">
+          <article class="card project">
+            <div class="card-head">
+              <h2 class="card-title"><a class="card-link" href="/private/fitness-tracking.html">Fitness Tracking</a></h2>
+              <time class="when" datetime="2026">2026</time>
+            </div>
+            <p class="pill"><span>Private</span></p>
+            <p class="card-text">Work in progress.</p>
+            <ul class="chips" aria-label="Tech"></ul>
+          </article>
+        </div>
       </div>
     </section>
   </main>
@@ -67,7 +78,7 @@
       <ul class="footer-links">
         <li><a href="https://www.linkedin.com/in/alexander-kashyap/" target="_blank" rel="noopener">LinkedIn</a></li>
         <li><a href="https://github.com/amkashyap1220" target="_blank" rel="noopener">GitHub</a></li>
-        <li><a href="/login">Log in</a></li>
+        <li class="login-link"><a href="/login">Log in</a></li>
       </ul>
     </div>
   </footer>
