@@ -354,6 +354,7 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
 .post-summary { color: var(--muted); font-size: var(--fs-sm); }
 .post-body .chips { margin-top: auto; padding-top: var(--space-2); }
 .empty { padding: var(--space-7); border: 1px dashed var(--border); border-radius: var(--radius-lg); color: var(--muted); font-size: var(--fs-md); text-align: center; }
+.grid > .empty { grid-column: 1 / -1; }   /* an empty state spans the whole grid, not one column */
 
 
 /* Login form (login.html) */
