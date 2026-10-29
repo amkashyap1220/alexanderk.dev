@@ -4,8 +4,8 @@
    see worker/fitness.js).
 
    Every 5 minutes (Cron Trigger in wrangler.jsonc) it asks GitHub for every
-   repo's stars, commit count, languages and last push, the 90-day activity
-   feed, and the READMEs, and saves the result in KV storage. Visitors'
+   repo's stars, commit count, languages and last push, the last year of
+   contributions, the 90-day activity feed, and the READMEs, and saves the result in KV storage. Visitors'
    browsers read it from /data/github.json, so they never call GitHub (and
    never hit its 60-requests-an-hour limit). Everything else on the site is
    plain static files, served as before.
@@ -83,6 +83,7 @@ async function refresh(env) {
   const query = `{
     user(login: "${USER}") {
       createdAt
+      contributionsCollection { totalCommitContributions contributionCalendar { totalContributions weeks { contributionDays { date contributionCount } } } }
       repositories(first: 100, ownerAffiliations: OWNER, privacy: PUBLIC, isFork: false, orderBy: { field: NAME, direction: ASC }) { nodes { ${fields} } }
     }
     ${extraQueries}
@@ -95,6 +96,17 @@ async function refresh(env) {
   const others = extras.map((_, i) => result.data["x" + i]).filter(Boolean);
 
   data[`user:${USER}`.toLowerCase()] = { since: result.data.user.createdAt };
+  // The last year of contributions, for the heat map: GitHub's own calendar, so it matches the profile.
+  // Only days with something on them are kept ({ "2026-03-04": 5 }); from/to give the whole range.
+  const calendar = result.data.user.contributionsCollection;
+  const allDays = calendar.contributionCalendar.weeks.flatMap((w) => w.contributionDays);
+  data[`contributions:${USER}`.toLowerCase()] = {
+    total: calendar.contributionCalendar.totalContributions,
+    commits: calendar.totalCommitContributions,
+    from: allDays[0].date,
+    to: allDays[allDays.length - 1].date,
+    days: Object.fromEntries(allDays.filter((d) => d.contributionCount).map((d) => [d.date, d.contributionCount])),
+  };
   data[`repos:${USER}`.toLowerCase()] = own.map((r) => ({
     name: r.name, fullName: r.nameWithOwner, url: r.url, stars: r.stargazerCount, pushed: r.pushedAt,
   }));

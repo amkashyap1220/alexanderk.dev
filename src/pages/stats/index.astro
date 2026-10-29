@@ -1,13 +1,14 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { projects } from "../../data/projects";
+import Contributions from "../../components/stats/Contributions.svelte";
 
 // Which repos have a page here, for js/stats.js: { "RateWillBot": "/projects/ratewillbot", ... }
 const projectPages = Object.fromEntries(projects.map((p) => [p.repo.split("/")[1], `/projects/${p.slug}`]));
 ---
 <BaseLayout
   title="GitHub Stats · Alexander Kashyap"
-  description="Live stats from Alexander Kashyap's public GitHub repos: languages, commits and recent activity."
+  description="Live stats from Alexander Kashyap's public GitHub repos: a year of contributions, languages, commits and recent activity."
   path="/stats/"
   current="stats"
 >
@@ -26,6 +27,16 @@ const projectPages = Object.fromEntries(projects.map((p) => [p.repo.split("/")[1
       <p class="muted" id="numbers-status" role="status">Loading from GitHub…</p>
       <dl class="stat-grid" id="numbers"></dl>
       <div class="highlights" id="highlights"></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="narrow">
+      <h2 class="section-title">Contributions</h2>
+      <p class="section-intro">Every day of the last year on GitHub, like the map on my profile: commits, pull requests, issues and reviews.</p>
+      <div id="contributions" aria-live="polite">
+        <Contributions client:load />
+      </div>
     </div>
   </section>
 
