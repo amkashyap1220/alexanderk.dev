@@ -1,6 +1,6 @@
 /* ==========================================================================
    Cloudflare Worker: keeps the site's GitHub numbers fresh, and guards the
-   private section (login: see worker/auth.js; the fitness dashboard's data:
+   private section (the unlock code: see worker/auth.js; the fitness dashboard's data:
    see worker/fitness.js).
 
    Every 5 minutes (Cron Trigger in wrangler.jsonc) it asks GitHub for every
@@ -21,7 +21,7 @@
    the file as is.
    ========================================================================== */
 
-import { handleAuth, loggedIn, privateResponse } from "./auth.js";
+import { handleAuth, unlocked, privateResponse } from "./auth.js";
 import { handleFitness } from "./fitness.js";
 
 const USER = "amkashyap1220";
@@ -32,12 +32,12 @@ const NAME = /^[\w.-]+$/;
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
-    // The fitness dashboard's data (worker/fitness.js): logged in only, and a 401 rather than a redirect
+    // The fitness dashboard's data (worker/fitness.js): unlocked only, and a 401 rather than a redirect
     if (url.pathname.startsWith("/private/api/fitness/")) {
-      if (!(await loggedIn(request, env))) return privateResponse(new Response('{"error":"Log in first."}', { status: 401, headers: { "Content-Type": "application/json" } }));
+      if (!(await unlocked(request, env))) return privateResponse(new Response('{"error":"Unlock first."}', { status: 401, headers: { "Content-Type": "application/json" } }));
       return privateResponse(await handleFitness(request, env));
     }
-    const auth = await handleAuth(request, env);   // /login, /logout and /private/...
+    const auth = await handleAuth(request, env);   // /unlock, /lock and /private/...
     if (auth) return auth;
     if (url.pathname !== "/data/github.json") return env.ASSETS.fetch(request);
 

@@ -1,35 +1,40 @@
 /* ==========================================================================
-   Login for the private section (/private/...).
+   The code that unlocks the private section (/private/...).
 
-   One username and password, no registration. They live as Worker secrets
+   One shared code, no usernames and no sign-up. It lives as a Worker secret
    (Settings > Variables and Secrets), never in the repo:
-     LOGIN_USERNAME, LOGIN_PASSWORD
+     UNLOCK_CODE
 
-   - GET  /login    the login page (login.html)
-   - POST /login    checks the username and password; on success sets a
-                    signed "session" cookie for a year, renewed each
-                    time you open a private page
-   - POST /logout   clears the cookie
+   - GET  /unlock   the unlock page (unlock.html); the lock icon in the
+                    header opens the same box in place
+   - POST /unlock   checks the code; on success sets a signed "session"
+                    cookie for a year, renewed each time you open a
+                    private page
+   - POST /lock     clears the cookie
+   - /login         old address: sends you to /unlock
    - /private/...   only served with a valid session; otherwise redirects
-                    to /login, which sends you back after you log in
+                    to /unlock, which sends you back once it's unlocked
 
    The cookie is "<expiry>.<signature>": an HMAC of the expiry, keyed by the
-   username and password. It can't be forged without the password, and
-   changing the password logs out every device. HttpOnly, so page scripts
-   can't read it. A second cookie, signed_in=1, is readable by the pages
-   only so they can show the Private tab (js/signed-in.js); it unlocks
-   nothing by itself.
+   code. It can't be forged without the code, and changing the code locks
+   every device out. HttpOnly, so page scripts can't read it. A second
+   cookie, signed_in=1, is readable by the pages only so they can show the
+   Private tab (js/signed-in.js); it unlocks nothing by itself.
 
-   Wrong guesses are slowed by the LOGIN_LIMITER rate limiter (5 tries a
-   minute per connection). It doesn't use KV, so it can't use up the KV
-   writes the GitHub data needs.
+   A short code is easy to guess by trying them all, so wrong guesses are
+   slowed twice over, without KV (so they can't use up the KV writes the
+   GitHub data needs):
+     UNLOCK_LIMITER   5 tries a minute per connection
+     UNLOCK_GLOBAL    10 tries a minute for everyone together (counted per
+                      Cloudflare location), so switching connections
+                      doesn't help much either
    ========================================================================== */
 
 const COOKIE = "session";
-const SESSION_DAYS = 365;   // and renewed every time a private page opens, so you stay logged in
+const SESSION_DAYS = 365;   // and renewed every time a private page opens, so it stays unlocked
 const enc = new TextEncoder();
 
-const configured = (env) => Boolean(env.LOGIN_USERNAME && env.LOGIN_PASSWORD);
+const configured = (env) => Boolean(env.UNLOCK_CODE);
 
 // Equal without leaking how much matched through timing: compare hashes, byte by byte, all the way through
 async function safeEqual(a, b) {
@@ -41,20 +46,20 @@ async function safeEqual(a, b) {
 }
 
 async function signature(env, expires) {
-  const key = await crypto.subtle.importKey("raw", enc.encode("session|" + env.LOGIN_USERNAME + "|" + env.LOGIN_PASSWORD),
+  const key = await crypto.subtle.importKey("raw", enc.encode("session|" + env.UNLOCK_CODE),
     { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
   const sig = new Uint8Array(await crypto.subtle.sign("HMAC", key, enc.encode(String(expires))));
   return btoa(String.fromCharCode(...sig)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
-export async function loggedIn(request, env) {
+export async function unlocked(request, env) {
   if (!configured(env)) return false;
   const m = (request.headers.get("Cookie") || "").match(/(?:^|;\s*)session=(\d+)\.([\w-]+)/);
   if (!m || Number(m[1]) < Date.now()) return false;
   return safeEqual(m[2], await signature(env, m[1]));
 }
 
-// Only ever send people back into the private section (never to another site)
+// Only ever send people on into the private section (never to another site)
 function nextPath(value) {
   return typeof value === "string" && /^\/private(\/[\w\-./]*)?$/.test(value) && !value.includes("..") ? value : "/private/";
 }
@@ -78,7 +83,7 @@ async function freshCookies(env) {
   return [session(`${expires}.${await signature(env, expires)}`), hint(true)];
 }
 
-const loginUrl = (next, error) => "/login?" + new URLSearchParams({ next, ...(error ? { error } : {}) });
+const unlockUrl = (next, error) => "/unlock?" + new URLSearchParams({ next, ...(error ? { error } : {}) });
 
 // Private pages are never cached by browsers or shared caches, and never indexed
 export function privateResponse(res) {
@@ -88,47 +93,49 @@ export function privateResponse(res) {
   return out;
 }
 
-// Handles /login, /logout and /private/...; returns null for anything else
+// Handles /unlock, /lock, /login and /private/...; returns null for anything else
 export async function handleAuth(request, env) {
   const url = new URL(request.url);
   const path = url.pathname;
 
   if (path === "/private" || path.startsWith("/private/")) {
-    if (!(await loggedIn(request, env))) return redirect(loginUrl(nextPath(path)), [hint(false)]);   // expired: hide the tab too
-    // Logged in: renew the session and the tab hint, so you stay logged in as long as you keep visiting
+    if (!(await unlocked(request, env))) return redirect(unlockUrl(nextPath(path)), [hint(false)]);   // expired: hide the tab too
+    // Unlocked: renew the session and the tab hint, so it stays unlocked as long as you keep visiting
     const res = privateResponse(await env.ASSETS.fetch(request));
     (await freshCookies(env)).forEach((c) => res.headers.append("Set-Cookie", c));
     return res;
   }
 
+  // The old login page's address, for bookmarks
   if (path === "/login" || path === "/login.html") {
+    return redirect(unlockUrl(nextPath(url.searchParams.get("next"))));
+  }
+
+  if (path === "/unlock" || path === "/unlock.html") {
     const next = nextPath(url.searchParams.get("next"));
     if (request.method === "GET" || request.method === "HEAD") {
-      if (await loggedIn(request, env)) return redirect(next, await freshCookies(env));   // also restores a missing tab hint
-      return privateResponse(await env.ASSETS.fetch(new Request(new URL("/login", url), request)));
+      if (await unlocked(request, env)) return redirect(next, await freshCookies(env));   // also restores a missing tab hint
+      return privateResponse(await env.ASSETS.fetch(new Request(new URL("/unlock", url), request)));
     }
     if (request.method !== "POST") return new Response("Method not allowed", { status: 405, headers: { Allow: "GET, POST" } });
 
     const form = await request.formData().catch(() => null);
     const sentNext = nextPath(form && form.get("next"));
-    if (!configured(env)) return redirect(loginUrl(sentNext, "setup"));
+    if (!configured(env)) return redirect(unlockUrl(sentNext, "setup"));
 
+    // Per connection first, then everyone together; both before the code is checked
     const ip = request.headers.get("CF-Connecting-IP") || "unknown";
-    if (env.LOGIN_LIMITER) {
-      const { success } = await env.LOGIN_LIMITER.limit({ key: "login:" + ip });
-      if (!success) return redirect(loginUrl(sentNext, "slow"));
+    for (const [limiter, key] of [[env.UNLOCK_LIMITER, "unlock:" + ip], [env.UNLOCK_GLOBAL, "unlock"]]) {
+      if (limiter && !(await limiter.limit({ key })).success) return redirect(unlockUrl(sentNext, "slow"));
     }
 
-    const [userOk, passOk] = await Promise.all([
-      safeEqual(form ? form.get("username") || "" : "", env.LOGIN_USERNAME),
-      safeEqual(form ? form.get("password") || "" : "", env.LOGIN_PASSWORD),
-    ]);
-    if (!userOk || !passOk) return redirect(loginUrl(sentNext, "wrong"));
+    const code = String((form && form.get("code")) || "").trim();
+    if (!(await safeEqual(code, env.UNLOCK_CODE))) return redirect(unlockUrl(sentNext, "wrong"));
 
     return redirect(sentNext, await freshCookies(env));
   }
 
-  if (path === "/logout") {
+  if (path === "/lock" || path === "/logout") {
     if (request.method !== "POST") return redirect("/");
     return redirect("/", [session(""), hint(false)]);
   }

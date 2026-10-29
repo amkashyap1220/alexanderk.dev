@@ -15,7 +15,7 @@
      POST /private/api/fitness/request      { text } ask for a new lift, or
                                             { cancel: n } take one back
 
-   Only reached when logged in (worker/index.js checks first). Needs a
+   Only reached when unlocked (worker/index.js checks first). Needs a
    FITNESS_GITHUB_TOKEN secret: a fine-grained GitHub token with access to
    fitness-data only, Contents read and write.
    ========================================================================== */
@@ -139,7 +139,7 @@ export async function handleFitness(request, env) {
     }
 
     if (request.method === "POST" && (path === "preferences" || path === "request")) {
-      // Only the dashboard itself can save (the login cookie is SameSite=Lax as well)
+      // Only the dashboard itself can save (the session cookie is SameSite=Lax as well)
       if (request.headers.get("Origin") !== new URL(request.url).origin) return fail(403, "Wrong origin.");
       const body = await request.json().catch(() => null);
       const conflict = () => fail(409, "Changed somewhere else meanwhile. Reload and try again.");

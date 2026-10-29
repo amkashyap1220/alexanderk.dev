@@ -1,4 +1,4 @@
-// Tests for the login and private section in worker/auth.js (run with: node --test tests/)
+// Tests for the unlock code and private section in worker/auth.js (run with: node --test tests/)
 import test from "node:test";
 import assert from "node:assert/strict";
 import worker from "../worker/index.js";
@@ -7,12 +7,14 @@ import { handleAuth } from "../worker/auth.js";
 const SITE = "https://alexanderk.dev";
 
 // A fake Cloudflare environment: secrets, a rate limiter, and static files that echo their path
-function env({ user = "alex", pass = "correct horse", allow = true } = {}) {
+function env({ code = "1234", allow = true, allowAll = true } = {}) {
   const served = [];
+  const keys = [];
   return {
-    LOGIN_USERNAME: user,
-    LOGIN_PASSWORD: pass,
-    LOGIN_LIMITER: { limit: async () => ({ success: allow }) },
+    UNLOCK_CODE: code,
+    UNLOCK_LIMITER: { limit: async ({ key }) => (keys.push(key), { success: allow }) },
+    UNLOCK_GLOBAL: { limit: async ({ key }) => (keys.push(key), { success: allowAll }) },
+    keys,
     ASSETS: { fetch: async (req) => { const p = new URL(req.url).pathname; served.push(p); return new Response("file " + p); } },
     served,
   };
@@ -28,21 +30,21 @@ const cookies = (res) => res.headers.getSetCookie();
 const cookieFrom = (res) => (cookies(res).find((c) => c.startsWith("session=")) || "").split(";")[0];
 
 async function logIn(e, next = "/private/") {
-  const res = await handleAuth(post("/login", { username: "alex", password: "correct horse", next }), e);
+  const res = await handleAuth(post("/unlock", { code: "1234", next }), e);
   return cookieFrom(res);
 }
 
-test("private pages redirect to the login without sending the file", async () => {
+test("private pages redirect to the unlock page without sending the file", async () => {
   const e = env();
   const res = await handleAuth(get("/private/notes.html"), e);
   assert.equal(res.status, 303);
-  assert.equal(res.headers.get("Location"), "/login?next=%2Fprivate%2Fnotes.html");
+  assert.equal(res.headers.get("Location"), "/unlock?next=%2Fprivate%2Fnotes.html");
   assert.deepEqual(e.served, []);
 });
 
-test("the right username and password set a secure session cookie and go back to the page", async () => {
+test("the right code sets a secure session cookie and goes on to the page", async () => {
   const e = env();
-  const res = await handleAuth(post("/login", { username: "alex", password: "correct horse", next: "/private/notes.html" }), e);
+  const res = await handleAuth(post("/unlock", { code: "1234", next: "/private/notes.html" }), e);
   assert.equal(res.status, 303);
   assert.equal(res.headers.get("Location"), "/private/notes.html");
   const [sessionCookie, hintCookie] = cookies(res);
@@ -51,7 +53,7 @@ test("the right username and password set a secure session cookie and go back to
   assert.equal(hintCookie, "signed_in=1; Path=/; Max-Age=31536000; Secure; SameSite=Lax");
 });
 
-test("logged in, private pages are served and never cached", async () => {
+test("unlocked, private pages are served and never cached", async () => {
   const e = env();
   const cookie = await logIn(e);
   const res = await handleAuth(get("/private/", cookie), e);
@@ -60,10 +62,10 @@ test("logged in, private pages are served and never cached", async () => {
   assert.equal(res.headers.get("Cache-Control"), "private, no-store");
 });
 
-test("a wrong password or username doesn't log in", async () => {
-  for (const fields of [{ username: "alex", password: "nope" }, { username: "bob", password: "correct horse" }, {}]) {
-    const res = await handleAuth(post("/login", { next: "/private/", ...fields }), env());
-    assert.equal(res.headers.get("Location"), "/login?next=%2Fprivate%2F&error=wrong");
+test("a wrong code doesn't unlock", async () => {
+  for (const fields of [{ code: "1243" }, { code: "12345" }, { code: "" }, {}]) {
+    const res = await handleAuth(post("/unlock", { next: "/private/", ...fields }), env());
+    assert.equal(res.headers.get("Location"), "/unlock?next=%2Fprivate%2F&error=wrong");
     assert.deepEqual(cookies(res), []);
   }
 });
@@ -78,51 +80,72 @@ test("forged, edited and expired cookies are rejected", async () => {
   }
 });
 
-test("changing the password logs out existing sessions", async () => {
+test("changing the code locks existing sessions out", async () => {
   const cookie = await logIn(env());
-  const res = await handleAuth(get("/private/", cookie), env({ pass: "a new password" }));
+  const res = await handleAuth(get("/private/", cookie), env({ code: "9876" }));
   assert.equal(res.status, 303);
 });
 
-test("after logging in, it only ever sends you into the private section", async () => {
+test("once unlocked, it only ever sends you into the private section", async () => {
   for (const next of ["https://evil.example", "//evil.example", "/private/../index.html", "/projects/", "javascript:alert(1)"]) {
-    const res = await handleAuth(post("/login", { username: "alex", password: "correct horse", next }), env());
+    const res = await handleAuth(post("/unlock", { code: "1234", next }), env());
     assert.equal(res.headers.get("Location"), "/private/", next);
   }
 });
 
-test("too many tries are turned away before the password is checked", async () => {
-  const res = await handleAuth(post("/login", { username: "alex", password: "correct horse", next: "/private/" }), env({ allow: false }));
-  assert.equal(res.headers.get("Location"), "/login?next=%2Fprivate%2F&error=slow");
-  assert.deepEqual(cookies(res), []);
+test("too many tries, from one connection or from everyone, are turned away before the code is checked", async () => {
+  for (const limits of [{ allow: false }, { allowAll: false }]) {
+    const res = await handleAuth(post("/unlock", { code: "1234", next: "/private/" }), env(limits));
+    assert.equal(res.headers.get("Location"), "/unlock?next=%2Fprivate%2F&error=slow");
+    assert.deepEqual(cookies(res), []);
+  }
+});
+
+test("every try counts against the connection's limit and the shared one", async () => {
+  const e = env();
+  await handleAuth(new Request(SITE + "/unlock", { method: "POST", headers: { "CF-Connecting-IP": "203.0.113.9" }, body: new URLSearchParams({ code: "0000" }) }), e);
+  assert.deepEqual(e.keys, ["unlock:203.0.113.9", "unlock"]);
+});
+
+test("spaces around the code are ignored", async () => {
+  const res = await handleAuth(post("/unlock", { code: " 1234 ", next: "/private/" }), env());
+  assert.equal(res.headers.get("Location"), "/private/");
 });
 
 test("without the secrets set, nothing private opens", async () => {
-  const e = env({ user: "", pass: "" });
+  const e = env({ code: "" });
   assert.equal((await handleAuth(get("/private/", "session=1.x"), e)).status, 303);
-  const res = await handleAuth(post("/login", { username: "", password: "", next: "/private/" }), e);
-  assert.equal(res.headers.get("Location"), "/login?next=%2Fprivate%2F&error=setup");
+  const res = await handleAuth(post("/unlock", { code: "", next: "/private/" }), e);
+  assert.equal(res.headers.get("Location"), "/unlock?next=%2Fprivate%2F&error=setup");
 });
 
-test("the login page is served, or skipped when already logged in", async () => {
+test("the unlock page is served, or skipped when already unlocked", async () => {
   const e = env();
-  const page = await handleAuth(get("/login?next=/private/notes.html"), e);
-  assert.equal(await page.text(), "file /login");
+  const page = await handleAuth(get("/unlock?next=/private/notes.html"), e);
+  assert.equal(await page.text(), "file /unlock");
   const cookie = await logIn(e);
-  const skip = await handleAuth(get("/login?next=/private/notes.html", cookie), e);
+  const skip = await handleAuth(get("/unlock?next=/private/notes.html", cookie), e);
   assert.equal(skip.status, 303);
   assert.equal(skip.headers.get("Location"), "/private/notes.html");
 });
 
-test("logging out clears the session and hides the Private tab", async () => {
-  const res = await handleAuth(post("/logout", {}), env());
-  assert.equal(res.headers.get("Location"), "/");
-  const [s, h] = cookies(res);
-  assert.match(s, /^session=; Path=\/; Max-Age=0/);
-  assert.match(h, /^signed_in=; Path=\/; Max-Age=0/);
+test("locking clears the session and hides the Private tab (the old /logout too)", async () => {
+  for (const path of ["/lock", "/logout"]) {
+    const res = await handleAuth(post(path, {}), env());
+    assert.equal(res.headers.get("Location"), "/");
+    const [s, h] = cookies(res);
+    assert.match(s, /^session=; Path=\/; Max-Age=0/);
+    assert.match(h, /^signed_in=; Path=\/; Max-Age=0/);
+  }
 });
 
-test("the Private tab hint alone opens nothing, and an expired login clears it", async () => {
+test("the old login address sends you to the unlock page", async () => {
+  const res = await handleAuth(get("/login?next=/private/notes.html"), env());
+  assert.equal(res.status, 303);
+  assert.equal(res.headers.get("Location"), "/unlock?next=%2Fprivate%2Fnotes.html");
+});
+
+test("the Private tab hint alone opens nothing, and an expired session clears it", async () => {
   const res = await handleAuth(get("/private/fitness-tracking.html", "signed_in=1"), env());
   assert.equal(res.status, 303);
   assert.match(cookies(res)[0], /^signed_in=; Path=\/; Max-Age=0/);
@@ -135,7 +158,7 @@ test("the rest of the site isn't affected", async () => {
   assert.equal(await res.text(), "file /research/");
 });
 
-test("opening a private page renews the login and the Private tab, so you stay logged in", async () => {
+test("opening a private page renews the session and the Private tab, so it stays unlocked", async () => {
   const e = env();
   const cookie = await logIn(e);
   const res = await handleAuth(get("/private/fitness-tracking.html", cookie), e);
@@ -147,10 +170,10 @@ test("opening a private page renews the login and the Private tab, so you stay l
   assert.equal((await handleAuth(get("/private/", renewed.split(";")[0]), e)).status, 200);
 });
 
-test("logged in without the tab hint (e.g. from before it existed), the login page restores it", async () => {
+test("unlocked without the tab hint (e.g. from before it existed), the unlock page restores it", async () => {
   const e = env();
   const cookie = await logIn(e);   // session only, no signed_in cookie sent back
-  const res = await handleAuth(get("/login", cookie), e);
+  const res = await handleAuth(get("/unlock", cookie), e);
   assert.equal(res.status, 303);
   assert.ok(cookies(res).includes("signed_in=1; Path=/; Max-Age=31536000; Secure; SameSite=Lax"));
 });

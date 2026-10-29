@@ -34,7 +34,7 @@
   async function load() {
     try {
       const [res, engine] = await Promise.all([fetch(API + "data", { cache: "no-store" }), import(/* @vite-ignore */ API + "engine.js")]);
-      if (res.status === 401) { location.href = "/login?next=" + encodeURIComponent(location.pathname); return; }
+      if (res.status === 401) { location.href = "/unlock?next=" + encodeURIComponent(location.pathname); return; }
       const body = await res.json();
       if (!res.ok) throw new Error(body.error || res.status);
       E = engine;

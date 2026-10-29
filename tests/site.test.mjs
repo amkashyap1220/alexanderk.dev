@@ -16,8 +16,8 @@ const files = fs.readdirSync(out, { recursive: true }).map(String).filter((f) =>
 const pages = files.map((f) => ({ file: f.split(path.sep).join("/"), html: fs.readFileSync(path.join(out, f), "utf8") }));
 const all = (html, re) => [...html.matchAll(re)].map((m) => m[1]);
 
-// Handled by the Worker, not files: the login, the GitHub data and the fitness API
-const DYNAMIC = /^\/(login|logout)$|^\/data\/|^\/private\/api\//;
+// Handled by the Worker, not files: unlocking and locking, the GitHub data and the fitness API
+const DYNAMIC = /^\/(unlock|lock)$|^\/data\/|^\/private\/api\//;
 
 // The file Cloudflare would serve for a site address, or null
 function fileFor(address) {
@@ -28,7 +28,7 @@ function fileFor(address) {
 
 test("the site builds every page", () => {
   assert.ok(pages.length >= 20, `built ${pages.length} pages`);
-  for (const p of ["index.html", "404.html", "login.html", "projects/index.html", "research/index.html", "stats/index.html", "private/index.html"]) {
+  for (const p of ["index.html", "404.html", "unlock.html", "projects/index.html", "research/index.html", "stats/index.html", "private/index.html"]) {
     assert.ok(pages.some((x) => x.file === p), p);
   }
 });
@@ -39,7 +39,8 @@ test("every page has a title, a description and the site header and footer", () 
     assert.match(html, /<meta name="description" content="[^"]+"/, file + ": description");
     assert.match(html, /<a class="nav-private" href="\/private\/"/, file + ": Private tab");
     assert.match(html, /<script src="\/js\/signed-in\.js"><\/script>/, file + ": signed-in.js");
-    assert.match(html, /class="btn small login-link" href="\/login"/, file + ": Log in button");
+    assert.match(html, /class="icon-btn unlock-link" href="\/unlock"/, file + ": lock icon");
+    assert.match(html, /<dialog class="unlock-dialog"/, file + ": unlock box");
     assert.match(html, /<footer class="site-footer">/, file + ": footer");
     assert.ok(all(html, /aria-current="(page)"/g).length <= 1, file + ": at most one current tab");
   }
