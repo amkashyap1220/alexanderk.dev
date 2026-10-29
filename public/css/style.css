@@ -164,8 +164,8 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
 .site-nav a { padding: 6px var(--space-3); border-radius: var(--radius); color: var(--muted); font-size: var(--fs-md); white-space: nowrap; }
 .site-nav a:hover { color: var(--text); background: var(--soft); text-decoration: none; }
 .site-nav a[aria-current="page"] { color: var(--text); }
-/* Private tab: only when logged in (js/signed-in.js); "Log in" hides then */
-.nav-private, :root.signed-in .login-link { display: none; }
+/* Private tab: only once unlocked (js/signed-in.js); the lock icon hides then */
+.nav-private, :root.signed-in .unlock-link { display: none; }
 :root.signed-in .nav-private { display: inline-block; }
 .header-actions { display: flex; align-items: center; gap: var(--space-2); }
 
@@ -356,13 +356,15 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
 .empty { padding: var(--space-7); border: 1px dashed var(--border); border-radius: var(--radius-lg); color: var(--muted); font-size: var(--fs-md); text-align: center; }
 
 
-/* Login form (login.html) */
-.login-form { display: grid; gap: var(--space-2); max-width: 320px; margin: var(--space-7) auto 0; text-align: left; }
-.login-form label { margin-top: var(--space-2); color: var(--muted); font-size: var(--fs-sm); }
-.login-form input { padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--soft); color: var(--text); font: inherit; }
-.login-form input:focus-visible { outline: 2px solid var(--link); outline-offset: 1px; }
-.login-form button { justify-self: start; margin-top: var(--space-4); }
-.login-error { padding: var(--space-3); border: 1px solid var(--code-number); border-radius: var(--radius); color: var(--code-number); font-size: var(--fs-sm); }
+/* Unlock code box (unlock.html, and the lock icon's dialog) */
+.unlock-form { display: grid; grid-template-columns: 1fr auto; gap: var(--space-2); max-width: 280px; margin: var(--space-7) auto 0; }
+.unlock-form input { min-width: 0; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--soft); color: var(--text); font: inherit; letter-spacing: 0.3em; text-align: center; }
+.unlock-form input::placeholder { letter-spacing: normal; }
+.unlock-form input:focus-visible { outline: 2px solid var(--link); outline-offset: 1px; }
+.unlock-error { grid-column: 1 / -1; padding: var(--space-3); border: 1px solid var(--code-number); border-radius: var(--radius); color: var(--code-number); font-size: var(--fs-sm); text-align: left; }
+.unlock-dialog { width: min(320px, calc(100vw - 32px)); padding: var(--space-5); border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg); color: var(--text); }
+.unlock-dialog::backdrop { background: rgb(0 0 0 / 0.35); }
+.unlock-dialog .unlock-form { margin: 0; max-width: none; }
 
 
 /* Embedded video: full width, always 16:9 */
@@ -422,6 +424,7 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
   .wrap, .narrow { padding: 0 var(--space-4); }
   .site-header .wrap { gap: var(--space-2); }
   .site-nav a { padding: 6px; font-size: 12.5px; }
+  .nav-long { display: none; }   /* "GitHub Stats" becomes "Stats", to make room for the lock icon */
 }
 
 /* The narrowest phones (320–360px, e.g. iPhone SE): smaller nav text so

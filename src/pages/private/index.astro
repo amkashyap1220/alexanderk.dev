@@ -11,8 +11,8 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     <div class="narrow">
       <p class="eyebrow">Private</p>
       <h1>Private projects</h1>
-      <form method="post" action="/logout" class="actions">
-        <button class="btn" type="submit">Log out</button>
+      <form method="post" action="/lock" class="actions">
+        <button class="btn" type="submit">Lock</button>
       </form>
     </div>
   </section>
@@ -21,7 +21,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     <div class="wrap">
       {/* To add a private project: copy one <article> here and add its page next to
           src/pages/private/fitness-tracking.astro. Everything under /private/ needs the
-          login on the site, but the repo is public on GitHub: never put passwords, keys
+          unlock code on the site, but the repo is public on GitHub: never put passwords, keys
           or anything sensitive in these files. */}
       <div class="grid two">
         <article class="card project">
