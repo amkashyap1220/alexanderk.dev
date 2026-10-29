@@ -388,6 +388,13 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
 .bar { height: 100%; border-radius: var(--radius-pill); background: var(--lang, var(--muted)); }   /* the language's Tango color */
 .bar-value { color: var(--muted); text-align: right; }
 
+.heatmap { overflow-x: auto; padding: var(--space-3); }
+.heatmap svg { display: block; width: 100%; min-width: 600px; height: auto; font-family: var(--font); }   /* phones scroll it sideways */
+.heatmap-foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-1) var(--space-4); margin: var(--space-3) 0 var(--space-2); }
+.heatmap-foot p, .heatmap-foot + p { font-size: var(--fs-sm); }
+.heatmap-legend { display: flex; align-items: center; gap: 3px; }
+.heatmap-swatch { display: inline-block; width: 11px; height: 11px; border-radius: 2px; background: var(--mark); }
+.heatmap-swatch.none { background: var(--soft); border: 0.5px solid var(--border); }
 .activity-summary { font-size: var(--fs-md); }
 .latest { margin-top: var(--space-5); padding: 0; list-style: none; font-size: var(--fs-sm); }
 .latest li { padding: var(--space-2) 0; border-top: 1px solid var(--border); }
