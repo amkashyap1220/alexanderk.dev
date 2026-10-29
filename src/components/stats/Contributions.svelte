@@ -1,7 +1,10 @@
 <!--
-  Stats page: a year of GitHub contributions as a heat map, like the one on
-  my GitHub profile. One square per day, a column per week (Sunday on top),
-  darker green for busier days.
+  Stats page: a year of GitHub contributions as a heat map. My own take on
+  the one on my GitHub profile: a row per month and a column per day of the
+  month, read like a page of a log book. Each day is a dot that grows and
+  darkens with how much I did; the busiest day is marked in orange, and each
+  row ends with that month's total. Built from HTML, not SVG, so the labels
+  stay full size on a phone.
 
   The data is GitHub's own contribution calendar (commits, pull requests,
   issues and reviews), saved into /data/github.json by worker/index.js and
@@ -12,12 +15,12 @@
   import { onMount } from "svelte";
 
   const USER = "amkashyap1220";
-  const cell = 11, gap = 3, L = 30, T = 16;
-  const LEVELS = [0.3, 0.55, 0.8, 1];   // fill-opacity of --mark for the four busy levels
+  const SIZES = [0.45, 0.65, 0.85, 1];      // dot size (share of the cell) for the four busy levels
+  const SHADES = [0.45, 0.65, 0.85, 1];     // and its opacity of --mark
+  const DAY_LABELS = [1, 5, 10, 15, 20, 25, 30];
 
   let data = $state(null);
   let failed = $state(false);
-  let scroller = $state();
 
   onMount(() => {
     window.GH.get("contributions", USER).then((d) => { data = d; }, () => { failed = true; });
@@ -25,40 +28,33 @@
 
   // Dates stay "YYYY-MM-DD" strings, done in UTC so time zones never shift a day
   const toDate = (s) => new Date(s + "T00:00:00Z");
-  const addDays = (s, n) => new Date(toDate(s).getTime() + n * 86400000).toISOString().slice(0, 10);
   const fmt = (s, opts) => toDate(s).toLocaleDateString("en-US", { timeZone: "UTC", ...opts });
+  const pad = (n) => String(n).padStart(2, "0");
 
-  const all = $derived.by(() => {
+  // The last 12 months, this one included: [{ key: "2026-10", name, days: [{ date, count, future }], total }]
+  const months = $derived.by(() => {
     if (!data) return [];
-    const list = [];
-    for (let d = data.from; d <= data.to; d = addDays(d, 1)) list.push({ date: d, count: data.days[d] || 0 });
-    return list;
+    const [y, m] = data.to.split("-").map(Number);
+    return Array.from({ length: 12 }, (_, i) => {
+      const at = new Date(Date.UTC(y, m - 12 + i, 1));
+      const key = at.getUTCFullYear() + "-" + pad(at.getUTCMonth() + 1);
+      const length = new Date(Date.UTC(at.getUTCFullYear(), at.getUTCMonth() + 1, 0)).getUTCDate();
+      const days = Array.from({ length }, (_, d) => {
+        const date = key + "-" + pad(d + 1);
+        return { date, count: data.days[date] || 0, future: date > data.to };
+      });
+      const name = fmt(key + "-01", { month: "short" }) + (i === 0 || key.endsWith("-01") ? " ’" + key.slice(2, 4) : "");
+      return { key, name, days, total: days.reduce((t, d) => t + d.count, 0) };
+    });
   });
+  const all = $derived(months.flatMap((mo) => mo.days).filter((d) => !d.future));
 
-  // Busy days split into four levels at the quartiles, as GitHub does
+  // Busy days split into four levels at the quartiles
   const cuts = $derived.by(() => {
     const counts = all.map((d) => d.count).filter(Boolean).sort((a, b) => a - b);
     return [0.25, 0.5, 0.75].map((q) => counts[Math.floor(q * (counts.length - 1))] || 0);
   });
   const level = (count) => (count <= cuts[0] ? 0 : count <= cuts[1] ? 1 : count <= cuts[2] ? 2 : 3);
-
-  // Each week: its x, its month label (when the month changes), and its days
-  const columns = $derived.by(() => {
-    if (!all.length) return [];
-    const offset = toDate(data.from).getUTCDay();   // the first week can start mid-week
-    const cols = [];
-    all.forEach((d, i) => {
-      const w = Math.floor((i + offset) / 7);
-      if (!cols[w]) cols[w] = { x: L + w * (cell + gap), month: null, days: [] };
-      cols[w].days.push({ ...d, y: T + ((i + offset) % 7) * (cell + gap) });
-      if (d.date.slice(8) === "01" || i === 0) cols[w].month = fmt(d.date, { month: "short" });
-    });
-    // No label on a first partial week whose month is relabelled right after
-    if (cols.length > 1 && cols[0].days.length < 7 && cols[1].month) cols[0].month = null;
-    return cols;
-  });
-  const W = $derived(L + columns.length * (cell + gap));
-  const H = T + 7 * (cell + gap);
 
   // The numbers under the map
   const summary = $derived.by(() => {
@@ -69,52 +65,60 @@
     let current = 0;
     for (let i = all.length - 1 - (all[all.length - 1].count ? 0 : 1); i >= 0 && all[i].count; i--) current++;
     const busiest = all.reduce((a, b) => (b.count > a.count ? b : a));
-    return { active: all.filter((d) => d.count).length, longest, current, busiest };
+    return { total: all.reduce((t, d) => t + d.count, 0), active: all.filter((d) => d.count).length, longest, current, busiest };
   });
+  const busiestMonth = $derived(months.reduce((a, b) => (b.total > a.total ? b : a), months[0] || { total: 0 }));
 
   const plural = (n, word) => n.toLocaleString() + " " + word + (n === 1 ? "" : "s");
-  const tip = (d) => (d.count ? plural(d.count, "contribution") : "No contributions") + " on " + fmt(d.date, { weekday: "short", month: "short", day: "numeric", year: "numeric" });
-
-  // Start scrolled to the latest weeks when the map is wider than the screen
-  $effect(() => { if (scroller && columns.length) scroller.scrollLeft = scroller.scrollWidth; });
+  const tip = (d) => (d.count ? plural(d.count, "contribution") : "Nothing") + " on " + fmt(d.date, { weekday: "short", month: "short", day: "numeric", year: "numeric" });
 </script>
 
 {#if failed}
   <p class="muted">Couldn't load contributions from GitHub right now.</p>
 {:else if !data}
   <p class="muted">Loading…</p>
-{:else}
-  <div class="heatmap card" bind:this={scroller}>
-    <svg viewBox="0 0 {W} {H}" role="img"
-      aria-label="{plural(data.total, 'contribution')} on GitHub from {fmt(data.from, { month: 'long', day: 'numeric', year: 'numeric' })} to {fmt(data.to, { month: 'long', day: 'numeric', year: 'numeric' })}, one square per day">
-      {#each ["Mon", "Wed", "Fri"] as d, i}
-        <text x="0" y={T + (i * 2 + 1) * (cell + gap) + cell - 2} font-size="9" fill="var(--muted)">{d}</text>
-      {/each}
-      {#each columns as { x, month, days }}
-        {#if month}<text {x} y="10" font-size="9" fill="var(--muted)">{month}</text>{/if}
-        {#each days as d}
-          {#if d.count}
-            <rect {x} y={d.y} width={cell} height={cell} rx="2" fill="var(--mark)" fill-opacity={LEVELS[level(d.count)]}><title>{tip(d)}</title></rect>
+{:else if summary}
+  <p class="heatmap-headline">
+    <b>{summary.total.toLocaleString()}</b> contributions in the last 12 months
+    <span class="muted">· {plural(data.commits, "commit")} in the last year</span>
+  </p>
+  <div class="heatmap card" role="img"
+    aria-label="{plural(summary.total, 'contribution')} over the last 12 months, by month. Busiest month: {fmt(busiestMonth.key + '-01', { month: 'long', year: 'numeric' })}, with {busiestMonth.total}.">
+    <div class="heatmap-row heatmap-head" aria-hidden="true">
+      <span></span>
+      {#each { length: 31 } as _, i}<span class="heatmap-day">{DAY_LABELS.includes(i + 1) ? i + 1 : ""}</span>{/each}
+      <span class="heatmap-total">sum</span>
+    </div>
+    {#each months as mo (mo.key)}
+      <div class="heatmap-row" class:top={mo === busiestMonth && mo.total > 0} aria-hidden="true">
+        <span class="heatmap-month">{mo.name}</span>
+        {#each mo.days as d (d.date)}
+          {#if d.future}
+            <span class="heatmap-cell"></span>
+          {:else if d.count}
+            {@const l = level(d.count)}
+            <span class="heatmap-cell" class:peak={d === summary.busiest} title={tip(d)}
+              style="--size:{SIZES[l]};--shade:{SHADES[l]}"><i></i></span>
           {:else}
-            <rect {x} y={d.y} width={cell} height={cell} rx="2" fill="var(--soft)" stroke="var(--border)" stroke-width="0.5"><title>{tip(d)}</title></rect>
+            <span class="heatmap-cell none" title={tip(d)}><i></i></span>
           {/if}
         {/each}
-      {/each}
-    </svg>
+        {#each { length: 31 - mo.days.length } as _}<span></span>{/each}
+        <span class="heatmap-total">{mo.total || "–"}</span>
+      </div>
+    {/each}
   </div>
   <div class="heatmap-foot">
-    <p class="muted">{plural(data.total, "contribution")} in the last year, {plural(data.commits, "commit")} of them.</p>
-    <p class="heatmap-legend muted" aria-hidden="true">
-      Less
-      <span class="heatmap-swatch none"></span>
-      {#each LEVELS as o}<span class="heatmap-swatch" style="opacity:{o}"></span>{/each}
-      More
-    </p>
-  </div>
-  {#if summary}
     <p class="muted">
       Active on {plural(summary.active, "day")}. Longest streak: {plural(summary.longest, "day")}{summary.current ? `, current: ${plural(summary.current, "day")}` : ""}.
-      Busiest day: {fmt(summary.busiest.date, { month: "short", day: "numeric", year: "numeric" })}, with {summary.busiest.count}.
+      Busiest day: {fmt(summary.busiest.date, { month: "short", day: "numeric", year: "numeric" })}, with {summary.busiest.count} <span class="heatmap-peak-key" aria-hidden="true"></span>.
+      Busiest month (shaded): {fmt(busiestMonth.key + "-01", { month: "long" })}, with {busiestMonth.total}.
     </p>
-  {/if}
+    <p class="heatmap-legend muted" aria-hidden="true">
+      less
+      <span class="heatmap-cell none"><i></i></span>
+      {#each SIZES as s, i}<span class="heatmap-cell" style="--size:{s};--shade:{SHADES[i]}"><i></i></span>{/each}
+      more
+    </p>
+  </div>
 {/if}

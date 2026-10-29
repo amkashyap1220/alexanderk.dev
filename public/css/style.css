@@ -388,13 +388,32 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
 .bar { height: 100%; border-radius: var(--radius-pill); background: var(--lang, var(--muted)); }   /* the language's Tango color */
 .bar-value { color: var(--muted); text-align: right; }
 
-.heatmap { overflow-x: auto; padding: var(--space-3); }
-.heatmap svg { display: block; width: 100%; min-width: 600px; height: auto; font-family: var(--font); }   /* phones scroll it sideways */
-.heatmap-foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-1) var(--space-4); margin: var(--space-3) 0 var(--space-2); }
-.heatmap-foot p, .heatmap-foot + p { font-size: var(--fs-sm); }
-.heatmap-legend { display: flex; align-items: center; gap: 3px; }
-.heatmap-swatch { display: inline-block; width: 11px; height: 11px; border-radius: 2px; background: var(--mark); }
-.heatmap-swatch.none { background: var(--soft); border: 0.5px solid var(--border); }
+.heatmap { padding: var(--space-4); }
+.heatmap-headline { margin-bottom: var(--space-3); font-size: var(--fs-md); }
+.heatmap-headline b { font-size: var(--fs-xl); color: var(--mark); }
+/* A row per month: name, a column per day of the month, the month's total */
+.heatmap-row { display: grid; grid-template-columns: 4.2em repeat(31, minmax(0, 1fr)) 2.8em; align-items: center; column-gap: 2px; padding: 1px 0; border-radius: var(--radius-sm); }
+.heatmap-row.top { background: var(--soft); }
+.heatmap-head { color: var(--muted); font-size: var(--fs-xs); }
+.heatmap-day { text-align: center; }
+.heatmap-month { color: var(--label); font-size: var(--fs-sm); white-space: nowrap; }
+.heatmap-total { color: var(--muted); font-size: var(--fs-xs); text-align: right; font-variant-numeric: tabular-nums; }
+.heatmap-cell { display: grid; place-items: center; aspect-ratio: 1; }
+.heatmap-cell i { width: calc(var(--size) * 100%); height: calc(var(--size) * 100%); border-radius: 50%; background: var(--mark); opacity: var(--shade); }
+.heatmap-cell.none i { width: 22%; height: 22%; background: var(--muted); opacity: 0.45; }
+.heatmap-cell.peak i { background: var(--star); opacity: 1; box-shadow: 0 0 0 2px var(--bg), 0 0 0 3px var(--star); }
+.heatmap-foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: var(--space-2) var(--space-5); margin-top: var(--space-3); }
+.heatmap-foot p { font-size: var(--fs-sm); }
+.heatmap-foot > p:first-child { flex: 1 1 300px; }
+.heatmap-legend { display: flex; align-items: center; gap: 4px; }
+.heatmap-legend .heatmap-cell { width: 14px; }
+.heatmap-peak-key { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--star); vertical-align: 0; }
+@media (max-width: 640px) {
+  .heatmap { padding: var(--space-3) var(--space-2); }
+  .heatmap-row { grid-template-columns: 3.4em repeat(31, minmax(0, 1fr)) 2.4em; column-gap: 1px; }
+  .heatmap-head { font-size: 10px; }
+  .heatmap-month { font-size: var(--fs-xs); }
+}
 .activity-summary { font-size: var(--fs-md); }
 .latest { margin-top: var(--space-5); padding: 0; list-style: none; font-size: var(--fs-sm); }
 .latest li { padding: var(--space-2) 0; border-top: 1px solid var(--border); }
