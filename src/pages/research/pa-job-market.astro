@@ -22,9 +22,7 @@ const byPay = [...d.states].sort((a: any, b: any) => b.pay - a.pay);
 const byGrowth = [...d.states].sort((a: any, b: any) => b.growth - a.growth);
 const firstYear = d.experience_pay[0], over20 = d.experience_pay.at(-1);
 const hospital = d.settings.find((s: any) => s.setting === "Hospital");
-const under90 = d.new_salary.filter((s: any) => s.high != null && s.high <= 90000).reduce((t: number, s: any) => t + s.pct_accepted, 0);
 const mid = d.new_salary.filter((s: any) => s.low >= 100001 && s.high != null && s.high <= 130000).reduce((t: number, s: any) => t + s.pct_accepted, 0);
-const over140 = d.new_salary.find((s: any) => s.high == null).pct_accepted;
 
 // The chart rows, in the shape each chart takes
 const specialtyRows = d.specialties.map((s: any) => ({ label: s.label, a: s.new, b: s.all }));
@@ -123,16 +121,6 @@ const satisfiedRows = Object.entries(p.satisfied).map(([label, value]) => ({ lab
       </figure>
 
       <article class="prose">
-        <h2>What this means if you're graduating</h2>
-        <ul>
-          <li><b>You'll probably have options.</b> Most new PAs get more than one offer and accept a job within about {h.months_to_job} months.</li>
-          <li><b>Some specialties are crowded.</b> Far more new grads want dermatology than get it. Emergency medicine, family medicine and hospital medicine hire the most new PAs.</li>
-          <li><b>Your rotations are job interviews.</b> More than a third of new PAs were hired by a rotation site.</li>
-          <li><b>Expect about {k(r.salary_median)} to start.</b> Only {Math.round(under90)}% of first jobs pay $90k or less. Over $140k is possible, but only {Math.round(over140)}% of new grads get it.</li>
-          <li><b>Specialty matters as much as years.</b> Surgical, dermatology and critical care PAs earn $15k to $35k a year more than family medicine PAs on average. Twenty years of experience adds about {k(over20.mean - firstYear.mean)}.</li>
-          <li><b>Look at pay and prices together.</b> The highest-paying state, California, is also one of the most expensive. A smaller salary somewhere cheaper can go further.</li>
-        </ul>
-
         <h2>About the data</h2>
         <ul>
           {d.sources.map((s: any) => <li><a href={s.url}>{s.name}</a></li>)}
