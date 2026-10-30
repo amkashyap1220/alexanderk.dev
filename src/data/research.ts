@@ -26,6 +26,10 @@ export const posts: Post[] = [
     summary: "A guide in charts for PAs about to graduate: which specialties hire new grads, pay by specialty, employer, state and city, the job search, and debt.",
     description: "Charts for graduating physician assistants: where new PAs take jobs, what each specialty and employer pays, pay after the cost of living by state and metro area, job growth, how long the job search takes, and how much debt new PAs carry. From NCCPA's latest reports and BLS data.",
     chips: ["Interactive map", "Python", "NCCPA data", "BLS data"],
+    image: {
+      alt: "Map of US metro areas as circles sized by PA jobs and shaded from light to dark blue by median PA pay after the cost of living",
+      previewAlt: "Map of US metro areas sized by PA jobs and shaded by PA pay after the cost of living",
+    },
     link: { label: "Data and code", href: "https://github.com/amkashyap1220/PhysiciansAssistantJobExploration" },
   },
   {
