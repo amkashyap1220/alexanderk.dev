@@ -21,7 +21,7 @@
 .pa-key.dot { width: 9px; height: 9px; border-radius: 50%; background: var(--pa-dot); }
 .pa-bar { display: flex; flex-wrap: wrap; gap: var(--space-3) var(--space-5); align-items: center; margin-top: var(--space-3); }
 .pa-find { display: flex; align-items: center; gap: var(--space-2); color: var(--muted); font-size: var(--fs-xs); }
-.pa select { padding: 3px 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--soft); color: var(--text); font: inherit; }
+.pa select { padding: 3px 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--field); color: var(--text); font: inherit; }
 .pa-detail { margin-top: var(--space-4); padding: var(--space-3) var(--space-4); border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); font-size: var(--fs-sm); }
 .pa-detail h3 { margin: 0 0 var(--space-2); font-size: var(--fs-base); }
 .pa-dl { display: grid; grid-template-columns: max-content 1fr; gap: 2px var(--space-4); margin: 0; }
