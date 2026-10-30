@@ -17,6 +17,18 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    slug: "pa-job-market",
+    name: "PA Job Market",
+    tagline: "The physician assistant job market, for new grads",
+    summary: "A data project for PAs about to graduate: which specialties hire new grads and what they pay, where PAs are by state, and what the job search and debt look like, built from NCCPA's yearly workforce reports.",
+    description: "PA Job Market: charts and an interactive US map of the physician assistant job market for new grads, built with Python and pandas from NCCPA's workforce reports.",
+    repo: "amkashyap1220/PhysiciansAssistantJobExploration",
+    chips: ["Python", "pandas", "NCCPA data", "Observable Plot", "Svelte"],
+    when: {"start": "2026"},
+    readme: true,
+    writeup: {"label": "See the charts", "href": "/research/pa-job-market"},
+  },
+  {
     slug: "home-value-score",
     name: "Home Value Score",
     tagline: "Best-value zip codes in the Chicago metro",

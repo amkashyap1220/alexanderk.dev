@@ -1,0 +1,1322 @@
+{
+ "sources": [
+  {
+   "name": "NCCPA, 2025 Statistical Profile of Board Certified PAs",
+   "year": 2025,
+   "url": "https://doi.org/10.64936/SR0513"
+  },
+  {
+   "name": "NCCPA, 2024 Statistical Profile of Recently Board Certified PAs",
+   "year": 2024,
+   "url": "https://doi.org/10.64936/MARE1040"
+  },
+  {
+   "name": "NCCPA, 2024 Statistical Profile of Board Certified PAs by Specialty",
+   "year": 2024,
+   "url": "https://www.nccpa.net/wp-content/uploads/2025/08/2024-Statistical-Profile-of-Board-Certified-PAs-by-Specialty.pdf"
+  },
+  {
+   "name": "NCCPA, 2023 Statistical Profile of Board Certified PAs by State",
+   "year": 2023,
+   "url": "https://www.nccpa.net/wp-content/uploads/2025/02/2023-NCCPA-Statistical-Profile-of-Board-Certified-PAs-by-State.pdf"
+  }
+ ],
+ "headline": {
+  "pas": 201038,
+  "pas_2013": 95583,
+  "growth_4yr": 26.9,
+  "median_pay": 125000,
+  "new_median_pay": 115000,
+  "new_median_pay_2020": 95000,
+  "months_to_job": 2,
+  "two_plus_offers": 77.7,
+  "mean_pay_all_2024": 129291,
+  "debt_median": 137500,
+  "new_certified": 12400,
+  "respondents": 8601
+ },
+ "states": [
+  {
+   "fips": "01",
+   "abbr": "AL",
+   "name": "Alabama",
+   "pas": 1497,
+   "per_100k": 28.8,
+   "growth": 35.4,
+   "pay": 113212,
+   "pay_median": 105000,
+   "new_pas": 121,
+   "new_per_100": 8.1
+  },
+  {
+   "fips": "02",
+   "abbr": "AK",
+   "name": "Alaska",
+   "pas": 713,
+   "per_100k": 96.7,
+   "growth": 8.9,
+   "pay": 133522,
+   "pay_median": 135000,
+   "new_pas": 17,
+   "new_per_100": 2.4
+  },
+  {
+   "fips": "04",
+   "abbr": "AZ",
+   "name": "Arizona",
+   "pas": 4392,
+   "per_100k": 57.6,
+   "growth": 27.7,
+   "pay": 128412,
+   "pay_median": 125000,
+   "new_pas": 228,
+   "new_per_100": 5.2
+  },
+  {
+   "fips": "05",
+   "abbr": "AR",
+   "name": "Arkansas",
+   "pas": 799,
+   "per_100k": 25.7,
+   "growth": 36.1,
+   "pay": 115537,
+   "pay_median": 105000,
+   "new_pas": 54,
+   "new_per_100": 6.8
+  },
+  {
+   "fips": "06",
+   "abbr": "CA",
+   "name": "California",
+   "pas": 15898,
+   "per_100k": 40.4,
+   "growth": 30.6,
+   "pay": 143074,
+   "pay_median": 145000,
+   "new_pas": 1049,
+   "new_per_100": 6.6
+  },
+  {
+   "fips": "08",
+   "abbr": "CO",
+   "name": "Colorado",
+   "pas": 5434,
+   "per_100k": 90.4,
+   "growth": 31.2,
+   "pay": 115937,
+   "pay_median": 115000,
+   "new_pas": 248,
+   "new_per_100": 4.6
+  },
+  {
+   "fips": "09",
+   "abbr": "CT",
+   "name": "Connecticut",
+   "pas": 3591,
+   "per_100k": 97.4,
+   "growth": 26.1,
+   "pay": 135312,
+   "pay_median": 135000,
+   "new_pas": 223,
+   "new_per_100": 6.2
+  },
+  {
+   "fips": "10",
+   "abbr": "DE",
+   "name": "Delaware",
+   "pas": 587,
+   "per_100k": 55.4,
+   "growth": 22.0,
+   "pay": 121839,
+   "pay_median": 115000,
+   "new_pas": 33,
+   "new_per_100": 5.6
+  },
+  {
+   "fips": "11",
+   "abbr": "DC",
+   "name": "District of Columbia",
+   "pas": 344,
+   "per_100k": 49.6,
+   "growth": 12.1,
+   "pay": 128932,
+   "pay_median": 125000,
+   "new_pas": 19,
+   "new_per_100": 5.5
+  },
+  {
+   "fips": "12",
+   "abbr": "FL",
+   "name": "Florida",
+   "pas": 13298,
+   "per_100k": 56.7,
+   "growth": 30.7,
+   "pay": 121646,
+   "pay_median": 115000,
+   "new_pas": 847,
+   "new_per_100": 6.4
+  },
+  {
+   "fips": "13",
+   "abbr": "GA",
+   "name": "Georgia",
+   "pas": 5782,
+   "per_100k": 51.2,
+   "growth": 29.6,
+   "pay": 123447,
+   "pay_median": 115000,
+   "new_pas": 371,
+   "new_per_100": 6.4
+  },
+  {
+   "fips": "15",
+   "abbr": "HI",
+   "name": "Hawaii",
+   "pas": 569,
+   "per_100k": 39.7,
+   "growth": 41.5,
+   "pay": 126445,
+   "pay_median": 125000,
+   "new_pas": 37,
+   "new_per_100": 6.5
+  },
+  {
+   "fips": "16",
+   "abbr": "ID",
+   "name": "Idaho",
+   "pas": 1747,
+   "per_100k": 86.1,
+   "growth": 28.0,
+   "pay": 124407,
+   "pay_median": 125000,
+   "new_pas": 79,
+   "new_per_100": 4.5
+  },
+  {
+   "fips": "17",
+   "abbr": "IL",
+   "name": "Illinois",
+   "pas": 5496,
+   "per_100k": 43.2,
+   "growth": 28.5,
+   "pay": 119937,
+   "pay_median": 115000,
+   "new_pas": 383,
+   "new_per_100": 7.0
+  },
+  {
+   "fips": "18",
+   "abbr": "IN",
+   "name": "Indiana",
+   "pas": 2788,
+   "per_100k": 40.0,
+   "growth": 34.8,
+   "pay": 115332,
+   "pay_median": 115000,
+   "new_pas": 248,
+   "new_per_100": 8.9
+  },
+  {
+   "fips": "19",
+   "abbr": "IA",
+   "name": "Iowa",
+   "pas": 1587,
+   "per_100k": 49.0,
+   "growth": 15.5,
+   "pay": 122317,
+   "pay_median": 115000,
+   "new_pas": 88,
+   "new_per_100": 5.5
+  },
+  {
+   "fips": "20",
+   "abbr": "KS",
+   "name": "Kansas",
+   "pas": 1547,
+   "per_100k": 52.0,
+   "growth": 18.0,
+   "pay": 116586,
+   "pay_median": 115000,
+   "new_pas": 96,
+   "new_per_100": 6.2
+  },
+  {
+   "fips": "21",
+   "abbr": "KY",
+   "name": "Kentucky",
+   "pas": 2154,
+   "per_100k": 46.8,
+   "growth": 26.6,
+   "pay": 113545,
+   "pay_median": 115000,
+   "new_pas": 155,
+   "new_per_100": 7.2
+  },
+  {
+   "fips": "22",
+   "abbr": "LA",
+   "name": "Louisiana",
+   "pas": 1895,
+   "per_100k": 41.0,
+   "growth": 28.8,
+   "pay": 119536,
+   "pay_median": 115000,
+   "new_pas": 141,
+   "new_per_100": 7.4
+  },
+  {
+   "fips": "23",
+   "abbr": "ME",
+   "name": "Maine",
+   "pas": 1177,
+   "per_100k": 83.2,
+   "growth": 19.4,
+   "pay": 118867,
+   "pay_median": 115000,
+   "new_pas": 52,
+   "new_per_100": 4.4
+  },
+  {
+   "fips": "24",
+   "abbr": "MD",
+   "name": "Maryland",
+   "pas": 4082,
+   "per_100k": 65.2,
+   "growth": 16.5,
+   "pay": 124629,
+   "pay_median": 125000,
+   "new_pas": 195,
+   "new_per_100": 4.8
+  },
+  {
+   "fips": "25",
+   "abbr": "MA",
+   "name": "Massachusetts",
+   "pas": 5566,
+   "per_100k": 77.8,
+   "growth": 28.9,
+   "pay": 127333,
+   "pay_median": 125000,
+   "new_pas": 421,
+   "new_per_100": 7.6
+  },
+  {
+   "fips": "26",
+   "abbr": "MI",
+   "name": "Michigan",
+   "pas": 7873,
+   "per_100k": 77.7,
+   "growth": 24.2,
+   "pay": 114304,
+   "pay_median": 115000,
+   "new_pas": 504,
+   "new_per_100": 6.4
+  },
+  {
+   "fips": "27",
+   "abbr": "MN",
+   "name": "Minnesota",
+   "pas": 4366,
+   "per_100k": 74.9,
+   "growth": 29.9,
+   "pay": 124071,
+   "pay_median": 125000,
+   "new_pas": 274,
+   "new_per_100": 6.3
+  },
+  {
+   "fips": "28",
+   "abbr": "MS",
+   "name": "Mississippi",
+   "pas": 486,
+   "per_100k": 16.5,
+   "growth": 42.9,
+   "pay": 118817,
+   "pay_median": 115000,
+   "new_pas": 41,
+   "new_per_100": 8.4
+  },
+  {
+   "fips": "29",
+   "abbr": "MO",
+   "name": "Missouri",
+   "pas": 2058,
+   "per_100k": 32.8,
+   "growth": 37.3,
+   "pay": 117955,
+   "pay_median": 115000,
+   "new_pas": 146,
+   "new_per_100": 7.1
+  },
+  {
+   "fips": "30",
+   "abbr": "MT",
+   "name": "Montana",
+   "pas": 1056,
+   "per_100k": 92.3,
+   "growth": 29.4,
+   "pay": 119923,
+   "pay_median": 115000,
+   "new_pas": 47,
+   "new_per_100": 4.5
+  },
+  {
+   "fips": "31",
+   "abbr": "NE",
+   "name": "Nebraska",
+   "pas": 1647,
+   "per_100k": 81.6,
+   "growth": 16.4,
+   "pay": 116250,
+   "pay_median": 115000,
+   "new_pas": 96,
+   "new_per_100": 5.8
+  },
+  {
+   "fips": "32",
+   "abbr": "NV",
+   "name": "Nevada",
+   "pas": 1446,
+   "per_100k": 44.1,
+   "growth": 25.7,
+   "pay": 137295,
+   "pay_median": 135000,
+   "new_pas": 88,
+   "new_per_100": 6.1
+  },
+  {
+   "fips": "33",
+   "abbr": "NH",
+   "name": "New Hampshire",
+   "pas": 1247,
+   "per_100k": 88.1,
+   "growth": 25.8,
+   "pay": 122485,
+   "pay_median": 125000,
+   "new_pas": 56,
+   "new_per_100": 4.5
+  },
+  {
+   "fips": "34",
+   "abbr": "NJ",
+   "name": "New Jersey",
+   "pas": 5581,
+   "per_100k": 58.5,
+   "growth": 40.2,
+   "pay": 132273,
+   "pay_median": 125000,
+   "new_pas": 421,
+   "new_per_100": 7.5
+  },
+  {
+   "fips": "35",
+   "abbr": "NM",
+   "name": "New Mexico",
+   "pas": 1010,
+   "per_100k": 47.5,
+   "growth": 13.7,
+   "pay": 121850,
+   "pay_median": 115000,
+   "new_pas": 54,
+   "new_per_100": 5.3
+  },
+  {
+   "fips": "36",
+   "abbr": "NY",
+   "name": "New York",
+   "pas": 17975,
+   "per_100k": 89.9,
+   "growth": 20.3,
+   "pay": 130235,
+   "pay_median": 125000,
+   "new_pas": 1145,
+   "new_per_100": 6.4
+  },
+  {
+   "fips": "37",
+   "abbr": "NC",
+   "name": "North Carolina",
+   "pas": 10161,
+   "per_100k": 90.7,
+   "growth": 28.0,
+   "pay": 117894,
+   "pay_median": 115000,
+   "new_pas": 583,
+   "new_per_100": 5.7
+  },
+  {
+   "fips": "38",
+   "abbr": "ND",
+   "name": "North Dakota",
+   "pas": 427,
+   "per_100k": 53.4,
+   "growth": 10.9,
+   "pay": 121678,
+   "pay_median": 115000,
+   "new_pas": 26,
+   "new_per_100": 6.1
+  },
+  {
+   "fips": "39",
+   "abbr": "OH",
+   "name": "Ohio",
+   "pas": 6009,
+   "per_100k": 50.5,
+   "growth": 29.9,
+   "pay": 115022,
+   "pay_median": 115000,
+   "new_pas": 449,
+   "new_per_100": 7.5
+  },
+  {
+   "fips": "40",
+   "abbr": "OK",
+   "name": "Oklahoma",
+   "pas": 2229,
+   "per_100k": 54.1,
+   "growth": 25.0,
+   "pay": 126123,
+   "pay_median": 125000,
+   "new_pas": 142,
+   "new_per_100": 6.4
+  },
+  {
+   "fips": "41",
+   "abbr": "OR",
+   "name": "Oregon",
+   "pas": 2846,
+   "per_100k": 66.6,
+   "growth": 28.4,
+   "pay": 130422,
+   "pay_median": 125000,
+   "new_pas": 154,
+   "new_per_100": 5.4
+  },
+  {
+   "fips": "42",
+   "abbr": "PA",
+   "name": "Pennsylvania",
+   "pas": 12743,
+   "per_100k": 97.6,
+   "growth": 19.8,
+   "pay": 113231,
+   "pay_median": 115000,
+   "new_pas": 811,
+   "new_per_100": 6.4
+  },
+  {
+   "fips": "44",
+   "abbr": "RI",
+   "name": "Rhode Island",
+   "pas": 685,
+   "per_100k": 61.5,
+   "growth": 24.8,
+   "pay": 128399,
+   "pay_median": 125000,
+   "new_pas": 45,
+   "new_per_100": 6.6
+  },
+  {
+   "fips": "45",
+   "abbr": "SC",
+   "name": "South Carolina",
+   "pas": 3221,
+   "per_100k": 57.8,
+   "growth": 44.4,
+   "pay": 116232,
+   "pay_median": 115000,
+   "new_pas": 208,
+   "new_per_100": 6.5
+  },
+  {
+   "fips": "46",
+   "abbr": "SD",
+   "name": "South Dakota",
+   "pas": 766,
+   "per_100k": 81.9,
+   "growth": 14.8,
+   "pay": 119412,
+   "pay_median": 115000,
+   "new_pas": 32,
+   "new_per_100": 4.2
+  },
+  {
+   "fips": "47",
+   "abbr": "TN",
+   "name": "Tennessee",
+   "pas": 3771,
+   "per_100k": 51.6,
+   "growth": 37.0,
+   "pay": 114801,
+   "pay_median": 115000,
+   "new_pas": 275,
+   "new_per_100": 7.3
+  },
+  {
+   "fips": "48",
+   "abbr": "TX",
+   "name": "Texas",
+   "pas": 12969,
+   "per_100k": 40.9,
+   "growth": 25.4,
+   "pay": 124672,
+   "pay_median": 125000,
+   "new_pas": 619,
+   "new_per_100": 4.8
+  },
+  {
+   "fips": "49",
+   "abbr": "UT",
+   "name": "Utah",
+   "pas": 2548,
+   "per_100k": 72.0,
+   "growth": 35.0,
+   "pay": 122825,
+   "pay_median": 125000,
+   "new_pas": 172,
+   "new_per_100": 6.8
+  },
+  {
+   "fips": "50",
+   "abbr": "VT",
+   "name": "Vermont",
+   "pas": 496,
+   "per_100k": 76.9,
+   "growth": 17.3,
+   "pay": 115935,
+   "pay_median": 115000,
+   "new_pas": 12,
+   "new_per_100": 2.4
+  },
+  {
+   "fips": "51",
+   "abbr": "VA",
+   "name": "Virginia",
+   "pas": 5485,
+   "per_100k": 61.8,
+   "growth": 30.8,
+   "pay": 121068,
+   "pay_median": 115000,
+   "new_pas": 369,
+   "new_per_100": 6.7
+  },
+  {
+   "fips": "53",
+   "abbr": "WA",
+   "name": "Washington",
+   "pas": 4654,
+   "per_100k": 58.2,
+   "growth": 24.2,
+   "pay": 133548,
+   "pay_median": 135000,
+   "new_pas": 170,
+   "new_per_100": 3.7
+  },
+  {
+   "fips": "54",
+   "abbr": "WV",
+   "name": "West Virginia",
+   "pas": 1268,
+   "per_100k": 71.8,
+   "growth": 18.4,
+   "pay": 115850,
+   "pay_median": 115000,
+   "new_pas": 76,
+   "new_per_100": 6.0
+  },
+  {
+   "fips": "55",
+   "abbr": "WI",
+   "name": "Wisconsin",
+   "pas": 4023,
+   "per_100k": 67.4,
+   "growth": 21.9,
+   "pay": 116262,
+   "pay_median": 115000,
+   "new_pas": 237,
+   "new_per_100": 5.9
+  },
+  {
+   "fips": "56",
+   "abbr": "WY",
+   "name": "Wyoming",
+   "pas": 318,
+   "per_100k": 54.0,
+   "growth": 9.7,
+   "pay": 119556,
+   "pay_median": 115000,
+   "new_pas": 16,
+   "new_per_100": 5.0
+  }
+ ],
+ "specialties": [
+  {
+   "label": "Surgery - subspecialties",
+   "all": 18.3,
+   "new": 16.6,
+   "want": 14.5
+  },
+  {
+   "label": "Family medicine/general practice",
+   "all": 15.9,
+   "new": 19.0,
+   "want": 16.6
+  },
+  {
+   "label": "Emergency medicine",
+   "all": 10.4,
+   "new": 16.5,
+   "want": 12.9
+  },
+  {
+   "label": "Internal medicine - subspecialties",
+   "all": 10.1,
+   "new": 8.2,
+   "want": 6.8
+  },
+  {
+   "label": "Dermatology",
+   "all": 4.6,
+   "new": 3.9,
+   "want": 9.2
+  },
+  {
+   "label": "Internal medicine - general",
+   "all": 3.8,
+   "new": 2.9,
+   "want": 3.5
+  },
+  {
+   "label": "Hospital medicine",
+   "all": 3.5,
+   "new": 4.5,
+   "want": 3.0
+  },
+  {
+   "label": "Surgery - general",
+   "all": 3.0,
+   "new": 3.2,
+   "want": 3.6
+  },
+  {
+   "label": "Psychiatry",
+   "all": 2.4,
+   "new": 1.6,
+   "want": 1.7
+  },
+  {
+   "label": "Critical care medicine",
+   "all": 2.1,
+   "new": 4.2,
+   "want": 2.8
+  },
+  {
+   "label": "Pediatrics - general",
+   "all": 1.7,
+   "new": 1.9,
+   "want": 3.7
+  },
+  {
+   "label": "Pediatrics - subspecialties",
+   "all": 1.5,
+   "new": 2.5,
+   "want": 2.3
+  },
+  {
+   "label": "Pain medicine",
+   "all": 1.4,
+   "new": 0.5,
+   "want": 0.1
+  },
+  {
+   "label": "Obstetrics and gynecology",
+   "all": 1.2,
+   "new": 2.1,
+   "want": 3.7
+  },
+  {
+   "label": "Otolaryngology",
+   "all": 1.2,
+   "new": 1.0,
+   "want": 0.7
+  },
+  {
+   "label": "Occupational medicine",
+   "all": 1.2,
+   "new": 0.1,
+   "want": 0.1
+  },
+  {
+   "label": "Neurology",
+   "all": 1.1,
+   "new": 1.4,
+   "want": 0.5
+  },
+  {
+   "label": "Urology",
+   "all": 1.1,
+   "new": 1.2,
+   "want": 0.2
+  },
+  {
+   "label": "Radiology - interventional",
+   "all": 0.7,
+   "new": 0.7,
+   "want": 0.7
+  }
+ ],
+ "specialty_pay": [
+  {
+   "label": "Cardiothoracic and vascular surgery",
+   "pas": 3138,
+   "mean_2024": 155036,
+   "median_2024": 145000,
+   "mean_2020": 138928,
+   "median_2020": 135000,
+   "hours_mean": 44,
+   "share_over_200k": 16.5
+  },
+  {
+   "label": "Dermatology",
+   "pas": 5959,
+   "mean_2024": 148810,
+   "median_2024": 145000,
+   "mean_2020": 131700,
+   "median_2020": 125000,
+   "hours_mean": 36,
+   "share_over_200k": 20.7
+  },
+  {
+   "label": "Critical care medicine",
+   "pas": 2753,
+   "mean_2024": 144361,
+   "median_2024": 135000,
+   "mean_2020": 127922,
+   "median_2020": 125000,
+   "hours_mean": 41,
+   "share_over_200k": 8.7
+  },
+  {
+   "label": "Neurosurgery",
+   "pas": 2806,
+   "mean_2024": 140945,
+   "median_2024": 135000,
+   "mean_2020": 126622,
+   "median_2020": 125000,
+   "hours_mean": 44,
+   "share_over_200k": 7.5
+  },
+  {
+   "label": "Emergency medicine",
+   "pas": 14129,
+   "mean_2024": 137839,
+   "median_2024": 135000,
+   "mean_2020": 126580,
+   "median_2020": 125000,
+   "hours_mean": 37,
+   "share_over_200k": 7.6
+  },
+  {
+   "label": "Orthopaedic surgery",
+   "pas": 14200,
+   "mean_2024": 135359,
+   "median_2024": 125000,
+   "mean_2020": 122248,
+   "median_2020": 115000,
+   "hours_mean": 43,
+   "share_over_200k": 5.9
+  },
+  {
+   "label": "General surgery",
+   "pas": 4120,
+   "mean_2024": 134925,
+   "median_2024": 125000,
+   "mean_2020": 118301,
+   "median_2020": 115000,
+   "hours_mean": 41,
+   "share_over_200k": 5.1
+  },
+  {
+   "label": "Plastic surgery",
+   "pas": 1490,
+   "mean_2024": 132369,
+   "median_2024": 125000,
+   "mean_2020": 116658,
+   "median_2020": 115000,
+   "hours_mean": 40,
+   "share_over_200k": 7.2
+  },
+  {
+   "label": "Hospital medicine",
+   "pas": 4756,
+   "mean_2024": 129850,
+   "median_2024": 125000,
+   "mean_2020": 116234,
+   "median_2020": 115000,
+   "hours_mean": 42,
+   "share_over_200k": 3.6
+  },
+  {
+   "label": "Psychiatry",
+   "pas": 3224,
+   "mean_2024": 129196,
+   "median_2024": 125000,
+   "mean_2020": 115633,
+   "median_2020": 115000,
+   "hours_mean": 38,
+   "share_over_200k": 6.1
+  },
+  {
+   "label": "Oncology",
+   "pas": 2259,
+   "mean_2024": 127221,
+   "median_2024": 125000,
+   "mean_2020": 110900,
+   "median_2020": 105000,
+   "hours_mean": 40,
+   "share_over_200k": 2.5
+  },
+  {
+   "label": "Cardiology",
+   "pas": 3999,
+   "mean_2024": 127021,
+   "median_2024": 125000,
+   "mean_2020": 112684,
+   "median_2020": 115000,
+   "hours_mean": 40,
+   "share_over_200k": 2.6
+  },
+  {
+   "label": "Pain medicine",
+   "pas": 1917,
+   "mean_2024": 126981,
+   "median_2024": 125000,
+   "mean_2020": 114543,
+   "median_2020": 115000,
+   "hours_mean": 39,
+   "share_over_200k": 4.2
+  },
+  {
+   "label": "Occupational medicine",
+   "pas": 1630,
+   "mean_2024": 126773,
+   "median_2024": 125000,
+   "mean_2020": 112814,
+   "median_2020": 115000,
+   "hours_mean": 36,
+   "share_over_200k": 4.4
+  },
+  {
+   "label": "Geriatrics",
+   "pas": 985,
+   "mean_2024": 126710,
+   "median_2024": 125000,
+   "mean_2020": 111415,
+   "median_2020": 105000,
+   "hours_mean": 40,
+   "share_over_200k": 4.1
+  },
+  {
+   "label": "Urology",
+   "pas": 1419,
+   "mean_2024": 126356,
+   "median_2024": 125000,
+   "mean_2020": 112660,
+   "median_2020": 115000,
+   "hours_mean": 41,
+   "share_over_200k": 3.1
+  },
+  {
+   "label": "Internal medicine (general)",
+   "pas": 5208,
+   "mean_2024": 123664,
+   "median_2024": 125000,
+   "mean_2020": 107624,
+   "median_2020": 105000,
+   "hours_mean": 39,
+   "share_over_200k": 4.2
+  },
+  {
+   "label": "Otolaryngology",
+   "pas": 1524,
+   "mean_2024": 122677,
+   "median_2024": 115000,
+   "mean_2020": 107663,
+   "median_2020": 105000,
+   "hours_mean": 39,
+   "share_over_200k": 2.8
+  },
+  {
+   "label": "Neurology",
+   "pas": 1497,
+   "mean_2024": 121655,
+   "median_2024": 115000,
+   "mean_2020": 107960,
+   "median_2020": 105000,
+   "hours_mean": 40,
+   "share_over_200k": 2.3
+  },
+  {
+   "label": "Family medicine",
+   "pas": 21859,
+   "mean_2024": 120750,
+   "median_2024": 115000,
+   "mean_2020": 107493,
+   "median_2020": 105000,
+   "hours_mean": 38,
+   "share_over_200k": 3.4
+  },
+  {
+   "label": "Physical medicine/rehabilitation",
+   "pas": 739,
+   "mean_2024": 119797,
+   "median_2024": 115000,
+   "mean_2020": 106613,
+   "median_2020": 105000,
+   "hours_mean": 39,
+   "share_over_200k": 2.5
+  },
+  {
+   "label": "Gastroenterology",
+   "pas": 2362,
+   "mean_2024": 119506,
+   "median_2024": 115000,
+   "mean_2020": 104970,
+   "median_2020": 105000,
+   "hours_mean": 40,
+   "share_over_200k": 1.6
+  },
+  {
+   "label": "Obstetrics and gynecology",
+   "pas": 1653,
+   "mean_2024": 117198,
+   "median_2024": 115000,
+   "mean_2020": 102680,
+   "median_2020": 105000,
+   "hours_mean": 37,
+   "share_over_200k": 1.9
+  },
+  {
+   "label": "Pediatrics (general)",
+   "pas": 2366,
+   "mean_2024": 107574,
+   "median_2024": 105000,
+   "mean_2020": 96570,
+   "median_2020": 95000,
+   "hours_mean": 35,
+   "share_over_200k": 1.3
+  }
+ ],
+ "settings": [
+  {
+   "setting": "Hospital",
+   "pas": 60488,
+   "pct": 42.8,
+   "pct_accepted": 50.6
+  },
+  {
+   "setting": "Office-based private practice",
+   "pas": 51000,
+   "pct": 36.1,
+   "pct_accepted": 29.3
+  },
+  {
+   "setting": "Urgent care",
+   "pas": 7782,
+   "pct": 5.5,
+   "pct_accepted": null
+  },
+  {
+   "setting": "Federal government (VA and others)",
+   "pas": 6081,
+   "pct": 4.3,
+   "pct_accepted": null
+  },
+  {
+   "setting": "Community health center",
+   "pas": 3982,
+   "pct": 2.8,
+   "pct_accepted": 4.6
+  },
+  {
+   "setting": "Rural health clinic",
+   "pas": 1869,
+   "pct": 1.3,
+   "pct_accepted": 2.5
+  },
+  {
+   "setting": "Other",
+   "pas": 9153,
+   "pct": 6.5,
+   "pct_accepted": null
+  }
+ ],
+ "experience_pay": [
+  {
+   "years": "Up to 1 year",
+   "mean": 113238,
+   "median": 115000
+  },
+  {
+   "years": "2-3 years",
+   "mean": 121903,
+   "median": 115000
+  },
+  {
+   "years": "4-5 years",
+   "mean": 128098,
+   "median": 125000
+  },
+  {
+   "years": "6-10 years",
+   "mean": 134094,
+   "median": 125000
+  },
+  {
+   "years": "11-15 years",
+   "mean": 136337,
+   "median": 135000
+  },
+  {
+   "years": "16-20 years",
+   "mean": 139324,
+   "median": 135000
+  },
+  {
+   "years": "Over 20 years",
+   "mean": 141093,
+   "median": 135000
+  }
+ ],
+ "new_salary": [
+  {
+   "range": "$80,000 or less",
+   "low": 0,
+   "high": 80000.0,
+   "pct_accepted": 4.6,
+   "pct_wanted_not_accepted": 0.7
+  },
+  {
+   "range": "$80,001-$90,000",
+   "low": 80001,
+   "high": 90000.0,
+   "pct_accepted": 3.6,
+   "pct_wanted_not_accepted": 2.7
+  },
+  {
+   "range": "$90,001-$100,000",
+   "low": 90001,
+   "high": 100000.0,
+   "pct_accepted": 11.6,
+   "pct_wanted_not_accepted": 13.3
+  },
+  {
+   "range": "$100,001-$110,000",
+   "low": 100001,
+   "high": 110000.0,
+   "pct_accepted": 22.7,
+   "pct_wanted_not_accepted": 34.7
+  },
+  {
+   "range": "$110,001-$120,000",
+   "low": 110001,
+   "high": 120000.0,
+   "pct_accepted": 21.6,
+   "pct_wanted_not_accepted": 22.7
+  },
+  {
+   "range": "$120,001-$130,000",
+   "low": 120001,
+   "high": 130000.0,
+   "pct_accepted": 18.0,
+   "pct_wanted_not_accepted": 15.9
+  },
+  {
+   "range": "$130,001-$140,000",
+   "low": 130001,
+   "high": 140000.0,
+   "pct_accepted": 8.5,
+   "pct_wanted_not_accepted": 6.9
+  },
+  {
+   "range": "More than $140,000",
+   "low": 140001,
+   "high": null,
+   "pct_accepted": 9.3,
+   "pct_wanted_not_accepted": 3.2
+  }
+ ],
+ "new_debt": [
+  {
+   "range": "None",
+   "pct": 12.4
+  },
+  {
+   "range": "Under $25,000",
+   "pct": 3.0
+  },
+  {
+   "range": "$25,000-$49,999",
+   "pct": 3.7
+  },
+  {
+   "range": "$50,000-$74,999",
+   "pct": 6.4
+  },
+  {
+   "range": "$75,000-$99,999",
+   "pct": 8.1
+  },
+  {
+   "range": "$100,000-$124,999",
+   "pct": 11.3
+  },
+  {
+   "range": "$125,000-$149,999",
+   "pct": 11.1
+  },
+  {
+   "range": "$150,000-$174,999",
+   "pct": 11.7
+  },
+  {
+   "range": "$175,000-$199,999",
+   "pct": 11.7
+  },
+  {
+   "range": "$200,000-$224,999",
+   "pct": 11.1
+  },
+  {
+   "range": "$225,000 or more",
+   "pct": 9.5
+  }
+ ],
+ "new_challenges": [
+  {
+   "challenge": "Few openings for new graduates",
+   "pct_accepted": 21.8,
+   "pct_searching": 36.8
+  },
+  {
+   "challenge": "Few openings in preferred specialty",
+   "pct_accepted": 10.4,
+   "pct_searching": 19.0
+  },
+  {
+   "challenge": "Few openings in preferred area",
+   "pct_accepted": 9.0,
+   "pct_searching": 15.8
+  },
+  {
+   "challenge": "Few openings in preferred setting",
+   "pct_accepted": 7.1,
+   "pct_searching": 14.4
+  },
+  {
+   "challenge": "Many new PAs competing for the same jobs",
+   "pct_accepted": 6.8,
+   "pct_searching": 12.9
+  },
+  {
+   "challenge": "Pay too low",
+   "pct_accepted": 6.5,
+   "pct_searching": 8.8
+  },
+  {
+   "challenge": "Few PA jobs at all",
+   "pct_accepted": 4.2,
+   "pct_searching": 5.6
+  }
+ ],
+ "recent": {
+  "source": "NCCPA, 2024 Statistical Profile of Recently Board Certified PAs (Sept 2025), https://doi.org/10.64936/MARE1040",
+  "note": "Hand-copied from the PDF; page numbers in the report. Percent change in the report is proportional change since 2020.",
+  "certified_2024": 12400,
+  "respondents": 8601,
+  "salary_median": 115000,
+  "salary_median_2020": 95000,
+  "salary_mean": 114231,
+  "salary_mean_2020": 98412,
+  "share_over_100k": 80.1,
+  "job_status": {
+   "accepted": 57.3,
+   "searching": 37.7,
+   "not_searching": 5.0
+  },
+  "months_to_job_median": 2,
+  "months_to_job_mean": 2.6,
+  "two_plus_offers": 77.7,
+  "two_plus_offers_2020": 62.7,
+  "offered_incentives": 68.1,
+  "offered_incentives_2020": 59.8,
+  "top_incentives": [
+   "Income guarantee",
+   "Paid CME and certification costs",
+   "Flexible hours"
+  ],
+  "job_at_rotation_site": 35.2,
+  "chose_area_grew_up": 37.6,
+  "chose_area_of_program": 33.0,
+  "chose_rural": 13.7,
+  "chose_urban_underserved": 9.7,
+  "debt_median": 137500,
+  "debt_mean": 129179,
+  "debt_none": 12.4,
+  "debt_influenced_specialty": 23.4,
+  "debt_influenced_specialty_2020": 13.3,
+  "primary_care_share": 31.3,
+  "specialty_care_share": 60.0,
+  "any_challenge": 27.5,
+  "any_challenge_2020": 40.6
+ },
+ "profile": {
+  "source": "NCCPA, 2025 Statistical Profile of Board Certified PAs (May 2026), https://doi.org/10.64936/SR0513",
+  "note": "Hand-copied from the PDF.",
+  "certified_pas": 201038,
+  "certified_pas_2013": 95583,
+  "growth_2021_2025": 26.9,
+  "per_100k": 58.6,
+  "per_100k_2021": 48,
+  "salary_median": 125000,
+  "salary_mean": 134010,
+  "salary_median_2021": 115000,
+  "salary_mean_2021": 117381,
+  "hours_mean": 39.2,
+  "hours_median": 40,
+  "patients_per_week_fulltime": 67,
+  "satisfied": {
+   "Present job": 84.3,
+   "Career as a PA": 87.6,
+   "Hours": 79.3,
+   "Work-life balance": 74.2,
+   "Income": 76.1,
+   "Benefits": 73.4,
+   "Location": 83.3,
+   "Employer": 76.2
+  },
+  "burnout_any": 31.8,
+  "burnout_scale": [
+   14.0,
+   54.2,
+   23.9,
+   6.4,
+   1.5
+  ],
+  "burnout_community_health_center": 40.3,
+  "burnout_private_practice": 29.3,
+  "intend_to_leave_12mo": 8.6,
+  "employer_hiring": 46,
+  "primary_care_share": 21.4,
+  "primary_care_share_2021": 23.7,
+  "female": 72.1,
+  "median_age": 38,
+  "highest_paid_specialties_named": [
+   "Cardiothoracic and vascular surgery",
+   "Dermatology",
+   "Critical care medicine",
+   "Ophthalmic surgery",
+   "Neurosurgery"
+  ]
+ }
+}

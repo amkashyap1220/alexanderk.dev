@@ -1,0 +1,144 @@
+---
+// The numbers and charts come from public/research/pa-job-market.json, made by
+// src/site_data.py in the PhysiciansAssistantJobExploration repo from NCCPA's
+// yearly reports. Each chart is a small Svelte component in src/components/pa-jobs/.
+import fs from "node:fs";
+import PostLayout from "../../layouts/PostLayout.astro";
+import StateMap from "../../components/pa-jobs/StateMap.svelte";
+import HBars from "../../components/pa-jobs/HBars.svelte";
+import Dumbbell from "../../components/pa-jobs/Dumbbell.svelte";
+import Columns from "../../components/pa-jobs/Columns.svelte";
+import "../../styles/pa-job-market.css";
+
+const d = JSON.parse(fs.readFileSync("public/research/pa-job-market.json", "utf8"));
+const h = d.headline, r = d.recent, p = d.profile;
+const money = (x: number) => "$" + Math.round(x).toLocaleString();
+const k = (x: number) => "$" + Math.round(x / 1000) + "k";
+const n = (x: number) => Math.round(x).toLocaleString();
+
+const topPay = d.specialty_pay[0], lowPay = d.specialty_pay.at(-1);
+const derm = d.specialties.find((s: any) => s.label === "Dermatology");
+const byPay = [...d.states].sort((a: any, b: any) => b.pay - a.pay);
+const byGrowth = [...d.states].sort((a: any, b: any) => b.growth - a.growth);
+const firstYear = d.experience_pay[0], over20 = d.experience_pay.at(-1);
+const hospital = d.settings.find((s: any) => s.setting === "Hospital");
+const under90 = d.new_salary.filter((s: any) => s.high != null && s.high <= 90000).reduce((t: number, s: any) => t + s.pct_accepted, 0);
+const mid = d.new_salary.filter((s: any) => s.low >= 100001 && s.high != null && s.high <= 130000).reduce((t: number, s: any) => t + s.pct_accepted, 0);
+const over140 = d.new_salary.find((s: any) => s.high == null).pct_accepted;
+
+// The chart rows, in the shape each chart takes
+const specialtyRows = d.specialties.map((s: any) => ({ label: s.label, a: s.new, b: s.all }));
+const wantRows = d.specialties.filter((s: any) => s.want != null).map((s: any) => ({ label: s.label, a: s.new, b: s.want }));
+const payRows = d.specialty_pay.map((s: any) => ({ label: s.label, value: s.mean_2024, median: s.median_2024, hours: s.hours_mean, over200: s.share_over_200k, pas: s.pas }));
+const expRows = d.experience_pay.map((s: any) => ({ label: s.years, value: s.mean }));
+// Short range labels so the columns can be told apart on a phone: "$100-110k"
+const kr = (s: any, unit = 1000) => s.high == null ? "Over $" + Math.round((s.low - 1) / unit) + "k" : s.low === 0 ? "Up to $" + s.high / unit + "k" : "$" + Math.round((s.low - 1) / unit) + "–" + s.high / unit + "k";
+const salaryRows = d.new_salary.map((s: any) => ({ label: kr(s), a: s.pct_accepted, b: s.pct_wanted_not_accepted }));
+const debtLabel = (r: string) => r.replace(/\$(\d+),000-\$(\d+),999/, (_m, lo, hi) => "$" + lo + "–" + (+hi + 1) + "k").replace("Under $25,000", "Under $25k").replace("$225,000 or more", "$225k+");
+const debtRows = d.new_debt.map((s: any) => ({ label: debtLabel(s.range), a: s.pct }));
+const challengeRows = d.new_challenges.map((s: any) => ({ label: s.challenge, a: s.pct_accepted, b: s.pct_searching }));
+const settingRows = d.settings.map((s: any) => ({ label: s.setting, value: s.pct }));
+const satisfiedRows = Object.entries(p.satisfied).map(([label, value]) => ({ label, value }));
+---
+<PostLayout slug="pa-job-market" heroClass="pa-hero">
+  <section class="section">
+    <div class="pa">
+      <ul class="pa-stats">
+        <li><b>{k(h.new_median_pay)}</b><span>typical first-job salary for PAs certified in 2024, up from {k(h.new_median_pay_2020)} in 2020</span></li>
+        <li><b>{h.months_to_job} months</b><span>typical time for a new grad to find and accept a job</span></li>
+        <li><b>{Math.round(h.two_plus_offers)}%</b><span>of new grads who took a job had two or more offers</span></li>
+        <li><b>{n(h.pas)}</b><span>certified PAs at the end of 2025, more than double the {n(h.pas_2013)} in 2013</span></li>
+      </ul>
+
+      <article class="prose pa-intro">
+        <p>If you're about to finish PA school, this page is for you. It answers the questions new grads ask most: which specialties hire new PAs, what they pay, where the jobs are, and how hard the search is. Every chart uses the latest reports from <a href="https://www.nccpa.net/">NCCPA</a>, the board that certifies every PA in the US, including its survey of {n(h.respondents)} PAs certified in 2024. Hover over or tap any chart for the exact numbers.</p>
+      </article>
+
+      <figure class="pa-figure">
+        <h2>Where new grads start</h2>
+        <p>The share of new PAs who took a job in each specialty, next to the share of all PAs who work in it. New grads lean toward family medicine and emergency medicine, which hire a lot of them.</p>
+        <Dumbbell client:visible rows={specialtyRows} names={["New grads who took a job (2024)", "All PAs (2025)"]} format="pct" label="Dot chart comparing the share of new PAs and all PAs in each specialty." />
+        <figcaption class="pa-note">“Surgery – subspecialties” covers orthopedics, cardiothoracic, neurosurgery and other surgical fields. About 12% of all PAs and 7% of new grads chose “other” (urgent care, aesthetics, wound care and more), not shown.</figcaption>
+      </figure>
+
+      <figure class="pa-figure">
+        <h2>What new grads want vs what they get</h2>
+        <p>The orange dots are where new grads who are still looking want to work. Dermatology stands out: {derm.want}% of them want it, but only {derm.new}% of the new grads who took a job got one there. More new grads end up in emergency and family medicine than list them as where they want to work.</p>
+        <Dumbbell client:visible rows={wantRows} names={["Took a job: where they work", "Still looking: where they want to work"]} format="pct" label="Dot chart comparing where job-seeking new PAs want to work with where new PAs took jobs." />
+      </figure>
+
+      <figure class="pa-figure">
+        <h2>What each specialty pays</h2>
+        <p>Average yearly income for all PAs in each specialty in 2024. Surgical, dermatology and critical care PAs earn the most. Pediatrics and women's health earn the least. The gap between the top and bottom is about {k(topPay.mean_2024 - lowPay.mean_2024)} a year.</p>
+        <HBars client:visible rows={payRows} format="money" above={h.mean_pay_all_2024} dots label="Bar chart of average PA income by specialty." />
+        <figcaption class="pa-note">Total income from all PA jobs, as PAs reported it. The dashed line is the {money(h.mean_pay_all_2024)} average for all PAs; darker dots are above it. Hover for the median, hours per week and the share earning over $200k. Only specialties NCCPA reports pay for are shown.</figcaption>
+      </figure>
+
+      <figure class="pa-figure">
+        <h2>Your first salary</h2>
+        <p>What new grads who took a job are paid (blue), and the lowest salary new grads still looking say they'd accept (orange). About {Math.round(mid)}% of first jobs pay between $100k and $130k, and the median is {money(r.salary_median)}. New grads' expectations line up closely with what the market pays.</p>
+        <Columns client:visible rows={salaryRows} names={["Took a job: salary", "Still looking: lowest salary they'd take"]} format="pct" label="Column chart of first-job salaries for new PAs." />
+      </figure>
+
+      <figure class="pa-figure">
+        <h2>Pay grows with experience, slowly</h2>
+        <p>Average income by years working as a PA. PAs in their first year average {k(firstYear.mean)}; PAs with more than 20 years average {k(over20.mean)}. The specialty you pick matters about as much as two decades of experience.</p>
+        <HBars client:visible rows={expRows} format="money" sort={false} dots label="Bar chart of average PA income by years of experience." />
+      </figure>
+
+      <figure class="pa-figure">
+        <h2>Where PAs are</h2>
+        <p>Pick what to color the map by, then click a state for all its numbers. {byPay[0].name}, {byPay[1].name} and {byPay[2].name} pay the most on average, though this pay isn't adjusted for the cost of living. {byGrowth[0].name}, {byGrowth[1].name} and {byGrowth[2].name} added PAs the fastest since 2021.</p>
+        <StateMap client:visible states={d.states} />
+        <figcaption class="pa-note">States are where PAs live, which is usually where they work. Pay is from NCCPA's 2023 survey; counts and growth are from 2025, new grads from 2024.</figcaption>
+      </figure>
+
+      <figure class="pa-figure">
+        <h2>Where PAs work</h2>
+        <p>Most PAs work in a hospital or a private practice. New grads are even more likely to start in a hospital: {hospital.pct_accepted}% of 2024's new PAs who took a job did, compared with {hospital.pct}% of all PAs.</p>
+        <HBars client:visible rows={settingRows} format="pct" label="Bar chart of the share of PAs in each practice setting." />
+      </figure>
+
+      <figure class="pa-figure">
+        <h2>The job search</h2>
+        <p>The market for new PAs is good: {Math.round(r.two_plus_offers)}% of those who took a job had more than one offer, and only {r.any_challenge}% said they had any trouble finding one (down from {r.any_challenge_2020}% in 2020). The most common problem is finding jobs open to new graduates.</p>
+        <Dumbbell client:visible rows={challengeRows} names={["Took a job", "Still looking"]} format="pct" label="Dot chart of the challenges new PAs reported in their job search." />
+        <ul class="pa-stats">
+          <li><b>{Math.round(r.offered_incentives)}%</b><span>were offered extras. The top ones: an income guarantee, paid CME and certification costs, and flexible hours.</span></li>
+          <li><b>{Math.round(r.job_at_rotation_site)}%</b><span>took a job at a place where they did a clinical rotation</span></li>
+          <li><b>{Math.round(r.chose_area_grew_up)}%</b><span>took a job in the area where they grew up; {Math.round(r.chose_area_of_program)}% near their PA program</span></li>
+        </ul>
+      </figure>
+
+      <figure class="pa-figure">
+        <h2>The debt you're starting with</h2>
+        <p>The median new PA owes {money(r.debt_median)} for school, more than a typical first year's salary. Only {r.debt_none}% have no debt. Debt is shaping more choices than it used to: {r.debt_influenced_specialty}% of new PAs said it affected whether they chose primary care, up from {r.debt_influenced_specialty_2020}% in 2020.</p>
+        <Columns client:visible rows={debtRows} names={["Share of new PAs"]} format="pct" label="Column chart of educational debt for new PAs." />
+      </figure>
+
+      <figure class="pa-figure">
+        <h2>Life on the job</h2>
+        <p>Most PAs like the work: {p.satisfied["Career as a PA"]}% are satisfied with their career. Work-life balance and benefits get the lowest marks. About {Math.round(p.burnout_any)}% report at least one sign of burnout, highest in community health centers ({p.burnout_community_health_center}%) among the larger settings. The average PA works {p.hours_mean} hours a week.</p>
+        <HBars client:visible rows={satisfiedRows} format="pct" label="Bar chart of the share of PAs satisfied with each part of their job." />
+      </figure>
+
+      <article class="prose">
+        <h2>What this means if you're graduating</h2>
+        <ul>
+          <li><b>You'll probably have options.</b> Most new PAs get more than one offer and accept a job within about {h.months_to_job} months.</li>
+          <li><b>Expect about {k(r.salary_median)} to start.</b> Only {Math.round(under90)}% of first jobs pay $90k or less. Over $140k is possible, but only {Math.round(over140)}% of new grads get it.</li>
+          <li><b>Specialty matters as much as years.</b> Surgical, dermatology and critical care PAs earn $15k to $35k a year more than family medicine PAs on average. Twenty years of experience adds about {k(over20.mean - firstYear.mean)}.</li>
+          <li><b>Some specialties are crowded.</b> Far more new grads want dermatology than get it. Emergency medicine, family medicine and hospital medicine hire the most new PAs.</li>
+          <li><b>Your rotations are job interviews.</b> More than a third of new PAs were hired by a rotation site.</li>
+          <li><b>Look at pay and prices together.</b> The highest-paying state, California, is also one of the most expensive. A smaller salary somewhere cheaper can go further.</li>
+        </ul>
+
+        <h2>About the data</h2>
+        <ul>
+          {d.sources.map((s: any) => <li><a href={s.url}>{s.name}</a></li>)}
+        </ul>
+        <p>NCCPA surveys every certified PA when they update their profile, and most respond (84% in 2025). Income is what PAs report earning from all PA jobs in a year, so it includes bonuses and second jobs. State figures use where PAs live, not where they work. The numbers here were copied from NCCPA's published tables; the code that builds the charts and the tables it reads are in the <a href="https://github.com/amkashyap1220/PhysiciansAssistantJobExploration">repo on GitHub</a>.</p>
+      </article>
+    </div>
+  </section>
+</PostLayout>
