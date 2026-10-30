@@ -220,6 +220,12 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
 .hero h1 { margin: var(--space-4) 0 6px; font-size: var(--fs-3xl); line-height: 1.1; letter-spacing: -0.025em; }
 .tagline { color: var(--label); font-size: var(--fs-md); }
 .lead { max-width: 560px; margin: 28px auto 0; color: var(--muted); line-height: 1.6; }
+/* Profile pictures above the About hero, each linking to its profile */
+.avatars { display: flex; justify-content: center; gap: var(--space-7); margin-bottom: var(--space-7); }
+.avatar { display: flex; flex-direction: column; align-items: center; gap: 6px; color: var(--muted); font-size: var(--fs-2xs); text-decoration: none; }
+.avatar img { width: 96px; height: 96px; border: 1px solid var(--border); border-radius: 50%; background: var(--soft); object-fit: cover; }
+.avatar:hover { color: var(--text); }
+.avatar:hover img { border-color: var(--text); }
 .actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: var(--space-7); }
 
 /* Pill for live GitHub stats */
