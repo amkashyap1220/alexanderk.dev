@@ -168,14 +168,16 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
 }
 .site-header .wrap { display: flex; align-items: center; gap: var(--space-4); height: var(--header-height); }
 .site-header .name { color: var(--text); font-size: var(--fs-sm); font-weight: 600; white-space: nowrap; }
-.site-nav { display: flex; gap: var(--space-1); margin: 0 auto; min-width: 0; }
+/* The nav is a popover (the ☰ menu on phones), so undo the browser's popover box here */
+.site-nav { display: flex; gap: var(--space-1); position: static; inset: auto; width: auto; height: auto; margin: 0 auto; padding: 0; border: 0; background: none; color: inherit; min-width: 0; }
 .site-nav a { padding: 6px var(--space-3); border-radius: var(--radius); color: var(--muted); font-size: var(--fs-md); white-space: nowrap; }
 .site-nav a:hover { color: var(--text); background: var(--soft); text-decoration: none; }
 .site-nav a[aria-current="page"] { color: var(--text); }
-/* Private tab: only once unlocked (js/signed-in.js); the lock icon hides then */
+/* Private tab: only once unlocked (js/signed-in.js); the lock icon and Unlock hide then */
 .nav-private, :root.signed-in .unlock-link { display: none; }
 :root.signed-in .nav-private { display: inline-block; }
 .header-actions { display: flex; align-items: center; gap: var(--space-2); }
+.header-actions .menu-btn, .menu-extra { display: none; }   /* phones only */
 
 /* Theme toggle: the sun shows in light mode, the moon in dark mode */
 .icon-moon { display: none; }
@@ -185,7 +187,8 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
 .site-footer { padding: var(--space-7) 0; border-top: 1px solid var(--border); color: var(--muted); font-size: var(--fs-xs); }
 .site-footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-2); }
 .site-footer a { color: var(--muted); }
-.footer-links { display: flex; gap: var(--space-4); padding: 0; list-style: none; }
+.footer-links { display: flex; align-items: center; gap: var(--space-4); padding: 0; list-style: none; }
+.footer-links .icon-btn { padding: 0; color: var(--muted); }
 
 
 /* ---------- 4. Components ---------- */
@@ -432,17 +435,35 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
 
 
 /* ---------- 7. Phones ---------- */
-/* Tablets and small laptops: drop the name from the header so the nav and
-   the LinkedIn / GitHub buttons fit (every page already shows the name big) */
+/* Tablets and small laptops: drop the name from the header so the tabs fit
+   (every page already shows the name big) */
 @media (max-width: 820px) {
   .site-header .name { display: none; }
   .site-nav { margin: 0 auto 0 0; }
 }
 
+/* Phones: just the name, the theme toggle and ☰. The menu drops down under the header. */
 @media (max-width: 640px) {
-  .header-actions .btn { display: none; }      /* LinkedIn and GitHub are still in the footer */
-  .site-nav { gap: 0; }
-  .site-nav a { padding: 6px var(--space-2); }
+  .site-header .name { display: inline; margin-right: auto; }
+  .header-actions .menu-btn { display: inline-flex; }
+  .menu-btn svg { width: 18px; height: 18px; }
+  .site-nav:not(:popover-open) { display: none; }
+  .site-nav {
+    position: fixed;
+    inset: var(--header-height) 0 auto;
+    flex-direction: column;
+    gap: 0;
+    margin: 0;
+    padding: 0 var(--space-5) var(--space-4);
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 12px 24px color-mix(in srgb, var(--text) 10%, transparent);
+  }
+  .site-nav a { padding: 12px 0; border-bottom: 1px solid var(--border); border-radius: 0; font-size: var(--fs-md); }
+  .site-nav a:hover { background: none; }
+  .site-nav a[aria-current="page"] { font-weight: 600; }
+  .site-nav .menu-extra { display: flex; gap: var(--space-5); padding-top: var(--space-2); }
+  .menu-extra a { border: 0; font-size: var(--fs-sm); }
   .hero { padding: 64px 0 48px; }
   .hero h1 { font-size: 34px; }
   .section { padding: var(--space-9) 0; }
@@ -454,33 +475,12 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
   .stat:last-child:nth-child(odd) { grid-column: 1 / -1; }   /* no lonely half-width tile at the end */
 }
 
-/* The smallest phones (iPhone SE and similar): tighten the header so it fits */
+/* The smallest phones (iPhone SE and similar) */
 @media (max-width: 420px) {
   .wrap, .narrow { padding: 0 var(--space-4); }
-  .site-header .wrap { gap: var(--space-2); }
-  .site-nav a { padding: 6px; font-size: 12.5px; }
-  .nav-long { display: none; }   /* "GitHub Stats" becomes "Stats", to make room for the lock icon */
+  .site-nav { padding: 0 var(--space-4) var(--space-4); }
 }
-
-/* The narrowest phones (320–360px, e.g. iPhone SE): smaller nav text so
-   "GitHub Stats" still fits. If a screen is ever narrower still, the nav
-   scrolls sideways on its own instead of pushing the page wider. */
 @media (max-width: 360px) {
   .wrap, .narrow { padding: 0 var(--space-3); }
-  .site-nav a { padding: 6px var(--space-1); font-size: 11.5px; }
+  .site-nav { padding: 0 var(--space-3) var(--space-3); }
 }
-/* Signed in there's a fifth tab (Private), so make room. The public header is unchanged. */
-@media (max-width: 1000px) {
-  :root.signed-in .nav-long { display: none; }    /* "GitHub Stats" becomes "Stats" */
-}
-@media (max-width: 720px) {
-  :root.signed-in .header-actions .btn { display: none; }   /* LinkedIn and GitHub are in the footer */
-}
-@media (max-width: 480px) {
-  :root.signed-in .site-nav a { padding: 6px 5px; font-size: 12px; }
-}
-@media (max-width: 360px) {
-  :root.signed-in .site-nav a { padding: 6px 3px; font-size: 11px; }
-}
-.site-nav { overflow-x: auto; scrollbar-width: none; }
-.site-nav::-webkit-scrollbar { display: none; }

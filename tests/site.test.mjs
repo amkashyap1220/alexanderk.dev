@@ -39,7 +39,8 @@ test("every page has a title, a description and the site header and footer", () 
     assert.match(html, /<meta name="description" content="[^"]+"/, file + ": description");
     assert.match(html, /<a class="nav-private" href="\/private\/"/, file + ": Private tab");
     assert.match(html, /<script src="\/js\/signed-in\.js"><\/script>/, file + ": signed-in.js");
-    assert.match(html, /class="icon-btn unlock-link" href="\/unlock"/, file + ": lock icon");
+    assert.match(html, /class="icon-btn unlock-link" href="\/unlock"/, file + ": footer lock icon");
+    assert.match(html, /popovertarget="site-menu"/, file + ": phone menu button");
     assert.match(html, /<dialog class="unlock-dialog"/, file + ": unlock box");
     assert.match(html, /<footer class="site-footer">/, file + ": footer");
     assert.ok(all(html, /aria-current="(page)"/g).length <= 1, file + ": at most one current tab");
