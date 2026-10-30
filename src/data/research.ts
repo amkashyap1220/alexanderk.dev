@@ -23,9 +23,9 @@ export const posts: Post[] = [
     title: "The PA job market for new grads",
     date: "2026-10-30",
     lead: "What PA specialties hire new grads, what they pay, where PAs work and how long the job search takes, in charts.",
-    summary: "A guide in charts for PAs about to graduate: which specialties hire new grads, pay by specialty and state, the job search, and debt.",
-    description: "Charts for graduating physician assistants: where new PAs take jobs, what each specialty pays, PAs and pay by state, how long the job search takes, and how much debt new PAs carry. From NCCPA's latest reports.",
-    chips: ["Interactive map", "Python", "NCCPA data"],
+    summary: "A guide in charts for PAs about to graduate: which specialties hire new grads, pay by specialty, employer, state and city, the job search, and debt.",
+    description: "Charts for graduating physician assistants: where new PAs take jobs, what each specialty and employer pays, pay after the cost of living by state and metro area, job growth, how long the job search takes, and how much debt new PAs carry. From NCCPA's latest reports and BLS data.",
+    chips: ["Interactive map", "Python", "NCCPA data", "BLS data"],
     link: { label: "Data and code", href: "https://github.com/amkashyap1220/PhysiciansAssistantJobExploration" },
   },
   {

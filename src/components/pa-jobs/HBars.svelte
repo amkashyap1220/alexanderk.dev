@@ -1,7 +1,8 @@
 <!-- Horizontal bars, longest first (unless sort is false), each labelled with
      its value. Rows are { label, value }, plus median, hours, over200 and pas
-     for the specialty pay chart's tips. With above set, bars over that value
-     are the main color and the rest are lighter. With dots, each row is a dot
+     for the specialty pay chart's tips, or tip for any other extra line. With
+     above set, bars over that value are the main color and the rest are
+     lighter; with highlight set, only the row with that label is. With dots, each row is a dot
      on a line and the axis starts near the smallest value, so close values
      can be told apart. -->
 <script>
@@ -9,7 +10,7 @@
   import { onMount } from "svelte";
   import { css, draw, fmt, halo, onTheme, rowLayout, tick } from "./pa.js";
 
-  let { rows, format: formatName, label, above = null, xLabel = null, sort = true, dots = false } = $props();
+  let { rows, format: formatName, label, above = null, highlight = null, xLabel = null, sort = true, dots = false } = $props();
 
   const format = $derived(fmt(formatName)), ticks = $derived(tick(formatName));
   let el, width = $state(0), theme = $state(0);
@@ -18,7 +19,7 @@
   // The tip: the value, plus the specialty pay chart's extra numbers when the rows have them
   const tipText = (r) => [r.label, format(r.value),
     r.median != null && "Median " + fmt("money")(r.median), r.hours != null && r.hours + " hours a week on average",
-    r.over200 != null && r.over200 + "% earn over $200k", r.pas != null && r.pas.toLocaleString() + " PAs"].filter(Boolean).join("\n");
+    r.over200 != null && r.over200 + "% earn over $200k", r.pas != null && r.pas.toLocaleString() + " PAs", r.tip].filter(Boolean).join("\n");
 
   $effect(() => {
     theme;
@@ -27,7 +28,8 @@
     const L = rowLayout(data, width), dy = L.dy;
     const max = Math.max(...data.map((r) => r.value)), min = Math.min(...data.map((r) => r.value));
     const lo = dots ? Math.floor((min - (max - min) * 0.15) / 5000) * 5000 : 0;
-    const fill = (r) => css(above == null || r.value > above ? "--pa-1" : "--pa-r2");
+    const main = (r) => (highlight != null ? r.label === highlight : above == null || r.value > above);
+    const fill = (r) => css(main(r) ? "--pa-1" : "--pa-r2");
     draw(el, label, {
       width, height: L.height,
       marginLeft: L.marginLeft, marginRight: 64, marginTop: L.stacked ? 14 : 4, marginBottom: 30,

@@ -37,4 +37,5 @@
 .pa-table-wrap table { width: 100%; border-collapse: collapse; font-size: var(--fs-xs); font-variant-numeric: tabular-nums; }
 .pa-table-wrap th, .pa-table-wrap td { padding: 4px 8px; border-bottom: 1px solid var(--border); text-align: right; }
 .pa-table-wrap th:first-child, .pa-table-wrap td:first-child { text-align: left; }
-@media (max-width: 560px) { .pa { padding: 0 var(--space-4); } .pa-stats b { font-size: var(--fs-xl); } }
+@media (max-width: 560px) { .pa { padding: 0 var(--space-4); } .pa-stats b { font-size: var(--fs-xl); }
+  .pa-dl { grid-template-columns: 1fr; } .pa-dl dd { margin-bottom: var(--space-2); } }

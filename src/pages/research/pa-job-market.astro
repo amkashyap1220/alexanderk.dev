@@ -1,7 +1,8 @@
 ---
 // The numbers and charts come from public/research/pa-job-market.json, made by
 // src/site_data.py in the PhysiciansAssistantJobExploration repo from NCCPA's
-// yearly reports. Each chart is a small Svelte component in src/components/pa-jobs/.
+// yearly reports and BLS, BEA and Census data. Each chart is a small Svelte
+// component in src/components/pa-jobs/.
 import fs from "node:fs";
 import PostLayout from "../../layouts/PostLayout.astro";
 import StateMap from "../../components/pa-jobs/StateMap.svelte";
@@ -19,6 +20,7 @@ const n = (x: number) => Math.round(x).toLocaleString();
 const topPay = d.specialty_pay[0], lowPay = d.specialty_pay.at(-1);
 const derm = d.specialties.find((s: any) => s.label === "Dermatology");
 const byPay = [...d.states].sort((a: any, b: any) => b.pay - a.pay);
+const byAdj = [...d.states].sort((a: any, b: any) => b.pay_adj - a.pay_adj);
 const byGrowth = [...d.states].sort((a: any, b: any) => b.growth - a.growth);
 const firstYear = d.experience_pay[0], over20 = d.experience_pay.at(-1);
 const hospital = d.settings.find((s: any) => s.setting === "Hospital");
@@ -36,6 +38,20 @@ const debtLabel = (r: string) => r.replace(/\$(\d+),000-\$(\d+),999/, (_m, lo, h
 const debtRows = d.new_debt.map((s: any) => ({ label: debtLabel(s.range), a: s.pct }));
 const challengeRows = d.new_challenges.map((s: any) => ({ label: s.challenge, a: s.pct_accepted, b: s.pct_searching }));
 const settingRows = d.settings.map((s: any) => ({ label: s.setting, value: s.pct }));
+// BLS: job growth, employers and the 20 metro areas with the most PA jobs
+const proj = (label: string) => d.projections.find((p: any) => p.label === label);
+const paProj = proj("PAs"), allProj = proj("All jobs"), npProj = proj("Nurse practitioners");
+const growthRows = d.projections.map((p: any) => ({ label: p.label, value: p.growth, tip: n(p.jobs_2025) + " jobs in 2025, " + n(p.jobs_2035) + " in 2035" }));
+const employerRows = d.employers.map((e: any) => ({ label: e.label, value: e.pay, tip: n(e.jobs) + " PA jobs (" + Math.round(e.share) + "% of all)" }));
+const employer = (label: string) => d.employers.find((e: any) => e.label === label);
+const bigMetros = d.metros.slice(0, 20);
+const metroRows = bigMetros.map((m: any) => ({ label: m.short, a: m.pay, b: m.pay_adj }));
+const lowMetro = [...bigMetros].sort((a: any, b: any) => a.pay_adj - b.pay_adj)[0];
+const lostMost = [...bigMetros].sort((a: any, b: any) => (a.pay_adj - a.pay) - (b.pay_adj - b.pay))[0];
+const nth = (i: number) => ["", "", "second-", "third-", "fourth-", "fifth-"][i] ?? i + "th-";
+const city = (m: any) => m.short.split(",")[0];
+const times = (x: number) => ["", "", "twice", "three times", "four times", "five times", "six times", "seven times", "eight times"][x] ?? x + " times";
+const above = (s: any) => Math.round(s.rpp - 100) + "%";
 const satisfiedRows = Object.entries(p.satisfied).map(([label, value]) => ({ label, value }));
 ---
 <PostLayout slug="pa-job-market" heroClass="pa-hero">
@@ -49,7 +65,7 @@ const satisfiedRows = Object.entries(p.satisfied).map(([label, value]) => ({ lab
       </ul>
 
       <article class="prose pa-intro">
-        <p>Every chart uses the latest reports from <a href="https://www.nccpa.net/">NCCPA</a>, the board that certifies every PA in the US, including its survey of {n(h.respondents)} PAs certified in 2024. Hover over or tap any chart for the exact numbers.</p>
+        <p>The charts use the latest reports from <a href="https://www.nccpa.net/">NCCPA</a>, the board that certifies every PA in the US, including its survey of {n(h.respondents)} PAs certified in 2024, plus federal data on jobs, pay and prices. Hover over or tap any chart for the exact numbers.</p>
       </article>
 
       <figure class="pa-figure">
@@ -67,15 +83,22 @@ const satisfiedRows = Object.entries(p.satisfied).map(([label, value]) => ({ lab
 
       <figure class="pa-figure">
         <h2>Where PAs are</h2>
-        <p>Pick what to color the map by, then click a state for all its numbers. {byGrowth[0].name}, {byGrowth[1].name} and {byGrowth[2].name} added PAs the fastest since 2021. {byPay[0].name}, {byPay[1].name} and {byPay[2].name} pay the most on average, though this pay isn't adjusted for the cost of living.</p>
-        <StateMap client:visible states={d.states} />
-        <figcaption class="pa-note">States are where PAs live, which is usually where they work. Pay is from NCCPA's 2023 survey; counts and growth are from 2025, new grads from 2024.</figcaption>
+        <p>Pick what to color the map by, then click a state for all its numbers. {byGrowth[0].name}, {byGrowth[1].name} and {byGrowth[2].name} added PAs the fastest since 2021.</p>
+        <StateMap client:visible states={d.states} measures={["per_100k", "growth", "new_per_100"]} details={["pas", "per_100k", "growth", "new_per_100", "new_pas"]} />
+        <figcaption class="pa-note">States are where PAs live, which is usually where they work. Counts and growth are from 2025, new grads from 2024.</figcaption>
       </figure>
 
       <figure class="pa-figure">
         <h2>Where PAs work</h2>
         <p>Most PAs work in a hospital or a private practice. New grads are even more likely to start in a hospital: {hospital.pct_accepted}% of 2024's new PAs who took a job did, compared with {hospital.pct}% of all PAs.</p>
         <HBars client:visible rows={settingRows} format="pct" label="Bar chart of the share of PAs in each practice setting." />
+      </figure>
+
+      <figure class="pa-figure">
+        <h2>PA jobs keep growing</h2>
+        <p>The Bureau of Labor Statistics expects PA jobs to grow {Math.round(paProj.growth)}% from 2025 to 2035, about {times(Math.round(paProj.growth / allProj.growth))} as fast as all jobs. Of the jobs PAs work alongside, only nurse practitioners are growing faster ({Math.round(npProj.growth)}%). That works out to about {n(h.openings)} PA openings a year, counting PAs who retire or leave the field.</p>
+        <HBars client:visible rows={growthRows} format="pct" highlight="PAs" label="Bar chart of projected job growth from 2025 to 2035 for PAs and similar jobs." />
+        <figcaption class="pa-note">BLS Employment Projections, 2025 to 2035. Physicians covers all physicians and surgeons.</figcaption>
       </figure>
 
       <figure class="pa-figure">
@@ -94,6 +117,26 @@ const satisfiedRows = Object.entries(p.satisfied).map(([label, value]) => ({ lab
         <p>Average yearly income for all PAs in each specialty in 2024. Surgical, dermatology and critical care PAs earn the most. Pediatrics and women's health earn the least. The gap between the top and bottom is about {k(topPay.mean_2024 - lowPay.mean_2024)} a year.</p>
         <HBars client:visible rows={payRows} format="money" above={h.mean_pay_all_2024} dots label="Bar chart of average PA income by specialty." />
         <figcaption class="pa-note">Total income from all PA jobs, as PAs reported it. The dashed line is the {money(h.mean_pay_all_2024)} average for all PAs; darker dots are above it. Hover for the median, hours per week and the share earning over $200k. Only specialties NCCPA reports pay for are shown.</figcaption>
+      </figure>
+
+      <figure class="pa-figure">
+        <h2>What each type of employer pays</h2>
+        <p>Median pay by who PAs work for. Doctors' offices employ {Math.round(employer("Doctors' offices").share)}% of PAs but pay the least of these, {k(employer("Doctors' offices").pay)}. The federal government, such as the VA, and staffing agencies, which place PAs in temporary jobs, pay the most: {k(employer("Federal government").pay)} and {k(employer("Staffing agencies").pay)}.</p>
+        <HBars client:visible rows={employerRows} format="money" above={h.bls_median_pay} dots label="Dot chart of median PA pay by type of employer." />
+        <figcaption class="pa-note">BLS pay for May 2025: wages from a survey of employers, without benefits or most bonuses. The dashed line is the {money(h.bls_median_pay)} median for all PAs; darker dots are above it. Only employers with at least 1,000 PA jobs are shown; hover for how many.</figcaption>
+      </figure>
+
+      <figure class="pa-figure">
+        <h2>Where pay goes furthest</h2>
+        <p>{byPay[0].name} and {byPay[1].name} pay PAs the most, about {k(byPay[1].pay)} a year, but prices there are {above(byPay[0])} and {above(byPay[1])} above the US average. After the cost of living, {byAdj[0].name} comes out on top at {k(byAdj[0].pay_adj)}. Switch to metro areas to see each city.</p>
+        <StateMap client:visible states={d.states} measures={["pay", "pay_adj"]} details={["jobs", "pay", "rpp", "pay_adj"]} metros />
+        <figcaption class="pa-note">BLS pay for May 2025, where PAs work. Prices are BEA's 2024 regional price parities. Rural areas outside metro areas aren't shown as circles.</figcaption>
+      </figure>
+
+      <figure class="pa-figure">
+        <h2>The biggest PA job markets</h2>
+        <p>The 20 metro areas with the most PA jobs, by median pay before and after the cost of living. {city(lostMost)} loses the most to prices. {city(lowMetro)} has the {nth(d.metros.indexOf(lowMetro) + 1)}most PA jobs but the lowest pay of the 20, even after prices.</p>
+        <Dumbbell client:visible rows={metroRows} names={["Median pay", "After cost of living"]} format="k" by="b" label="Dot chart of median PA pay before and after the cost of living in the 20 metro areas with the most PA jobs." />
       </figure>
 
       <figure class="pa-figure">
@@ -125,7 +168,7 @@ const satisfiedRows = Object.entries(p.satisfied).map(([label, value]) => ({ lab
         <ul>
           {d.sources.map((s: any) => <li><a href={s.url}>{s.name}</a></li>)}
         </ul>
-        <p>NCCPA surveys every certified PA when they update their profile, and most respond (84% in 2025). Income is what PAs report earning from all PA jobs in a year, so it includes bonuses and second jobs. State figures use where PAs live, not where they work. The numbers here were copied from NCCPA's published tables; the code that builds the charts and the tables it reads are in the <a href="https://github.com/amkashyap1220/PhysiciansAssistantJobExploration">repo on GitHub</a>.</p>
+        <p>NCCPA surveys every certified PA when they update their profile, and most respond (84% in 2025). Its income figures are what PAs report earning from all PA jobs in a year, so they include bonuses and second jobs. Its state figures use where PAs live. The Bureau of Labor Statistics instead surveys employers, so its job counts and pay are by where PAs work, and its pay is wages without most bonuses. That's why the two sources' pay figures differ. Pay after the cost of living divides pay by the Bureau of Economic Analysis's price level for each area. The code that builds the charts and the tables it reads are in the <a href="https://github.com/amkashyap1220/PhysiciansAssistantJobExploration">repo on GitHub</a>.</p>
       </article>
     </div>
   </section>

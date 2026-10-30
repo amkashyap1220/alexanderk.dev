@@ -1,12 +1,13 @@
 <!-- Two values per row joined by a line, e.g. where new PAs took jobs vs
      where the ones still looking want to work. Rows are { label, a, b };
-     names are the two series' names for the legend. -->
+     names are the two series' names for the legend. Rows are sorted by
+     their larger value, or by one series when by is "a" or "b". -->
 <script>
   import * as Plot from "@observablehq/plot";
   import { onMount } from "svelte";
   import { css, draw, fmt, halo, onTheme, rowLayout, tick } from "./pa.js";
 
-  let { rows, names, format: formatName, label, xLabel = null } = $props();
+  let { rows, names, format: formatName, label, xLabel = null, by = null } = $props();
 
   const format = $derived(fmt(formatName)), ticks = $derived(tick(formatName));
   let el, width = $state(0), theme = $state(0);
@@ -15,7 +16,8 @@
   $effect(() => {
     theme;
     if (width < 200) return;
-    const data = [...rows].sort((p, q) => Math.max(q.a, q.b) - Math.max(p.a, p.b));
+    const key = (r) => (by ? r[by] : Math.max(r.a, r.b));
+    const data = [...rows].sort((p, q) => key(q) - key(p));
     const L = rowLayout(data, width), dy = L.dy;
     const [ca, cb] = [css("--pa-1"), css("--pa-2")];
     // The smaller value is labelled only when its dot has room on its left
