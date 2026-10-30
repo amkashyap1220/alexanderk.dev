@@ -37,6 +37,7 @@ export const halo = () => ({ stroke: css("--bg"), strokeWidth: 4, paintOrder: "s
 const FORMATS = {
   pct: [(x) => (x == null ? "n/a" : (Math.round(x * 10) / 10) + "%"), (x) => x + "%"],
   money: [money, k],
+  k: [k, k],
 };
 export const fmt = (name) => FORMATS[name][0];
 export const tick = (name) => FORMATS[name][1];
