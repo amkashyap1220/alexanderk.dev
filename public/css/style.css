@@ -168,8 +168,8 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
 }
 .site-header .wrap { display: flex; align-items: center; gap: var(--space-4); height: var(--header-height); }
 .site-header .name { color: var(--text); font-size: var(--fs-sm); font-weight: 600; white-space: nowrap; }
-/* The nav is a popover (the ☰ menu on phones), so undo the browser's popover box here */
-.site-nav { display: flex; gap: var(--space-1); position: static; inset: auto; width: auto; height: auto; margin: 0 auto; padding: 0; border: 0; background: none; color: inherit; min-width: 0; }
+.site-nav { display: flex; gap: var(--space-1); margin: 0 auto; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+.site-nav::-webkit-scrollbar { display: none; }
 .site-nav a { padding: 6px var(--space-3); border-radius: var(--radius); color: var(--muted); font-size: var(--fs-md); white-space: nowrap; }
 .site-nav a:hover { color: var(--text); background: var(--soft); text-decoration: none; }
 .site-nav a[aria-current="page"] { color: var(--text); }
@@ -442,28 +442,23 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
   .site-nav { margin: 0 auto 0 0; }
 }
 
-/* Phones: just the name, the theme toggle and ☰. The menu drops down under the header. */
+/* Phones: just the name, the theme toggle and ☰ (js/menu.js). The menu opens
+   inside the header, which turns solid, so the two read as one sheet.
+   Without scripts the tabs stay in a row that scrolls sideways. */
 @media (max-width: 640px) {
-  .site-header .name { display: inline; margin-right: auto; }
-  .header-actions .menu-btn { display: inline-flex; }
+  :root.js .site-header .name { display: inline; margin-right: auto; }
+  :root.js .header-actions { height: var(--header-height); }
+  :root.js .header-actions .menu-btn { display: inline-flex; }
   .menu-btn svg { width: 18px; height: 18px; }
-  .site-nav:not(:popover-open) { display: none; }
-  .site-nav {
-    position: fixed;
-    inset: var(--header-height) 0 auto;
-    flex-direction: column;
-    gap: 0;
-    margin: 0;
-    padding: 0 var(--space-5) var(--space-4);
-    background: var(--bg);
-    border-bottom: 1px solid var(--border);
-    box-shadow: 0 12px 24px color-mix(in srgb, var(--text) 10%, transparent);
-  }
-  .site-nav a { padding: 12px 0; border-bottom: 1px solid var(--border); border-radius: 0; font-size: var(--fs-md); }
-  .site-nav a:hover { background: none; }
-  .site-nav a[aria-current="page"] { font-weight: 600; }
-  .site-nav .menu-extra { display: flex; gap: var(--space-5); padding-top: var(--space-2); }
-  .menu-extra a { border: 0; font-size: var(--fs-sm); }
+  :root.js .site-header .wrap { flex-wrap: wrap; row-gap: 0; height: auto; }
+  :root.js .site-nav { display: none; order: 1; flex-basis: 100%; flex-direction: column; gap: 0; margin: 0; padding-bottom: var(--space-4); }
+  :root.js .menu-open .site-nav { display: flex; }
+  .site-header.menu-open { background: var(--bg); box-shadow: 0 12px 24px color-mix(in srgb, var(--text) 10%, transparent); }
+  :root.js .site-nav a { padding: 12px 0; border-top: 1px solid var(--border); border-radius: 0; font-size: var(--fs-md); }
+  :root.js .site-nav a:hover { background: none; }
+  :root.js .site-nav a[aria-current="page"] { font-weight: 600; }
+  :root.js .site-nav .menu-extra { display: flex; gap: var(--space-5); border-top: 1px solid var(--border); padding-top: var(--space-2); }
+  :root.js .menu-extra a { border: 0; font-size: var(--fs-sm); }
   .hero { padding: 64px 0 48px; }
   .hero h1 { font-size: 34px; }
   .section { padding: var(--space-9) 0; }
@@ -478,9 +473,7 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
 /* The smallest phones (iPhone SE and similar) */
 @media (max-width: 420px) {
   .wrap, .narrow { padding: 0 var(--space-4); }
-  .site-nav { padding: 0 var(--space-4) var(--space-4); }
 }
 @media (max-width: 360px) {
   .wrap, .narrow { padding: 0 var(--space-3); }
-  .site-nav { padding: 0 var(--space-3) var(--space-3); }
 }
