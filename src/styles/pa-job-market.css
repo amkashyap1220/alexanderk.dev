@@ -1,0 +1,40 @@
+/* The PA job market post's charts only (scoped under .pa) */
+/* Map ramp, low to high: aluminium to sky blue (Tango), so it reads without color too.
+   Series: sky blue 2 for the main one, orange 2 for the comparison. */
+:root { --pa-r0: #e4ecf5; --pa-r1: #b4cbe5; --pa-r2: #729fcf; --pa-r3: #3465a4; --pa-r4: #1d3e6e; --pa-none: #d3d7cf;
+        --pa-1: #3465a4; --pa-2: #f57900; --pa-dot: #ce5c00; }
+:root.dark { --pa-r0: #3b4a5c; --pa-r1: #3f5f86; --pa-r2: #4f7fb8; --pa-r3: #729fcf; --pa-r4: #b4d2f0; --pa-none: #4a4f50;
+             --pa-1: #729fcf; --pa-2: #fcaf3e; --pa-dot: #fcaf3e; }
+.pa-hero { padding-bottom: var(--space-7); }
+.pa { max-width: 1000px; margin: 0 auto; padding: 0 var(--space-5); }
+.pa-figure { margin: var(--space-7) 0 var(--space-9); }
+.pa-figure h2 { margin: 0 0 var(--space-2); font-size: var(--fs-xl); }
+.pa-figure > p, .pa-hint { margin: 0 0 var(--space-3); color: var(--muted); font-size: var(--fs-sm); line-height: 1.6; max-width: 70ch; }
+.pa-note { margin: var(--space-2) 0 0; color: var(--muted); font-size: var(--fs-xs); line-height: 1.6; }
+.pa-chart svg, .pa-map svg { display: block; max-width: 100%; height: auto; margin: 0 auto; overflow: visible; }
+.pa-map { min-height: 260px; }
+.pa-toggle { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-bottom: var(--space-3); }
+.pa .btn:focus-visible, .pa button:focus-visible, .pa select:focus-visible, .pa input:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+.pa-legend { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-5); margin: 0 0 var(--space-3); padding: 0; list-style: none; color: var(--muted); font-size: var(--fs-xs); }
+.pa-legend li { display: flex; align-items: center; gap: 6px; }
+.pa-key { display: inline-block; width: 12px; height: 12px; border-radius: 2px; }
+.pa-key.dot { width: 9px; height: 9px; border-radius: 50%; background: var(--pa-dot); }
+.pa-bar { display: flex; flex-wrap: wrap; gap: var(--space-3) var(--space-5); align-items: center; margin-top: var(--space-3); }
+.pa-find { display: flex; align-items: center; gap: var(--space-2); color: var(--muted); font-size: var(--fs-xs); }
+.pa select { padding: 3px 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--soft); color: var(--text); font: inherit; }
+.pa-detail { margin-top: var(--space-4); padding: var(--space-3) var(--space-4); border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); font-size: var(--fs-sm); }
+.pa-detail h3 { margin: 0 0 var(--space-2); font-size: var(--fs-base); }
+.pa-dl { display: grid; grid-template-columns: max-content 1fr; gap: 2px var(--space-4); margin: 0; }
+.pa-dl dt { color: var(--muted); }
+.pa-dl dd { margin: 0; font-variant-numeric: tabular-nums; }
+/* Big numbers at the top of the post */
+.pa-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: var(--space-4); margin: var(--space-6) 0; padding: 0; list-style: none; }
+.pa-stats li { padding: var(--space-4); border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); }
+.pa-stats b { display: block; font-size: var(--fs-2xl); line-height: 1.2; color: var(--text); }
+.pa-stats span { color: var(--muted); font-size: var(--fs-xs); line-height: 1.5; }
+.pa-two { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: var(--space-6); }
+.pa-table-wrap { overflow-x: auto; }
+.pa-table-wrap table { width: 100%; border-collapse: collapse; font-size: var(--fs-xs); font-variant-numeric: tabular-nums; }
+.pa-table-wrap th, .pa-table-wrap td { padding: 4px 8px; border-bottom: 1px solid var(--border); text-align: right; }
+.pa-table-wrap th:first-child, .pa-table-wrap td:first-child { text-align: left; }
+@media (max-width: 560px) { .pa { padding: 0 var(--space-4); } .pa-stats b { font-size: var(--fs-xl); } }
