@@ -44,9 +44,9 @@ const satisfiedRows = Object.entries(p.satisfied).map(([label, value]) => ({ lab
   <section class="section">
     <div class="pa">
       <ul class="pa-stats">
-        <li><b>{k(h.new_median_pay)}</b><span>typical first-job salary for PAs certified in 2024, up from {k(h.new_median_pay_2020)} in 2020</span></li>
         <li><b>{h.months_to_job} months</b><span>typical time for a new grad to find and accept a job</span></li>
         <li><b>{Math.round(h.two_plus_offers)}%</b><span>of new grads who took a job had two or more offers</span></li>
+        <li><b>{k(h.new_median_pay)}</b><span>typical first-job salary for PAs certified in 2024, up from {k(h.new_median_pay_2020)} in 2020</span></li>
         <li><b>{n(h.pas)}</b><span>certified PAs at the end of 2025, more than double the {n(h.pas_2013)} in 2013</span></li>
       </ul>
 
@@ -68,27 +68,8 @@ const satisfiedRows = Object.entries(p.satisfied).map(([label, value]) => ({ lab
       </figure>
 
       <figure class="pa-figure">
-        <h2>What each specialty pays</h2>
-        <p>Average yearly income for all PAs in each specialty in 2024. Surgical, dermatology and critical care PAs earn the most. Pediatrics and women's health earn the least. The gap between the top and bottom is about {k(topPay.mean_2024 - lowPay.mean_2024)} a year.</p>
-        <HBars client:visible rows={payRows} format="money" above={h.mean_pay_all_2024} dots label="Bar chart of average PA income by specialty." />
-        <figcaption class="pa-note">Total income from all PA jobs, as PAs reported it. The dashed line is the {money(h.mean_pay_all_2024)} average for all PAs; darker dots are above it. Hover for the median, hours per week and the share earning over $200k. Only specialties NCCPA reports pay for are shown.</figcaption>
-      </figure>
-
-      <figure class="pa-figure">
-        <h2>Your first salary</h2>
-        <p>What new grads who took a job are paid (blue), and the lowest salary new grads still looking say they'd accept (orange). About {Math.round(mid)}% of first jobs pay between $100k and $130k, and the median is {money(r.salary_median)}. New grads' expectations line up closely with what the market pays.</p>
-        <Columns client:visible rows={salaryRows} names={["Took a job: salary", "Still looking: lowest salary they'd take"]} format="pct" label="Column chart of first-job salaries for new PAs." />
-      </figure>
-
-      <figure class="pa-figure">
-        <h2>Pay grows with experience, slowly</h2>
-        <p>Average income by years working as a PA. PAs in their first year average {k(firstYear.mean)}; PAs with more than 20 years average {k(over20.mean)}. The specialty you pick matters about as much as two decades of experience.</p>
-        <HBars client:visible rows={expRows} format="money" sort={false} dots label="Bar chart of average PA income by years of experience." />
-      </figure>
-
-      <figure class="pa-figure">
         <h2>Where PAs are</h2>
-        <p>Pick what to color the map by, then click a state for all its numbers. {byPay[0].name}, {byPay[1].name} and {byPay[2].name} pay the most on average, though this pay isn't adjusted for the cost of living. {byGrowth[0].name}, {byGrowth[1].name} and {byGrowth[2].name} added PAs the fastest since 2021.</p>
+        <p>Pick what to color the map by, then click a state for all its numbers. {byGrowth[0].name}, {byGrowth[1].name} and {byGrowth[2].name} added PAs the fastest since 2021. {byPay[0].name}, {byPay[1].name} and {byPay[2].name} pay the most on average, though this pay isn't adjusted for the cost of living.</p>
         <StateMap client:visible states={d.states} />
         <figcaption class="pa-note">States are where PAs live, which is usually where they work. Pay is from NCCPA's 2023 survey; counts and growth are from 2025, new grads from 2024.</figcaption>
       </figure>
@@ -111,6 +92,25 @@ const satisfiedRows = Object.entries(p.satisfied).map(([label, value]) => ({ lab
       </figure>
 
       <figure class="pa-figure">
+        <h2>What each specialty pays</h2>
+        <p>Average yearly income for all PAs in each specialty in 2024. Surgical, dermatology and critical care PAs earn the most. Pediatrics and women's health earn the least. The gap between the top and bottom is about {k(topPay.mean_2024 - lowPay.mean_2024)} a year.</p>
+        <HBars client:visible rows={payRows} format="money" above={h.mean_pay_all_2024} dots label="Bar chart of average PA income by specialty." />
+        <figcaption class="pa-note">Total income from all PA jobs, as PAs reported it. The dashed line is the {money(h.mean_pay_all_2024)} average for all PAs; darker dots are above it. Hover for the median, hours per week and the share earning over $200k. Only specialties NCCPA reports pay for are shown.</figcaption>
+      </figure>
+
+      <figure class="pa-figure">
+        <h2>Your first salary</h2>
+        <p>What new grads who took a job are paid (blue), and the lowest salary new grads still looking say they'd accept (orange). About {Math.round(mid)}% of first jobs pay between $100k and $130k, and the median is {money(r.salary_median)}. New grads' expectations line up closely with what the market pays.</p>
+        <Columns client:visible rows={salaryRows} names={["Took a job: salary", "Still looking: lowest salary they'd take"]} format="pct" label="Column chart of first-job salaries for new PAs." />
+      </figure>
+
+      <figure class="pa-figure">
+        <h2>Pay grows with experience, slowly</h2>
+        <p>Average income by years working as a PA. PAs in their first year average {k(firstYear.mean)}; PAs with more than 20 years average {k(over20.mean)}. The specialty you pick matters about as much as two decades of experience.</p>
+        <HBars client:visible rows={expRows} format="money" sort={false} dots label="Bar chart of average PA income by years of experience." />
+      </figure>
+
+      <figure class="pa-figure">
         <h2>The debt you're starting with</h2>
         <p>The median new PA owes {money(r.debt_median)} for school, more than a typical first year's salary. Only {r.debt_none}% have no debt. Debt is shaping more choices than it used to: {r.debt_influenced_specialty}% of new PAs said it affected whether they chose primary care, up from {r.debt_influenced_specialty_2020}% in 2020.</p>
         <Columns client:visible rows={debtRows} names={["Share of new PAs"]} format="pct" label="Column chart of educational debt for new PAs." />
@@ -126,10 +126,10 @@ const satisfiedRows = Object.entries(p.satisfied).map(([label, value]) => ({ lab
         <h2>What this means if you're graduating</h2>
         <ul>
           <li><b>You'll probably have options.</b> Most new PAs get more than one offer and accept a job within about {h.months_to_job} months.</li>
-          <li><b>Expect about {k(r.salary_median)} to start.</b> Only {Math.round(under90)}% of first jobs pay $90k or less. Over $140k is possible, but only {Math.round(over140)}% of new grads get it.</li>
-          <li><b>Specialty matters as much as years.</b> Surgical, dermatology and critical care PAs earn $15k to $35k a year more than family medicine PAs on average. Twenty years of experience adds about {k(over20.mean - firstYear.mean)}.</li>
           <li><b>Some specialties are crowded.</b> Far more new grads want dermatology than get it. Emergency medicine, family medicine and hospital medicine hire the most new PAs.</li>
           <li><b>Your rotations are job interviews.</b> More than a third of new PAs were hired by a rotation site.</li>
+          <li><b>Expect about {k(r.salary_median)} to start.</b> Only {Math.round(under90)}% of first jobs pay $90k or less. Over $140k is possible, but only {Math.round(over140)}% of new grads get it.</li>
+          <li><b>Specialty matters as much as years.</b> Surgical, dermatology and critical care PAs earn $15k to $35k a year more than family medicine PAs on average. Twenty years of experience adds about {k(over20.mean - firstYear.mean)}.</li>
           <li><b>Look at pay and prices together.</b> The highest-paying state, California, is also one of the most expensive. A smaller salary somewhere cheaper can go further.</li>
         </ul>
 

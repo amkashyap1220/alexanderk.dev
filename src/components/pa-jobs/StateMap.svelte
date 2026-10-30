@@ -16,18 +16,18 @@
 
   const plus = (x) => (x > 0 ? "+" : "") + Math.round(x) + "%";
   const MEASURES = [
-    { key: "pay", name: "Pay", long: "Average yearly income (2023)", fmt: k,
-      hint: "What PAs living in each state earned in 2023 from all their PA jobs, on average. Not adjusted for local prices." },
     { key: "per_100k", name: "PAs for the population", long: "PAs per 100,000 residents (2025)", fmt: (x) => Math.round(x),
       hint: "Where PAs are already common, employers know how to use them. Where they're rare, there may be room to grow, or fewer jobs." },
     { key: "growth", name: "Growth", long: "Growth in PAs, 2021 to 2025", fmt: plus,
       hint: "How much the number of PAs living in the state grew in four years. Nationally it was +27%." },
     { key: "new_per_100", name: "New-grad competition", long: "New PAs (2024) per 100 PAs already there", fmt: (x) => x.toFixed(1),
       hint: "How many PAs were newly certified in 2024 for every 100 already living in the state. Higher means more new grads in the same pool, since many take jobs near where they grew up or trained." },
+    { key: "pay", name: "Pay", long: "Average yearly income (2023)", fmt: k,
+      hint: "What PAs living in each state earned in 2023 from all their PA jobs, on average. Not adjusted for local prices." },
   ];
 
   let geo = $state.raw(null), failed = $state(false);
-  let measure = $state("pay"), selected = $state(null);
+  let measure = $state("per_100k"), selected = $state(null);
   let el, width = $state(0), theme = $state(0);
   const m = $derived(MEASURES.find((x) => x.key === measure));
   const byFips = $derived(new Map(states.map((s) => [s.fips, s])));
