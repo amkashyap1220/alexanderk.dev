@@ -4,7 +4,7 @@ My personal site: about me, my projects, my research, and stats from my GitHub.
 
 **Live:** [alexanderk.dev](https://alexanderk.dev)
 
-Built with [Astro](https://astro.build) into plain HTML, CSS and JavaScript, and hosted on Cloudflare. The two most interactive pages, the Chicago home value map and the fitness dashboard, are built from [Svelte](https://svelte.dev) components.
+Built with [Astro](https://astro.build) into plain HTML, CSS and JavaScript, and hosted on Cloudflare. The most interactive pages, the Chicago home value map, the PA job market charts and the fitness dashboard, are built from [Svelte](https://svelte.dev) components.
 
 ## Building
 
@@ -18,6 +18,7 @@ Built with [Astro](https://astro.build) into plain HTML, CSS and JavaScript, and
 | `src/components/`, `src/styles/` | Small shared pieces (README, chips, GitHub numbers) and page-only styles |
 | `src/components/home-value/` | The Chicago home value map, chart, table and form (Svelte), loaded only on that post |
 | `src/components/fitness/` | The fitness dashboard: one Svelte component per panel, loaded only on that page |
+| `src/components/pa-jobs/` | The PA job market post's map and charts (Svelte + Observable Plot), reading `public/research/pa-job-market.json` |
 | `public/` | Copied to the site as is: `css/style.css`, the browser scripts in `js/`, images and data files |
 | `worker/` | The Cloudflare Worker: GitHub data, the private section's unlock code and the fitness API (never uploaded as a file) |
 
