@@ -23,6 +23,7 @@
   --border: #d3d7cf;          /* aluminium 2 */
   --card: rgba(255, 255, 255, 0.6);
   --soft: #ffffff;            /* secondary buttons, code, bar tracks, pills */
+  --field: #ffffff;           /* dropdowns and text boxes: solid, so the open option list can match */
   --link: #204a87;            /* sky blue 3: links, focus ring, hovers */
   --label: #8f5902;           /* chocolate 3: eyebrows, taglines, company names */
   --mark: #4e9a06;            /* chameleon 3: bullets, quote bars */
@@ -78,6 +79,7 @@
   --border: #555753;
   --card: rgba(255, 255, 255, 0.04);
   --soft: rgba(255, 255, 255, 0.07);
+  --field: #3d4244;           /* --soft over --bg, made solid */
   --link: #729fcf;            /* sky blue 1 */
   --label: #e9b96e;           /* chocolate 1 */
   --mark: #8ae234;            /* chameleon 1 */
@@ -117,6 +119,12 @@ code { font-family: inherit; font-size: 0.9em; }
 :not(pre) > code { padding: 1px 6px; border-radius: var(--radius-sm); background: var(--soft); }
 
 .muted { color: var(--muted); }
+
+/* Dropdowns: the open option list is drawn by the browser and doesn't
+   blend a see-through background, so give the list the theme's colors
+   (otherwise Windows and Linux show light text on a white list in dark mode) */
+select { background-color: var(--field); color: var(--text); }
+option, optgroup { background-color: var(--field); color: var(--text); }
 
 /* Hidden on screen, still read by screen readers */
 .sr-only {

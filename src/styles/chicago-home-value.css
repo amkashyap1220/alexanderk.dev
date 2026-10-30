@@ -42,7 +42,7 @@
 .hv-key.station { width: 6px; height: 6px; border-radius: 50%; background: var(--text); box-shadow: 0 0 0 1px var(--bg); }
 .hv figcaption { margin-top: var(--space-2); text-align: center; color: var(--muted); font-size: var(--fs-xs); line-height: 1.6; }
 .hv-find { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin: var(--space-4) 0 var(--space-3); font-size: var(--fs-xs); color: var(--muted); }
-.hv input[type="search"], .hv select { padding: 3px 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--soft); color: var(--text); font: inherit; }
+.hv input[type="search"], .hv select { padding: 3px 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--field); color: var(--text); font: inherit; }
 .hv-find input { width: 200px; }
 /* Detail panel */
 .hv-detail { padding: var(--space-3) var(--space-4); border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); font-size: var(--fs-sm); }
