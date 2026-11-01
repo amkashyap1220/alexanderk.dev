@@ -1,0 +1,20 @@
+---
+import ProjectLayout from "../../layouts/ProjectLayout.astro";
+---
+<ProjectLayout slug="bowling-ball-finder">
+  <Fragment slot="intro">
+    <section class="section">
+      <div class="narrow">
+        <h2 class="section-title">In short</h2>
+        <div class="prose">
+          <ul>
+            <li><b>The problem.</b> Serious bowlers already own six to twelve balls, and dozens of new ones come out every year. The useful question isn't "what's a good ball?" but "what reaction is my arsenal missing?"</li>
+            <li><b>No numbers needed.</b> Most bowlers don't know their rev rate or axis rotation, so the app asks what they can see: where they stand, where the ball breaks, and what goes wrong. Filming one slow-motion shot measures ball speed and rev rate instead.</li>
+            <li><b>Recommendations with reasons.</b> Each ball's published specs (RG, differential, mass bias, coverstock, factory finish) become reaction scores; the app finds the gap in your arsenal and says why each pick fills it.</li>
+            <li><b>Private for now.</b> It runs on Cloudflare Workers with a D1 database, behind a Cloudflare Access sign-in for me and two other bowlers. It's being built in milestones; the plan is in the repo.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </Fragment>
+</ProjectLayout>

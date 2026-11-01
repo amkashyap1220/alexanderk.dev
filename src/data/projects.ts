@@ -17,6 +17,18 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    slug: "bowling-ball-finder",
+    name: "Bowling Ball Finder",
+    tagline: "The next ball for your arsenal",
+    summary: "A web app for serious bowlers: describe how you bowl (in plain words, or by filming a shot), list the balls you already own, and get recommendations for the reaction your arsenal is missing. Private for now, for me and two other bowlers.",
+    description: "Bowling Ball Finder: a web app that recommends bowling balls from how you bowl, where you bowl and the balls you already own. Astro, Svelte, Cloudflare Workers and D1.",
+    repo: "amkashyap1220/BowlingBallFinder",
+    chips: ["Astro", "Svelte", "Cloudflare Workers", "Cloudflare D1", "Cloudflare Access"],
+    when: {"start": "2026", "end": "present"},
+    readme: true,
+    writeup: {"label": "Open the app", "href": "https://bowling.alexanderk.dev"},
+  },
+  {
     slug: "pa-job-market",
     name: "PA Job Market",
     tagline: "The physician assistant job market, for new grads",
