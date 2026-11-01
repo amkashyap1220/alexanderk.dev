@@ -1,5 +1,7 @@
 <!-- Weekly sets per muscle against the target band, lowest first -->
 <script>
+  import MuscleIcon from "./MuscleIcon.svelte";
+
   let { D, A } = $props();
 
   const ws = $derived(D.program.weekly_sets);
@@ -13,7 +15,7 @@
   {#each rows as v}
     {@const [cls, word] = LABEL[v.status]}
     <div class="fit-bar-row" data-tip={`${v.name}\n${v.avgWeekly} sets a week (target ${ws.target}–${ws.high})`}>
-      <span>{v.name}</span>
+      <span class="fit-muscle"><MuscleIcon muscle={v.muscle} />{v.name}</span>
       <div class="fit-track"><div class="band" style="left:{pct(ws.target)};width:calc({pct(ws.high)} - {pct(ws.target)})"></div><div class="fill" style="width:{pct(v.avgWeekly)}"></div></div>
       <span class="fit-bar-value">{v.avgWeekly} sets {#if word}<span class={cls}>{word}</span>{/if}</span>
     </div>

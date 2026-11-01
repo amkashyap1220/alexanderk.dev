@@ -1,6 +1,7 @@
 <!-- Weak areas: low-volume muscles, stalled lifts and push vs pull balance -->
 <script>
   import { liftsOf } from "./fit.js";
+  import MuscleIcon from "./MuscleIcon.svelte";
 
   let { D, E, A } = $props();
 
@@ -16,7 +17,7 @@
     {#each A.weakAreas.slice(0, 8) as w}
       <article class="card fit-weak">
         <p class="card-label {level(w)}">{KIND[w.kind]}</p>
-        <h3 class="card-title">{w.label}</h3>
+        <h3 class="card-title fit-muscle">{#if w.kind === "volume"}<MuscleIcon muscle={w.muscle} />{/if}{w.label}</h3>
         <p class="card-text">{w.detail}</p>
       </article>
     {:else}
