@@ -47,7 +47,7 @@
 
 <figure class="hv-chart-box" id="hv-chart-box" hidden={!shown}>
   <h2 class="hv-h">Fit vs price</h2>
-  <p class="hv-hint">Two different questions: how well a zip matches what you want (across), and whether it sells for less or more than zips with the same measured features (up and down). Your best leads sit on the right; lower right is a good fit that also sells below its expected price.</p>
+  <p class="hv-hint">Right is a better fit; lower is cheaper than expected.</p>
   <div id="hv-chart" class="hv-chart" bind:this={chartEl} bind:clientWidth={width}></div>
-  <figcaption id="hv-chart-note">{#if shown}Each dot is a ranked zip. Right of the dashed line are your top {data.top}. The shaded band is ±{Math.round(data.value_model.in_line_band * 100)}%, where a price counts as in line. Faded dots: low confidence. Gaps beyond ±60% are drawn at the edge.{/if}</figcaption>
+  <figcaption id="hv-chart-note">{#if shown}Dashed line: your top {data.top}. Shaded band: in line (±{Math.round(data.value_model.in_line_band * 100)}%). Faded: low confidence.{/if}</figcaption>
 </figure>

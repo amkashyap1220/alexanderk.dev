@@ -229,7 +229,7 @@
     <div class="hv-main">
       <figure class="hv-figure" aria-labelledby="hv-caption">
         <ZipMap {data} {geo} {stations} {byZip} {result} {cur} {rank} {mode} {view} {lens} {selected} {ps} {placeName} {theme} {failed} onselect={select} />
-        <figcaption id="hv-caption">Hover or tap a zip for a summary; click it for details. Scores are for zip codes as a whole, not for streets or homes.</figcaption>
+        <figcaption id="hv-caption">Tap a zip for details.</figcaption>
       </figure>
       <label class="hv-find"><span>Find a zip:</span>
         <input id="hv-find" type="search" list="hv-places" placeholder="town or zip" autocomplete="off" bind:value={find} onchange={onfind}>
