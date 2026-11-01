@@ -1,0 +1,36 @@
+---
+import ProjectLayout from "../../layouts/ProjectLayout.astro";
+import Walkthrough from "../../components/Walkthrough.astro";
+---
+<ProjectLayout slug="cosmishapes">
+  <!-- Demo video (YouTube, privacy-enhanced embed: no tracking cookies until it's played) -->
+  <section class="section">
+    <div class="narrow">
+      <h2 class="section-title">Demo</h2>
+      <p class="section-intro">A play test of the game.</p>
+      <div class="video">
+        <iframe src="https://www.youtube-nocookie.com/embed/fJTECt56q_M"
+                title="Cosmishapes Play Test (demo video)"
+                loading="lazy"
+                allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen></iframe>
+      </div>
+      <p class="muted video-link"><a href="https://www.youtube.com/watch?v=fJTECt56q_M" target="_blank" rel="noopener">Watch on YouTube</a></p>
+    </div>
+  </section>
+
+  <!-- Written here on purpose: the repo's README is not used for this project -->
+  <section class="section">
+    <div class="narrow">
+      <h2 class="section-title">About the game</h2>
+      <div class="prose">
+        <p>I made CosmiShapes in Unity with two classmates for our software engineering capstone in high school, in spring 2018.</p>
+        <p>Shapes attack you level by level, and you shoot your way through: hit the point goal before time runs out to unlock the next level. Between levels, you spend your points in a shop to upgrade your health, speed, and attacks. The last level is a boss fight with waves of enemies.</p>
+        <p>Built with Unity and C#.</p>
+      </div>
+    </div>
+  </section>
+
+  <Walkthrough />
+</ProjectLayout>

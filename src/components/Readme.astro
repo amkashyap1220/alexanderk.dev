@@ -1,0 +1,13 @@
+---
+// The project's README, filled in from the site's GitHub data (js/github.js)
+interface Props { repo: string }
+const { repo } = Astro.props;
+---
+<section class="section">
+  <div class="narrow">
+    <h2 class="section-title">README</h2>
+    <div class="prose readme" aria-live="polite" aria-busy="true" data-readme={repo}>
+      <p class="muted">Loading README from GitHub…</p>
+    </div>
+  </div>
+</section>

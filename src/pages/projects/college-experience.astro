@@ -1,0 +1,60 @@
+---
+import ProjectLayout from "../../layouts/ProjectLayout.astro";
+import Walkthrough from "../../components/Walkthrough.astro";
+---
+<ProjectLayout slug="college-experience">
+  <!-- Demo video (YouTube, privacy-enhanced embed: no tracking cookies until it's played) -->
+  <section class="section">
+    <div class="narrow">
+      <h2 class="section-title">Demo</h2>
+      <p class="section-intro">A video I made of the game in 2020.</p>
+      <div class="video">
+        <iframe src="https://www.youtube-nocookie.com/embed/p_1WSjy58ME?start=38"
+                title="MP5: The College Experience (demo video)"
+                loading="lazy"
+                allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen></iframe>
+      </div>
+      <p class="muted video-link"><a href="https://www.youtube.com/watch?v=p_1WSjy58ME&amp;t=38s" target="_blank" rel="noopener">Watch on YouTube</a></p>
+    </div>
+  </section>
+
+  <!-- This repo has no README, so the project is described here instead -->
+  <section class="section">
+    <div class="narrow">
+      <h2 class="section-title">About the game</h2>
+      <div class="prose">
+        <p>College Experience is an Android game I built with a partner in spring 2020. You start college with five stats: <b>money</b>, <b>sanity</b>, <b>education</b>, <b>health</b>, and <b>restlessness</b>. Every turn is one month, and you decide how to spend it.</p>
+
+        <h3>How it plays</h3>
+        <p>Each choice helps some stats and costs others:</p>
+        <table>
+          <thead><tr><th>Choice</th><th>What it does</th></tr></thead>
+          <tbody>
+            <tr><td>Buy textbooks</td><td>Education +5, money −10</td></tr>
+            <tr><td>Study with friends</td><td>Education +3, sanity +5, restlessness +10</td></tr>
+            <tr><td>Study alone</td><td>Education +10, restlessness +9, sanity −10</td></tr>
+            <tr><td>Sleep</td><td>A little of everything: +3 to money, sanity, education and health, restlessness −3</td></tr>
+            <tr><td>Exercise</td><td>Health +10, sanity +5, restlessness +10, education −3</td></tr>
+            <tr><td>Work</td><td>Money +15, restlessness +10, education −5</td></tr>
+            <tr><td>Night out</td><td>Sanity +7, but education −5, money −5, health −7</td></tr>
+            <tr><td>Health center</td><td>Health +3, sanity +3, education −3</td></tr>
+          </tbody>
+        </table>
+        <p>Then something might happen: a pop quiz (you pass or fail depending on your education), your parents sending money, getting sick, passing out in class, or not being able to pay for your streaming subscriptions.</p>
+
+        <h3>Winning and losing</h3>
+        <ul>
+          <li><b>Lose</b> if money, sanity, education, or health drops to 0, or restlessness reaches 100.</li>
+          <li><b>Win</b> by making it through all 8 semesters and graduating.</li>
+        </ul>
+
+        <h3>Built with</h3>
+        <p>Java and the Android SDK in Android Studio, built with Gradle. Each screen (main menu, monthly choices, results, win and lose) is its own Android activity, and background music runs as a service.</p>
+      </div>
+    </div>
+  </section>
+
+  <Walkthrough />
+</ProjectLayout>

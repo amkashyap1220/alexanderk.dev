@@ -1,0 +1,32 @@
+---
+import ProjectLayout from "../../layouts/ProjectLayout.astro";
+import Walkthrough from "../../components/Walkthrough.astro";
+---
+<ProjectLayout slug="csci-241">
+  <!-- Written here on purpose: the repo's README is not used for this project -->
+  <section class="section">
+    <div class="narrow">
+      <h2 class="section-title">About the course</h2>
+      <div class="prose">
+        <p>I took CSCI 241 at NIU in spring 2021. It's the second programming course, focused on data structures, recursion, searching and sorting, and algorithm complexity. This repo has my assignments from it, all in C++.</p>
+        <ul>
+          <li><strong>Assignment 0:</strong> a warm-up lab.</li>
+          <li><strong>Assignment 1:</strong> insertion sort.</li>
+          <li><strong>Assignment 2:</strong> Towers of Hanoi and the eight queens puzzle, solved with recursion.</li>
+          <li><strong>Assignment 3:</strong> merge sort and quick sort.</li>
+          <li><strong>Assignment 4:</strong> a simulator for a simple machine language (SML).</li>
+          <li><strong>Assignment 5:</strong> a bank that processes transactions against a set of accounts.</li>
+          <li><strong>Assignment 6:</strong> a complex number class with overloaded operators.</li>
+          <li><strong>Assignment 7:</strong> converting infix expressions to postfix with a stack class.</li>
+          <li><strong>Assignment 8:</strong> evaluating postfix expressions.</li>
+          <li><strong>Assignment 9:</strong> a small compiler that turns a BASIC-like language into SML for the simulator from Assignment 4.</li>
+          <li><strong>Assignment 10:</strong> a doubly linked list template class.</li>
+          <li><strong>Assignment 11:</strong> a binary search tree template class.</li>
+          <li><strong>Assignment 12:</strong> shape classes (circle, rectangle, triangle) using inheritance and virtual functions.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <Walkthrough />
+</ProjectLayout>

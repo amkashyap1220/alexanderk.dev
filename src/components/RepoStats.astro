@@ -1,0 +1,11 @@
+---
+// Live GitHub numbers for a repo, filled in by js/github.js ("--" until then)
+interface Props { repo: string; updated?: boolean }
+const { repo, updated = false } = Astro.props;
+---
+<p class="pill">
+  <span><span class="star">★</span> <b data-gh={repo} data-field="stars">--</b></span><span class="sep"></span>
+  <span><b data-gh={repo} data-field="commits">--</b> commits</span><span class="sep"></span>
+  <span><b data-gh={repo} data-field="language">--</b></span>{updated && <><span class="sep"></span>
+  <span>updated <b data-gh={repo} data-field="updated">--</b></span></>}
+</p>

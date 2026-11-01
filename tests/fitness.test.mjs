@@ -45,15 +45,15 @@ function repo() {
 
 function env(extra = {}) {
   return {
-    LOGIN_USERNAME: "alex", LOGIN_PASSWORD: "pw", FITNESS_GITHUB_TOKEN: "token",
-    LOGIN_LIMITER: { limit: async () => ({ success: true }) },
+    UNLOCK_CODE: "1234", FITNESS_GITHUB_TOKEN: "token",
+    UNLOCK_LIMITER: { limit: async () => ({ success: true }) },
     ASSETS: { fetch: async (req) => new Response("file " + new URL(req.url).pathname) },
     ...extra,
   };
 }
 
 async function cookie(e) {
-  const res = await handleAuth(new Request(SITE + "/login", { method: "POST", body: new URLSearchParams({ username: "alex", password: "pw" }) }), e);
+  const res = await handleAuth(new Request(SITE + "/unlock", { method: "POST", body: new URLSearchParams({ code: "1234" }) }), e);
   return res.headers.getSetCookie().find((c) => c.startsWith("session=")).split(";")[0];
 }
 

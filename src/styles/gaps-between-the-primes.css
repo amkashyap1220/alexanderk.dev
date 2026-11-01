@@ -1,0 +1,12 @@
+/* The Gaps Between the Primes page's live demo only (scoped under #walkthrough) */
+#walkthrough .prose + .prose { margin-top: var(--space-7); }
+#walkthrough .demo { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); margin: var(--space-4) 0 var(--space-5); font-size: var(--fs-md); }
+#walkthrough .demo input {
+  width: 140px;
+  padding: 6px var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+  color: var(--text);
+  font: inherit;
+}

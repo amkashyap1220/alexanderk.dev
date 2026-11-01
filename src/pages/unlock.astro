@@ -1,0 +1,25 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+<BaseLayout
+  title="Unlock · Alexander Kashyap"
+  description="Enter the code to open the private section."
+  noindex
+>
+  <section class="hero">
+    <div class="narrow">
+      <p class="eyebrow">Private</p>
+      <h1>Enter the code</h1>
+
+      <!-- Checked by the Cloudflare Worker (worker/auth.js); js/unlock.js fills in where to go next and any error.
+           The header's lock icon opens the same box in place. -->
+      <form class="unlock-form" method="post" action="/unlock">
+        <p class="unlock-error" id="unlock-error" role="alert" hidden></p>
+        <input type="hidden" name="next" id="unlock-next" value="/private/">
+        <input id="unlock-code" name="code" type="password" inputmode="numeric" autocomplete="off" aria-label="Code" placeholder="Code" required autofocus>
+        <button class="btn primary" type="submit">Unlock</button>
+      </form>
+    </div>
+  </section>
+
+</BaseLayout>

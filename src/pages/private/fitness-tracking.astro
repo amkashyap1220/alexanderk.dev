@@ -1,0 +1,23 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Dashboard from "../../components/fitness/Dashboard.svelte";
+---
+<BaseLayout
+  title="Fitness Tracking · Alexander Kashyap"
+  description="Fitness Tracking (private project)."
+  noindex
+  current="private"
+>
+  <Fragment slot="head">
+    <link rel="stylesheet" href="/private/fitness.css">
+  </Fragment>
+  <section class="section fit-page">
+    <div class="wrap">
+      <h1 class="sr-only">Fitness Tracking</h1>
+      <!-- The dashboard (src/components/fitness/) draws everything from
+           /private/api/fitness/data (worker/fitness.js), which reads the
+           fitness-data repo. No workout data is in this file or this repo. -->
+      <Dashboard client:load />
+    </div>
+  </section>
+</BaseLayout>
