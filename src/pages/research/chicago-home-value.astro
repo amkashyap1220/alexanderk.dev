@@ -1,0 +1,53 @@
+---
+// The numbers and tables in the write-up come from the same data file the map
+// loads (src/value_gap.py in the Home-Value-Score repo), filled in at build time.
+import fs from "node:fs";
+import PostLayout from "../../layouts/PostLayout.astro";
+import HomeValue from "../../components/home-value/HomeValue.svelte";
+import "../../styles/chicago-home-value.css";
+
+const m = JSON.parse(fs.readFileSync("public/research/chicago-home-value.json", "utf8")).value_model;
+const pct = (x: number) => Math.round(x * 100) + "%";
+const p = (x: number) => (x < 0.001 ? "< 0.001" : x.toFixed(3));
+const stat = { r2: m.r2_in_sample.toFixed(2), n: m.n, band: pct(m.in_line_band) };
+const validation = Object.entries(m.validation.random_10_fold).map(([k, v]: [string, any]) => ({ name: k, random: v, spatial: m.validation.spatial_10_fold[k] }));
+const coefficients = m.coefficients.filter((c: any) => c.term !== "const");
+---
+<PostLayout slug="chicago-home-value" heroClass="hv-hero">
+  <section class="section hv-section">
+    {/* The map, chart, table and form: src/components/home-value/ */}
+    <HomeValue client:load />
+
+    <article class="narrow prose">
+      <h2>How it works</h2>
+      <ul>
+        <li><b>Fit score:</b> each factor scores 100 minus the percentile gap between the zip and your target, and the fit is their weighted average.</li>
+        <li><b>Price vs expected:</b> a regression on the same factors ({stat.n} zips, R² {stat.r2}) predicts each zip's price per sq ft from the other zips. Within ±{stat.band} counts as in line.</li>
+      </ul>
+      <div class="hv-table-wrap"><table id="hv-validation">
+        <caption>Error on held-out zips (lower is better)</caption>
+        <thead><tr><th>Model</th><th>Error, random</th><th>R², random</th><th>Error, by area</th><th>R², by area</th></tr></thead>
+        <tbody>
+          {validation.map((v) => (
+            <tr class={v.name.startsWith("This model:") ? "hv-selected" : undefined}><td>{v.name}</td><td>{v.random.median_abs_pct_error.toFixed(1)}%</td><td>{v.random.r2_log.toFixed(2)}</td><td>{v.spatial.median_abs_pct_error.toFixed(1)}%</td><td>{v.spatial.r2_log.toFixed(2)}</td></tr>
+          ))}
+        </tbody>
+      </table></div>
+      <div class="hv-table-wrap"><table id="hv-coefs">
+        <caption>Effect of one unit on price per sq ft</caption>
+        <thead><tr><th>Factor</th><th>Effect</th><th>p</th></tr></thead>
+        <tbody>
+          {coefficients.map((c: any) => (
+            <tr><td>{c.label}</td><td>{(c.pct_effect > 0 ? "+" : "") + c.pct_effect.toFixed(1)}%</td><td>{p(c.p_county)}</td></tr>
+          ))}
+        </tbody>
+      </table></div>
+      <p>Race and ethnicity aren't used. Full method, data and code are on <a href="https://github.com/amkashyap1220/Home-Value-Score">GitHub</a>.</p>
+    </article>
+  </section>
+
+  <Fragment slot="head">
+    {/* The fit score (also tested against the Python in tests/), loaded before the map starts */}
+    <script is:inline src="/js/chicago-home-value-model.js"></script>
+  </Fragment>
+</PostLayout>

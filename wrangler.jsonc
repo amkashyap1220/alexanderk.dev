@@ -4,18 +4,28 @@
   "compatibility_date": "2026-10-20",
   // Small script that keeps the GitHub numbers fresh (see worker/index.js)
   "main": "worker/index.js",
+  // Astro builds the pages into dist/ before every deploy (and wrangler dev)
+  "build": { "command": "npm run build" },
   "assets": {
-    "directory": "./",
+    "directory": "./dist",
     "binding": "ASSETS",
     // Unknown addresses get /404.html (with a real 404 status)
     "not_found_handling": "404-page",
-    // Only /data/... goes to the script; every other page is a plain file
-    "run_worker_first": ["/data/*"]
+    // These go to the script first: the GitHub data, the unlock code, and the
+    // private section (checked before any private file is sent).
+    // Every other page is a plain file.
+    "run_worker_first": ["/data/*", "/unlock", "/unlock.html", "/lock", "/login", "/login.html", "/logout", "/private", "/private/*"]
   },
   // Refresh the GitHub data every 5 minutes
   "triggers": { "crons": ["*/5 * * * *"] },
   // Where the GitHub data is saved. Cloudflare creates it on the first deploy.
   "kv_namespaces": [{ "binding": "GITHUB_DATA" }],
+  // Slows down guessing the unlock code: 5 tries a minute per connection,
+  // and 10 a minute for everyone together (see worker/auth.js)
+  "ratelimits": [
+    { "name": "UNLOCK_LIMITER", "namespace_id": "1001", "simple": { "limit": 5, "period": 60 } },
+    { "name": "UNLOCK_GLOBAL", "namespace_id": "1002", "simple": { "limit": 10, "period": 60 } }
+  ],
   // Lets branches other than main build a preview (npx wrangler preview)
   "previews": {}
 }

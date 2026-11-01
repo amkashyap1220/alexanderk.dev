@@ -5,7 +5,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
-const M = require("../js/chicago-home-value-model.js");
+const M = require("../public/js/chicago-home-value-model.js");
 
 const near = (a, b, eps = 1e-9) => assert.ok(Math.abs(a - b) < eps, `${a} != ${b}`);
 
@@ -79,7 +79,7 @@ test("changes lists what came in and dropped out", () => {
 });
 
 test("the page's model reproduces src/value.py's sample top 20 for buyers and renters", () => {
-  const dir = path.join(__dirname, "..", "research");
+  const dir = path.join(__dirname, "..", "public", "research");
   const data = JSON.parse(fs.readFileSync(path.join(dir, "chicago-home-value.json")));
   const times = JSON.parse(fs.readFileSync(path.join(dir, "chicago-home-value-drive.json")));
   const index = new Map(times.zips.map((z, i) => [z, i]));
