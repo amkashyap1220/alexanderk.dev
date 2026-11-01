@@ -52,7 +52,7 @@
 .fit-link:hover { text-decoration-color: currentColor; }
 .fit-day { display: inline-block; width: 0.7em; height: 0.7em; margin-right: 0.4em; border-radius: 2px; background: var(--c); }
 
-/* 8×8 muscle figures (private/fitness-pixels.js) */
+/* 8×8 muscle figures (src/components/fitness/MuscleIcon.svelte) */
 .fit-px { flex: none; width: 24px; height: 24px; image-rendering: pixelated; }
 .fit-muscle { display: flex; align-items: center; gap: var(--space-2); min-width: 0; }
 .fit-bar-row .fit-px { width: 16px; height: 16px; }
