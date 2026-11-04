@@ -5,7 +5,7 @@
 
    Every 5 minutes (Cron Trigger in wrangler.jsonc) it asks GitHub for every
    repo's stars, commit count, languages and last push, the last year of
-   contributions, the 90-day activity feed, and the READMEs, and saves the result in KV storage. Visitors'
+   contributions, the latest commits, the recent activity feed, and the READMEs, and saves the result in KV storage. Visitors'
    browsers read it from /data/github.json, so they never call GitHub (and
    never hit its 60-requests-an-hour limit). Everything else on the site is
    plain static files, served as before.
@@ -85,6 +85,11 @@ async function refresh(env) {
       createdAt
       contributionsCollection { totalCommitContributions contributionCalendar { totalContributions weeks { contributionDays { date contributionCount } } } }
       repositories(first: 100, ownerAffiliations: OWNER, privacy: PUBLIC, isFork: false, orderBy: { field: NAME, direction: ASC }) { nodes { ${fields} } }
+      recent: repositories(first: 6, ownerAffiliations: OWNER, privacy: PUBLIC, isFork: false, orderBy: { field: PUSHED_AT, direction: DESC }) {
+        nodes { nameWithOwner defaultBranchRef { name target { ... on Commit {
+          history(first: 10) { nodes { oid messageHeadline committedDate url } }
+        } } } }
+      }
     }
     ${extraQueries}
   }`;
@@ -110,6 +115,15 @@ async function refresh(env) {
   data[`repos:${USER}`.toLowerCase()] = own.map((r) => ({
     name: r.name, fullName: r.nameWithOwner, url: r.url, stars: r.stargazerCount, pushed: r.pushedAt,
   }));
+
+  // The latest commits on the default branch of my most recently pushed repos. Read straight
+  // from the repos, so they're current as of this run (the events feed below can lag by hours
+  // and only holds 300 events).
+  data[`latestcommits:${USER}`.toLowerCase()] = result.data.user.recent.nodes
+    .flatMap((r) => (r.defaultBranchRef && r.defaultBranchRef.target.history ? r.defaultBranchRef.target.history.nodes : [])
+      .map((c) => ({ repo: r.nameWithOwner, branch: r.defaultBranchRef.name, message: c.messageHeadline, at: c.committedDate, url: c.url })))
+    .sort((x, y) => (x.at < y.at ? 1 : x.at > y.at ? -1 : 0))
+    .slice(0, 10);
 
   const readmeOids = (previous._readmeOids || {});
   const newOids = {};
