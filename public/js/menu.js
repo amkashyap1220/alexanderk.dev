@@ -1,7 +1,7 @@
 /* ==========================================================================
-   The ☰ menu on phones: the button opens the nav inside the header.
+   The ☰ menu: the button opens the nav (a card on desktop, a sheet on phones).
    Loaded in <head> so the .js class is set before the page paints; without
-   it (no scripts) the phone header keeps its tabs in a row instead.
+   it (no scripts) the header keeps its tabs in a row instead.
    Closes on Escape, a tap outside the header, or choosing a link.
    ========================================================================== */
 
