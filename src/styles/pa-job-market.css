@@ -1,9 +1,9 @@
 /* The PA job market post's charts only (scoped under .pa) */
 /* Map ramp, low to high: aluminium to sky blue (Tango), so it reads without color too.
    Series: sky blue 2 for the main one, orange 2 for the comparison. */
-:root { --pa-r0: #e4ecf5; --pa-r1: #b4cbe5; --pa-r2: #729fcf; --pa-r3: #3465a4; --pa-r4: #1d3e6e; --pa-none: #d3d7cf;
+:root { --pa-r0: #e4ecf5; --pa-r1: #b4cbe5; --pa-r2: #729fcf; --pa-r3: #3465a4; --pa-r4: #1d3e6e; --pa-none: #c9cfd4;
         --pa-1: #3465a4; --pa-2: #f57900; --pa-dot: #ce5c00; }
-:root.dark { --pa-r0: #3b4a5c; --pa-r1: #3f5f86; --pa-r2: #4f7fb8; --pa-r3: #729fcf; --pa-r4: #b4d2f0; --pa-none: #4a4f50;
+:root.dark { --pa-r0: #3b4a5c; --pa-r1: #3f5f86; --pa-r2: #4f7fb8; --pa-r3: #729fcf; --pa-r4: #b4d2f0; --pa-none: #353b41;
              --pa-1: #729fcf; --pa-2: #fcaf3e; --pa-dot: #fcaf3e; }
 .pa-hero { padding-bottom: var(--space-7); }
 .pa { max-width: 1000px; margin: 0 auto; padding: 0 var(--space-5); }

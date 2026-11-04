@@ -11,7 +11,7 @@
   --s1: #2a78d6;   /* push, treadmill */
   --s2: #eb6834;   /* pull, bike */
   --s3: #1baf7a;   /* legs, elliptical */
-  --band: rgba(46, 52, 54, 0.07);
+  --band: rgba(18, 20, 23, 0.07);
   --bad: #d03b3b;
   --warn: #b97a00;
 }
@@ -19,7 +19,7 @@
   --s1: #3987e5;
   --s2: #d95926;
   --s3: #199e70;
-  --band: rgba(238, 238, 236, 0.08);
+  --band: rgba(230, 232, 234, 0.08);
   --bad: #e66767;
   --warn: #fab219;
 }
