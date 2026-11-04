@@ -81,34 +81,9 @@ const here = (tab: Props["current"]) => (current === tab ? "page" : undefined);
     </div>
   </header>
 
-  <!-- On wide screens (1100px+) the page is two columns: a sticky sidebar
-       (photo, short bio, links, and an "On this page" list that js/toc.js
-       fills from the page's section titles) and the content. Phones and
-       tablets hide the sidebar and look as before. -->
-  <div class="page">
-    <aside class="sidebar" aria-label="About me">
-      <div class="side-me">
-        <a class="side-photo" href="/" tabindex="-1" aria-hidden="true">
-          <img src="/img/linkedin-photo.jpg" alt="" width="96" height="96">
-        </a>
-        <p class="side-name"><a href="/">Alexander Kashyap</a></p>
-        <p class="side-role">Software developer · Chicago, IL Area</p>
-        <p class="side-bio">Building data-driven enterprise systems in C#, .NET, SQL &amp; Python.</p>
-        <ul class="side-links">
-          <li><a href="https://www.linkedin.com/in/alexander-kashyap/" target="_blank" rel="noopener">LinkedIn</a></li>
-          <li><a href="https://github.com/amkashyap1220" target="_blank" rel="noopener">GitHub</a></li>
-        </ul>
-      </div>
-      <nav class="toc" aria-label="On this page" hidden>
-        <p class="toc-title">On this page</p>
-        <ol></ol>
-      </nav>
-    </aside>
-
-    <main id="main" tabindex="-1">
-      <slot />
-    </main>
-  </div>
+  <main id="main" tabindex="-1">
+    <slot />
+  </main>
 
   <footer class="site-footer">
     <div class="wrap">
@@ -132,7 +107,6 @@ const here = (tab: Props["current"]) => (current === tab ? "page" : undefined);
     </form>
   </dialog>
   <script is:inline src="/js/unlock.js"></script>
-  <script is:inline src="/js/toc.js"></script>
   <slot name="scripts" />
 </body>
 </html>
