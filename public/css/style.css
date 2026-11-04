@@ -167,18 +167,18 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
 .wrap   { max-width: 900px; margin: 0 auto; padding: 0 var(--space-5); }
 .narrow { max-width: 680px; margin: 0 auto; padding: 0 var(--space-5); }
 
-/* Header: sticky and slightly see-through */
+/* Header: sticky and solid. The name sits on the content column's left edge;
+   the tabs and theme toggle sit together on its right edge. */
 .site-header {
   position: sticky;
   top: 0;
   z-index: 10;
-  background: color-mix(in srgb, var(--bg) 90%, transparent);
-  backdrop-filter: blur(8px);
+  background: var(--bg);
   border-bottom: 1px solid var(--border);
 }
 .site-header .wrap { display: flex; align-items: center; gap: var(--space-4); height: var(--header-height); }
-.site-header .name { color: var(--text); font-size: var(--fs-sm); font-weight: 600; white-space: nowrap; }
-.site-nav { display: flex; gap: var(--space-1); margin: 0 auto; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+.site-header .name { color: var(--text); font-size: var(--fs-md); font-weight: 600; white-space: nowrap; }
+.site-nav { display: flex; gap: var(--space-1); margin-left: auto; min-width: 0; overflow-x: auto; scrollbar-width: none; }
 .site-nav::-webkit-scrollbar { display: none; }
 .site-nav a { padding: 6px var(--space-3); border-radius: var(--radius); color: var(--muted); font-size: var(--fs-md); white-space: nowrap; }
 .site-nav a:hover { color: var(--text); background: var(--soft); text-decoration: none; }
@@ -186,7 +186,8 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
 /* Private tab: only once unlocked (js/signed-in.js); the lock icon and Unlock hide then */
 .nav-private, :root.signed-in .unlock-link { display: none; }
 :root.signed-in .nav-private { display: inline-block; }
-.header-actions { display: flex; align-items: center; gap: var(--space-2); }
+.header-actions { display: flex; align-items: center; gap: var(--space-2); margin-right: -6px; }   /* the icon's own padding, so it lines up with the column edge */
+.header-actions .icon-btn svg { width: 16px; height: 16px; }
 .header-actions .menu-btn, .menu-extra { display: none; }   /* phones only */
 
 /* Theme toggle: the sun shows in light mode, the moon in dark mode */
@@ -455,7 +456,7 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
    (every page already shows the name big) */
 @media (max-width: 820px) {
   .site-header .name { display: none; }
-  .site-nav { margin: 0 auto 0 0; }
+  .site-nav { margin: 0 auto 0 -12px; }   /* the first tab's padding, so its text lines up with the column edge */
 }
 
 /* Phones: just the name, the theme toggle and ☰ (js/menu.js). The menu opens
@@ -465,11 +466,11 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
   :root.js .site-header .name { display: inline; margin-right: auto; }
   :root.js .header-actions { height: var(--header-height); }
   :root.js .header-actions .menu-btn { display: inline-flex; }
-  .menu-btn svg { width: 18px; height: 18px; }
+  .header-actions .menu-btn svg { width: 18px; height: 18px; }
   :root.js .site-header .wrap { flex-wrap: wrap; row-gap: 0; height: auto; }
   :root.js .site-nav { display: none; order: 1; flex-basis: 100%; flex-direction: column; gap: 0; margin: 0; padding-bottom: var(--space-4); }
   :root.js .menu-open .site-nav { display: flex; }
-  .site-header.menu-open { background: var(--bg); box-shadow: 0 12px 24px color-mix(in srgb, var(--text) 10%, transparent); }
+  .site-header.menu-open { box-shadow: 0 12px 24px color-mix(in srgb, var(--text) 10%, transparent); }
   :root.js .site-nav a { padding: 12px 0; border-top: 1px solid var(--border); border-radius: 0; font-size: var(--fs-md); }
   :root.js .site-nav a:hover { background: none; }
   :root.js .site-nav a[aria-current="page"] { font-weight: 600; }
