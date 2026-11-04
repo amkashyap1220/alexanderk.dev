@@ -167,8 +167,8 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
 .wrap   { max-width: 900px; margin: 0 auto; padding: 0 var(--space-5); }
 .narrow { max-width: 680px; margin: 0 auto; padding: 0 var(--space-5); }
 
-/* Header: sticky and solid. The name sits on the content column's left edge;
-   the tabs and theme toggle sit together on its right edge. */
+/* Header: sticky and solid, full width. The name sits on the far left; the
+   theme toggle and ☰ sit on the far right. ☰ (js/menu.js) opens the tabs. */
 .site-header {
   position: sticky;
   top: 0;
@@ -176,8 +176,8 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
   background: var(--bg);
   border-bottom: 1px solid var(--border);
 }
-.site-header .wrap { display: flex; align-items: center; gap: var(--space-4); height: var(--header-height); }
-.site-header .name { color: var(--text); font-size: var(--fs-md); font-weight: 600; white-space: nowrap; }
+.site-header .wrap { position: relative; display: flex; align-items: center; gap: var(--space-4); max-width: none; height: var(--header-height); }
+.site-header .name { margin-right: auto; color: var(--text); font-size: var(--fs-md); font-weight: 600; white-space: nowrap; }
 .site-nav { display: flex; gap: var(--space-1); margin-left: auto; min-width: 0; overflow-x: auto; scrollbar-width: none; }
 .site-nav::-webkit-scrollbar { display: none; }
 .site-nav a { padding: 6px var(--space-3); border-radius: var(--radius); color: var(--muted); font-size: var(--fs-md); white-space: nowrap; }
@@ -188,7 +188,31 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
 :root.signed-in .nav-private { display: inline-block; }
 .header-actions { display: flex; align-items: center; gap: var(--space-2); margin-right: -6px; }   /* the icon's own padding, so it lines up with the column edge */
 .header-actions .icon-btn svg { width: 16px; height: 16px; }
-.header-actions .menu-btn, .menu-extra { display: none; }   /* phones only */
+.header-actions .menu-btn, .menu-extra { display: none; }   /* only with scripts (below) */
+.header-actions .menu-btn svg { width: 18px; height: 18px; }
+
+/* The menu: a small card under ☰. Without scripts the tabs stay in a row instead. */
+:root.js .header-actions .menu-btn { display: inline-flex; }
+:root.js .site-nav {
+  display: none;
+  position: absolute;
+  top: calc(var(--header-height) - 4px);
+  right: var(--space-4);
+  flex-direction: column;
+  gap: 0;
+  min-width: 220px;
+  margin: 0;
+  padding: var(--space-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  box-shadow: 0 12px 24px color-mix(in srgb, var(--text) 10%, transparent);
+}
+:root.js .menu-open .site-nav { display: flex; }
+:root.js .site-nav a { padding: 8px var(--space-3); }
+:root.js .site-nav a[aria-current="page"] { font-weight: 600; }
+:root.js .site-nav .menu-extra { display: flex; gap: var(--space-1); margin-top: var(--space-2); padding-top: var(--space-2); border-top: 1px solid var(--border); }
+:root.js .menu-extra a { font-size: var(--fs-sm); }
 
 /* Theme toggle: the sun shows in light mode, the moon in dark mode */
 .icon-moon { display: none; }
@@ -455,27 +479,21 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
 /* Tablets and small laptops: drop the name from the header so the tabs fit
    (every page already shows the name big) */
 @media (max-width: 820px) {
-  .site-header .name { display: none; }
-  .site-nav { margin: 0 auto 0 -12px; }   /* the first tab's padding, so its text lines up with the column edge */
+  :root:not(.js) .site-header .name { display: none; }   /* no scripts: make room for the row of tabs */
+  :root:not(.js) .site-nav { margin: 0 auto 0 -12px; }
 }
 
-/* Phones: just the name, the theme toggle and ☰ (js/menu.js). The menu opens
-   inside the header, which turns solid, so the two read as one sheet.
-   Without scripts the tabs stay in a row that scrolls sideways. */
+/* Phones: the menu opens inside the header as a full-width sheet instead of a card */
 @media (max-width: 640px) {
-  :root.js .site-header .name { display: inline; margin-right: auto; }
   :root.js .header-actions { height: var(--header-height); }
-  :root.js .header-actions .menu-btn { display: inline-flex; }
-  .header-actions .menu-btn svg { width: 18px; height: 18px; }
   :root.js .site-header .wrap { flex-wrap: wrap; row-gap: 0; height: auto; }
-  :root.js .site-nav { display: none; order: 1; flex-basis: 100%; flex-direction: column; gap: 0; margin: 0; padding-bottom: var(--space-4); }
-  :root.js .menu-open .site-nav { display: flex; }
+  :root.js .site-nav { position: static; order: 1; flex-basis: 100%; min-width: 0; padding: 0 0 var(--space-4); border: 0; border-radius: 0; box-shadow: none; }
   .site-header.menu-open { box-shadow: 0 12px 24px color-mix(in srgb, var(--text) 10%, transparent); }
   :root.js .site-nav a { padding: 12px 0; border-top: 1px solid var(--border); border-radius: 0; font-size: var(--fs-md); }
   :root.js .site-nav a:hover { background: none; }
   :root.js .site-nav a[aria-current="page"] { font-weight: 600; }
-  :root.js .site-nav .menu-extra { display: flex; gap: var(--space-5); border-top: 1px solid var(--border); padding-top: var(--space-2); }
-  :root.js .menu-extra a { border: 0; font-size: var(--fs-sm); }
+  :root.js .site-nav .menu-extra { gap: var(--space-5); margin-top: 0; }
+  :root.js .menu-extra a { padding: 12px 0; border: 0; }
   .hero { padding: 64px 0 48px; }
   .hero h1 { font-size: 34px; }
   .section { padding: var(--space-9) 0; }

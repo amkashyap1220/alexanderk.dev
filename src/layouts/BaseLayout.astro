@@ -56,7 +56,7 @@ const here = (tab: Props["current"]) => (current === tab ? "page" : undefined);
   <header class="site-header">
     <div class="wrap">
       <a class="name" href="/">Alexander Kashyap</a>
-      <!-- On phones the nav becomes the ☰ menu (js/menu.js) -->
+      <!-- The ☰ menu (js/menu.js); without scripts the tabs show in a row -->
       <nav class="site-nav" id="site-menu" aria-label="Main">
         <a href="/" aria-current={here("about")}>About</a>
         <a href="/projects/" aria-current={here("projects")}>Projects</a>
