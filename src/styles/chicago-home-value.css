@@ -1,10 +1,10 @@
 /* The Chicago home value post's map only (scoped under .hv) */
 /* Fit ramp, low to high: scarlet red 3, orange 2, butter 2, chameleon 1 (lighter as it gets better, so it reads without color too).
    Price vs expected, below to above: sky blue, aluminium, plum (a separate diverging scale, so the two lenses can't be confused). */
-:root { --pick: #ce5c00; --hv-top: #204a87; --hv-0: #a40000; --hv-1: #f57900; --hv-2: #edd400; --hv-3: #8ae234; --hv-none: #d3d7cf;
-        --hv-below: #3465a4; --hv-mid: #f3f3f1; --hv-above: #75507b; }
-:root.dark { --pick: #fcaf3e; --hv-top: #729fcf; --hv-0: #ef2929; --hv-1: #f57900; --hv-2: #edd400; --hv-3: #8ae234; --hv-none: #4a4f50;
-             --hv-below: #729fcf; --hv-mid: #3b4143; --hv-above: #ad7fa8; }
+:root { --pick: #ce5c00; --hv-top: #204a87; --hv-0: #a40000; --hv-1: #f57900; --hv-2: #edd400; --hv-3: #8ae234; --hv-none: #c9cfd4;
+        --hv-below: #3465a4; --hv-mid: #f4f6f7; --hv-above: #75507b; }
+:root.dark { --pick: #fcaf3e; --hv-top: #729fcf; --hv-0: #ef2929; --hv-1: #f57900; --hv-2: #edd400; --hv-3: #8ae234; --hv-none: #353b41;
+             --hv-below: #729fcf; --hv-mid: #2a2f33; --hv-above: #ad7fa8; }
 .hv-hero { padding-bottom: var(--space-7); }
 .hv-section { padding-top: var(--space-6); }
 .hv { max-width: 1100px; margin: 0 auto var(--space-9); padding: 0 var(--space-5); }

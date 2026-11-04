@@ -32,7 +32,7 @@
     root.classList.toggle("dark", theme === "dark");
     root.classList.toggle("light", theme !== "dark");
     const bar = document.querySelector('meta[name="theme-color"]');
-    if (bar) bar.content = theme === "dark" ? "#2e3436" : "#eeeeec";
+    if (bar) bar.content = theme === "dark" ? "#101214" : "#eceff1";
     const icon = document.querySelector('link[rel="icon"]');
     if (icon) icon.href = theme === "dark" ? "/favicon-dark.svg" : "/favicon.svg";
   }

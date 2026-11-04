@@ -35,16 +35,16 @@ import Walkthrough from "../../components/Walkthrough.astro";
 
         <h3>3. Styling and dark mode</h3>
         <p>Every color, space and font size is defined once, as a <b>CSS variable</b> at the top of <code>style.css</code>. The rest of the stylesheet only uses the variables. Dark mode is then just a second set of values for the same variables:</p>
-<pre is:raw><code class="language-css">:root      { --bg: #eeeeec; --text: #2e3436; }   /* light */
-:root.dark { --bg: #2e3436; --text: #eeeeec; }   /* dark */
+<pre is:raw><code class="language-css">:root      { --bg: #eceff1; --text: #121417; }   /* light */
+:root.dark { --bg: #101214; --text: #e6e8ea; }   /* dark */
 
 body { background: var(--bg); color: var(--text); }</code></pre>
-        <p>Switching themes means adding or removing one class, <code>dark</code>, on the page. <code>theme.js</code> does that. It runs before the page is drawn, so there's no flash of the wrong theme. It uses the theme you picked with the toggle if you've picked one, and otherwise follows your device's light or dark setting:</p>
-<pre is:raw><code class="language-js">const saved = localStorage.getItem("theme");          // "dark", "light" or nothing
+        <p>Switching themes means adding or removing one class, <code>dark</code>, on the page. <code>theme.js</code> does that. It runs before the page is drawn, so there's no flash of the wrong theme. It uses the theme you picked with the toggle if you've picked one that differs from your device, and otherwise follows your device's light or dark setting (picking the device's own theme again forgets the choice):</p>
+<pre is:raw><code class="language-js">const saved = localStorage.getItem("theme-choice");   // "dark", "light" or nothing
 const deviceIsDark = matchMedia("(prefers-color-scheme: dark)").matches;
 const theme = saved || (deviceIsDark ? "dark" : "light");
 document.documentElement.classList.toggle("dark", theme === "dark");</code></pre>
-        <p>The colors come from Tango, the palette used by GNOME and most Linux terminals.</p>
+        <p>The colors are "Aurora": graphite and cool grays with green and blue, kept flat, and every text color passes WCAG AA contrast. The font is DejaVu Sans Mono, the Linux Mint terminal's font, served from the site itself.</p>
 
         <h3>4. Live GitHub numbers</h3>
         <p>The stars, commits and languages on the project cards come from GitHub. The obvious approach is to have each visitor's browser ask GitHub directly. The catch: GitHub only allows <b>60 requests an hour</b> per visitor without a key, and the Stats page alone needs dozens. Reload a few times and the numbers stop loading.</p>

@@ -1,7 +1,8 @@
 /* ==========================================================================
    alexanderk.dev — styles
-   Monospace "docs" look in Fira Code. Light or dark mode, colored with Tango,
-   the default palette of GNOME and most Linux desktops and terminals.
+   Monospace "docs" look in DejaVu Sans Mono, the Linux Mint terminal's
+   font. Light or dark mode in "Aurora" colors: graphite and cool grays with
+   green and blue, kept flat (no gradients).
 
    1. Tokens        colors, spacing, type, radius (light + dark)
    2. Base          reset, body, links, focus, utilities
@@ -14,25 +15,34 @@
 
 
 /* ---------- 1. Tokens ---------- */
+/* DejaVu Sans Mono (the Linux Mint terminal's font), served from /fonts so
+   it looks the same everywhere; a copy already on the device is used first.
+   Latin, punctuation, arrows and box/shape symbols only, to keep it small.
+   License: public/fonts/LICENSE.txt */
+@font-face { font-family: "DejaVu Sans Mono"; font-weight: 400 500; font-style: normal; font-display: swap;
+  src: local("DejaVu Sans Mono"), local("DejaVuSansMono"), url("/fonts/DejaVuSansMono.woff2") format("woff2"); }
+@font-face { font-family: "DejaVu Sans Mono"; font-weight: 600 700; font-style: normal; font-display: swap;
+  src: local("DejaVu Sans Mono Bold"), local("DejaVuSansMono-Bold"), url("/fonts/DejaVuSansMono-Bold.woff2") format("woff2"); }
+
 :root {
-  /* colors (light): GNOME Terminal's "Tango Light", darkest Tango shades for
-     color. Every text color passes WCAG AA on every surface it sits on. */
-  --bg: #eeeeec;              /* aluminium 1 */
-  --text: #2e3436;            /* aluminium 6 */
-  --muted: #555753;           /* aluminium 5 */
-  --border: #d3d7cf;          /* aluminium 2 */
+  /* colors (light): "Aurora", cool grays with green and blue, flat (no
+     gradients). Every text color passes WCAG AA on every surface it sits on. */
+  --bg: #eceff1;              /* cool light gray */
+  --text: #121417;            /* near black */
+  --muted: #4b5258;           /* slate gray */
+  --border: #c9cfd4;
   --card: rgba(255, 255, 255, 0.6);
   --soft: #ffffff;            /* secondary buttons, code, bar tracks, pills */
   --field: #ffffff;           /* dropdowns and text boxes: solid, so the open option list can match */
-  --link: #204a87;            /* sky blue 3: links, focus ring, hovers */
-  --label: #8f5902;           /* chocolate 3: eyebrows, taglines, company names */
-  --mark: #4e9a06;            /* chameleon 3: bullets, quote bars */
-  --star: #ce5c00;            /* orange 3: GitHub stars */
-  /* code highlighting: only Tango shades that pass AA on the code background */
-  --code-keyword: #204a87;    /* sky blue 3 */
-  --code-string: #75507b;     /* plum 2 */
-  --code-number: #cc0000;     /* scarlet red 2 */
-  --code-function: #8f5902;   /* chocolate 3 */
+  --link: #0b6e4f;            /* deep green: links, focus ring, hovers */
+  --label: #2952a3;           /* deep blue: eyebrows, taglines, company names */
+  --mark: #0b6e4f;            /* deep green: bullets, quote bars, heat map dots */
+  --star: #8a5a00;            /* amber: GitHub stars */
+  /* code highlighting: every shade passes AA on the code background */
+  --code-keyword: #2952a3;    /* blue */
+  --code-string: #0b6e4f;     /* green */
+  --code-number: #8a3ea0;     /* violet */
+  --code-function: #0e6a80;   /* teal */
   color-scheme: light;
 
   /* spacing scale */
@@ -65,29 +75,29 @@
   --radius-lg: 8px;
   --radius-pill: 999px;
 
-  --font: "Fira Code", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font: "DejaVu Sans Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   --header-height: 46px;
 }
 
 /* Dark colors, used when the visitor turns dark mode on (js/theme.js puts
-   .dark on <html>). The site starts light for everyone, including with
-   JavaScript off. */
+   .dark on <html>, following the device's setting unless the visitor
+   picked one). With JavaScript off the site is light. */
 :root.dark {
-  --bg: #2e3436;              /* GNOME Terminal's "Tango Dark" */
-  --text: #eeeeec;
-  --muted: #babdb6;           /* aluminium 3 */
-  --border: #555753;
+  --bg: #101214;              /* graphite, almost black */
+  --text: #e6e8ea;
+  --muted: #9ba3ab;           /* mid gray */
+  --border: #353b41;
   --card: rgba(255, 255, 255, 0.04);
   --soft: rgba(255, 255, 255, 0.07);
-  --field: #3d4244;           /* --soft over --bg, made solid */
-  --link: #729fcf;            /* sky blue 1 */
-  --label: #e9b96e;           /* chocolate 1 */
-  --mark: #8ae234;            /* chameleon 1 */
-  --star: #fce94f;            /* butter 1 */
-  --code-keyword: #fcaf3e;    /* orange 1 */
-  --code-string: #8ae234;     /* chameleon 1 */
-  --code-number: #fce94f;     /* butter 1 */
-  --code-function: #e9b96e;   /* chocolate 1 */
+  --field: #1f2224;           /* --soft over --bg, made solid */
+  --link: #3ddc97;            /* aurora green */
+  --label: #82aaff;           /* soft blue */
+  --mark: #3ddc97;            /* aurora green */
+  --star: #ffd166;            /* starlight yellow */
+  --code-keyword: #82aaff;    /* blue */
+  --code-string: #3ddc97;     /* green */
+  --code-number: #e5a4f5;     /* violet */
+  --code-function: #5fd3e8;   /* cyan */
   color-scheme: dark;
 }
 
