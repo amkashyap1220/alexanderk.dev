@@ -4,7 +4,7 @@
    the shared helpers in js/gh.js.
 
      1. EXTRACT    the profile, the repo list, languages and commit count per
-                   repo, and the last 90 days of public activity
+                   repo, and recent public activity and the latest commits
      2. TRANSFORM  add up languages, count commits, find the
                    busiest weekday and hour
      3. LOAD       draw the numbers, the language bars and the activity
@@ -22,6 +22,7 @@
 
   // ---------------------------------------------------------------- 1. extract
   const recentEvents = () => get("events", USER);
+  const latestCommits = () => get("latestcommits", USER).catch(() => null);   // missing until the worker's next run
 
   async function fetchAll() {
     const [user, repos] = await Promise.all([get("user", USER), get("repos", USER)]);
@@ -52,6 +53,7 @@
   const dayKey = new Intl.DateTimeFormat("en-CA", { timeZone: TIME_ZONE, year: "numeric", month: "2-digit", day: "2-digit" });
   const weekdayName = new Intl.DateTimeFormat("en-US", { timeZone: TIME_ZONE, weekday: "long" });
   const hourOf = new Intl.DateTimeFormat("en-US", { timeZone: TIME_ZONE, hour: "numeric", hourCycle: "h23" });
+  const shortDate = new Intl.DateTimeFormat("en-US", { timeZone: TIME_ZONE, month: "short", day: "numeric" });
 
   // The value that appears most often, e.g. the busiest weekday
   function mostCommon(values) {
@@ -136,38 +138,56 @@
     });
   }
 
-  function drawActivity(events) {
+  function drawActivity(events, latest) {
     const summary = document.getElementById("activity-summary");
     const feed = document.getElementById("latest");
     summary.textContent = feed.textContent = "";
     done(summary);
-    if (!events) return summary.append(el("p", "muted", "Couldn't load recent activity from GitHub right now."));
-    if (!events.length) return summary.append(el("p", "muted", "No public activity in the last 90 days."));
+    if (events && events.length) {
+      // GitHub keeps 300 events at most, so a busy stretch can cover far less than 90 days:
+      // say how far back these actually go
+      const oldest = events.reduce((min, e) => (e.at < min ? e.at : min), events[0].at);
+      const ageDays = Math.floor((Date.now() - new Date(oldest)) / 86400000);
+      const span = ageDays >= 85 ? "in the last 90 days" : "since " + shortDate.format(new Date(oldest));
+      const days = new Set(events.map((e) => dayKey.format(new Date(e.at)))).size;
+      const day = mostCommon(events.map((e) => weekdayName.format(new Date(e.at))));
+      const hour = Number(mostCommon(events.map((e) => hourOf.format(new Date(e.at)))));
+      const clock = (h) => ((h + 11) % 12 + 1) + (h < 12 ? "am" : "pm");
+      summary.append(
+        el("p", null, events.length + " public events on " + days + " different days " + span + "."),
+        el("p", "muted", "Busiest day: " + day + ". Busiest hour: " + clock(hour) + "–" + clock((hour + 1) % 24) + " (Chicago time).")
+      );
+    } else if (!latest || !latest.length) {
+      return summary.append(el("p", "muted", events ? "No public activity in the last 90 days." : "Couldn't load recent activity from GitHub right now."));
+    }
 
-    const days = new Set(events.map((e) => dayKey.format(new Date(e.at)))).size;
-    const day = mostCommon(events.map((e) => weekdayName.format(new Date(e.at))));
-    const hour = Number(mostCommon(events.map((e) => hourOf.format(new Date(e.at)))));
-    const clock = (h) => ((h + 11) % 12 + 1) + (h < 12 ? "am" : "pm");
-    summary.append(
-      el("p", null, events.length + " public events on " + days + " different days in the last 90 days."),
-      el("p", "muted", "Busiest day: " + day + ". Busiest hour: " + clock(hour) + "–" + clock((hour + 1) % 24) + " (Chicago time).")
-    );
+    const item = (repoName, parts, at) => {
+      const li = el("li");
+      const repo = el("a", null, repoName.split("/")[1]);
+      repo.href = "https://github.com/" + repoName;
+      repo.target = "_blank";
+      repo.rel = "noopener";
+      const when = el("time", null, timeAgo(at));
+      when.dateTime = at;
+      li.append(...parts, el("span", "muted", " in "), repo, el("span", "muted", " · "), when);
+      feed.append(li);
+    };
 
-    // Last 5 pushes, newest first (sorted here too, so the order never depends on how the data arrived)
+    // The latest 5 commits, read from the repos themselves so they're current. Older data
+    // files don't have them yet, so fall back to the last 5 pushes from the events feed.
+    if (latest && latest.length) {
+      [...latest].sort((x, y) => new Date(y.at) - new Date(x.at)).slice(0, 5).forEach((c) => {
+        const message = el("a", null, c.message);
+        message.href = c.url;
+        message.target = "_blank";
+        message.rel = "noopener";
+        item(c.repo, [message], c.at);
+      });
+      return;
+    }
     events.filter((e) => e.type === "PushEvent")
       .sort((x, y) => new Date(y.at) - new Date(x.at))
-      .slice(0, 5).forEach((e) => {
-        const item = el("li");
-        const repo = el("a", null, e.repo.split("/")[1]);
-        repo.href = "https://github.com/" + e.repo;
-        repo.target = "_blank";
-        repo.rel = "noopener";
-        const when = el("time", null, timeAgo(e.at));
-        when.dateTime = e.at;
-        item.append(el("span", "muted", "Pushed to "), el("code", null, (e.ref || "").replace("refs/heads/", "")),
-          el("span", "muted", " in "), repo, el("span", "muted", " · "), when);
-        feed.append(item);
-      });
+      .slice(0, 5).forEach((e) => item(e.repo, [el("span", "muted", "Pushed to "), el("code", null, (e.ref || "").replace("refs/heads/", ""))], e.at));
   }
 
   // Activity handles its own errors; this covers the numbers and languages
@@ -199,5 +219,5 @@
     .catch(showError);
 
   // Activity loads on its own: if it fails, the rest of the page still shows
-  recentEvents().then(drawActivity, () => drawActivity(null));
+  Promise.all([recentEvents().catch(() => null), latestCommits()]).then(([events, latest]) => drawActivity(events, latest));
 })();
