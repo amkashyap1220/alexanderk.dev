@@ -57,34 +57,50 @@
 {#snippet broken(err)}<p class="fit-status error">Couldn't draw this part: {err.message}</p>{/snippet}
 
 {#if D}
+  <!-- Each .fit-pair puts two panels side by side on wide screens (stacked otherwise) -->
   <div id="fit-app">
-    <h2 class="section-title">Up next</h2>
-    <svelte:boundary failed={broken}><UpNext {D} {E} {today} /></svelte:boundary>
+    <div class="fit-pair">
+      <div>
+        <h2 class="section-title">Up next</h2>
+        <svelte:boundary failed={broken}><UpNext {D} {E} {today} /></svelte:boundary>
+      </div>
+      <div>
+        <svelte:boundary failed={broken}><Stats {D} {E} {A} {today} /></svelte:boundary>
+      </div>
+    </div>
 
-    <svelte:boundary failed={broken}><Stats {D} {E} {A} {today} /></svelte:boundary>
-
-    <h2 class="section-title fit-h">Body weight</h2>
-    <p class="section-intro">From the weigh-ins you give your daily session. They swing a few pounds with water and food, so the line is the 7-day average.</p>
-    <svelte:boundary failed={broken}><BodyWeight {D} {E} {today} /></svelte:boundary>
-
-    <h2 class="section-title fit-h">Weak areas</h2>
-    <p class="section-intro">Muscles under the weekly set target, lifts that stopped improving, and push vs pull balance, over the last 4 weeks. The fifth lift of each session goes to the biggest gap.</p>
-    <svelte:boundary failed={broken}><WeakAreas {D} {E} {A} /></svelte:boundary>
+    <div class="fit-pair">
+      <div>
+        <h2 class="section-title fit-h">Body weight</h2>
+        <p class="section-intro">From the weigh-ins you give your daily session. They swing a few pounds with water and food, so the line is the 7-day average.</p>
+        <svelte:boundary failed={broken}><BodyWeight {D} {E} {today} /></svelte:boundary>
+      </div>
+      <div>
+        <h2 class="section-title fit-h">Weak areas</h2>
+        <p class="section-intro">Muscles under the weekly set target, lifts that stopped improving, and push vs pull balance, over the last 4 weeks. The fifth lift of each session goes to the biggest gap.</p>
+        <svelte:boundary failed={broken}><WeakAreas {D} {E} {A} /></svelte:boundary>
+      </div>
+    </div>
 
     <h2 class="section-title fit-h">Strength</h2>
     <p class="section-intro">Estimated 1-rep max per session (best set, Epley formula). Bigger dots are new bests.</p>
     <svelte:boundary failed={broken}><Strength {D} {A} /></svelte:boundary>
 
-    <h2 class="section-title fit-h">Consistency</h2>
-    <svelte:boundary failed={broken}><Calendar {D} {E} {A} {today} /></svelte:boundary>
+    <div class="fit-pair">
+      <div>
+        <h2 class="section-title fit-h">Consistency</h2>
+        <svelte:boundary failed={broken}><Calendar {D} {E} {A} {today} /></svelte:boundary>
+      </div>
+      <div>
+        <h2 class="section-title fit-h">Cardio</h2>
+        <p class="section-intro">Minutes per week by machine. The tick on each week is 25 minutes for every workout you finished.</p>
+        <svelte:boundary failed={broken}><Cardio {D} {A} /></svelte:boundary>
+      </div>
+    </div>
 
     <h2 class="section-title fit-h">Weekly sets per muscle</h2>
     <p class="section-intro">Average over the last 4 weeks. Main muscles count a full set, helpers half. The shaded band is the 10 to 20 set target.</p>
     <svelte:boundary failed={broken}><Volume {D} {A} /></svelte:boundary>
-
-    <h2 class="section-title fit-h">Cardio</h2>
-    <p class="section-intro">Minutes per week by machine. The tick on each week is 25 minutes for every workout you finished.</p>
-    <svelte:boundary failed={broken}><Cardio {D} {A} /></svelte:boundary>
 
     <h2 class="section-title fit-h">Previous workouts</h2>
     <svelte:boundary failed={broken}><History {D} {E} {A} /></svelte:boundary>

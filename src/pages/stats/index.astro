@@ -40,6 +40,8 @@ const projectPages = Object.fromEntries(projects.map((p) => [p.repo.split("/")[1
     </div>
   </section>
 
+  <!-- Side by side on wide screens -->
+  <div class="section-pair">
   <section class="section">
     <div class="narrow">
       <h2 class="section-title">Languages</h2>
@@ -64,6 +66,7 @@ const projectPages = Object.fromEntries(projects.map((p) => [p.repo.split("/")[1
       <ul class="latest" id="latest"></ul>
     </div>
   </section>
+  </div>
 
   <Fragment slot="scripts">
     <script is:inline type="application/json" id="project-pages" set:html={JSON.stringify(projectPages)}></script>

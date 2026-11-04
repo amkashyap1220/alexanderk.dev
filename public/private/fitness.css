@@ -28,6 +28,13 @@
 .fit-status { color: var(--muted); font-size: var(--fs-md); text-align: center; }
 .fit-status.error { color: var(--bad); }
 .fit-h { margin-top: var(--space-9); }
+/* Two panels side by side on wide screens; stacked (as before) below that */
+@media (min-width: 1100px) {
+  .fit-h { margin-top: var(--space-8); }
+  .fit-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 var(--space-8); align-items: start; }
+  .fit-pair .fit-stats { margin-top: 0; }
+  .fit-pair > div > .fit-stats:first-child { margin-top: calc(var(--fs-2xl) * 1.2 + var(--space-3)); }   /* line up with "Up next" beside it */
+}
 .fit-h3 { margin: var(--space-8) 0 var(--space-3); font-size: var(--fs-lg); }
 .fit-label { display: block; margin-bottom: var(--space-1); color: var(--muted); font-size: var(--fs-xs); }
 .fit-input { padding: 6px 10px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--field); color: var(--text); font: inherit; font-size: var(--fs-sm); }
