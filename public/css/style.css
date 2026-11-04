@@ -10,7 +10,8 @@
    4. Components    buttons, hero, pill, chips, cards, grids, sections
    5. Content       entries (About), prose (README + posts), posts list
    6. Stats page
-   7. Phones
+   7. Wider screens  tighter spacing; sidebar, timeline and grids at 1100px+
+   8. Phones
    ========================================================================== */
 
 
@@ -475,7 +476,95 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
 .latest code { font-size: var(--fs-xs); }
 
 
-/* ---------- 7. Phones ---------- */
+/* ---------- 7. Wider screens ---------- */
+/* The sidebar is only for wide screens; everywhere else it stays out of the way */
+.sidebar { display: none; }
+
+/* Tablets and up: less empty space between and around sections */
+@media (min-width: 641px) {
+  .hero { padding: var(--space-9) 0 var(--space-8); }
+  .hero h1 { margin-top: var(--space-3); }
+  .lead { margin-top: var(--space-5); }
+  .actions { margin-top: var(--space-6); }
+  .section { padding: var(--space-8) 0; }
+  .section-intro { margin-bottom: var(--space-6); }
+  .entry + .entry { margin-top: var(--space-7); }
+}
+
+/* Desktop: two columns, a sticky sidebar on the left and the content on the
+   right, with the content allowed to use the whole width next to it */
+@media (min-width: 1100px) {
+  .page {
+    display: grid;
+    grid-template-columns: 232px minmax(0, 1fr);
+    gap: var(--space-9);
+    max-width: 1480px;
+    margin: 0 auto;
+    padding: 0 var(--space-7);
+  }
+  .site-footer .wrap { max-width: 1480px; padding: 0 var(--space-7); }
+  main .wrap { max-width: none; padding: 0; }
+  main .narrow { max-width: 960px; margin: 0; padding: 0; }
+
+  /* Everything lines up on one left edge, next to the sidebar */
+  .hero { text-align: left; }
+  .lead { max-width: 760px; margin-left: 0; }
+  .actions, .hero .chips, .highlights { justify-content: flex-start; }
+  main :is(.pa, .hv) { margin-left: 0; margin-right: 0; padding: 0; }   /* research posts' wide blocks */
+
+  .sidebar {
+    position: sticky;
+    top: var(--header-height);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-7);
+    align-self: start;
+    max-height: calc(100vh - var(--header-height));
+    overflow-y: auto;
+    padding: var(--space-9) 0 var(--space-7);
+    scrollbar-width: thin;
+  }
+  .side-me { display: flex; flex-direction: column; gap: var(--space-2); }
+  .side-photo { width: 72px; margin-bottom: var(--space-2); }
+  .side-photo img { display: block; width: 72px; height: 72px; border: 1px solid var(--border); border-radius: 50%; background: var(--soft); object-fit: cover; }
+  .side-name { font-size: var(--fs-base); font-weight: 600; }
+  .side-name a { color: var(--text); }
+  .side-role { color: var(--label); font-size: var(--fs-xs); }
+  .side-bio { color: var(--muted); font-size: var(--fs-sm); line-height: 1.6; }
+  .side-links { display: flex; gap: var(--space-4); margin: var(--space-1) 0 0; padding: 0; list-style: none; font-size: var(--fs-sm); }
+
+  .toc { padding-top: var(--space-5); border-top: 1px solid var(--border); }
+  .toc-title { margin-bottom: var(--space-2); color: var(--label); font-size: var(--fs-2xs); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+  .toc ol { margin: 0; padding: 0; list-style: none; font-size: var(--fs-sm); }
+  .toc a { display: block; padding: 3px 0 3px var(--space-3); border-left: 2px solid var(--border); color: var(--muted); }
+  .toc a:hover { color: var(--text); text-decoration: none; }
+  .toc .toc-sub a { padding-left: var(--space-6); font-size: var(--fs-xs); }
+  .toc a[aria-current] { border-left-color: var(--mark); color: var(--text); font-weight: 600; }
+
+  /* About: the sidebar already shows the photo */
+  .hero .avatars { display: none; }
+
+  /* Experience and education as a timeline: dates on the left, the rest on the right */
+  .entry { display: grid; grid-template-columns: 150px minmax(0, 1fr); column-gap: var(--space-7); }
+  .entry-head { display: contents; }
+  .entry .when { grid-column: 1; grid-row: 1 / span 3; padding-top: 2px; white-space: normal; }
+  .entry-title, .entry-where, .entry ul { grid-column: 2; }
+  .entry ul { padding-left: var(--space-4); border-left: 1px solid var(--border); }
+  .entry li { padding-left: var(--space-4); }
+  .entry li::before { left: 0; }
+
+  /* Pairs of sections that sit side by side (Stats: languages and activity) */
+  .section-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--space-9); border-top: 1px solid var(--border); }
+  .section-pair > .section { border-top: 0; }
+
+  /* Research: posts as a grid of cards, image on top */
+  .posts { grid-template-columns: repeat(auto-fill, minmax(min(400px, 100%), 1fr)); }
+  .posts .post-card { grid-template-columns: 1fr; grid-template-rows: auto 1fr; height: 100%; }
+  .posts .post-thumb { min-height: 0; aspect-ratio: 1200 / 630; border-right: 0; border-bottom: 1px solid var(--border); }
+}
+
+
+/* ---------- 8. Phones ---------- */
 /* Tablets and small laptops: drop the name from the header so the tabs fit
    (every page already shows the name big) */
 @media (max-width: 820px) {
