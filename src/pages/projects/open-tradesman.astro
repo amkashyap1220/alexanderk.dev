@@ -2,6 +2,7 @@
 // Written from the project's README, CLAUDE.md and docs/MILESTONES.md
 import ProjectLayout from "../../layouts/ProjectLayout.astro";
 import TradesmanFlow from "../../components/TradesmanFlow.astro";
+import { pics } from "../../lib/pic";
 ---
 <ProjectLayout slug="open-tradesman">
   <Fragment slot="intro">
@@ -16,7 +17,7 @@ import TradesmanFlow from "../../components/TradesmanFlow.astro";
       </div>
     </section>
     <figure class="pic cs-sec">
-      <img src="/img/home/open-tradesman.webp" srcset="/img/home/open-tradesman-640.webp 640w, /img/home/open-tradesman.webp 1200w" sizes="(min-width: 1100px) 60vw, calc(100vw - 32px)" width="1200" height="630" decoding="async" alt="Three phone screens from the app: the price list in Settings, the home screen with a yellow microphone button, and a $525 estimate for painting a room's walls and ceiling, all in Spanish">
+      <img {...pics("open-tradesman")} sizes="(min-width: 1100px) 60vw, calc(100vw - 32px)" width="1200" height="630" decoding="async" alt="Three phone screens from the app: the price list in Settings, the home screen with a yellow microphone button, and a $525 estimate for painting a room's walls and ceiling, all in Spanish">
       <figcaption>The price list, the home screen and an estimate, here in Spanish. The big yellow button is the microphone.</figcaption>
     </figure>
   </Fragment>

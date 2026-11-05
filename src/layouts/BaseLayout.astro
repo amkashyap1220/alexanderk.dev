@@ -9,6 +9,7 @@ import { site } from "../data/person";
 // The styles every page shares. Linked by hand, first in <head>, so every page's
 // own styles come after it; Astro still minifies it and puts a hash in its name.
 import siteCss from "../styles/site.css?url";
+import { pic } from "../lib/pic";
 
 interface Props {
   title: string;              // the whole <title>, e.g. "Projects · Alexander Kashyap"
@@ -48,7 +49,7 @@ const year = new Date().getFullYear();
       <meta property="og:title" content={ogTitle}>
       <meta property="og:description" content={ogDescription}>
       <meta property="og:url" content={new URL(path, site).href}>
-      <meta property="og:image" content={new URL(ogImage.src, site).href}>
+      <meta property="og:image" content={new URL(pic(ogImage.src), site).href}>
       <meta property="og:image:width" content="1200">
       <meta property="og:image:height" content="630">
       <meta property="og:image:alt" content={ogImage.alt}>

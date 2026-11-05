@@ -49,9 +49,11 @@ const figures = [["repos", "public repos"], ["commits", "commits"], ["stars", "s
     <div class="section-head">
       <h2 id="contrib-h" class="h-label">Contributions</h2>
     </div>
-    <p class="st-intro">Every day of the last year on GitHub, a row per month and a dot per day: commits, pull requests, issues and reviews. Hover a dot for the day.</p>
-    <div id="contributions" aria-live="polite">
-      <Contributions client:load />
+    <div class="st-contrib">
+      <p class="st-intro">Every day of the last year on GitHub, a row per month and a dot per day: commits, pull requests, issues and reviews. Hover a dot for the day.</p>
+      <div id="contributions" aria-live="polite">
+        <Contributions client:load />
+      </div>
     </div>
   </section>
 
