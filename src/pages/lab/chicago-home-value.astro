@@ -9,7 +9,7 @@ import HomeValue from "../../components/home-value/HomeValue.svelte";
 import { currentOf, factorsFor, relatedPairs, samplePerson, summarize, weightParts } from "../../components/home-value/hv.js";
 import "../../styles/chicago-home-value.css";
 
-const read = (f: string) => JSON.parse(fs.readFileSync(`public/research/chicago-home-value${f}.json`, "utf8"));
+const read = (f: string) => JSON.parse(fs.readFileSync(`public/lab/chicago-home-value${f}.json`, "utf8"));
 const data = read("");
 const m = data.value_model;
 

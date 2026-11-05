@@ -1,10 +1,10 @@
 // Every project on the site, newest first within each tier. The Work page
-// (/projects/) lists them in three tiers; each one also needs a page at
-// src/pages/projects/<slug>.astro (copy one of those; the page's header,
+// (/repositories/) lists them in three tiers; each one also needs a page at
+// src/pages/repositories/<slug>.astro (copy one of those; the page's header,
 // facts and README come from here).
 
 export interface Project {
-  slug: string;              // the page's address: /projects/<slug>
+  slug: string;              // the page's address: /repositories/<slug>
   name: string;
   tagline: string;           // one line: the archive list, and the page's dek when there's no question
   summary: string;           // the page's opening paragraph
@@ -17,7 +17,7 @@ export interface Project {
   status: string;            // "In progress", "Live", "Published", "Finished"
   tier: "featured" | "more" | "archive";   // where the Work page lists it
   headline?: string;         // a featured project's headline, after its name
-  preview?: string;          // alt text for its own link-preview image, public/projects/<slug>.jpg (made by scripts/link-previews.mjs)
+  preview?: string;          // alt text for its own link-preview image, public/repositories/<slug>.jpg (made by scripts/link-previews.mjs)
   question?: string;         // the question the project answers, under the headline
   app?: { label: string; href: string };       // the live app
   writeup?: { label: string; href: string };   // the research write-up
@@ -63,7 +63,7 @@ export const projects: Project[] = [
     when: {"start": "2026"},
     readme: true,
     kind: "Research", status: "Published", tier: "more",
-    writeup: { label: "See the charts", href: "/research/pa-job-market" },
+    writeup: { label: "See the charts", href: "/lab/pa-job-market" },
   },
   {
     slug: "home-value-score",
@@ -78,7 +78,7 @@ export const projects: Project[] = [
     kind: "Research", status: "Published", tier: "featured",
     headline: "Where is the best value in Chicagoland?",
     question: "If you decide what matters to you, which Chicago-area zip codes fit best, and which cost less than they should?",
-    writeup: { label: "Explore the map", href: "/research/chicago-home-value" },
+    writeup: { label: "Explore the map", href: "/lab/chicago-home-value" },
   },
   {
     slug: "switch-to-youtube",

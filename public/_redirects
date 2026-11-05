@@ -1,3 +1,9 @@
-# The Writing section moved to Research
-/writing /research/ 301
-/writing/* /research/:splat 301
+# Work became Repositories, and Research became Lab (Nov 2026): old links still work
+/projects /repositories/ 301
+/projects/* /repositories/:splat 301
+/research /lab/ 301
+/research/* /lab/:splat 301
+
+# The Writing section moved to Research, now Lab
+/writing /lab/ 301
+/writing/* /lab/:splat 301

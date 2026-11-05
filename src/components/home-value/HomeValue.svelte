@@ -1,10 +1,10 @@
 <!--
   Chicago home value: the map, chart and table for the post.
-  Reads /research/chicago-home-value.json (per-zip values and the housing
+  Reads /lab/chicago-home-value.json (per-zip values and the housing
   value estimates, made by src/site_data.py in the Home-Value-Score repo) and
-  /research/chicago-home-value-zips.json (zip shapes, src/map.py), scores the
+  /lab/chicago-home-value-zips.json (zip shapes, src/map.py), scores the
   zips with js/chicago-home-value-model.js and draws them with Observable Plot,
-  with the train stations from /research/chicago-home-value-stations.json on top.
+  with the train stations from /lab/chicago-home-value-stations.json on top.
 
   Two separate questions, two lenses on the same map:
   - Fit to you: how close each zip is to the reader's own targets (the fit score).
@@ -17,7 +17,7 @@
 
   The reader picks buying or renting, sets a target and a weight for each
   factor, can name where they work (commute becomes the drive time there,
-  from /research/chicago-home-value-drive.json, src/commute.py), and can add
+  from /lab/chicago-home-value-drive.json, src/commute.py), and can add
   a second person. The drive times to the sample's workplace come with the
   page (`cols`), so the whole grid loads only once the reader names another workplace. The form starts with sample values. Colors come from the
   site's CSS variables, so the map redraws when the theme or the width changes.
@@ -27,7 +27,7 @@
 
   This file holds the state and the scoring; each part of the page is its own
   component next to it. The methods tables further down the post are filled
-  in when the site is built (src/pages/research/chicago-home-value.astro).
+  in when the site is built (src/pages/lab/chicago-home-value.astro).
 -->
 <script>
   import { onMount, flushSync, untrack } from "svelte";
@@ -47,7 +47,7 @@
   let byZip = $state.raw(new Map());
   let failed = $state(""), loading = $state(true);
 
-  const load = (f) => fetch("/research/chicago-home-value" + f + ".json").then((r) => { if (!r.ok) throw new Error(f + " " + r.status); return r.json(); });
+  const load = (f) => fetch("/lab/chicago-home-value" + f + ".json").then((r) => { if (!r.ok) throw new Error(f + " " + r.status); return r.json(); });
 
   // Drive times in minutes: to the sample's workplace from the page, to anywhere else
   // from the whole grid (chicago-home-value-drive.json) once it loads

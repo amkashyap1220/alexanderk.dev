@@ -24,15 +24,15 @@ const github = `https://github.com/${p.repo}`;
 <BaseLayout
   title={`${p.name} · Alexander Kashyap`}
   description={p.description ?? `${p.name}: ${p.summary}`}
-  path={`/projects/${p.slug}`}
-  ogImage={p.preview ? { src: `/projects/${p.slug}.jpg`, alt: p.preview } : undefined}
+  path={`/repositories/${p.slug}`}
+  ogImage={p.preview ? { src: `/repositories/${p.slug}.jpg`, alt: p.preview } : undefined}
   current="projects"
 >
 <div class="gutter ed-page">
 <div class="shell">
   <article class="cs" aria-labelledby="cs-h">
     <header class="cs-head">
-      <p class="kicker"><span class="k"><a href="/projects/">Repositories</a></span> <span>{p.kind}</span> <span>{p.status}</span></p>
+      <p class="kicker"><span class="k"><a href="/repositories/">Repositories</a></span> <span>{p.kind}</span> <span>{p.status}</span></p>
       <h1 id="cs-h" class="cs-hed">
         {p.headline ? (
           <><span class="proj">{p.name}<span class="vh">:</span></span> <span class="t">{p.headline}</span></>
@@ -65,7 +65,7 @@ const github = `https://github.com/${p.repo}`;
         <slot name="intro" />
         <slot />
         {p.readme && <Readme repo={p.repo} />}
-        <p class="cs-back"><a class="h-more" href="/projects/">All work</a></p>
+        <p class="cs-back"><a class="h-more" href="/repositories/">All work</a></p>
       </div>
     </div>
   </article>

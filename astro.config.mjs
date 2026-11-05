@@ -11,6 +11,6 @@ export default defineConfig({
   site: "https://alexanderk.dev",
   integrations: [svelte()],
   // Files land where they sit in src/pages, so URLs stay the same:
-  // login.astro -> login.html, projects/index.astro -> projects/index.html
+  // login.astro -> login.html, repositories/index.astro -> repositories/index.html
   build: { format: "preserve" },
 });

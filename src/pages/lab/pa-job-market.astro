@@ -1,5 +1,5 @@
 ---
-// The numbers and charts come from public/research/pa-job-market.json, made by
+// The numbers and charts come from public/lab/pa-job-market.json, made by
 // src/site_data.py in the PhysiciansAssistantJobExploration repo from NCCPA's
 // yearly reports and BLS, BEA and Census data. Each chart is a small Svelte
 // component in src/components/pa-jobs/.
@@ -11,7 +11,7 @@ import Dumbbell from "../../components/pa-jobs/Dumbbell.svelte";
 import Columns from "../../components/pa-jobs/Columns.svelte";
 import "../../styles/pa-job-market.css";
 
-const d = JSON.parse(fs.readFileSync("public/research/pa-job-market.json", "utf8"));
+const d = JSON.parse(fs.readFileSync("public/lab/pa-job-market.json", "utf8"));
 const h = d.headline, r = d.recent, p = d.profile;
 const money = (x: number) => "$" + Math.round(x).toLocaleString();
 const k = (x: number) => "$" + Math.round(x / 1000) + "k";

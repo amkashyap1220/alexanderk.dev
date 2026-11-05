@@ -11,8 +11,8 @@ import Contributions from "../../components/stats/Contributions.svelte";
 import "../../styles/editorial.css";
 import "../../styles/stats.css";
 
-// Which repos have a page here, for js/stats.js: { "RateWillBot": "/projects/ratewillbot", ... }
-const projectPages = Object.fromEntries(projects.map((p) => [p.repo.split("/")[1], `/projects/${p.slug}`]));
+// Which repos have a page here, for js/stats.js: { "RateWillBot": "/repositories/ratewillbot", ... }
+const projectPages = Object.fromEntries(projects.map((p) => [p.repo.split("/")[1], `/repositories/${p.slug}`]));
 // The numbers at the top, in order (js/stats.js fills each one in by its key)
 const figures = [["repos", "public repos"], ["commits", "commits"], ["stars", "stars"], ["languages", "languages"], ["since", "on GitHub since"]];
 ---

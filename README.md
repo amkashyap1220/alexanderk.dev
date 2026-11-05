@@ -36,8 +36,8 @@ Deploying runs the tests first, so a failing test stops the deploy.
 
 ## Adding things
 
-- **A project:** add it to `src/data/projects.ts`, then copy a page in `src/pages/projects/` to `<slug>.astro` and fill it in.
-- **A research post:** follow the steps at the top of `src/pages/research/_template.astro`.
+- **A project:** add it to `src/data/projects.ts`, then copy a page in `src/pages/repositories/` to `<slug>.astro` and fill it in.
+- **A research post:** follow the steps at the top of `src/pages/lab/_template.astro`.
 
 ## Secrets
 

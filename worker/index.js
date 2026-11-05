@@ -193,7 +193,7 @@ async function refresh(env) {
 
 // Every owner/repo named in a data-gh attribute on the Projects page, as [owner, name]
 async function siteRepos(env) {
-  const html = await env.ASSETS.fetch(new Request("https://site/projects/")).then((r) => r.text());
+  const html = await env.ASSETS.fetch(new Request("https://site/repositories/")).then((r) => r.text());
   const found = new Set();
   for (const m of html.matchAll(/data-gh="([^"\/]+)\/([^"]+)"/g)) {
     if (NAME.test(m[1]) && NAME.test(m[2])) found.add(m[1] + "/" + m[2]);

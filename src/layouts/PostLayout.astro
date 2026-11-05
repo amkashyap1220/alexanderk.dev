@@ -21,25 +21,25 @@ interface Props {
 const { slug, found = [], highlight = false } = Astro.props;
 const p = post(slug);
 // The project page that tells how it was built, and the next research post (they loop)
-const built = projects.find((x) => x.writeup?.href === `/research/${p.slug}`);
+const built = projects.find((x) => x.writeup?.href === `/lab/${p.slug}`);
 const next = posts.length > 1 ? posts[(posts.indexOf(p) + 1) % posts.length] : null;
 // For search engines: an article by me, with its dates and preview image
 const article = {
   "@type": "Article",
   headline: p.title,
   description: p.description,
-  url: `${site}/research/${p.slug}`,
+  url: `${site}/lab/${p.slug}`,
   datePublished: p.date,
   dateModified: p.updated ?? p.date,
   author: { "@type": "Person", "@id": person["@id"], name: person.name, url: person.url },
-  ...(p.image && { image: `${site}/research/${p.slug}.png` }),
+  ...(p.image && { image: `${site}/lab/${p.slug}.png` }),
 };
 ---
 <BaseLayout
   title={`${p.title} · Alexander Kashyap`}
   description={p.description}
-  path={`/research/${p.slug}`}
-  ogImage={p.image && { src: `/research/${p.slug}.png`, alt: p.image.previewAlt ?? p.image.alt }}
+  path={`/lab/${p.slug}`}
+  ogImage={p.image && { src: `/lab/${p.slug}.png`, alt: p.image.previewAlt ?? p.image.alt }}
   current="research"
   schema={article}
 >
@@ -48,7 +48,7 @@ const article = {
 <div class="shell">
   <article class="post" aria-labelledby="post-h">
     <header class="post-head">
-      <p class="kicker"><span class="k"><a href="/research/">Lab</a></span> {p.chips[0] && <span>{p.chips[0]}</span>}</p>
+      <p class="kicker"><span class="k"><a href="/lab/">Lab</a></span> {p.chips[0] && <span>{p.chips[0]}</span>}</p>
       <h1 id="post-h" class="page-hed">{p.title}</h1>
       <p class="page-dek">{p.lead}</p>
       <p class="byline">
@@ -57,7 +57,7 @@ const article = {
         {p.updated && <span>Updated <time datetime={p.updated}>{formatDate(p.updated)}</time></span>}
         <span>Data through {p.through}</span>
         {p.link && <a href={p.link.href}>{p.link.label}</a>}
-        {built && <a href={`/projects/${built.slug}`}>How I built it</a>}
+        {built && <a href={`/repositories/${built.slug}`}>How I built it</a>}
       </p>
     </header>
 
@@ -76,12 +76,12 @@ const article = {
       {next && (
         <div class="post-next">
           <p class="h-label">Read next</p>
-          <p class="post-next-t"><a href={`/research/${next.slug}`}>{next.title}</a></p>
+          <p class="post-next-t"><a href={`/lab/${next.slug}`}>{next.title}</a></p>
           <p class="post-next-s">{next.summary}</p>
         </div>
       )}
       <p class="post-contact">Questions about this, or data I should look at next? <a href="mailto:alexander.kashyap@gmail.com">Email me</a>.</p>
-      <p><a class="h-more" href="/research/">All research</a></p>
+      <p><a class="h-more" href="/lab/">All research</a></p>
     </footer>
   </article>
 </div>

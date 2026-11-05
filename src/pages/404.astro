@@ -9,7 +9,7 @@ const email = "alexander.kashyap@gmail.com";
 // The homepage's featured three, each linked to its main page
 const picks = ["open-tradesman", "home-value-score", "alexanderk-dev"].map((slug) => {
   const p = project(slug);
-  return { name: p.name, headline: p.headline ?? p.name, question: p.question ?? p.tagline, href: p.kind === "Research" && p.writeup ? p.writeup.href : `/projects/${p.slug}` };
+  return { name: p.name, headline: p.headline ?? p.name, question: p.question ?? p.tagline, href: p.kind === "Research" && p.writeup ? p.writeup.href : `/repositories/${p.slug}` };
 });
 ---
 <BaseLayout
@@ -27,7 +27,7 @@ const picks = ["open-tradesman", "home-value-score", "alexanderk-dev"].map((slug
   <section class="h-section" aria-labelledby="picks-h">
     <div class="section-head">
       <h2 id="picks-h" class="h-label">Start here</h2>
-      <a href="/projects/">All my work</a>
+      <a href="/repositories/">All my work</a>
     </div>
     <ul class="nf-picks">
       {picks.map((p) => (

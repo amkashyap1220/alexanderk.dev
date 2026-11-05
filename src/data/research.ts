@@ -1,9 +1,9 @@
 // Every research post, newest first (the order the Research page lists them).
-// Each one also needs a page at src/pages/research/<slug>.astro: copy
-// src/pages/research/_template.astro (files starting with _ aren't pages).
+// Each one also needs a page at src/pages/lab/<slug>.astro: copy
+// src/pages/lab/_template.astro (files starting with _ aren't pages).
 
 export interface Post {
-  slug: string;              // the page's address: /research/<slug>
+  slug: string;              // the page's address: /lab/<slug>
   title: string;
   date: string;              // "2026-10-21"
   updated?: string;          // shown as "Updated <date>" in the byline when set
@@ -13,7 +13,7 @@ export interface Post {
   summary: string;           // the Research page card text
   description: string;       // search and link-preview text
   chips: string[];
-  // Preview image: public/research/<slug>.png and <slug>-dark.png, 1200 x 630.
+  // Preview image: public/lab/<slug>.png and <slug>-dark.png, 1200 x 630.
   // Used on the card and as the link preview; leave out for a card without one.
   image?: { alt: string; previewAlt?: string };
   link?: { label: string; href: string };   // a main button before "← All research"
