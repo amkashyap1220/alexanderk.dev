@@ -17,7 +17,7 @@ const archive = projects.filter((p) => p.tier === "archive");
 const tm = project("open-tradesman");
 const hv = project("home-value-score");
 const site = project("alexanderk-dev");
-// A research project's main page is its write-up; its project page tells how it was built
+// A research project's main page is its write-up (which links to how it was built)
 const href = (p: (typeof projects)[number]) => p.kind === "Research" && p.writeup ? p.writeup.href : `/projects/${p.slug}`;
 ---
 <BaseLayout
@@ -61,7 +61,7 @@ const href = (p: (typeof projects)[number]) => p.kind === "Research" && p.writeu
         <p class="q">{hv.question}</p>
         <p class="h-text">An interactive map that scores every Chicago-area zip code on schools, safety, commute, train access, walkability, home age and price or rent, with weights you set. It also shows which zips sell for less, or more, than their features predict.</p>
         <p class="stack">{hv.chips.map((c, i) => <>{i > 0 && " "}<Tech name={c} /></>)}</p>
-        <p class="feat-links"><a class="h-more" href={hv.writeup!.href}>Explore the map</a> <a class="h-more" href={`/projects/${hv.slug}`}>How I built it</a></p>
+        <p class="feat-links"><a class="h-more" href={hv.writeup!.href}>Explore the map</a> <a class="h-more" href={`https://github.com/${hv.repo}`}>Data and code</a></p>
       </div>
       <figure class="pic feat-fig">
         <img src="/img/home/chicago-home-value.webp" srcset="/img/home/chicago-home-value-640.webp 640w, /img/home/chicago-home-value.webp 1200w" sizes="(min-width: 1024px) 742px, (min-width: 720px) calc(100vw - 64px), calc(100vw - 32px)" width="1200" height="630" loading="lazy" decoding="async" alt="Map of Chicago-area zip codes colored from red (low score) to green (high score), with the 20 best-value zips outlined in blue">
@@ -93,7 +93,7 @@ const href = (p: (typeof projects)[number]) => p.kind === "Research" && p.writeu
       {more.map((p) => (
         <li>
           <h3 class="more-name"><a href={href(p)}>{p.name}</a></h3>
-          <p class="more-line">{p.tagline}{p.kind === "Research" && <> <a class="more-sub" href={`/projects/${p.slug}`}>How I built it</a></>}</p>
+          <p class="more-line">{p.tagline}</p>
           <p class="more-meta mono"><span>{p.kind}</span> <span>{p.status}</span> <span>{years(p.when)}</span></p>
         </li>
       ))}

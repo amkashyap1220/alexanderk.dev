@@ -74,7 +74,9 @@ test("the Work page lists every project under Featured work and More work, and e
   for (const tier of ["Featured work", "More work"]) assert.match(work, new RegExp(`class="h-label">${tier}<`), "Work: " + tier);
   assert.match(work, new RegExp(`<span>${slugs.length} projects</span>`), "Work: the project count");
   for (const slug of slugs) {
-    assert.ok(work.includes(`href="/projects/${slug}"`), `Work: a link to ${slug}`);
+    // A research project is listed by its write-up, which links on to the project page
+    const writeup = pages.find((x) => x.file.startsWith("research/") && x.html.includes(`href="/projects/${slug}"`) && work.includes(`href="/${x.file.replace(/\.html$/, "")}"`));
+    assert.ok(work.includes(`href="/projects/${slug}"`) || writeup, `Work: a link to ${slug}, or to a write-up that links to it`);
     const page = pages.find((x) => x.file === `projects/${slug}.html`)?.html;
     assert.ok(page, `projects/${slug}.html`);
     assert.match(page, /<aside class="cs-facts"/, slug + ": facts");

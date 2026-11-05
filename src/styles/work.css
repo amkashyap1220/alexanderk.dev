@@ -32,8 +32,6 @@
 .more-name a { text-decoration: none; }
 .more-name a:hover { text-decoration: underline; text-decoration-color: var(--accent); text-decoration-thickness: 2px; }
 .more-line { font-family: var(--serif); font-size: 1.125rem; line-height: 1.35; color: var(--muted); }
-.more-sub { margin-left: 8px; font-family: var(--sans); font-size: 0.875rem; font-weight: 600; color: var(--ink); white-space: nowrap; }
-.more-sub::after { content: " \2192"; content: " \2192" / ""; color: var(--accent); }
 .more-meta { color: var(--muted); font-size: 0.75rem; letter-spacing: 0.05em; text-transform: uppercase; }
 .more-meta span { white-space: nowrap; }
 .more-meta span:not(:last-child)::after { content: " \00B7"; content: " \00B7" / ""; }
