@@ -2,21 +2,63 @@
 // The numbers and tables in the write-up come from the same data file the map
 // loads (src/value_gap.py in the Home-Value-Score repo), filled in at build time.
 import fs from "node:fs";
+import path from "node:path";
+import { createRequire } from "node:module";
 import PostLayout from "../../layouts/PostLayout.astro";
 import HomeValue from "../../components/home-value/HomeValue.svelte";
+import { currentOf, factorsFor, relatedPairs, samplePerson, summarize, weightParts } from "../../components/home-value/hv.js";
 import "../../styles/chicago-home-value.css";
 
-const m = JSON.parse(fs.readFileSync("public/research/chicago-home-value.json", "utf8")).value_model;
+const read = (f: string) => JSON.parse(fs.readFileSync(`public/research/chicago-home-value${f}.json`, "utf8"));
+const data = read("");
+const m = data.value_model;
+
+// The map's opening state, worked out here so the page shows it before the data loads
+// and nothing jumps when it does: the sample buyer's results (the same scoring script
+// the page runs), and the drive times to the sample's workplace, so the page needs the
+// whole drive time grid only when a reader names another workplace.
+const times = read("-drive");
+const n = times.zips.length;
+const cells = Buffer.from(times.minutes, "base64");
+const at = new Map<string, number>(times.zips.map((z: string, i: number) => [z, i]));
+const drive = (from: string, to: string) => (at.has(from) && at.has(to) ? cells[at.get(from)! * n + at.get(to)!] : null);
+const workplaces = [...new Set(["buy", "rent"].map((k) => data.sample[k].workplace))] as string[];
+const cols = { zips: times.zips.join(","), to: Object.fromEntries(workplaces.map((w) => [w, times.zips.map((z: string) => drive(z, w)).join(",")])) };
+
+const HVModel = createRequire(import.meta.url)(path.resolve("public/js/chicago-home-value-model.js"));
+const person = samplePerson(data, "buy");
+const result = HVModel.run(data.zips, "buy", [person], data.top, drive);
+const cur = currentOf(result, 0);
+const rows = new Map(result.rows.map((r: any) => [r.zip, r]));
+const mapped = read("-zips").features.map((f: any) => rows.get(f.id)).filter((r: any) => r && cur.ranked(r) && cur.score(r) != null).map(cur.score);
+const first = {
+  summary: summarize(data, result, cur, "buy", 0, [person]),
+  parts: weightParts(person),
+  pairs: relatedPairs(data, person, factorsFor("buy")),
+  lo: Math.min(...mapped), hi: Math.max(...mapped), top: data.top,
+};
 const pct = (x: number) => Math.round(x * 100) + "%";
 const p = (x: number) => (x < 0.001 ? "< 0.001" : x.toFixed(3));
 const stat = { r2: m.r2_in_sample.toFixed(2), n: m.n, band: pct(m.in_line_band) };
 const validation = Object.entries(m.validation.random_10_fold).map(([k, v]: [string, any]) => ({ name: k, random: v, spatial: m.validation.spatial_10_fold[k] }));
 const coefficients = m.coefficients.filter((c: any) => c.term !== "const");
+
+// "What I found", from the same numbers as the tables below
+const coef = (term: string) => m.coefficients.find((c: any) => c.term === term);
+const schools10 = (Math.exp(10 * coef("school_pct").coef) - 1) * 100;
+const station = coef("log_station");
+const found = [
+  { n: `${m.classes.below} of ${m.n}`, text: `zips sell for more than ${stat.band} below the price per square foot their measured features predict, and ${m.classes.above} for ${stat.band} or more above it. The map’s “Price vs expected” view shows which.` },
+  { n: `${schools10.toFixed(1)}% more`, text: `per square foot for every 10 percentile points of school test scores, with the model’s other factors held steady.` },
+  station.p_county >= 0.05
+    ? { n: "No clear effect", text: `on price per square foot from distance to a Metra, CTA or South Shore Line station, once the other factors are known (p = ${station.p_county.toFixed(2)}).` }
+    : { n: `${Math.abs(station.pct_effect).toFixed(1)}% ${station.pct_effect < 0 ? "less" : "more"}`, text: `per square foot for each step further from a train station, with the other factors held steady.` },
+];
 ---
-<PostLayout slug="chicago-home-value" heroClass="hv-hero">
+<PostLayout slug="chicago-home-value" {found}>
   <section class="section hv-section">
     {/* The map, chart, table and form: src/components/home-value/ */}
-    <HomeValue client:load />
+    <HomeValue client:load {first} {cols} />
 
     <article class="narrow prose">
       <h2>How it works</h2>
@@ -47,7 +89,8 @@ const coefficients = m.coefficients.filter((c: any) => c.term !== "const");
   </section>
 
   <Fragment slot="head">
-    {/* The fit score (also tested against the Python in tests/), loaded before the map starts */}
-    <script is:inline src="/js/chicago-home-value-model.js"></script>
+    {/* The fit score (also tested against the Python in tests/). Deferred, so it doesn't hold up
+        the first paint; the map waits for it (HomeValue.svelte) */}
+    <script is:inline src="/js/chicago-home-value-model.js" defer></script>
   </Fragment>
 </PostLayout>

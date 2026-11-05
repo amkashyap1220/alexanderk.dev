@@ -1,11 +1,13 @@
 <!-- Side-by-side columns for a distribution, such as pay ranges. Rows are
-     { label, a } or { label, a, b }; names label the one or two series. -->
+     { label, a } or { label, a, b }; names label the one or two series.
+     rowName heads the first column of the table of numbers under the chart. -->
 <script>
   import * as Plot from "@observablehq/plot";
   import { onMount } from "svelte";
   import { css, draw, fmt, onTheme, tick } from "./pa.js";
+  import Numbers from "./Numbers.svelte";
 
-  let { rows, names, format: formatName, label, yLabel = null } = $props();
+  let { rows, names, format: formatName, label, rowName, yLabel = null } = $props();
 
   const format = $derived(fmt(formatName)), ticks = $derived(tick(formatName));
   let el, width = $state(0), theme = $state(0);
@@ -42,3 +44,4 @@
   </ul>
 {/if}
 <div class="pa-chart" bind:this={el} bind:clientWidth={width}></div>
+<Numbers heads={[rowName, ...names.slice(0, two ? 2 : 1)]} rows={rows.map((r) => [r.label, format(r.a), ...(two ? [format(r.b)] : [])])} />

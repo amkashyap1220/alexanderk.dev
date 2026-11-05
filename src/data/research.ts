@@ -6,7 +6,9 @@ export interface Post {
   slug: string;              // the page's address: /research/<slug>
   title: string;
   date: string;              // "2026-10-21"
-  updated?: string;          // shown as "· updated <date>" when set
+  updated?: string;          // shown as "Updated <date>" in the byline when set
+  through: string;           // how recent the data is, for the byline: "Data through <through>"
+  featured?: boolean;        // the lead investigation on the Research page (one at a time)
   lead: string;              // the line under the title on the post
   summary: string;           // the Research page card text
   description: string;       // search and link-preview text
@@ -22,6 +24,7 @@ export const posts: Post[] = [
     slug: "pa-job-market",
     title: "The PA job market for new grads",
     date: "2026-10-30",
+    through: "2025",
     lead: "What PA specialties hire new grads, what they pay, where PAs work and how long the job search takes, in charts.",
     summary: "A guide in charts for PAs about to graduate: which specialties hire new grads, pay by specialty, employer, state and city, the job search, and debt.",
     description: "Charts for graduating physician assistants: where new PAs take jobs, what each specialty and employer pays, pay after the cost of living by state and metro area, job growth, how long the job search takes, and how much debt new PAs carry. From NCCPA's latest reports and BLS data.",
@@ -37,6 +40,8 @@ export const posts: Post[] = [
     title: "Where is the best value in Chicagoland?",
     date: "2026-10-21",
     updated: "2026-10-22",
+    through: "May 2026",
+    featured: true,
     lead: "Say what you want in a place. The map scores every Chicago-area zip against it, and shows separately which zips sell for less, or more, than their measured features predict.",
     summary: "An interactive map of how well Chicago-area zip codes fit your own targets for buying or renting, and which sell for less or more than their measured features predict.",
     description: "Set your own targets and weights, for buying or renting, alone or with a partner, and see how every Chicago-area zip code fits on a map, and which sell for less or more than their measured features predict.",

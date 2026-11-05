@@ -1,23 +1,29 @@
 <!-- Two values per row joined by a line, e.g. where new PAs took jobs vs
      where the ones still looking want to work. Rows are { label, a, b };
      names are the two series' names for the legend. Rows are sorted by
-     their larger value, or by one series when by is "a" or "b". -->
+     their larger value, or by one series when by is "a" or "b". rowName heads
+     the first column of the table of numbers under the chart. -->
 <script>
   import * as Plot from "@observablehq/plot";
   import { onMount } from "svelte";
   import { css, draw, fmt, halo, onTheme, rowLayout, tick } from "./pa.js";
+  import Numbers from "./Numbers.svelte";
 
-  let { rows, names, format: formatName, label, xLabel = null, by = null } = $props();
+  let { rows, names, format: formatName, label, rowName, xLabel = null, by = null } = $props();
 
   const format = $derived(fmt(formatName)), ticks = $derived(tick(formatName));
   let el, width = $state(0), theme = $state(0);
   onMount(() => onTheme(() => theme++));
 
+  const sorted = $derived.by(() => {
+    const key = (r) => (by ? r[by] : Math.max(r.a, r.b));
+    return [...rows].sort((p, q) => key(q) - key(p));
+  });
+
   $effect(() => {
     theme;
     if (width < 200) return;
-    const key = (r) => (by ? r[by] : Math.max(r.a, r.b));
-    const data = [...rows].sort((p, q) => key(q) - key(p));
+    const data = sorted;
     const L = rowLayout(data, width), dy = L.dy;
     const [ca, cb] = [css("--pa-1"), css("--pa-2")];
     // The smaller value is labelled only when its dot has room on its left
@@ -47,3 +53,4 @@
   <li><span class="pa-key" style="background: var(--pa-2)"></span>{names[1]}</li>
 </ul>
 <div class="pa-chart" bind:this={el} bind:clientWidth={width}></div>
+<Numbers heads={[rowName, ...names]} rows={sorted.map((r) => [r.label, format(r.a), format(r.b)])} />

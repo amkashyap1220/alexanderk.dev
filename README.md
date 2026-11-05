@@ -14,11 +14,11 @@ Built with [Astro](https://astro.build) into plain HTML, CSS and JavaScript, and
 | --- | --- |
 | `src/layouts/` | The page shell (head, header, footer) in `BaseLayout.astro`, plus the project and research post layouts built on it |
 | `src/pages/` | One file per page; its path is the page's address |
-| `src/data/` | The projects and research posts; their pages, the Work page's lists and the Research cards are built from these |
-| `src/components/`, `src/styles/` | Small shared pieces (the folded README, Fig. 1 of Open Tradesman) and page styles: `editorial.css` for what the homepage and Work pages share, `home.css` and `work.css` for each one's layout |
-| `src/components/home-value/` | The Chicago home value map, chart, table and form (Svelte), loaded only on that post |
+| `src/data/` | The projects and research posts; their pages, the Work page's lists and the Research page are built from these |
+| `src/components/`, `src/styles/` | Small shared pieces (the folded README, Fig. 1 of Open Tradesman) and page styles: `editorial.css` for what the homepage, Work and Research pages share, `home.css`, `work.css` and `research.css` for each one's layout |
+| `src/components/home-value/` | The Chicago home value map, chart, table and form (Svelte), loaded only on that post. Its opening summary and the drive times to the sample workplace are worked out when the site is built, so the page doesn't jump when the data loads and the full drive time grid loads only when a reader names another workplace |
 | `src/components/fitness/` | The fitness dashboard: one Svelte component per panel, loaded only on that page |
-| `src/components/pa-jobs/` | The PA job market post's map and charts (Svelte + Observable Plot), reading `public/research/pa-job-market.json` |
+| `src/components/pa-jobs/` | The PA job market post's map and charts (Svelte + Observable Plot), reading `public/research/pa-job-market.json`. Each has its numbers as a folded table under it |
 | `public/` | Copied to the site as is: `css/style.css`, the browser scripts in `js/`, images and data files |
 | `worker/` | The Cloudflare Worker: GitHub data, the private section's unlock code and the fitness API (never uploaded as a file) |
 

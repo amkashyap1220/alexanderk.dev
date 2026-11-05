@@ -1,19 +1,27 @@
 ---
-// A research post: the hero (date, title, lead, links) comes from
-// src/data/research.ts; the page adds the post itself inside
-// <PostLayout slug="...">. Page-only scripts go in slot="scripts" (or
-// slot="head" for one that must run before the page is drawn).
+// A research post. The head (kicker, headline, standfirst, byline) comes from
+// src/data/research.ts; the page passes its "What I found" points as `found`
+// (worked out from its data when the site is built) and adds the post itself
+// inside <PostLayout slug="...">. The ending links to the next investigation
+// and to email. Page-only scripts go in slot="scripts" (or slot="head" for
+// one that must load with the page). The layout is in src/styles/research.css.
 import BaseLayout from "./BaseLayout.astro";
-import { post, formatDate } from "../data/research";
+import { post, posts, formatDate } from "../data/research";
+import { projects } from "../data/projects";
+import "../styles/editorial.css";
+import "../styles/research.css";
 
 interface Props {
   slug: string;
+  found?: { n: string; text: string }[];   // "What I found": a number or short phrase, then the sentence it starts
   highlight?: boolean;   // load Prism for code blocks (<pre><code class="language-...">)
-  heroClass?: string;    // an extra class on the hero, for a post's own styles
 }
 
-const { slug, highlight = false, heroClass } = Astro.props;
+const { slug, found = [], highlight = false } = Astro.props;
 const p = post(slug);
+// The project page that tells how it was built, and the next investigation (they loop)
+const built = projects.find((x) => x.writeup?.href === `/research/${p.slug}`);
+const next = posts.length > 1 ? posts[(posts.indexOf(p) + 1) % posts.length] : null;
 ---
 <BaseLayout
   title={`${p.title} · Alexander Kashyap`}
@@ -23,19 +31,48 @@ const p = post(slug);
   current="research"
 >
   <Fragment slot="head"><slot name="head" /></Fragment>
-  <section class={heroClass ? `hero ${heroClass}` : "hero"}>
-    <div class="narrow">
-      <p class="eyebrow"><time datetime={p.date}>{formatDate(p.date)}</time>{p.updated && <> · updated <time datetime={p.updated}>{formatDate(p.updated)}</time></>}</p>
-      <h1>{p.title}</h1>
-      <p class="lead">{p.lead}</p>
-      <div class="actions">
-        {p.link && <a class="btn primary" href={p.link.href} target="_blank" rel="noopener">{p.link.label}</a>}
-        <a class="btn" href="/research/">← All research</a>
-      </div>
-    </div>
-  </section>
+<div class="gutter ed-page">
+<div class="shell">
+  <article class="post" aria-labelledby="post-h">
+    <header class="post-head">
+      <p class="kicker"><span class="k"><a href="/research/">Research</a></span> {p.chips[0] && <span>{p.chips[0]}</span>}</p>
+      <h1 id="post-h" class="page-hed">{p.title}</h1>
+      <p class="page-dek">{p.lead}</p>
+      <p class="byline">
+        <span>By Alexander Kashyap</span>
+        <span><time datetime={p.date}>{formatDate(p.date)}</time></span>
+        {p.updated && <span>Updated <time datetime={p.updated}>{formatDate(p.updated)}</time></span>}
+        <span>Data through {p.through}</span>
+        {p.link && <a href={p.link.href}>{p.link.label}</a>}
+        {built && <a href={`/projects/${built.slug}`}>How I built it</a>}
+      </p>
+    </header>
 
-  <slot />
+    {found.length > 0 && (
+      <section class="found" aria-labelledby="found-h">
+        <h2 id="found-h" class="h-label">What I found</h2>
+        <ol>
+          {found.map((f) => <li><b>{f.n}</b> <span>{f.text}</span></li>)}
+        </ol>
+      </section>
+    )}
+
+    <slot />
+
+    <footer class="post-end">
+      {next && (
+        <div class="post-next">
+          <p class="h-label">Next investigation</p>
+          <p class="post-next-t"><a href={`/research/${next.slug}`}>{next.title}</a></p>
+          <p class="post-next-s">{next.summary}</p>
+        </div>
+      )}
+      <p class="post-contact">Questions about this, or data I should look at next? <a href="mailto:alexander.kashyap@gmail.com">Email me</a>.</p>
+      <p><a class="h-more" href="/research/">All research</a></p>
+    </footer>
+  </article>
+</div>
+</div>
 
   <Fragment slot="scripts">
     <slot name="scripts" />

@@ -1,7 +1,9 @@
 /* ==========================================================================
    The Work page (src/pages/projects/index.astro) and every project page
-   (src/layouts/ProjectLayout.astro). The labels, headlines, fact lists,
-   archive list and Fig. 1 they share with the homepage are in editorial.css.
+   (src/layouts/ProjectLayout.astro). The page frame and head, labels,
+   headlines, fact lists, archive list and Fig. 1 they share with the
+   homepage and the Research pages are in editorial.css. The Research page
+   uses the featured layout here too.
 
    Work page: a page head, then three tiers. Featured projects put their
    text beside a figure from 960px; More work is a list of rows from 720px.
@@ -9,13 +11,7 @@
    from 1100px. Reading text stays under about 38em.
    ========================================================================== */
 
-.ed-page { padding-block: 32px 16px; }
-
-/* ---------- Page head (Work) ---------- */
-.page-hed { font-family: var(--serif); font-weight: 600; font-size: clamp(2.25rem, 1.6rem + 2.6vw, 3.5rem); line-height: 1.04; letter-spacing: -0.018em; }
-.page-dek { margin-top: 12px; max-width: 34em; font-family: var(--serif); font-size: clamp(1.125rem, 1rem + 0.5vw, 1.3125rem); line-height: 1.45; color: var(--muted); }
-
-.ed-page .section-head .credit { font-size: 0.875rem; }
+/* The page frame (.ed-page) and the page head (.page-hed, .page-dek) are in editorial.css */
 
 /* ---------- Featured ---------- */
 .feat + .feat { border-top: 1px solid var(--rule); margin-top: 32px; padding-top: 32px; }
@@ -109,6 +105,5 @@
 }
 
 @media (min-width: 1180px) {
-  .ed-page { padding-top: 40px; }
   .ed-page .archive ol { column-count: 3; column-gap: 48px; }
 }
