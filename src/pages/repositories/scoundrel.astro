@@ -1,0 +1,72 @@
+---
+// Written from the project's README. The game's "How to play" link points here.
+import ProjectLayout from "../../layouts/ProjectLayout.astro";
+import { pics } from "../../lib/pic";
+---
+<ProjectLayout slug="scoundrel">
+  <Fragment slot="intro">
+    <section class="cs-sec" aria-labelledby="sc-short">
+      <h2 id="sc-short" class="cs-h2">In short</h2>
+      <div class="prose">
+        <ul>
+          <li><b>The game.</b> Scoundrel is a one-player dungeon crawler for an ordinary deck of cards, designed by Zach Gage and Kurt Bieg in 2011. This is a web version with the standard rules, made for phones as much as for computers. <a href="/lab/scoundrel">Play it in the Lab</a>.</li>
+          <li><b>High scores.</b> When a game ends you can add your name, and the top ten show with their dates. The server checks every score by replaying the game itself.</li>
+          <li><b>No undo.</b> Tapping a card shows what it would do and asks you to confirm, so a stray tap never costs you, but a choice made is made.</li>
+        </ul>
+      </div>
+    </section>
+    <figure class="pic cs-sec">
+      <img {...pics("scoundrel")} sizes="(min-width: 1100px) 60vw, calc(100vw - 32px)" width="1200" height="630" decoding="async" alt="Three phone screens from the game: a room of four cards with a weapon held, a monster about to be fought with the weapon, and a won game with a name entered for the high scores">
+      <figcaption>A room of four cards, a fight with a weapon, and a won game going on the high scores.</figcaption>
+    </figure>
+  </Fragment>
+
+  <section class="cs-sec" id="how-to-play" aria-labelledby="sc-play">
+    <h2 id="sc-play" class="cs-h2">How to play</h2>
+    <div class="prose">
+      <p>The dungeon is a deck of cards without the jokers, the red face cards and the red aces: 44 cards.</p>
+      <ul>
+        <li><b>&clubs; &spades; Monsters</b> hit you for their value: 2 to 10, then Jack 11, Queen 12, King 13 and Ace 14.</li>
+        <li><b>&diams; Weapons</b> (2 to 10) take their value off every monster you fight with them.</li>
+        <li><b>&hearts; Potions</b> (2 to 10) heal you by their value.</li>
+      </ul>
+      <p>You start with 20 health and can never go above 20. Each turn the room is filled up to four cards. You can <b>avoid</b> the room, which sends all four to the bottom of the dungeon, but never two rooms in a row. Otherwise you face three of the four cards, one at a time, and the last one stays for the next room.</p>
+      <ul>
+        <li><b>A weapon</b> replaces the one you held, along with the monsters it slew.</li>
+        <li><b>A potion</b> heals you, but only one potion a room works. A second one is wasted.</li>
+        <li><b>A monster</b> can be fought barehanded, taking its full value as damage, or with your weapon, taking the monster&rsquo;s value minus the weapon&rsquo;s. Once a weapon has slain a monster, it only works on monsters weaker than the last one it slew.</li>
+      </ul>
+      <p>The game ends when your health reaches 0 or the dungeon runs out. If you make it through, your score is the health you have left, plus the last card&rsquo;s value if it was a potion and you&rsquo;re at 20. If you die, it&rsquo;s minus the total of the monsters still in the dungeon.</p>
+    </div>
+  </section>
+
+  <section class="cs-sec" aria-labelledby="sc-decisions">
+    <h2 id="sc-decisions" class="cs-h2">Key decisions</h2>
+    <ol class="decisions">
+      <li>
+        <h3>The rules are one file of plain functions.</h3>
+        <p>Every move goes through one function that takes the game and a move and returns the next game, with no screen code in it. The same file runs in your browser and on the server, and it&rsquo;s easy to test: the tests set up exact rooms and check each rule.</p>
+      </li>
+      <li>
+        <h3>The server works out every score itself.</h3>
+        <p>A game is dealt from a random seed the server picks and keeps. When it ends, the browser sends only your name and the list of moves. The server replays them from its seed and saves the score that gives, so an edited request can&rsquo;t claim a score that wasn&rsquo;t played. Unknown games, unfinished games, illegal moves and games already scored are all refused.</p>
+      </li>
+      <li>
+        <h3>Tap, then confirm.</h3>
+        <p>On a phone it&rsquo;s easy to tap the wrong card, and the rules have no take-backs. A tap shows what the card would do, on the card and in a button, and the button does it. A monster you could fight either way offers both.</p>
+      </li>
+    </ol>
+  </section>
+
+  <section class="cs-sec" aria-labelledby="sc-built">
+    <h2 id="sc-built" class="cs-h2">How it&rsquo;s built</h2>
+    <dl class="spec cs-spec">
+      <div><dt>Game</dt><dd>Svelte 5, built with Vite into a few small static files</dd></div>
+      <div><dt>Rules</dt><dd>One JavaScript file of pure functions with a seeded shuffle, shared by the game and the server</dd></div>
+      <div><dt>Server</dt><dd>A Cloudflare Worker that serves the game, deals each game and checks scores, with a rate limit on both</dd></div>
+      <div><dt>Scores</dt><dd>Cloudflare D1, a SQLite database, holding the dealt games and the scores with names and dates</dd></div>
+      <div><dt>Tests</dt><dd>Node&rsquo;s built-in test runner, for the rules and for the server against Node&rsquo;s own SQLite</dd></div>
+      <div><dt>On this site</dt><dd>Embedded in the Lab page, which sizes the frame to the game as it changes</dd></div>
+    </dl>
+  </section>
+</ProjectLayout>

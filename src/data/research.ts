@@ -7,7 +7,7 @@ export interface Post {
   title: string;
   date: string;              // "2026-10-21"
   updated?: string;          // shown as "Updated <date>" in the byline when set
-  through: string;           // how recent the data is, for the byline: "Data through <through>"
+  through?: string;          // how recent the data is, for the byline: "Data through <through>" (leave out for a game)
   featured?: boolean;        // the featured research on the Research page (one at a time)
   lead: string;              // the line under the title on the post
   summary: string;           // the Research page card text
@@ -20,6 +20,21 @@ export interface Post {
 }
 
 export const posts: Post[] = [
+  {
+    slug: "scoundrel",
+    title: "Scoundrel",
+    date: "2026-11-05",
+    featured: true,
+    lead: "A solo dungeon crawler played with a deck of cards. Fight monsters, pick your weapons and potions carefully, and see how far you get.",
+    summary: "Scoundrel, the solo card game, to play right here on a phone or a computer, with shared high scores.",
+    description: "Play Scoundrel, the solo dungeon crawler played with a deck of cards, in your browser on a phone or a computer, with shared high scores.",
+    chips: ["Card game", "Svelte", "Cloudflare Workers", "Cloudflare D1"],
+    image: {
+      alt: "Three phone screens from the game: a room of four cards with a weapon held, a monster about to be fought with the weapon, and a won game with a name entered for the high scores",
+      previewAlt: "Three phone screens from the Scoundrel card game",
+    },
+    link: { label: "Code", href: "https://github.com/amkashyap1220/SimpleScoundrel" },
+  },
   {
     slug: "pa-job-market",
     title: "The PA job market for new grads",
@@ -41,7 +56,6 @@ export const posts: Post[] = [
     date: "2026-10-21",
     updated: "2026-10-22",
     through: "May 2026",
-    featured: true,
     lead: "Say what you want in a place. The map scores every Chicago-area zip against it, and shows separately which zips sell for less, or more, than their measured features predict.",
     summary: "An interactive map of how well Chicago-area zip codes fit your own targets for buying or renting, and which sell for less or more than their measured features predict.",
     description: "Set your own targets and weights, for buying or renting, alone or with a partner, and see how every Chicago-area zip code fits on a map, and which sell for less or more than their measured features predict.",

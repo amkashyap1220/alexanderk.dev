@@ -90,13 +90,18 @@ test("the Research page lists every post, and every post has its byline, finding
   const slugs = all(fs.readFileSync("src/data/research.ts", "utf8"), /slug: "([^"]+)"/g);
   const index = pages.find((x) => x.file === "lab/index.html").html;
   assert.match(index, /class="h-label">Featured</, "Lab: featured");
+  const source = fs.readFileSync("src/data/research.ts", "utf8");
   for (const slug of slugs) {
     assert.ok(index.includes(`href="/lab/${slug}"`), `Research: a link to ${slug}`);
     const page = pages.find((x) => x.file === `lab/${slug}.html`)?.html;
     assert.ok(page, `lab/${slug}.html`);
-    assert.match(page, /<p class="byline">[\s\S]*?By Alexander Kashyap[\s\S]*?Data through/, slug + ": byline");
-    assert.match(page, /class="h-label">What I found<\/h2>\s*<ol>(\s*<li>[\s\S]*?<\/li>){3}/, slug + ": at least three findings");
+    assert.match(page, /<p class="byline">[\s\S]*?By Alexander Kashyap/, slug + ": byline");
     assert.match(page, /class="h-label">Read next</, slug + ": what to read next");
+    // A data piece (one with `through`) says how recent its data is and opens with what it found; a game doesn't
+    const entry = source.slice(source.indexOf(`slug: "${slug}"`)).split(/\n  \},?\n/)[0];
+    if (!/\bthrough:/.test(entry)) continue;
+    assert.match(page, /<p class="byline">[\s\S]*?Data through/, slug + ": byline says how recent the data is");
+    assert.match(page, /class="h-label">What I found<\/h2>\s*<ol>(\s*<li>[\s\S]*?<\/li>){3}/, slug + ": at least three findings");
   }
   // Every PA chart has its numbers as a table, in the page as built
   const pa = pages.find((x) => x.file === "lab/pa-job-market.html").html;

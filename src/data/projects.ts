@@ -25,6 +25,23 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    slug: "scoundrel",
+    preview: "Scoundrel: a solo dungeon crawler played with a deck of cards, with shared high scores",
+    name: "Scoundrel",
+    tagline: "The solo card game, in the browser",
+    summary: "Scoundrel, the one-player dungeon crawler for an ordinary deck of cards, as a web game for phones and computers. Monsters, weapons and potions come four to a room; face three, or avoid the room. A small server deals every game and keeps shared high scores, checking each one by replaying the game.",
+    description: "Scoundrel: the solo card game as a web game for phones and computers, with shared high scores checked by replaying each game. Svelte, Cloudflare Workers and D1.",
+    repo: "amkashyap1220/SimpleScoundrel",
+    chips: ["Svelte", "JavaScript", "Cloudflare Workers", "Cloudflare D1"],
+    when: { start: "2026-11", end: "present" },
+    readme: true,
+    kind: "Game", status: "Live", tier: "featured",
+    headline: "A dungeon crawler in a deck of cards",
+    question: "Can a high-score list trust a game played in your browser?",
+    writeup: { label: "Play it", href: "/lab/scoundrel" },
+    app: { label: "Open the game on its own page", href: "https://scoundrel.alexanderk.dev" },
+  },
+  {
     slug: "open-tradesman",
     preview: "Open Tradesman: Talk through the job in your language. The customer gets a priced estimate in theirs.",
     name: "Open Tradesman",
@@ -75,7 +92,7 @@ export const projects: Project[] = [
     chips: ["Python", "pandas", "GeoPandas", "statsmodels", "DuckDB", "Census data", "Observable Plot"],
     when: {"start": "2026"},
     readme: true,
-    kind: "Research", status: "Published", tier: "featured",
+    kind: "Research", status: "Published", tier: "more",
     headline: "Where is the best value in Chicagoland?",
     question: "If you decide what matters to you, which Chicago-area zip codes fit best, and which cost less than they should?",
     writeup: { label: "Explore the map", href: "/lab/chicago-home-value" },

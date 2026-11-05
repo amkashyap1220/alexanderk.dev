@@ -17,14 +17,14 @@ const first = projects.map((p) => p.when.start.slice(0, 4)).sort()[0];
 const more = projects.filter((p) => p.tier === "more");
 const archive = projects.filter((p) => p.tier === "archive");
 const tm = project("open-tradesman");
-const hv = project("home-value-score");
+const sc = project("scoundrel");
 const site = project("alexanderk-dev");
 // A research project's main page is its write-up (which links to how it was built)
 const href = (p: (typeof projects)[number]) => p.kind === "Research" && p.writeup ? p.writeup.href : `/repositories/${p.slug}`;
 ---
 <BaseLayout
   title="Repositories · Alexander Kashyap"
-  description="Projects by Alexander Kashyap: a voice-to-invoice app for the PayPal AI Hackathon, a map of the best-value zip codes around Chicago, this site, and more, newest first."
+  description="Projects by Alexander Kashyap: a voice-to-invoice app for the PayPal AI Hackathon, the Scoundrel card game, this site, and more, newest first."
   path="/repositories/"
   current="projects"
 >
@@ -56,18 +56,18 @@ const href = (p: (typeof projects)[number]) => p.kind === "Research" && p.writeu
       </figure>
     </article>
 
-    <article class="feat" aria-labelledby="hv-h">
+    <article class="feat" aria-labelledby="sc-h">
       <div class="feat-text">
-        <p class="kicker"><span class="k">{hv.name}</span> <span>{hv.kind}</span> <span>{years(hv.when)}</span> <span>{hv.status}</span></p>
-        <h3 id="hv-h" class="hed feat-hed"><a href={hv.writeup!.href}>{hv.headline}</a></h3>
-        <p class="q">{hv.question}</p>
-        <p class="h-text">An interactive map that scores every Chicago-area zip code on schools, safety, commute, train access, walkability, home age and price or rent, with weights you set. It also shows which zips sell for less, or more, than their features predict.</p>
-        <p class="stack">{hv.chips.map((c, i) => <>{i > 0 && " "}<Tech name={c} /></>)}</p>
-        <p class="feat-links"><a class="h-more" href={hv.writeup!.href}>Explore the map</a> <a class="h-more" href={`/repositories/${hv.slug}`}>How I built it</a></p>
+        <p class="kicker"><span class="k">{sc.name}</span> <span>{sc.kind}</span> <span>{years(sc.when)}</span> <span>{sc.status}</span></p>
+        <h3 id="sc-h" class="hed feat-hed"><a href={sc.writeup!.href}>{sc.headline}</a></h3>
+        <p class="q">{sc.question}</p>
+        <p class="h-text">The solo card game Scoundrel, built for phones and computers. A small Cloudflare server deals every game and keeps the high scores, and it replays each finished game with the same rules code before it saves a score, so a score can&rsquo;t be made up.</p>
+        <p class="stack">{sc.chips.map((c, i) => <>{i > 0 && " "}<Tech name={c} /></>)}</p>
+        <p class="feat-links"><a class="h-more" href={sc.writeup!.href}>Play it</a> <a class="h-more" href={`/repositories/${sc.slug}`}>How I built it</a></p>
       </div>
       <figure class="pic feat-fig">
-        <img {...pics("chicago-home-value")} sizes="(min-width: 1024px) 742px, (min-width: 720px) calc(100vw - 64px), calc(100vw - 32px)" width="1200" height="630" loading="lazy" decoding="async" alt="Map of Chicago-area zip codes colored from red (low score) to green (high score), with the 20 best-value zips outlined in blue">
-        <figcaption>Red scores low, green high. The 20 best-value zips are outlined in blue.</figcaption>
+        <img {...pics("scoundrel")} sizes="(min-width: 1024px) 742px, (min-width: 720px) calc(100vw - 64px), calc(100vw - 32px)" width="1200" height="630" loading="lazy" decoding="async" alt="Three phone screens from the game: a room of four cards with a weapon held, a monster about to be fought with the weapon, and a won game with a name entered for the high scores">
+        <figcaption>A room of four cards, a fight with a weapon, and a won game going on the high scores.</figcaption>
       </figure>
     </article>
 
