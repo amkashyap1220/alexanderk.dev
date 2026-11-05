@@ -16,10 +16,13 @@
   const params = new URLSearchParams(location.search);
   const onPage = location.pathname === "/unlock";
 
+  // The message goes under the field, and the field is marked invalid (its aria-describedby points at the message)
   function showError(form, text) {
     const box = form.querySelector(".unlock-error");
     box.textContent = text;
     box.hidden = !text;
+    if (text) form.elements.code.setAttribute("aria-invalid", "true");
+    else form.elements.code.removeAttribute("aria-invalid");
   }
 
   document.querySelectorAll(".unlock-form").forEach((form) => {
@@ -50,15 +53,28 @@
     });
   });
 
-  // The lock icon opens the box in place
+  // The lock icon opens the box in place. Closing it (the X, Escape, or a click outside)
+  // puts the focus back on whatever opened it.
   const dialog = document.getElementById("unlock-dialog");
+  let opener = null;
   document.querySelectorAll("[data-unlock]").forEach((link) => link.addEventListener("click", (event) => {
     if (!dialog || !dialog.showModal || onPage) return;   // on /unlock the box is already there
     event.preventDefault();
-    showError(dialog.querySelector("form"), "");
+    opener = link;
+    const form = dialog.querySelector("form");
+    showError(form, "");
+    form.elements.code.value = "";
     dialog.showModal();
-    dialog.querySelector("input[name=code]").focus();
+    form.elements.code.focus();
   }));
-  // Clicking outside the box closes it
-  if (dialog) dialog.addEventListener("click", (event) => { if (event.target === dialog) dialog.close(); });
+  if (dialog) {
+    dialog.addEventListener("click", (event) => {
+      // The dialog itself is the target for its backdrop and its own padding: only the backdrop closes it
+      const r = dialog.getBoundingClientRect();
+      const outside = event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom;
+      if (event.target === dialog && outside) dialog.close();
+    });
+    dialog.querySelector("[data-close]").addEventListener("click", () => dialog.close());
+    dialog.addEventListener("close", () => { if (opener && opener.isConnected) opener.focus(); opener = null; });
+  }
 })();

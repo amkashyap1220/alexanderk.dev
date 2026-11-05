@@ -28,7 +28,7 @@ function fileFor(address) {
 
 test("the site builds every page", () => {
   assert.ok(pages.length >= 20, `built ${pages.length} pages`);
-  for (const p of ["index.html", "404.html", "unlock.html", "projects/index.html", "research/index.html", "stats/index.html", "private/index.html"]) {
+  for (const p of ["index.html", "about.html", "404.html", "unlock.html", "projects/index.html", "research/index.html", "stats/index.html", "private/index.html"]) {
     assert.ok(pages.some((x) => x.file === p), p);
   }
 });
@@ -44,9 +44,13 @@ test("every page has a title, a description and the site header and footer", () 
     const nav = html.match(/<nav class="site-nav" aria-label="Main">([\s\S]*?)<\/nav>/)?.[1] ?? "";
     assert.match(nav, /<a href="\/projects\/"[^>]*>Work<\/a>/, file + ": nav Work");
     assert.match(nav, /<a href="\/research\/"[^>]*>Research<\/a>/, file + ": nav Research");
-    assert.match(nav, /<a href="\/#about"[^>]*>About<\/a>/, file + ": nav About");
+    assert.match(nav, /<a href="\/about"[^>]*>About<\/a>/, file + ": nav About");
     assert.match(html, /<a class="cta cta-solid" href="\/resume\.pdf">/, file + ": Resume in the header");
-    assert.match(html, /<dialog class="unlock-dialog"/, file + ": unlock box");
+    // The unlock box: a visible title, a close button, and a labeled field tied to its error message
+    assert.match(html, /<dialog class="unlock-dialog" id="unlock-dialog" aria-labelledby="unlock-dialog-h">/, file + ": unlock box");
+    assert.match(html, /<h2 class="unlock-title" id="unlock-dialog-h">/, file + ": unlock box title");
+    assert.match(html, /<button class="unlock-close" type="button" aria-label="Close" data-close>/, file + ": unlock box close button");
+    assert.match(html, /<label class="unlock-label" for="unlock-dialog-code">[\s\S]*?id="unlock-dialog-code"[^>]*aria-describedby="unlock-dialog-error"[\s\S]*?id="unlock-dialog-error"/, file + ": unlock field and its error");
     assert.match(html, /<footer class="site-footer">/, file + ": footer");
     assert.ok(all(html, /aria-current="(page)"/g).length <= 1, file + ": at most one current tab");
   }
@@ -108,13 +112,61 @@ test("no page shows a phone number", () => {
   }
 });
 
-test("link previews point at the page's own address", () => {
+test("link previews and canonical links point at the page's own address, and their images exist", () => {
   for (const { file, html } of pages) {
     const url = html.match(/<meta property="og:url" content="([^"]+)"/)?.[1];
+    const canonical = html.match(/<link rel="canonical" href="([^"]+)"/)?.[1];
+    assert.equal(canonical, url, file + ": the canonical link is the link preview's address");
     if (!url) continue;
     const own = "/" + file.replace(/(^|\/)index\.html$/, "$1").replace(/\.html$/, "");
     assert.equal(new URL(url).pathname, own, file);
+    const image = html.match(/<meta property="og:image" content="([^"]+)"/)?.[1];
+    assert.ok(image && fileFor(new URL(image).pathname), `${file}: preview image ${image}`);
   }
+});
+
+test("the sitemap lists exactly the public pages, and robots.txt points to it", () => {
+  const listed = all(fs.readFileSync(path.join(out, "sitemap.xml"), "utf8"), /<loc>([^<]+)<\/loc>/g).sort();
+  const shared = pages.map((p) => p.html.match(/<meta property="og:url" content="([^"]+)"/)?.[1]).filter(Boolean).sort();
+  assert.deepEqual(listed, shared);
+  for (const { file, html } of pages) {
+    if (/<meta name="robots" content="noindex/.test(html)) assert.ok(!listed.some((u) => fileFor(new URL(u).pathname) === "/" + file), file + " is noindex");
+  }
+  assert.match(fs.readFileSync(path.join(out, "robots.txt"), "utf8"), /^Sitemap: https:\/\/alexanderk\.dev\/sitemap\.xml$/m);
+});
+
+test("structured data is valid JSON, and names me on the homepage, the About page and every post", () => {
+  for (const { file, html } of pages) {
+    for (const json of all(html, /<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
+      const data = JSON.parse(json);
+      assert.equal(data["@context"], "https://schema.org", file);
+    }
+  }
+  const ld = (file) => JSON.stringify(JSON.parse(pages.find((x) => x.file === file).html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]));
+  for (const file of ["index.html", "about.html"]) assert.match(ld(file), /"@type":"Person".*"name":"Alexander Kashyap"/, file);
+  for (const slug of all(fs.readFileSync("src/data/research.ts", "utf8"), /slug: "([^"]+)"/g)) {
+    assert.match(ld(`research/${slug}.html`), /"@type":"Article".*"datePublished":"\d{4}-\d\d-\d\d".*"author":\{"@type":"Person"/, slug);
+  }
+});
+
+test("hashed bundles are cached for good; pages are not", () => {
+  const rules = fs.readFileSync(path.join(out, "_headers"), "utf8");
+  assert.match(rules, /^\/_astro\/\*\n\s+Cache-Control: public, max-age=31536000, immutable$/m);
+  assert.doesNotMatch(rules, /^\/\*$|^\/$|\.html/m, "no rule for pages");
+});
+
+test("the About, Stats and 404 pages have what they promise", () => {
+  const about = pages.find((x) => x.file === "about.html").html;
+  for (const place of ["K-Rise Systems", "Outlier, a Scale AI platform", "Northern Illinois University", "Chamberlain Group"]) assert.ok(about.includes(`<h3>${place}</h3>`), "About: " + place);
+  assert.match(about, /id="tools-h"[^>]*>Toolbox</, "About: the toolbox");
+  assert.match(about, /id="otc-h"[^>]*>Off the clock</, "About: Off the clock");
+  assert.match(about, /href="\/stats\/"/, "About: a link to GitHub Stats");
+  const stats = pages.find((x) => x.file === "stats/index.html").html;
+  assert.match(stats, /Public repos only; my day-to-day C#\/\.NET work lives in private company repos\./, "Stats: the framing line");
+  assert.equal((stats.match(/<div data-figure="/g) || []).length, 5, "Stats: five numbers, drawn before the data arrives");
+  const notFound = pages.find((x) => x.file === "404.html").html;
+  for (const href of ["/projects/open-tradesman", "/research/chicago-home-value", "/projects/alexanderk-dev"]) assert.ok(notFound.includes(`href="${href}"`), "404: " + href);
+  assert.match(notFound, /href="mailto:alexander\.kashyap@gmail\.com"/, "404: email");
 });
 
 test("every link and file a page uses exists, at its clean address", () => {

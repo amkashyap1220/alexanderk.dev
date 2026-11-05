@@ -17,6 +17,7 @@ export interface Project {
   status: string;            // "In progress", "Live", "Published", "Finished"
   tier: "featured" | "more" | "archive";   // where the Work page lists it
   headline?: string;         // a featured project's headline, after its name
+  preview?: string;          // alt text for its own link-preview image, public/projects/<slug>.jpg (made by scripts/link-previews.mjs)
   question?: string;         // the question the project answers, under the headline
   app?: { label: string; href: string };       // the live app
   writeup?: { label: string; href: string };   // the research write-up
@@ -25,6 +26,7 @@ export interface Project {
 export const projects: Project[] = [
   {
     slug: "open-tradesman",
+    preview: "Open Tradesman: Talk through the job in your language. The customer gets a priced estimate in theirs.",
     name: "Open Tradesman",
     tagline: "Talk through a job, send a priced estimate, get paid",
     summary: "A voice-first estimating app for tradespeople, built for the PayPal AI Hackathon. The tradesperson talks through the job in their own language; Claude turns it into an itemized, priced estimate in the customer's language; and PayPal invoicing handles the money, from the deposit and change orders to the final invoice.",
@@ -91,6 +93,7 @@ export const projects: Project[] = [
   },
   {
     slug: "alexanderk-dev",
+    preview: "A static site that keeps its own numbers fresh: how alexanderk.dev is built",
     name: "alexanderk.dev",
     tagline: "This website",
     summary: "This website. Built with Astro into plain HTML, CSS and JavaScript, and hosted on Cloudflare.",

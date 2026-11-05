@@ -25,7 +25,9 @@
 }
 
 .fit-page { padding-top: var(--space-7); border-top: 0; }   /* no hero above: start right under the header */
-.fit-status { color: var(--muted); font-size: var(--fs-md); text-align: center; }
+.fit-back { margin-bottom: var(--space-5); font-size: var(--fs-sm); font-weight: 600; }
+.fit-back a::before { content: "\2190  "; content: "\2190  " / ""; color: var(--accent); }
+.fit-status { color: var(--muted); font-size: var(--fs-md); text-align: center; overflow-wrap: anywhere; }
 .fit-status.error { color: var(--bad); }
 .fit-h { margin-top: var(--space-9); }
 /* Two panels side by side on wide screens; stacked (as before) below that */

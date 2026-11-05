@@ -1,0 +1,73 @@
+/* ==========================================================================
+   GitHub Stats (src/pages/stats/index.astro). The page head and section
+   heads are in editorial.css; the language bars and the toggle buttons
+   come from public/css/style.css. js/stats.js and
+   components/stats/Contributions.svelte fill everything in; the page draws
+   each box at its final size first, so nothing moves when they do.
+   ========================================================================== */
+
+.st-status:empty { display: none; }
+.st-status { margin-bottom: 16px; color: var(--muted); }
+.st-intro { max-width: 38em; margin-bottom: 20px; color: var(--muted); }
+/* Narrow enough to always take two lines, whichever font is showing, so it never rewraps when the web font arrives */
+.st-dek { max-width: 26em; }
+
+/* The numbers at the top: big serif figures over small labels, between rules */
+.figures { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 24px; margin: 0; }
+.figures > div { display: flex; flex-direction: column-reverse; justify-content: flex-end; padding: 12px 0 16px; border-top: 1px solid var(--rule); }
+.figures dd { font-family: var(--serif); font-weight: 600; font-size: 2.25rem; line-height: 1.1; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+.figures dt { margin-top: 4px; font: 500 0.6875rem/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.figures > div:last-child:nth-child(odd) { grid-column: 1 / -1; }
+.st-high { display: flex; flex-wrap: wrap; gap: 4px 32px; padding-top: 12px; border-top: 1px solid var(--rule); }
+.st-high p { margin: 0; }
+
+/* Contributions: the heat map, no wider than 1000px (the dots would get huge) */
+#contributions { max-width: 1000px; }
+.heatmap { padding: var(--space-4); }
+.heatmap-headline { margin-bottom: var(--space-3); font-size: var(--fs-md); }
+.heatmap-headline b { font-size: var(--fs-xl); color: var(--mark); }
+/* A row per month: name, a column per day of the month, the month's total */
+.heatmap-row { display: grid; grid-template-columns: 4.2em repeat(31, minmax(0, 1fr)) 2.8em; align-items: center; column-gap: 2px; padding: 1px 0; border-radius: var(--radius-sm); }
+.heatmap-row.top { background: var(--soft); }
+.heatmap-head { color: var(--muted); font-size: var(--fs-xs); }
+.heatmap-day { text-align: center; }
+.heatmap-month { color: var(--label); font-size: var(--fs-sm); white-space: nowrap; }
+.heatmap-total { color: var(--muted); font-size: var(--fs-xs); text-align: right; font-variant-numeric: tabular-nums; }
+.heatmap-cell { display: grid; place-items: center; aspect-ratio: 1; }
+.heatmap-cell i { width: calc(var(--size) * 100%); height: calc(var(--size) * 100%); border-radius: 50%; background: var(--mark); opacity: var(--shade); }
+.heatmap-cell.none i { width: 22%; height: 22%; background: var(--muted); opacity: 0.45; }
+.heatmap-cell.peak i { background: var(--star); opacity: 1; box-shadow: 0 0 0 2px var(--card), 0 0 0 3px var(--star); }
+.heatmap-foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: var(--space-2) var(--space-5); margin-top: var(--space-3); }
+.heatmap-foot p { font-size: var(--fs-sm); }
+.heatmap-foot > p:first-child { flex: 1 1 300px; }
+.heatmap-legend { display: flex; align-items: center; gap: 4px; }
+.heatmap-legend .heatmap-cell { width: 14px; }
+.heatmap-peak-key { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--star); vertical-align: 0; }
+@media (max-width: 640px) {
+  .heatmap { padding: var(--space-3) var(--space-2); }
+  .heatmap-row { grid-template-columns: 3.4em repeat(31, minmax(0, 1fr)) 2.4em; column-gap: 1px; }
+  .heatmap-head { font-size: 10px; }
+  .heatmap-month { font-size: var(--fs-xs); }
+}
+.activity-summary { font-size: var(--fs-md); }
+.latest { margin-top: var(--space-5); padding: 0; list-style: none; font-size: var(--fs-sm); }
+.latest li { padding: var(--space-2) 0; border-top: 1px solid var(--rule); }
+.latest code { font-size: var(--fs-xs); }
+.heatmap-sub { white-space: nowrap; }
+.heatmap-wait { min-height: 3.25rem; }
+@media (max-width: 640px) {
+  .heatmap-sub { display: block; }
+  .heatmap-dot { display: none; }
+  .heatmap-wait { min-height: 9rem; }
+}
+
+/* Languages and activity: side by side on wide screens */
+.st-pair .bar-row.st-wait .bar-name { color: var(--muted); }
+.latest .st-wait { border-top: 1px solid var(--rule); }
+@media (min-width: 720px) {
+  .figures { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .figures > div:last-child:nth-child(odd) { grid-column: auto; }
+}
+@media (min-width: 1100px) {
+  .st-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 48px; }
+}

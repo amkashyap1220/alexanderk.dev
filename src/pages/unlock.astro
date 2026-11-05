@@ -1,25 +1,36 @@
 ---
+// /unlock: the code box for the private section, as a page. The lock icon in
+// every page's footer opens the same box in place (BaseLayout's dialog).
+// The Worker checks the code (worker/auth.js); js/unlock.js fills in where to
+// go next and any error. The layout is in src/styles/private.css.
 import BaseLayout from "../layouts/BaseLayout.astro";
+import "../styles/editorial.css";
+import "../styles/private.css";
 ---
 <BaseLayout
   title="Unlock · Alexander Kashyap"
   description="Enter the code to open the private section."
   noindex
 >
-  <section class="hero">
-    <div class="narrow">
-      <p class="eyebrow">Private</p>
-      <h1>Enter the code</h1>
+<div class="gutter ed-page">
+<div class="shell">
+  <div class="lock-page">
+    <header class="page-head">
+      <p class="kicker"><span class="k">Private</span></p>
+      <h1 class="page-hed">Enter the code</h1>
+      <p class="page-dek">The private section holds a few personal projects, like my workout log, so it&rsquo;s behind a code. Everything else on the site is open to everyone.</p>
+    </header>
 
-      <!-- Checked by the Cloudflare Worker (worker/auth.js); js/unlock.js fills in where to go next and any error.
-           The header's lock icon opens the same box in place. -->
-      <form class="unlock-form" method="post" action="/unlock">
-        <p class="unlock-error" id="unlock-error" role="alert" hidden></p>
-        <input type="hidden" name="next" id="unlock-next" value="/private/">
-        <input id="unlock-code" name="code" type="password" inputmode="numeric" autocomplete="off" aria-label="Code" placeholder="Code" required autofocus>
-        <button class="btn primary" type="submit">Unlock</button>
-      </form>
-    </div>
-  </section>
+    <form class="unlock-form" method="post" action="/unlock">
+      <label class="unlock-label" for="unlock-code">Code</label>
+      <input id="unlock-code" name="code" type="password" inputmode="numeric" autocomplete="off" aria-describedby="unlock-error" required autofocus>
+      <button class="btn primary" type="submit">Unlock</button>
+      <p class="unlock-error" id="unlock-error" role="alert" hidden></p>
+      <input type="hidden" name="next" id="unlock-next" value="/private/">
+    </form>
 
+    <p class="lock-back"><a class="h-more" href="/">Go to the homepage</a></p>
+  </div>
+</div>
+</div>
 </BaseLayout>

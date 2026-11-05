@@ -22,7 +22,7 @@ import Walkthrough from "../../components/Walkthrough.astro";
           <thead><tr><th>File</th><th>What it does</th></tr></thead>
           <tbody>
             <tr><td><code>src/layouts/</code></td><td>The page shell (head, header, footer) and the project and post layouts</td></tr>
-            <tr><td><code>src/pages/</code></td><td>One file per page: Home, Work, Research, Stats</td></tr>
+            <tr><td><code>src/pages/</code></td><td>One file per page: Home, About, Work, Research, Stats, plus the sitemap</td></tr>
             <tr><td><code>src/data/</code></td><td>The list of projects and research posts that the pages and lists are built from</td></tr>
             <tr><td><code>src/components/</code></td><td>Pieces shared by several pages, and the Svelte components behind the home value map and the fitness dashboard</td></tr>
             <tr><td><code>public/css/style.css</code>, <code>src/styles/</code></td><td>The styling every page shares, and each page’s own layout</td></tr>
@@ -96,7 +96,7 @@ body { color: var(--ink); }</code></pre>
 }</code></pre>
 
         <h3>6. Shipping changes</h3>
-        <p>The repo is connected to Cloudflare, so <b>every push to <code>main</code> deploys the site</b> automatically. Cloudflare runs <code>npx wrangler deploy</code>, which builds the pages with Astro and uploads them along with the Worker. It's live in under a minute.</p>
+        <p>The repo is connected to Cloudflare, so <b>every push to <code>main</code> deploys the site</b> automatically. Cloudflare runs <code>npx wrangler deploy</code>, which first runs the tests (they build the site and check every page and link), then builds the pages with Astro and uploads them along with the Worker. If a test fails, nothing is deployed. It's live in under a minute.</p>
         <p>Changes don't go straight to <code>main</code>, though. Each one goes on its own branch with a pull request. Cloudflare builds a preview of the branch, and it gets merged once it looks right:</p>
 <pre is:raw><code class="language-bash">git checkout -b add-new-project     # new branch
 # ...make changes...

@@ -24,6 +24,7 @@ const github = `https://github.com/${p.repo}`;
   title={`${p.name} · Alexander Kashyap`}
   description={p.description ?? `${p.name}: ${p.summary}`}
   path={`/projects/${p.slug}`}
+  ogImage={p.preview ? { src: `/projects/${p.slug}.jpg`, alt: p.preview } : undefined}
   current="projects"
 >
 <div class="gutter ed-page">
