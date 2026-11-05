@@ -1,5 +1,6 @@
 ---
-// The Work page, laid out like the Research page: Featured work, then More work.
+// The Repositories page (at /projects/), laid out like the Research page:
+// Featured, then More repositories.
 // The tiers come from src/data/projects.ts (each project's `tier`). Featured
 // projects get a picture; under More work, the "more" tier gets a line and a
 // status each, then the archive tier a list with dotted leaders. The layout
@@ -22,7 +23,7 @@ const site = project("alexanderk-dev");
 const href = (p: (typeof projects)[number]) => p.kind === "Research" && p.writeup ? p.writeup.href : `/projects/${p.slug}`;
 ---
 <BaseLayout
-  title="Work · Alexander Kashyap"
+  title="Repositories · Alexander Kashyap"
   description="Projects by Alexander Kashyap: a voice-to-invoice app for the PayPal AI Hackathon, a map of the best-value zip codes around Chicago, this site, and more, newest first."
   path="/projects/"
   current="projects"
@@ -30,14 +31,14 @@ const href = (p: (typeof projects)[number]) => p.kind === "Research" && p.writeu
 <div class="gutter ed-page">
 <div class="shell">
   <header class="page-head">
-    <p class="kicker"><span class="k">Work</span> <span>{count} projects</span> <span>{first}&ndash;now</span></p>
+    <p class="kicker"><span class="k">Repositories</span> <span>{count} projects</span> <span>{first}&ndash;now</span></p>
     <h1 class="page-hed">Things I&rsquo;ve built</h1>
     <p class="page-dek">Apps, research and coursework, newest first. The three at the top are the ones I&rsquo;d show you first.</p>
   </header>
 
   <section class="h-section" aria-labelledby="feat-h">
     <div class="section-head">
-      <h2 id="feat-h" class="h-label">Featured work</h2>
+      <h2 id="feat-h" class="h-label">Featured repositories</h2>
     </div>
 
     <article class="feat" aria-labelledby="tm-h">
@@ -88,7 +89,7 @@ const href = (p: (typeof projects)[number]) => p.kind === "Research" && p.writeu
 
   <section class="h-section" aria-labelledby="more-h">
     <div class="section-head">
-      <h2 id="more-h" class="h-label">More work</h2>
+      <h2 id="more-h" class="h-label">More repositories</h2>
     </div>
     <ul class="more">
       {more.map((p) => (

@@ -22,7 +22,7 @@ const cards = [
     kicker: ["Software developer", "Chicago area"],
     name: "Alexander Kashyap",
     dek: "I build software, dig into data, and share what I learn.",
-    foot: ["Work", "Research", "About"],
+    foot: ["Repositories", "Lab", "About"],
   },
   {
     out: "projects/open-tradesman.jpg",

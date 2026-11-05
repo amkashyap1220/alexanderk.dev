@@ -20,22 +20,22 @@ const built = (slug: string) => projects.find((x) => x.writeup?.href === `/resea
 const leadBuilt = built(lead.slug);
 ---
 <BaseLayout
-  title="Research · Alexander Kashyap"
-  description="Research by Alexander Kashyap: questions answered with public data, each with interactive charts and the data and code behind them."
+  title="Lab · Alexander Kashyap"
+  description="Alexander Kashyap's lab: interactive maps and charts built from public data, plus small games and experiments, all in your browser."
   path="/research/"
   current="research"
 >
 <div class="gutter ed-page">
 <div class="shell">
   <header class="page-head">
-    <p class="kicker"><span class="k">Research</span> <span>{posts.length} published</span></p>
-    <h1 class="page-hed">Questions I chase through public data</h1>
-    <p class="page-dek">Each one is an interactive map or set of charts you can explore, with the data and code behind it.</p>
+    <p class="kicker"><span class="k">Lab</span> <span>{posts.length} published</span></p>
+    <h1 class="page-hed">Things to explore</h1>
+    <p class="page-dek">Interactive maps and charts built from public data, plus small games and experiments. Everything runs right in your browser.</p>
   </header>
 
   <section class="h-section" aria-labelledby="lead-h">
     <div class="section-head">
-      <h2 id="lead-h" class="h-label">Featured research</h2>
+      <h2 id="lead-h" class="h-label">Featured</h2>
     </div>
     <article class="feat" aria-labelledby="lead-t">
       <div class="feat-text">
@@ -59,7 +59,7 @@ const leadBuilt = built(lead.slug);
   {rest.length > 0 && (
     <section class="h-section" aria-labelledby="more-h">
       <div class="section-head">
-        <h2 id="more-h" class="h-label">More research</h2>
+        <h2 id="more-h" class="h-label">More in the lab</h2>
       </div>
       <ul class="inv-list">
         {rest.map((p) => {

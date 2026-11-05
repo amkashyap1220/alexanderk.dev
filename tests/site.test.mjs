@@ -46,8 +46,8 @@ test("every page has a title, a description and the site header and footer", () 
     assert.match(html, /class="icon-btn unlock-link" href="\/unlock"/, file + ": footer lock icon");
     // The main nav: Work, Research and About, in a <nav> every page has (the ☰ menu it replaced is gone)
     const nav = html.match(/<nav class="site-nav" aria-label="Main">([\s\S]*?)<\/nav>/)?.[1] ?? "";
-    assert.match(nav, /<a href="\/projects\/"[^>]*>Work<\/a>/, file + ": nav Work");
-    assert.match(nav, /<a href="\/research\/"[^>]*>Research<\/a>/, file + ": nav Research");
+    assert.match(nav, /<a href="\/projects\/"[^>]*>Repositories<\/a>/, file + ": nav Repositories");
+    assert.match(nav, /<a href="\/research\/"[^>]*>Lab<\/a>/, file + ": nav Lab");
     assert.match(nav, /<a href="\/about"[^>]*>About<\/a>/, file + ": nav About");
     assert.match(html, /<a class="cta cta-solid" href="\/resume\.pdf">/, file + ": Resume in the header");
     // The unlock box: a visible title, a close button, and a labeled field tied to its error message
@@ -68,10 +68,10 @@ test("the resume is there to download, and the homepage shows the email address"
   assert.match(home, /href="mailto:alexander\.kashyap@gmail\.com"/, "a mailto link");
 });
 
-test("the Work page lists every project under Featured work and More work, and every project page has its facts", () => {
+test("the Repositories page lists every project under Featured repositories and More repositories, and every project page has its facts", () => {
   const slugs = all(fs.readFileSync("src/data/projects.ts", "utf8"), /slug: "([^"]+)"/g);
   const work = pages.find((x) => x.file === "projects/index.html").html;
-  for (const tier of ["Featured work", "More work"]) assert.match(work, new RegExp(`class="h-label">${tier}<`), "Work: " + tier);
+  for (const tier of ["Featured repositories", "More repositories"]) assert.match(work, new RegExp(`class="h-label">${tier}<`), "Repositories: " + tier);
   assert.match(work, new RegExp(`<span>${slugs.length} projects</span>`), "Work: the project count");
   for (const slug of slugs) {
     // A research project is listed by its write-up, which links on to the project page
@@ -89,7 +89,7 @@ test("the Work page lists every project under Featured work and More work, and e
 test("the Research page lists every post, and every post has its byline, findings and charts' numbers", () => {
   const slugs = all(fs.readFileSync("src/data/research.ts", "utf8"), /slug: "([^"]+)"/g);
   const index = pages.find((x) => x.file === "research/index.html").html;
-  assert.match(index, /class="h-label">Featured research</, "Research: featured research");
+  assert.match(index, /class="h-label">Featured</, "Lab: featured");
   for (const slug of slugs) {
     assert.ok(index.includes(`href="/research/${slug}"`), `Research: a link to ${slug}`);
     const page = pages.find((x) => x.file === `research/${slug}.html`)?.html;

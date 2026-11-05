@@ -406,7 +406,7 @@ main .hv { padding-block: var(--space-5); }
 /* ---------- 10. Wider screens and phones ---------- */
 /* Phones (the narrowest): the compact header's links get a little smaller */
 @media (max-width: 379.98px) {
-  .topbar-links, .topbar .sections, .topbar .nav-actions { gap: 0 12px; }
+  .topbar-links, .topbar .sections, .topbar .nav-actions { gap: 0 10px; }
   .topbar .sections a, .topbar .nav-actions .cta { font-size: 0.875rem; }
 }
 
@@ -455,10 +455,12 @@ main .hv { padding-block: var(--space-5); }
   .site-footer ul { flex-direction: column; align-items: flex-start; }
 }
 
-/* Small tablets: a little tighter, so the name, nav and buttons fit one row */
+/* Small tablets: a little tighter, so the name, nav and buttons fit one row
+   (the "PDF" tag on the Resume button drops out here) */
 @media (min-width: 720px) and (max-width: 959.98px) {
-  .brand { font-size: 1.375rem; }
+  .brand { font-size: 1.25rem; }
   .topbar .sections { gap: 0 20px; }
+  .topbar .nav-actions .mono { display: none; }
 }
 
 /* Desktop: the content lines up with the header's edges, up to 1368px wide */
