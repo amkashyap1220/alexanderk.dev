@@ -68,6 +68,7 @@
   --sans: "Libre Franklin", "Libre Franklin fallback", Arial, sans-serif;
   --mono: "IBM Plex Mono", "IBM Plex Mono fallback", ui-monospace, Menlo, Consolas, monospace;
   --fs-body: 1rem;
+  --head-h: 52px;            /* how much of the header stays on screen as the page scrolls */
   --col-pad: 24px;
   color-scheme: dark;
 
@@ -155,7 +156,8 @@ code { font-size: 0.875em; }
 .muted { color: var(--muted); }
 .mono { font-family: var(--mono); font-weight: 500; font-size: 0.75rem; line-height: 1.45; letter-spacing: 0.05em; text-transform: uppercase; }
 .nw { white-space: nowrap; }
-[id] { scroll-margin-top: 16px; }
+/* Jumping to a section leaves room for the header, which stays at the top */
+html { scroll-padding-top: calc(var(--head-h) + 16px); }
 
 /* Dropdowns: the open option list is drawn by the browser, so give it the colors too */
 select { background-color: var(--field); color: var(--ink); }
@@ -228,6 +230,12 @@ main .hv { padding-block: var(--space-5); }
 .mast-tagline { max-width: 34em; margin: 12px auto 16px; font-family: var(--serif); font-size: clamp(1.1875rem, 1rem + 0.8vw, 1.5rem); line-height: 1.3; text-align: center; text-wrap: balance; }
 .navrow { display: grid; align-items: center; gap: 4px; padding-block: 4px 12px; border-top: 1px solid var(--ink); border-bottom: 4px double var(--ink); }
 .dateline { display: none; margin: 0; color: var(--muted); }
+
+/* The header stays at the top of the screen as the page scrolls, on a solid
+   strip so the photo and the page don't show through it. On phones only its
+   row of links stays; the name above them scrolls away (the negative top). */
+.site-header { position: sticky; top: 0; z-index: 20; background: var(--night); }
+.site-header:not(.masthead-bar) { top: -53px; }
 
 /* Every other page: a compact header, the name (home link) and the same nav */
 .topbar { display: grid; grid-template-columns: minmax(0, 1fr); align-items: center; padding-top: 8px; border-bottom: 4px double var(--ink); }
@@ -411,7 +419,24 @@ main .hv { padding-block: var(--space-5); }
   .section-intro { margin-bottom: var(--space-6); }
 }
 
+/* Phones: the homepage's nav row matches the other pages' one row of links,
+   so it stays short while it sits at the top of the screen */
+@media (max-width: 719.98px) {
+  .navrow { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0 16px; padding-block: 0; border-top: 0; }
+  .navrow .sections { justify-content: flex-start; gap: 0 20px; }
+  .navrow .nav-actions { display: flex; gap: 0 20px; }
+  .navrow .nav-actions .cta { width: auto; min-height: 44px; padding: 0; border: 0; background: transparent; color: var(--ink); font-size: 1rem; text-shadow: inherit; }
+  .navrow .nav-actions .cta:hover { background: transparent; color: var(--ink); text-decoration: underline; text-decoration-color: var(--accent); }
+  .navrow .nav-actions .mono { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+}
+@media (max-width: 379.98px) {
+  .navrow, .navrow .sections, .navrow .nav-actions { gap: 0 12px; }
+  .navrow .sections a, .navrow .nav-actions .cta { font-size: 0.875rem; }
+}
+
 @media (min-width: 720px) {
+  :root { --head-h: 64px; }
+  .site-header:not(.masthead-bar) { top: 0; }
   .shell { padding-inline: 16px; }
   .sky-inner { min-height: 440px; }
   .dateline { display: block; }
