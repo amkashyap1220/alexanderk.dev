@@ -1,13 +1,16 @@
 ---
-// The project's README, filled in from the site's GitHub data (js/github.js)
+// "From the repo": the project's README from GitHub, folded so it doesn't
+// push the write-up down. js/github.js loads it from the site's GitHub data
+// the first time it's opened; without scripts it links to GitHub instead.
 interface Props { repo: string }
 const { repo } = Astro.props;
 ---
-<section class="section">
-  <div class="narrow">
-    <h2 class="section-title">README</h2>
-    <div class="prose readme" aria-live="polite" aria-busy="true" data-readme={repo}>
-      <p class="muted">Loading README from GitHub…</p>
+<section class="cs-sec repo" aria-labelledby="repo-h">
+  <h2 id="repo-h" class="cs-h2">From the repo</h2>
+  <details class="repo-fold">
+    <summary><span class="when-closed">Show the README</span><span class="when-open">Hide the README</span> <span class="repo-name mono">{repo}</span></summary>
+    <div class="prose readme" aria-live="polite" data-readme={repo}>
+      <p class="muted"><a href={`https://github.com/${repo}#readme`}>Read the README on GitHub</a>.</p>
     </div>
-  </div>
+  </details>
 </section>

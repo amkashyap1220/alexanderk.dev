@@ -1,0 +1,114 @@
+/* ==========================================================================
+   The Work page (src/pages/projects/index.astro) and every project page
+   (src/layouts/ProjectLayout.astro). The labels, headlines, fact lists,
+   archive list and Fig. 1 they share with the homepage are in editorial.css.
+
+   Work page: a page head, then three tiers. Featured projects put their
+   text beside a figure from 960px; More work is a list of rows from 720px.
+   Project pages: a head, then the facts and the write-up, side by side
+   from 1100px. Reading text stays under about 38em.
+   ========================================================================== */
+
+.ed-page { padding-block: 32px 16px; }
+
+/* ---------- Page head (Work) ---------- */
+.page-hed { font-family: var(--serif); font-weight: 600; font-size: clamp(2.25rem, 1.6rem + 2.6vw, 3.5rem); line-height: 1.04; letter-spacing: -0.018em; }
+.page-dek { margin-top: 12px; max-width: 34em; font-family: var(--serif); font-size: clamp(1.125rem, 1rem + 0.5vw, 1.3125rem); line-height: 1.45; color: var(--muted); }
+
+.ed-page .section-head .credit { font-size: 0.875rem; }
+
+/* ---------- Featured ---------- */
+.feat + .feat { border-top: 1px solid var(--rule); margin-top: 32px; padding-top: 32px; }
+.feat-hed { font-size: clamp(1.5rem, 1.25rem + 1vw, 2rem); line-height: 1.1; letter-spacing: -0.01em; }
+.feat .q { max-width: 32em; }
+.feat .h-text { line-height: 1.6; max-width: 36em; }
+.feat-links { display: flex; flex-wrap: wrap; gap: 0 24px; }
+.feat-fig { margin-top: 24px; }
+.feat-fig.pic { margin-bottom: 0; }
+.feat-fig .flow { margin-top: 0; }
+.feat .spec { max-width: 34em; }
+
+/* ---------- More work ---------- */
+.more { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--rule); }
+.more li { display: grid; gap: 2px; padding: 12px 0; border-bottom: 1px solid var(--rule); }
+.more-name { font-family: var(--serif); font-weight: 600; font-size: 1.375rem; line-height: 1.2; }
+.more-name a { text-decoration: none; }
+.more-name a:hover { text-decoration: underline; text-decoration-color: var(--accent); text-decoration-thickness: 2px; }
+.more-line { font-family: var(--serif); font-size: 1.125rem; line-height: 1.35; color: var(--muted); }
+.more-sub { margin-left: 8px; font-family: var(--sans); font-size: 0.875rem; font-weight: 600; color: var(--ink); white-space: nowrap; }
+.more-sub::after { content: " \2192"; content: " \2192" / ""; color: var(--accent); }
+.more-meta { color: var(--muted); font-size: 0.75rem; letter-spacing: 0.05em; text-transform: uppercase; }
+.more-meta span { white-space: nowrap; }
+.more-meta span:not(:last-child)::after { content: " \00B7"; content: " \00B7" / ""; }
+
+/* ---------- Project page ---------- */
+.cs-head { padding-bottom: 24px; border-bottom: 4px double var(--ink); }
+.cs-head .kicker a { color: inherit; }
+.cs-hed { font-family: var(--serif); font-weight: 600; font-size: clamp(2.125rem, 1.5rem + 2.6vw, 3.25rem); line-height: 1.05; letter-spacing: -0.016em; max-width: 22em; }
+.cs-hed .proj { font-size: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem); margin-bottom: 8px; }
+.cs-hed .t { display: block; }
+.cs-dek { margin-top: 12px; max-width: 34em; font-family: var(--serif); font-size: clamp(1.125rem, 1rem + 0.5vw, 1.3125rem); line-height: 1.45; color: var(--muted); }
+
+.cs-facts { padding-top: 16px; }
+.cs-facts .spec { border-top: 0; }
+.cs-facts .spec div:first-child { border-top: 0; }
+.cs-links { margin: 0; padding: 0; list-style: none; }
+.cs-links li + li { margin-top: 4px; }
+
+.cs-body { padding-top: 24px; min-width: 0; }
+.cs-lede { max-width: 34em; font-family: var(--serif); font-size: 1.1875rem; line-height: 1.5; }
+.cs-callout { max-width: 38em; margin-top: 16px; padding: 12px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); color: var(--muted); }
+.cs-callout .h-more { margin-top: 0; }
+
+.cs-sec { margin-top: 48px; }
+.cs-h2 { margin-bottom: 16px; padding-top: 12px; border-top: 1px solid var(--ink); font-family: var(--serif); font-weight: 600; font-size: 1.625rem; line-height: 1.2; letter-spacing: -0.008em; }
+.cs-body .prose > :is(p, ul, ol, blockquote, h3, h4) { max-width: 38em; }
+.cs-body .section-intro { max-width: 38em; margin-bottom: 24px; color: var(--muted); }
+.cs-body .video { max-width: 52rem; }
+.cs-body .flow { border-top: 0; padding-top: 0; margin-top: 0; }
+
+/* Key decisions: a numbered list with a serif lead-in */
+.decisions { margin: 0; padding: 0; list-style: none; counter-reset: decision; max-width: 38em; }
+.decisions li { counter-increment: decision; position: relative; padding: 16px 0 16px 40px; border-top: 1px solid var(--rule); }
+.decisions li:last-child { border-bottom: 1px solid var(--rule); }
+.decisions li::before { content: counter(decision, decimal-leading-zero); position: absolute; left: 0; top: 20px; font: 500 0.75rem/1.5 var(--mono); letter-spacing: 0.05em; color: var(--accent); }
+.decisions h3 { font-family: var(--serif); font-weight: 600; font-size: 1.25rem; line-height: 1.25; margin-bottom: 6px; }
+.decisions p { line-height: 1.6; }
+.cs-spec { max-width: 38em; border-bottom: 1px solid var(--rule); }
+
+/* From the repo: the README, folded */
+.repo-fold > summary { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; min-height: 44px; padding: 10px 0; cursor: pointer; font-weight: 600; list-style: none; }
+.repo-fold > summary::-webkit-details-marker { display: none; }
+.repo-fold > summary::before { content: "+"; content: "+" / ""; display: inline-block; width: 1ch; font-family: var(--mono); color: var(--accent); }
+.repo-fold[open] > summary::before { content: "\2212"; content: "\2212" / ""; }
+.repo-fold > summary:hover .when-closed, .repo-fold > summary:hover .when-open { text-decoration: underline; text-decoration-color: var(--accent); }
+.repo-fold .when-open, .repo-fold[open] .when-closed { display: none; }
+.repo-fold[open] .when-open { display: inline; }
+.repo-name { color: var(--muted); font-weight: 500; font-size: 0.75rem; letter-spacing: 0.02em; overflow-wrap: anywhere; }
+.repo-fold .readme { margin-top: 8px; padding: 20px; border: 1px solid var(--rule); background: var(--paper); text-shadow: none; }
+
+.cs-back { margin-top: 48px; padding-top: 12px; border-top: 1px solid var(--rule); }
+.cs-back .h-more { margin-top: 0; }
+
+@media (min-width: 720px) {
+  .more li { grid-template-columns: minmax(0, 4fr) minmax(0, 6fr) minmax(0, 3fr); column-gap: var(--col-pad); align-items: baseline; padding: 14px 0; }
+  .more-meta { text-align: right; }
+  .ed-page .archive ol { column-count: 2; }
+}
+
+@media (min-width: 960px) {
+  .feat { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); column-gap: 48px; align-items: start; }
+  .feat-fig { margin-top: 4px; }
+}
+
+@media (min-width: 1100px) {
+  .cs-grid { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 9fr); align-items: start; }
+  .cs-facts { position: sticky; top: 16px; padding-right: 32px; }
+  .cs-body { padding-top: 16px; padding-left: 48px; border-left: 1px solid var(--rule); }
+  .cs-facts .spec div { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+}
+
+@media (min-width: 1180px) {
+  .ed-page { padding-top: 40px; }
+  .ed-page .archive ol { column-count: 3; column-gap: 48px; }
+}

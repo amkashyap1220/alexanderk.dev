@@ -1,9 +1,12 @@
 /* ==========================================================================
-   GitHub numbers and READMEs for the project pages (needs js/gh.js).
+   READMEs for the project pages (needs js/gh.js), and GitHub numbers for
+   any page that asks for them.
 
      <b data-gh="owner/repo" data-field="stars|commits|language|updated">--</b>
-     <div data-readme="owner/repo">Loading…</div>
+     <div data-readme="owner/repo">...</div>
 
+   A README inside a folded <details> ("From the repo") loads the first time
+   it's opened, so the page doesn't download the GitHub data until then.
    Anything left as "--" means that repo isn't in /data/github.json (yet).
    ========================================================================== */
 
@@ -48,8 +51,8 @@
     });
   }
 
-  // The README sits under the page's own "README" heading (an <h2>), so its
-  // headings move down two levels (h1 -> h3) to keep the page outline in order
+  // The README sits under the page's own "From the repo" heading (an <h2>), so
+  // its headings move down two levels (h1 -> h3) to keep the page outline in order
   function demoteHeadings(box) {
     box.querySelectorAll("h1, h2, h3, h4").forEach((h) => {
       const level = Math.min(6, Number(h.tagName[1]) + 2);
@@ -60,8 +63,11 @@
     });
   }
 
-  document.querySelectorAll("[data-readme]").forEach((box) => {
+  function load(box) {
     const name = box.dataset.readme;
+    box.setAttribute("aria-busy", "true");
+    box.textContent = "";
+    box.append(window.GH.el("p", "muted", "Loading the README from GitHub\u2026"));
     readme(name)
       .then((html) => {
         box.innerHTML = html;   // sanitized by GitHub's renderer
@@ -77,5 +83,12 @@
         box.append(p);
       })
       .finally(() => box.setAttribute("aria-busy", "false"));
+  }
+
+  document.querySelectorAll("[data-readme]").forEach((box) => {
+    const fold = box.closest("details");
+    if (!fold) return load(box);
+    if (fold.open) return load(box);
+    fold.addEventListener("toggle", () => { if (fold.open) load(box); }, { once: true });
   });
 })();
