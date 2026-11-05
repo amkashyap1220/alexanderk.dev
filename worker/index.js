@@ -87,7 +87,7 @@ async function refresh(env) {
       repositories(first: 100, ownerAffiliations: OWNER, privacy: PUBLIC, isFork: false, orderBy: { field: NAME, direction: ASC }) { nodes { ${fields} } }
       recent: repositories(first: 6, ownerAffiliations: OWNER, privacy: PUBLIC, isFork: false, orderBy: { field: PUSHED_AT, direction: DESC }) {
         nodes { nameWithOwner defaultBranchRef { name target { ... on Commit {
-          history(first: 10) { nodes { oid messageHeadline committedDate url parents { totalCount } } }
+          history(first: 10) { nodes { oid messageHeadline committedDate url parents(first: 1) { totalCount } } }
         } } } }
       }
     }
