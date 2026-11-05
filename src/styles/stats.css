@@ -1,7 +1,7 @@
 /* ==========================================================================
    GitHub Stats (src/pages/stats/index.astro). The page head and section
    heads are in editorial.css; the language bars and the toggle buttons
-   come from public/css/style.css. js/stats.js and
+   come from site.css. js/stats.js and
    components/stats/Contributions.svelte fill everything in; the page draws
    each box at its final size first, so nothing moves when they do.
    ========================================================================== */

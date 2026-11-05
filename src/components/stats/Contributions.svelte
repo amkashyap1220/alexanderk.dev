@@ -28,7 +28,10 @@
 
   // Dates stay "YYYY-MM-DD" strings, done in UTC so time zones never shift a day
   const toDate = (s) => new Date(s + "T00:00:00Z");
-  const fmt = (s, opts) => toDate(s).toLocaleDateString("en-US", { timeZone: "UTC", ...opts });
+  // One formatter for each set of options, made once: making a new one for each of
+  // the year's days (toLocaleDateString does) took most of the heat map's drawing time
+  const formats = {};
+  const fmt = (s, opts) => (formats[JSON.stringify(opts)] ??= new Intl.DateTimeFormat("en-US", { timeZone: "UTC", ...opts })).format(toDate(s));
   const pad = (n) => String(n).padStart(2, "0");
 
   // The last 12 months, this one included: [{ key: "2026-10", name, days: [{ date, count, future }], total }]

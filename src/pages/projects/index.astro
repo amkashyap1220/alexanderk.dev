@@ -61,7 +61,7 @@ const href = (p: (typeof projects)[number]) => p.kind === "Research" && p.writeu
         <p class="feat-links"><a class="h-more" href={hv.writeup!.href}>Explore the map</a> <a class="h-more" href={`/projects/${hv.slug}`}>How I built it</a></p>
       </div>
       <figure class="pic feat-fig">
-        <img src="/img/home/chicago-home-value.webp" width="1200" height="630" loading="lazy" decoding="async" alt="Map of Chicago-area zip codes colored from red (low score) to green (high score), with the 20 best-value zips outlined in blue">
+        <img src="/img/home/chicago-home-value.webp" srcset="/img/home/chicago-home-value-640.webp 640w, /img/home/chicago-home-value.webp 1200w" sizes="(min-width: 1024px) 742px, (min-width: 720px) calc(100vw - 64px), calc(100vw - 32px)" width="1200" height="630" loading="lazy" decoding="async" alt="Map of Chicago-area zip codes colored from red (low score) to green (high score), with the 20 best-value zips outlined in blue">
         <figcaption>Red scores low, green high. The 20 best-value zips are outlined in blue.</figcaption>
       </figure>
     </article>

@@ -1,6 +1,6 @@
 /* ==========================================================================
    Fitness dashboard (src/components/fitness/). Uses the site's tokens
-   from css/style.css; only what this page adds is here.
+   from src/styles/site.css; only what this page adds is here.
 
    Series colors: Push / Pull / Legs and treadmill / bike / elliptical share
    three slots, checked for color-blind separation on both page colors.

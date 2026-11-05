@@ -1,10 +1,11 @@
 # How long browsers may keep each kind of file (Cloudflare reads this file for
-# the site's static files). Pages, css/style.css, the scripts in js/ and the
-# data files keep Cloudflare's default (checked again on every visit), so a
-# new deploy shows up straight away.
+# the site's static files). Pages, the scripts in js/ and the data files keep
+# Cloudflare's default (checked again on every visit), so a new deploy shows
+# up straight away.
 
-# Astro's bundles have a hash of their contents in their names: a changed file
-# gets a new name, so these never need checking again
+# Astro's bundles, the shared stylesheet among them, have a hash of their
+# contents in their names: a changed file gets a new name, so these never need
+# checking again
 /_astro/*
   Cache-Control: public, max-age=31536000, immutable
 

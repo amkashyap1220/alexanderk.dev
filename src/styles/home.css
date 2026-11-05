@@ -1,7 +1,7 @@
 /* ==========================================================================
    The homepage's own layout (src/pages/index.astro). The type, colors,
    masthead, nav and footer it shares with every page are in
-   public/css/style.css; the labels, headlines, lists and Fig. 1 it shares
+   src/styles/site.css; the labels, headlines, lists and Fig. 1 it shares
    with the Work pages are in src/styles/editorial.css.
 
    Phones get one column; tablets (720px+) pair things up; desktop (1180px+)

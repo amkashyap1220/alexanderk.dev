@@ -1,8 +1,7 @@
 /* ==========================================================================
    The unlock page (src/pages/unlock.astro) and the private section's front
    page (src/pages/private/index.astro). The code box itself (.unlock-form)
-   is in public/css/style.css, since the footer's lock icon opens it on
-   every page.
+   is in site.css, since the footer's lock icon opens it on every page.
    ========================================================================== */
 
 .lock-page { max-width: 36rem; }

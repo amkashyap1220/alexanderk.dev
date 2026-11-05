@@ -25,7 +25,7 @@ import Walkthrough from "../../components/Walkthrough.astro";
             <tr><td><code>src/pages/</code></td><td>One file per page: Home, About, Work, Research, Stats, plus the sitemap</td></tr>
             <tr><td><code>src/data/</code></td><td>The list of projects and research posts that the pages and lists are built from</td></tr>
             <tr><td><code>src/components/</code></td><td>Pieces shared by several pages, and the Svelte components behind the home value map and the fitness dashboard</td></tr>
-            <tr><td><code>public/css/style.css</code>, <code>src/styles/</code></td><td>The styling every page shares, and each page’s own layout</td></tr>
+            <tr><td><code>src/styles/</code></td><td>The styling every page shares (<code>site.css</code>), and each page’s own layout</td></tr>
             <tr><td><code>public/fonts/</code></td><td>The three typefaces, served from the site itself</td></tr>
             <tr><td><code>public/js/gh.js</code>, <code>github.js</code>, <code>stats.js</code></td><td>Fill in the READMEs and the Stats page</td></tr>
             <tr><td><code>worker/index.js</code></td><td>The Cloudflare script that fetches from GitHub</td></tr>
@@ -34,7 +34,7 @@ import Walkthrough from "../../components/Walkthrough.astro";
         </table>
 
         <h3>3. Styling</h3>
-        <p>Every color and font is defined once, as a <b>CSS variable</b> at the top of <code>style.css</code>. The rest of the stylesheet only uses the variables, so changing a color is one edit:</p>
+        <p>Every color and font is defined once, as a <b>CSS variable</b> at the top of <code>site.css</code>. The rest of the stylesheet only uses the variables, so changing a color is one edit:</p>
 <pre is:raw><code class="language-css">:root {
   --paper: #151412;    /* solid panels: charts, code, tables */
   --ink: #EDE9E1;      /* text */

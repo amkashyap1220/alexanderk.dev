@@ -7,6 +7,9 @@
 // the compact header (the name as the home link, then the nav).
 import { projects } from "../data/projects";
 import { site } from "../data/person";
+// The styles every page shares. Linked by hand, first in <head>, so every page's
+// own styles come after it; Astro still minifies it and puts a hash in its name.
+import siteCss from "../styles/site.css?url";
 
 interface Props {
   title: string;              // the whole <title>, e.g. "Projects · Alexander Kashyap"
@@ -63,8 +66,11 @@ const dateline = `${new Date().toLocaleDateString("en-US", { month: "short", yea
   <link rel="icon" href="/favicon-dark.svg" type="image/svg+xml">
   <link rel="preload" href="/fonts/newsreader-display-600.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/libre-franklin-400.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/css/style.css">
-  <script is:inline src="/js/signed-in.js"></script>
+  <link rel="stylesheet" href={siteCss}>
+  {/* Shows the Private tab (and hides the lock) once it's unlocked. It reads the
+       signed_in=1 cookie the unlock code sets (worker/auth.js), which only changes
+       what's shown. Inline, so it runs before the page paints, with no extra request. */}
+  <script is:inline>if (/(?:^|;\s*)signed_in=1(?:;|$)/.test(document.cookie)) document.documentElement.classList.add("signed-in");</script>
   <slot name="head" />
 </head>
 <body>
@@ -152,7 +158,7 @@ const dateline = `${new Date().toLocaleDateString("en-US", { month: "short", yea
       <div class="foot-bottom">
         <p class="mono">© {year} Alexander Kashyap</p>
         <p class="foot-private">
-          {/* "Private" shows once unlocked (js/signed-in.js); the lock hides then */}
+          {/* "Private" shows once unlocked (the script in <head>); the lock hides then */}
           <a class="nav-private" href="/private/" aria-current={here("private")}>Private</a>
           <a class="icon-btn unlock-link" href="/unlock" aria-label="Unlock the private section" data-unlock>
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false"><rect x="3" y="7" width="10" height="7" rx="1"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2"/></svg>
