@@ -1,132 +1,345 @@
 ---
+// The homepage: a front page. The masthead and nav come from BaseLayout
+// (home); the layout is in src/styles/home.css. The archive list, project
+// count and research dates come from src/data/.
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { projects } from "../data/projects";
+import { post, formatDate } from "../data/research";
+import "../styles/home.css";
+
+const email = "alexander.kashyap@gmail.com";
+const count = projects.length;
+const hv = post("chicago-home-value");
+const pa = post("pa-job-market");
+
+// Everything not featured above it, in the Projects page's order
+const featured = ["bowling-ball-finder", "pa-job-market", "home-value-score", "switch-to-youtube", "alexanderk-dev"];
+const archive = projects.filter((p) => !featured.includes(p.slug));
+// "2021", "2020–21", "2023–now"
+const years = ({ start, end }: { start: string; end?: string }) => {
+  const from = start.slice(0, 4);
+  if (end === "present") return `${from}–now`;
+  const to = end?.slice(0, 4);
+  return !to || to === from ? from : `${from}–${to.slice(2)}`;
+};
 ---
 <BaseLayout
   title="Alexander Kashyap"
-  description="Alexander Kashyap - software developer building data-driven enterprise systems in C#, .NET, SQL, and Python."
-  ogDescription="Software developer building data-driven enterprise systems in C#, .NET, SQL, and Python."
+  description="Alexander Kashyap, a software developer in the Chicago area. I build software, dig into data, and share what I learn."
+  ogDescription="Software developer in the Chicago area. I build software, dig into data, and share what I learn."
   path="/"
   current="about"
+  home
 >
-  <section class="hero">
-    <div class="narrow">
-      <div class="avatars">
-        <a class="avatar" href="https://github.com/amkashyap1220" target="_blank" rel="noopener">
-          <img src="/img/github-avatar.jpg" alt="Alexander Kashyap's GitHub profile picture" width="96" height="96">
-          <span>GitHub</span>
-        </a>
-        <a class="avatar" href="https://www.linkedin.com/in/alexander-kashyap/" target="_blank" rel="noopener">
-          <img src="/img/linkedin-photo.jpg" alt="Alexander Kashyap's LinkedIn profile picture" width="96" height="96">
-          <span>LinkedIn</span>
-        </a>
+<div class="gutter home">
+<div class="shell">
+  <div class="front">
+    <div class="rail">
+      <section class="brief" aria-labelledby="brief-h">
+        <h2 id="brief-h" class="h-label">In brief</h2>
+        <div class="byline">
+          <img src="/img/linkedin-photo.jpg" width="192" height="192" alt="Alex Kashyap, smiling, in glasses" decoding="async">
+          <p><strong>B.S. Computer Science, NIU</strong> <span class="bl-role">Application Developer, <span class="nw">K-Rise Systems</span></span> <span class="bl-aws">AWS Certified Cloud Practitioner</span></p>
+        </div>
+        <div class="h-intro">
+          <p>By day I write C#/.NET and SQL at <span class="nw">K-Rise</span> Systems for an <span class="nw">accounts-payable</span> automation product on JD&nbsp;Edwards. On my own time I chase questions through public data, like <a href="/research/chicago-home-value">which Chicago-area zip codes sell for less than they should</a>, and build free tools like <a href="/projects/switch-to-youtube">Switch To YouTube</a>.</p>
+          <p>I learn fastest by building, and I like building with people. Right now that means <a href="https://github.com/amkashyap1220/PayPal-Tradesman">a <span class="nw">voice-to-invoice</span> app for the PayPal AI Hackathon</a>.</p>
+          <p>Most of what I make is free and open: tools that help someone learn a thing or make a decision.</p>
+        </div>
+      </section>
+
+      <section class="contact" aria-labelledby="contact-h">
+        <h2 id="contact-h" class="h-label">Contact</h2>
+        <dl class="rows">
+          <div><dt>Email</dt><dd><a href={`mailto:${email}`}>{email}</a></dd></div>
+          <div><dt>LinkedIn</dt><dd><a href="https://www.linkedin.com/in/alexander-kashyap/">linkedin.com/in/<wbr><span class="nw">alexander-kashyap</span></a></dd></div>
+          <div><dt>GitHub</dt><dd><a href="https://github.com/amkashyap1220">github.com/amkashyap1220</a></dd></div>
+        </dl>
+        <a class="cta" href="/resume.pdf">Download resume <span class="mono">PDF</span></a>
+      </section>
+
+      <aside class="teaser" aria-labelledby="teaser-h">
+        <p id="teaser-h" class="h-label">From my camera roll</p>
+        <figure>
+          <img src="/img/photos/fountain-480.webp" srcset="/img/photos/fountain-480.webp 480w, /img/photos/fountain-960.webp 960w" sizes="400px" width="1600" height="1480" loading="lazy" decoding="async" alt="Buckingham Fountain spraying water on a sunny day, with the Chicago skyline behind it">
+          <figcaption><span class="mono">Buckingham Fountain, Chicago</span> A few more are in <a href="#otc">Off the clock</a><span class="down" aria-hidden="true"> &darr;</span></figcaption>
+        </figure>
+      </aside>
+    </div>
+
+    <section class="featured" id="work" aria-labelledby="work-h">
+      <h2 id="work-h" class="vh">Featured work</h2>
+
+      <article class="h-lead" aria-labelledby="tm-h">
+        <p class="kicker"><span class="k">My project</span> <span>PayPal AI Hackathon</span> <span>Nov 2026</span> <span>In progress</span></p>
+        <h3 id="tm-h" class="hed-lead"><span class="proj">PayPal Tradesman<span class="vh">:</span></span> <span class="t"><span>Talk through the job in your language.</span> <span>The&nbsp;customer gets a priced estimate in theirs.</span></span></h3>
+        <p class="dek">I&rsquo;m building a voice-first estimating app for tradespeople. Claude turns a spoken job description into an itemized, priced estimate, and PayPal invoicing handles the money, from the deposit and change orders to the final invoice.</p>
+        <div class="h-body">
+          <p>The AI does the tedious part: turning a rambling description into clean line items in someone else&rsquo;s language. I kept it out of the parts that need trust.</p>
+        </div>
+
+        <figure class="flow">
+          <figcaption id="fig1" class="flow-cap"><span class="mono">Fig. 1</span> How a job moves through Tradesman, with each guardrail under the step it protects. Illustrative example.</figcaption>
+          <ol class="steps">
+            <li class="step">
+              <p class="step-n mono"><b>01</b> Speak</p>
+              <p class="said" lang="es">&ldquo;Cambio el calentador de agua de 40&nbsp;galones y me llevo el viejo.&rdquo;</p>
+              <p class="h-note">The tradesperson describes the job out loud, in their own language.</p>
+              <p class="guard"><span class="g">Guardrail</span> No invented measurements.</p>
+            </li>
+            <li class="step">
+              <p class="step-n mono"><b>02</b> Match</p>
+              <dl class="items">
+                <div><dt>WH-40</dt><dd>Water heater, 40&nbsp;gal</dd></div>
+                <div><dt>HAUL</dt><dd>Haul-away, old unit</dd></div>
+              </dl>
+              <p class="h-note">Claude picks each line item by id from the tradesperson&rsquo;s price book.</p>
+              <p class="guard"><span class="g">Guardrail</span> Prices come only from the price book. Any SQL the AI writes runs read-only.</p>
+            </li>
+            <li class="step">
+              <p class="step-n mono"><b>03</b> Estimate</p>
+              <div class="est">
+                <p class="est-h mono">Customer&rsquo;s copy, in English</p>
+                <dl class="items items-est">
+                  <div><dt>WH-40</dt><dd>Replace 40-gal water heater</dd><dd class="price">Book rate</dd></div>
+                  <div><dt>HAUL</dt><dd>Haul away old unit</dd><dd class="price">Book rate</dd></div>
+                </dl>
+              </div>
+              <p class="h-note">The same ids, each line priced from the price book and written in the customer&rsquo;s language.</p>
+              <p class="guard"><span class="g">Guardrail</span> Anything that doesn&rsquo;t match the price book blocks the estimate from sending.</p>
+            </li>
+            <li class="step">
+              <p class="step-n mono"><b>04</b> Get paid</p>
+              <ol class="pay"><li>Deposit</li><li>Change order</li><li>Final invoice</li></ol>
+              <p class="h-note">Each one goes out through the PayPal Invoicing API.</p>
+              <p class="guard"><span class="g">Guardrail</span> PayPal webhooks are verified before they change anything.</p>
+            </li>
+          </ol>
+        </figure>
+
+        <p class="stack"><span>React PWA</span> <span>FastAPI</span> <span>Claude API</span> <span>PayPal Invoicing API</span> <span>Postgres</span></p>
+        <a class="h-more" href="https://github.com/amkashyap1220/PayPal-Tradesman">Read the code on GitHub</a>
+      </article>
+
+      <div class="side">
+        <article class="story" aria-labelledby="hv-h">
+          <p class="kicker"><span class="k">Research</span> <span><time datetime={hv.date}>{formatDate(hv.date)}</time></span> <span>Published</span></p>
+          <h3 id="hv-h" class="hed"><a href="/research/chicago-home-value">Where is the best value in Chicagoland?</a></h3>
+          <p class="q">If you decide what matters to you, which Chicago-area zip codes fit best, and which cost less than they should?</p>
+          <figure class="pic">
+            <img src="/img/home/chicago-home-value.webp" width="1200" height="630" loading="lazy" decoding="async" alt="Map of Chicago-area zip codes colored from red (low score) to green (high score), with the 20 best-value zips outlined in blue">
+            <figcaption>Red scores low, green high. The 20 best-value zips are outlined in blue.</figcaption>
+          </figure>
+          <p class="h-text">Home Value Score is an interactive map that scores every Chicago-area zip code on schools, safety, commute, train access, walkability, home age and price or rent, with weights you set. It also shows which zips sell for less, or more, than their features predict.</p>
+          <p class="stack"><span>Python</span> <span>pandas</span> <span>GeoPandas</span> <span>statsmodels</span> <span>DuckDB</span> <span>Census data</span> <span>Observable Plot</span> <span>Svelte</span></p>
+          <a class="h-more" href="/research/chicago-home-value">Explore the map</a>
+        </article>
+
+        <article class="story" aria-labelledby="site-h">
+          <p class="kicker"><span class="k">This site</span> <span>alexanderk.dev</span> <span>Live</span></p>
+          <h3 id="site-h" class="hed"><a href="/projects/alexanderk-dev">A static site that keeps its own numbers fresh</a></h3>
+          <p class="q">Can a static site stay current, and prove every page works, without a server to look after?</p>
+          <dl class="spec">
+            <div><dt>Build</dt><dd>Astro, static HTML, hosted on Cloudflare</dd></div>
+            <div><dt>Live data</dt><dd>A Worker keeps GitHub numbers fresh in KV storage</dd></div>
+            <div><dt>Charts</dt><dd>Interactive Svelte data pages</dd></div>
+            <div><dt>Private</dt><dd>A section behind an unlock code</dd></div>
+            <div><dt>Tests</dt><dd>Build the site, then check every page and link</dd></div>
+          </dl>
+          <a class="h-more" href="/projects/alexanderk-dev">How it&rsquo;s built</a>
+        </article>
       </div>
-      <p class="eyebrow">Software developer · Chicago, IL Area</p>
-      <h1>Alexander Kashyap</h1>
-      <p class="tagline">C#, .NET, SQL &amp; Python</p>
-      <p class="lead">Software developer with ~2 years of experience building data-driven enterprise systems in C#, .NET, SQL, and Python. Comfortable working across the stack, from database design to API integrations, and skilled at turning business requirements into reliable solutions. Detail-oriented, quick to learn, and focused on building systems people can depend on.</p>
-      <div class="actions">
-        <a class="btn primary" href="/projects/">View projects</a>
-        <a class="btn" href="https://www.linkedin.com/in/alexander-kashyap/" target="_blank" rel="noopener">LinkedIn</a>
+    </section>
+  </div>
+
+  <section class="h-section" aria-labelledby="more-h">
+    <div class="section-head">
+      <h2 id="more-h" class="h-label">More work</h2>
+      <a href="/projects/">All {count} projects</a>
+    </div>
+    <div class="cols3">
+      <article class="story3" aria-labelledby="sty-h">
+        <p class="kicker"><span class="k">Open source</span> <span>2023&ndash;present</span></p>
+        <h3 id="sty-h" class="hed"><a href="/projects/switch-to-youtube">Switch To YouTube</a></h3>
+        <p class="xform">Your Spotify playlists <span class="arr" aria-hidden="true">&rarr;</span><span class="vh">moved to</span> YouTube Music, free</p>
+        <p class="h-text">A free, open-source app that moves your liked songs and playlists over, so you don&rsquo;t have to pay a migration service to do it.</p>
+        <p class="stack"><span>Python</span> <span>Flask</span></p>
+      </article>
+      <article class="story3" aria-labelledby="bbf-h">
+        <p class="kicker"><span class="k">Web app</span> <span>2026</span> <span>Private beta</span></p>
+        <h3 id="bbf-h" class="hed"><a href="/projects/bowling-ball-finder">Bowling Ball Finder</a></h3>
+        <p class="xform">How you bowl + the balls you own <span class="arr" aria-hidden="true">&rarr;</span><span class="vh">gives</span> the ball you&rsquo;re missing</p>
+        <p class="h-text">Describe your game in plain words, list your arsenal, and it recommends the reaction you don&rsquo;t have yet. In a private beta with a few bowlers.</p>
+        <p class="stack"><span>Astro</span> <span>Svelte</span> <span>Cloudflare Workers</span> <span>D1</span></p>
+      </article>
+      <article class="story3" aria-labelledby="pa-h">
+        <p class="kicker"><span class="k">Research</span> <span><time datetime={pa.date}>{formatDate(pa.date)}</time></span> <span>Published</span></p>
+        <h3 id="pa-h" class="hed"><a href="/research/pa-job-market">The PA job market for new grads</a></h3>
+        <figure class="pic">
+          <img src="/img/home/pa-job-market.webp" width="1200" height="630" loading="lazy" decoding="async" alt="Map of US metro areas as circles sized by PA jobs and shaded from light to dark blue by median PA pay after the cost of living">
+          <figcaption>Each circle is a metro area, sized by PA jobs and shaded by pay after the cost of living.</figcaption>
+        </figure>
+        <p class="h-text">Which specialties hire new physician assistants, what they pay, and where the pay goes furthest, in charts and an interactive US map from NCCPA and BLS data.</p>
+      </article>
+    </div>
+  </section>
+
+  <div class="lower h-section">
+    <section id="about" aria-labelledby="about-h">
+      <div class="section-head">
+        <h2 id="about-h" class="h-label">About</h2>
+        <a href="/resume.pdf">Full resume (PDF)</a>
       </div>
+      <p class="sublabel">Where I&rsquo;ve worked and studied</p>
+      <ol class="cv">
+        <li>
+          <p class="h-when mono">Jan 2025 &ndash; now</p>
+          <h3>K-Rise Systems</h3>
+          <p class="role">Application Developer, Aurora, IL</p>
+          <p class="what">C#/.NET and SQL on an AP automation product for JD Edwards ERP, from scanned invoice to voucher.</p>
+        </li>
+        <li>
+          <p class="h-when mono">May 2024 &ndash; Jan 2025</p>
+          <h3>Outlier, a Scale AI platform</h3>
+          <p class="role">AI Evaluator, contract</p>
+          <p class="what">Reviewed AI-written code for correctness and quality.</p>
+        </li>
+        <li>
+          <p class="h-when mono">May 2024</p>
+          <h3>Northern Illinois University</h3>
+          <p class="role">B.S. Computer Science</p>
+          <p class="what">NIU Esports scholarship player and ACM board member.</p>
+        </li>
+        <li>
+          <p class="h-when mono">May 2022 &ndash; Jan 2023</p>
+          <h3>Chamberlain Group</h3>
+          <p class="role">Software Engineering Intern, Middleware</p>
+          <p class="what">.NET 6 REST APIs for the myQ platform.</p>
+        </li>
+      </ol>
+      <p class="cv-note">Also: AWS Certified Cloud Practitioner.</p>
+    </section>
+
+    <aside class="archive" aria-labelledby="arch-h">
+      <div class="section-head">
+        <h2 id="arch-h" class="h-label">Archive</h2>
+      </div>
+      <ol>
+        {archive.map((p) => (
+          <li><a href={`/projects/${p.slug}`}><span class="t"><span class="nm">{p.name}</span><span class="tg">{p.tagline}</span></span> <span class="dots"></span> <span class="yr">{years(p.when)}</span></a></li>
+        ))}
+      </ol>
+      <a class="h-more" href="/projects/">All {count} projects</a>
+    </aside>
+  </div>
+
+  <section class="h-section" id="otc" aria-labelledby="otc-h">
+    <div class="section-head">
+      <h2 id="otc-h" class="h-label">Off the clock</h2>
+    </div>
+    <div class="otc">
+      <div class="otc-text">
+        <p>Gaming is still a big part of my life. At NIU I played on an esports scholarship.</p>
+        <p>Free software and free education are a big passion of mine. It started with tutoring in high school. At NIU I tested out of the intro C++ course, but I still made <a href="/projects/csci-240">tutorials for some of its labs</a>, mostly for friends taking it, and later I TA&rsquo;d it.</p>
+        <p>I also bike, lift and like cars, and I love learning about history and new technology.</p>
+        <p>And here are a few pictures I&rsquo;ve taken that I like.</p>
+      </div>
+
+      <figure class="ph ph-lead">
+        <div class="h-fill">
+          <img src="/img/photos/boat-sunset-960.webp" srcset="/img/photos/boat-sunset-480.webp 480w, /img/photos/boat-sunset-960.webp 960w, /img/photos/boat-sunset-1600.webp 1600w" sizes="(min-width: 1180px) 872px, (min-width: 720px) calc(100vw - 64px), calc(100vw - 32px)" width="1600" height="1200" loading="lazy" decoding="async" alt="A shrimp boat on calm water at sunset, under streaks of orange and pink cloud">
+        </div>
+        <figcaption>Shrimp boat, Tybee Island, Georgia</figcaption>
+      </figure>
+
+      {/* Phones and tablets only: on desktop the fountain sits in the rail at the top instead */}
+      <figure class="ph ph-fountain">
+        <img src="/img/photos/fountain-480.webp" srcset="/img/photos/fountain-480.webp 480w, /img/photos/fountain-960.webp 960w, /img/photos/fountain-1600.webp 1600w" sizes="50vw" width="1600" height="1480" loading="lazy" decoding="async" alt="Buckingham Fountain spraying water on a sunny day, with the Chicago skyline behind it">
+        <figcaption>Buckingham Fountain, Chicago</figcaption>
+      </figure>
+
+      <figure class="ph ph-valley">
+        <img src="/img/photos/sierra-valley-480.webp" srcset="/img/photos/sierra-valley-480.webp 480w, /img/photos/sierra-valley-960.webp 960w" sizes="(min-width: 1180px) 424px, 50vw" width="960" height="1023" loading="lazy" decoding="async" alt="A steep valley of pine forest and granite slopes under a clear blue sky, with sunlit shrubs and boulders in front">
+        <figcaption>Near Pinecrest, Stanislaus National Forest</figcaption>
+      </figure>
+
+      <figure class="ph ph-waterfall">
+        <img src="/img/photos/waterfall-480.webp" srcset="/img/photos/waterfall-480.webp 480w, /img/photos/waterfall-960.webp 960w" sizes="(min-width: 1180px) 324px, (min-width: 720px) 25vw, 50vw" width="960" height="1280" loading="lazy" decoding="async" alt="White water pouring down between large granite boulders">
+        <figcaption>Waterfall, Yosemite National Park</figcaption>
+      </figure>
+
+      <figure class="ph ph-dog">
+        <img src="/img/photos/dog-960.webp" srcset="/img/photos/dog-480.webp 480w, /img/photos/dog-960.webp 960w, /img/photos/dog-1600.webp 1600w" sizes="(min-width: 1180px) 648px, (min-width: 720px) 50vw, calc(100vw - 32px)" width="1600" height="1200" loading="lazy" decoding="async" alt="Sita, a small black and white dog, standing in sunny grass dotted with dandelions">
+        <figcaption>Sita in the grass</figcaption>
+      </figure>
+
+      <figure class="ph ph-redsky">
+        <img src="/img/photos/red-sky-960.webp" srcset="/img/photos/red-sky-480.webp 480w, /img/photos/red-sky-960.webp 960w, /img/photos/red-sky-1500.webp 1500w" sizes="(min-width: 1180px) 324px, (min-width: 720px) 25vw, 50vw" width="1500" height="2000" loading="lazy" decoding="async" alt="Rippled clouds lit red and orange above a pale field, with bare branches reaching in from the corners">
+        <figcaption>Another sunset</figcaption>
+      </figure>
+
+      <figure class="ph ph-lisle">
+        <img src="/img/photos/lisle-sunset-1600.webp" srcset="/img/photos/lisle-sunset-480.webp 480w, /img/photos/lisle-sunset-960.webp 960w, /img/photos/lisle-sunset-1600.webp 1600w, /img/photos/lisle-sunset-2400.webp 2400w" sizes="(min-width: 1180px) 1320px, calc(100vw - 32px)" width="2400" height="1800" loading="lazy" decoding="async" alt="A band of orange sunset above dark treetops, with the sky reflected in a small pond below">
+        <figcaption>Sunset over Lisle, Illinois</figcaption>
+      </figure>
     </div>
   </section>
 
-  <section class="section">
-    <div class="narrow">
-      <h2 class="section-title">Experience</h2>
-      <p class="section-intro">~2 years building enterprise software, mostly C#, .NET and SQL.</p>
-
-      <article class="entry">
-        <div class="entry-head">
-          <h3 class="entry-title">Application Developer</h3>
-          <span class="when"><time datetime="2025-01">Jan 2025</time> – Present</span>
-        </div>
-        <p class="entry-where">K-Rise Systems · Aurora, IL · Enterprise software company</p>
-        <ul>
-          <li>Worked on the rebuild of the company's AP Automation application for JD Edwards (primary project) in C# and .NET, adding new AI features and updates across the invoice pipeline, from scanned capture through validation and into JDE vouchers</li>
-          <li>Help implement AP Automation for clients, gathering requirements from their finance teams, customizing the solution to fit their workflows, and carrying improvements back into the base product</li>
-          <li>Wrote SQL to insert and update JD Edwards tables as invoices flowed through the pipeline, keeping accounts payable data accurate and in sync between systems</li>
-          <li>Built AP Automation reports and dashboards, writing the SQL queries and building the report pages in JavaScript and CSS to give clients visibility into automation performance and their invoice data</li>
-          <li>Integrated AI APIs to match addresses extracted from scanned invoices against address records in the database, reducing manual lookup</li>
-          <li>Supported development of EASYPay and EASYCommerce, the company's .NET payments and e-commerce applications, including SQL to keep payment and order data in sync with JD Edwards</li>
-        </ul>
-      </article>
-
-      <article class="entry">
-        <div class="entry-head">
-          <h3 class="entry-title">AI Evaluator (Contract)</h3>
-          <span class="when"><time datetime="2024-05">May 2024</time> – <time datetime="2025-01">Jan 2025</time></span>
-        </div>
-        <p class="entry-where">Outlier, a Scale AI platform · Remote</p>
-        <ul>
-          <li>Evaluated and compared AI-generated code for correctness, clarity, and quality, writing feedback used as training data to improve large language models</li>
-          <li>Applied detailed scoring rubrics consistently to coding tasks, flagging bugs and logical errors</li>
-        </ul>
-      </article>
-
-      <article class="entry">
-        <div class="entry-head">
-          <h3 class="entry-title">Software Engineering Intern – Middleware</h3>
-          <span class="when"><time datetime="2022-05">May 2022</time> – <time datetime="2023-01">Jan 2023</time></span>
-        </div>
-        <p class="entry-where">Chamberlain Group · Chicago, IL</p>
-        <ul>
-          <li>Built RESTful API endpoints in .NET 6 for the myQ connected-device platform</li>
-          <li>Helped migrate services from .NET Core 3.1 to .NET 6, improving performance and maintainability in an Agile/Scrum team</li>
-        </ul>
-      </article>
+  <section class="h-section write" id="contact" aria-labelledby="write-h">
+    <div class="section-head">
+      <p class="h-label">Contact</p>
+    </div>
+    <div class="write-inner">
+      <h2 id="write-h" class="h-big">Write to me</h2>
+      <p class="lede">If you&rsquo;re hiring, have a dataset you think I&rsquo;d enjoy, or want to talk through something you&rsquo;re building, email is the best way to reach me.</p>
+      <div class="mailline">
+        <a class="big-email" id="big-email" href={`mailto:${email}`}>{email}</a>
+        <button class="copy" id="copy-email" type="button" hidden>Copy</button>
+        <span id="copy-status" class="vh" aria-live="polite"></span>
+      </div>
+      <div class="reach">
+        <a class="cta cta-solid" href="/resume.pdf">Resume <span class="mono">PDF</span></a>
+        <a href="https://www.linkedin.com/in/alexander-kashyap/">LinkedIn</a>
+        <a href="https://github.com/amkashyap1220">GitHub</a>
+      </div>
+      <p class="signoff">Thanks for reading, <span>Alex</span></p>
     </div>
   </section>
+</div>
+</div>
 
-  <section class="section">
-    <div class="narrow">
-      <h2 class="section-title">Education</h2>
-      <article class="entry">
-        <div class="entry-head">
-          <h3 class="entry-title">B.S. in Computer Science</h3>
-          <time class="when" datetime="2024-05">May 2024</time>
-        </div>
-        <p class="entry-where">Northern Illinois University</p>
-        <ul>
-          <li>Relevant coursework: Databases, Probability &amp; Statistics, Data Structures, Algorithms, Software Engineering</li>
-          <li>Scholarship player, NIU Esports</li>
-          <li>Event Coordinator / Board Member, Association for Computing Machinery (ACM)</li>
-          <li>Transfer Merit Scholar</li>
-        </ul>
-      </article>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="wrap">
-      <h2 class="section-title">Skills &amp; Certifications</h2>
-      <p class="section-intro">What I work with day to day.</p>
-      <dl class="grid">
-        <div class="card">
-          <dt class="card-label">Languages</dt>
-          <dd class="card-title">SQL, Python, C#, JavaScript/TypeScript, C++</dd>
-        </div>
-        <div class="card">
-          <dt class="card-label">Databases</dt>
-          <dd class="card-title">Microsoft SQL Server (T-SQL, SSMS), MySQL, NoSQL</dd>
-        </div>
-        <div class="card">
-          <dt class="card-label">Frameworks &amp; Tools</dt>
-          <dd class="card-title">.NET / .NET Core, REST APIs, Git, Jira</dd>
-        </div>
-        <div class="card">
-          <dt class="card-label">Cloud</dt>
-          <dd class="card-title">AWS, Azure</dd>
-        </div>
-        <div class="card">
-          <dt class="card-label">Enterprise Systems</dt>
-          <dd class="card-title">JD Edwards (ERP)</dd>
-        </div>
-        <div class="card">
-          <dt class="card-label">Certifications</dt>
-          <dd class="card-title">AWS Certified Cloud Practitioner (May 2024)</dd>
-        </div>
-      </dl>
-    </div>
-  </section>
+  <Fragment slot="scripts">
+    {/* The Copy button next to the email address. Without scripts it stays hidden and the address is a mailto link. */}
+    <script is:inline>
+      (function () {
+        var cbtn = document.getElementById("copy-email");
+        var addr = document.getElementById("big-email");
+        var live = document.getElementById("copy-status");
+        if (!cbtn || !addr || !live) return;
+        cbtn.hidden = false;
+        var timer, speak;
+        function say(label, msg) {
+          cbtn.textContent = label;
+          clearTimeout(timer); clearTimeout(speak);
+          live.textContent = "";
+          speak = setTimeout(function () { live.textContent = msg; }, 60);
+          timer = setTimeout(function () { cbtn.textContent = "Copy"; live.textContent = ""; }, 2500);
+        }
+        // Clipboard blocked or missing: select the address so it's one keystroke away
+        function selectIt() {
+          var r = document.createRange(); r.selectNodeContents(addr);
+          var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+          say("Selected", "Email address selected.");
+        }
+        cbtn.addEventListener("click", function () {
+          var text = addr.textContent.trim();
+          try {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              navigator.clipboard.writeText(text).then(function () { say("Copied", "Email address copied."); }, selectIt);
+            } else { selectIt(); }
+          } catch (e) { selectIt(); }
+        });
+      })();
+    </script>
+  </Fragment>
 </BaseLayout>

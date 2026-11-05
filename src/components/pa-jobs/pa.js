@@ -5,7 +5,8 @@ import * as Plot from "@observablehq/plot";
 // A CSS variable's current value, so charts follow the light and dark themes
 export const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 
-// Calls fn whenever js/theme.js swaps .light/.dark on <html>; returns the stop function
+// Calls fn whenever the classes on <html> change (the site is dark only now, but
+// charts still redraw if a theme class ever changes); returns the stop function
 export function onTheme(fn) {
   const watch = new MutationObserver(fn);
   watch.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });

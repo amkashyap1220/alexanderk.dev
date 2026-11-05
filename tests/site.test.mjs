@@ -40,11 +40,33 @@ test("every page has a title, a description and the site header and footer", () 
     assert.match(html, /<a class="nav-private" href="\/private\/"/, file + ": Private tab");
     assert.match(html, /<script src="\/js\/signed-in\.js"><\/script>/, file + ": signed-in.js");
     assert.match(html, /class="icon-btn unlock-link" href="\/unlock"/, file + ": footer lock icon");
-    assert.match(html, /data-menu-toggle/, file + ": phone menu button");
-    assert.match(html, /<script src="\/js\/menu\.js"><\/script>/, file + ": menu.js");
+    // The main nav: Work, Research and About, in a <nav> every page has (the ☰ menu it replaced is gone)
+    const nav = html.match(/<nav class="site-nav" aria-label="Main">([\s\S]*?)<\/nav>/)?.[1] ?? "";
+    assert.match(nav, /<a href="\/projects\/"[^>]*>Work<\/a>/, file + ": nav Work");
+    assert.match(nav, /<a href="\/research\/"[^>]*>Research<\/a>/, file + ": nav Research");
+    assert.match(nav, /<a href="\/#about"[^>]*>About<\/a>/, file + ": nav About");
+    assert.match(html, /<a class="cta cta-solid" href="\/resume\.pdf">/, file + ": Resume in the header");
     assert.match(html, /<dialog class="unlock-dialog"/, file + ": unlock box");
     assert.match(html, /<footer class="site-footer">/, file + ": footer");
     assert.ok(all(html, /aria-current="(page)"/g).length <= 1, file + ": at most one current tab");
+  }
+});
+
+test("the resume is there to download, and the homepage shows the email address", () => {
+  assert.ok(fileFor("/resume.pdf"), "/resume.pdf");
+  assert.equal(fs.readFileSync(path.join(out, "resume.pdf")).subarray(0, 5).toString(), "%PDF-", "resume.pdf is a PDF");
+  const home = pages.find((x) => x.file === "index.html").html;
+  assert.match(home, />alexander\.kashyap@gmail\.com<\/a>/, "the email address, as text");
+  assert.match(home, /href="mailto:alexander\.kashyap@gmail\.com"/, "a mailto link");
+});
+
+test("no page shows a phone number", () => {
+  // US-style numbers: 555-123-4567, (555) 123-4567, 555.123.4567, +1 555 123 4567
+  const phone = /(?:\+1[\s.-]?)?(?:\(\d{3}\)\s?|\b\d{3}[\s.-])\d{3}[\s.-]\d{4}\b/;
+  for (const { file, html } of pages) {
+    const text = html.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/g, " ").replace(/<[^>]+>/g, " ");
+    assert.doesNotMatch(text, phone, file);
+    assert.doesNotMatch(html, /href="tel:/, file + ": tel: link");
   }
 });
 
@@ -64,6 +86,12 @@ test("every link and file a page uses exists, at its clean address", () => {
       if (DYNAMIC.test(ref.split(/[?#]/)[0])) continue;
       assert.ok(fileFor(ref), `${file}: ${ref} doesn't exist`);
       assert.doesNotMatch(ref, /\.html([?#]|$)/, `${file}: link to ${ref} without .html`);
+    }
+    // Responsive images: every size listed in srcset
+    for (const set of all(html, /srcset="([^"]+)"/g)) {
+      for (const ref of set.split(",").map((c) => c.trim().split(/\s+/)[0])) {
+        assert.ok(ref.startsWith("/") && fileFor(ref), `${file}: ${ref} (srcset) doesn't exist`);
+      }
     }
   }
 });

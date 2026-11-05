@@ -171,7 +171,7 @@
   }
 
   onMount(() => {
-    // Redraw when the theme changes (js/theme.js swaps .light/.dark on <html>)
+    // Redraw if the theme class on <html> changes (the site is dark only now)
     const watch = new MutationObserver(() => theme++);
     watch.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
 
