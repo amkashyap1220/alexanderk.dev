@@ -2,12 +2,12 @@
    alexanderk.dev — styles
    An editorial look: Newsreader for headlines, Libre Franklin for text and
    IBM Plex Mono for labels and dates. Dark only, with one green accent
-   ("Forest"), and a dimmed Hubble photo fixed behind every page.
+   ("Forest"), and a dimmed Hubble photo across the top of every page.
 
    1. Fonts         self-hosted, plus size-matched fallbacks (no layout jump)
    2. Tokens        colors, type, spacing; older names kept as aliases
    3. Base          reset, body, links, focus, utilities
-   4. Sky           the photo behind every page, and keeping text readable on it
+   4. Sky           the photo across the top of every page, and keeping text readable on it
    5. Header        the name and nav at the top of every page
    6. Footer
    7. Components    buttons, cards, grids, sections
@@ -183,11 +183,12 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
 
 
 /* ---------- 4. Sky ---------- */
-/* Hubble's Ultra Deep Field, fixed behind every page so the page scrolls over
-   it. It's dimmed ahead of time (in the image itself), so nothing here fades
-   it. 100lvh: it stays put when a phone's toolbar slides away. */
-.sky-bg { position: fixed; top: 0; left: 0; z-index: -1; width: 100%; height: 100vh; height: 100lvh; overflow: hidden; pointer-events: none; background: var(--night); }
-.sky-bg img { display: block; width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: 50% 50%; }
+/* Hubble's Ultra Deep Field across the top of every page, behind the header
+   and the page's opening, fading into the dark page below. It scrolls away
+   with the page. It's dimmed ahead of time (in the image itself). */
+.sky-bg { position: absolute; top: 0; left: 0; z-index: -1; width: 100%; height: 440px; overflow: hidden; pointer-events: none; -webkit-mask-image: linear-gradient(to bottom, #000 45%, transparent); mask-image: linear-gradient(to bottom, #000 45%, transparent); }
+.sky-bg img { display: block; width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: 50% 40%; }
+@media (min-width: 720px) { .sky-bg { height: 600px; } }
 
 /* A soft dark edge around text, so a bright star behind a line never washes
    it out. Solid panels (charts, maps, code, tables) don't need it. */
