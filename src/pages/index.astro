@@ -1,7 +1,7 @@
 ---
-// The homepage: a brief front door. The name and tagline are in the masthead
-// (BaseLayout, home); here is a two-line intro, three featured cards (a
-// picture, a title and one line each), a short More list and how to reach me.
+// The homepage: a brief front door. The name and tagline, a two-line intro,
+// three featured cards (a picture, a title and one line each), a short More
+// list and how to reach me.
 // The details live on the Work, Research and About pages. The layout is in
 // src/styles/home.css.
 import BaseLayout from "../layouts/BaseLayout.astro";
@@ -28,7 +28,7 @@ const featured = [
   {
     kicker: ["This site", "Live"], title: "alexanderk.dev", href: "/projects/alexanderk-dev", img: "alexanderk-dev",
     line: "A static site that keeps its own numbers fresh and checks every page before it ships.",
-    alt: "The top of this site's homepage: the name Alexander Kashyap in large serif type over a dimmed photo of Hubble's Pillars of Creation",
+    alt: "The top of this site's homepage: the name Alexander Kashyap, a short intro and three featured project cards, over a dimmed photo of Hubble's Pillars of Creation",
   },
 ];
 
@@ -41,14 +41,16 @@ const more = projects.filter((p) => p.tier === "more").map((p) => ({ name: p.nam
   ogDescription="Software developer in the Chicago area. I build software, dig into data, and share what I learn."
   path="/"
   schema={{ "@graph": [{ "@type": "WebSite", "@id": `${site}/#site`, url: `${site}/`, name: "Alexander Kashyap", author: { "@id": person["@id"] } }, person] }}
-  home
 >
 <div class="gutter home">
 <div class="shell">
-  <section class="hello" aria-label="About me">
+  <header class="hello">
+    <p class="kicker"><span class="k">Software developer</span> <span>Chicago area</span></p>
+    <h1 class="page-hed">Alexander Kashyap</h1>
+    <p class="hello-tag">I build software, dig into data, and share what I learn.</p>
     <p class="hello-lede">By day I write C#/.NET and SQL at <span class="nw">K-Rise</span> Systems, on an <span class="nw">accounts-payable</span> automation product. On my own time I build free tools and chase questions through public data.</p>
     <a class="h-more" href="/about">More about me</a>
-  </section>
+  </header>
 
   <section class="h-section" aria-labelledby="feat-h">
     <div class="section-head">

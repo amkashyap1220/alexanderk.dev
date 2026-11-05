@@ -3,10 +3,8 @@
 // A page passes its own title and description, and puts its content
 // inside <BaseLayout> (it lands in <main>). Scripts that run after the
 // page go in slot="scripts"; extra <head> tags go in slot="head".
-// The homepage passes `home` for the full masthead; every other page gets
-// the compact header (the name as the home link, then the nav). Either way
-// the nav stays at the top of the screen as the page scrolls.
-import { projects } from "../data/projects";
+// Every page gets the same header: the name as the home link, then the nav,
+// which stays at the top of the screen as the page scrolls.
 import { site } from "../data/person";
 // The styles every page shares. Linked by hand, first in <head>, so every page's
 // own styles come after it; Astro still minifies it and puts a hash in its name.
@@ -21,19 +19,16 @@ interface Props {
   ogImage?: { src: string; alt: string };   // link preview image, 1200 x 630 (defaults to /og.jpg, made by scripts/link-previews.mjs)
   noindex?: boolean;          // keep search engines off (unlock, private pages)
   current?: "about" | "projects" | "research" | "stats" | "private";   // marks the page's link in the nav or footer
-  home?: boolean;             // the homepage's masthead instead of the compact header
   schema?: object;            // structured data for search engines (schema.org JSON-LD), e.g. a post's Article
 }
 
-const { title, description, path, ogTitle = title, ogDescription = description, noindex = false, current, home = false, schema } = Astro.props;
+const { title, description, path, ogTitle = title, ogDescription = description, noindex = false, current, schema } = Astro.props;
 // "<" written as \u003c, so nothing in the data can close the <script> early
 const schemaJson = schema && JSON.stringify({ "@context": "https://schema.org", ...schema }).replace(/</g, "\\u003c");
 const ogImage = Astro.props.ogImage ?? { src: "/og.jpg", alt: "Alexander Kashyap, software developer in the Chicago area: I build software, dig into data, and share what I learn." };
 const here = (tab: Props["current"]) => (current === tab ? "page" : undefined);
 const email = "alexander.kashyap@gmail.com";
 const year = new Date().getFullYear();
-// The masthead's dateline: the month the site was built, and how many projects it has
-const dateline = `${new Date().toLocaleDateString("en-US", { month: "short", year: "numeric", timeZone: "America/Chicago" })} · ${projects.length} projects`;
 ---
 <!doctype html>
 <html lang="en" class="dark">
@@ -77,25 +72,11 @@ const dateline = `${new Date().toLocaleDateString("en-US", { month: "short", yea
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
 
-  {home ? (
-    <>
-    <div class="masthead">
-      <div class="sky">
-        <div class="gutter"><div class="shell sky-inner">
-          <div class="mast-top">
-            <p class="ear ear-left"><span class="mono">Software developer</span> <span>Chicago area</span></p>
-            <h1 class="mast-name">Alexander Kashyap</h1>
-            <p class="ear ear-right"><span class="mono">Since Jan 2025</span> <span>Application Developer, <span class="nw">K-Rise Systems</span></span></p>
-          </div>
-          <p class="mast-tagline">I build software, dig into data, and share what I learn.</p>
-        </div></div>
-      </div>
-    </div>
-    {/* The nav row stays at the top of the screen as the page scrolls */}
-    <header class="site-header masthead-bar">
-      <div class="gutter"><div class="shell">
-        <div class="navrow">
-          <p class="dateline mono">{dateline}</p>
+  <header class="site-header">
+    <div class="gutter"><div class="shell">
+      <div class="topbar">
+        <a class="brand" href="/" aria-current={path === "/" ? "page" : undefined}>Alexander Kashyap</a>
+        <div class="topbar-links">
           <nav class="site-nav" aria-label="Main">
             <ul class="sections">
               <li><a href="/projects/" aria-current={here("projects")}>Work</a></li>
@@ -108,31 +89,9 @@ const dateline = `${new Date().toLocaleDateString("en-US", { month: "short", yea
             <li><a class="cta" href={`mailto:${email}`}>Email</a></li>
           </ul>
         </div>
-      </div></div>
-    </header>
-    </>
-  ) : (
-    <header class="site-header">
-      <div class="gutter"><div class="shell">
-        <div class="topbar">
-          <a class="brand" href="/">Alexander Kashyap</a>
-          <div class="topbar-links">
-            <nav class="site-nav" aria-label="Main">
-              <ul class="sections">
-                <li><a href="/projects/" aria-current={here("projects")}>Work</a></li>
-                <li><a href="/research/" aria-current={here("research")}>Research</a></li>
-                <li><a href="/about" aria-current={here("about")}>About</a></li>
-              </ul>
-            </nav>
-            <ul class="nav-actions">
-              <li><a class="cta cta-solid" href="/resume.pdf">Resume <span class="mono">PDF</span></a></li>
-              <li><a class="cta" href={`mailto:${email}`}>Email</a></li>
-            </ul>
-          </div>
-        </div>
-      </div></div>
-    </header>
-  )}
+      </div>
+    </div></div>
+  </header>
 
   <main id="main" tabindex="-1">
     <slot />
