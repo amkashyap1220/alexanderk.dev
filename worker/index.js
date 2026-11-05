@@ -87,7 +87,7 @@ async function refresh(env) {
       repositories(first: 100, ownerAffiliations: OWNER, privacy: PUBLIC, isFork: false, orderBy: { field: NAME, direction: ASC }) { nodes { ${fields} } }
       recent: repositories(first: 6, ownerAffiliations: OWNER, privacy: PUBLIC, isFork: false, orderBy: { field: PUSHED_AT, direction: DESC }) {
         nodes { nameWithOwner defaultBranchRef { name target { ... on Commit {
-          history(first: 10) { nodes { oid messageHeadline committedDate url } }
+          history(first: 10) { nodes { oid messageHeadline committedDate url parents(first: 1) { totalCount } } }
         } } } }
       }
     }
@@ -118,9 +118,11 @@ async function refresh(env) {
 
   // The latest commits on the default branch of my most recently pushed repos. Read straight
   // from the repos, so they're current as of this run (the events feed below can lag by hours
-  // and only holds 300 events).
+  // and only holds 300 events). Merge commits (two parents) are left out: they say nothing
+  // about the work.
   data[`latestcommits:${USER}`.toLowerCase()] = result.data.user.recent.nodes
     .flatMap((r) => (r.defaultBranchRef && r.defaultBranchRef.target.history ? r.defaultBranchRef.target.history.nodes : [])
+      .filter((c) => !c.parents || c.parents.totalCount < 2)
       .map((c) => ({ repo: r.nameWithOwner, branch: r.defaultBranchRef.name, message: c.messageHeadline, at: c.committedDate, url: c.url })))
     .sort((x, y) => (x.at < y.at ? 1 : x.at > y.at ? -1 : 0))
     .slice(0, 10);

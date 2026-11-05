@@ -1,0 +1,16 @@
+/* ==========================================================================
+   The unlock page (src/pages/unlock.astro) and the private section's front
+   page (src/pages/private/index.astro). The code box itself (.unlock-form)
+   is in public/css/style.css, since the footer's lock icon opens it on
+   every page.
+   ========================================================================== */
+
+.lock-page { max-width: 36rem; }
+.lock-page .unlock-form { margin: 24px 0 0; }
+.lock-back { margin-top: 24px; }
+.lock-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 24px; margin-top: 20px; }
+.lock-actions .h-more { margin-top: 0; }
+
+.priv-list { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--rule); }
+.priv-list li { padding: 16px 0; border-bottom: 1px solid var(--rule); }
+.priv-list .h-text { max-width: 38em; color: var(--muted); }

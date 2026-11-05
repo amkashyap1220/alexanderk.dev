@@ -14,6 +14,8 @@
   const { get, commits, languages, languageColor, timeAgo, el } = window.GH;
   const USER = "amkashyap1220";
   const TIME_ZONE = "America/Chicago";       // activity is bucketed in my time zone
+  // Merge commits ("Merge pull request #12 from ...") say nothing about the work, so the feed leaves them out
+  const MERGE = /^Merge (pull request|branch|remote-tracking branch) /;
 
   // Repos that have a page on this site (repo name -> page), from src/data/projects.ts
   // via the stats page; everything else links to GitHub
@@ -70,21 +72,19 @@
   const done = (box) => box.setAttribute("aria-busy", "false");
 
   function drawNumbers(data) {
+    // The page already has a box for each number (stats/index.astro), showing "–" until now
     const box = document.getElementById("numbers");
-    document.getElementById("numbers-status").hidden = true;
-    const tiles = [
-      ["public repos", data.repos.length.toLocaleString()],
-      ["commits", sum(data.repos, "commits").toLocaleString()],
-      ["stars", sum(data.repos, "stars").toLocaleString()],
-      ["languages", languageTotals(data.repos).length.toLocaleString()],
-      ["on GitHub since", String(new Date(data.since).getFullYear())],   // no comma in a year
-    ];
-    box.textContent = "";
-    tiles.forEach(([label, value]) => {
-      const tile = el("div", "card stat");
-      tile.append(el("dt", "stat-label", label), el("dd", "stat-value", value));   // shown number-first by CSS
-      box.append(tile);
+    const figures = {
+      repos: data.repos.length.toLocaleString(),
+      commits: sum(data.repos, "commits").toLocaleString(),
+      stars: sum(data.repos, "stars").toLocaleString(),
+      languages: languageTotals(data.repos).length.toLocaleString(),
+      since: String(new Date(data.since).getFullYear()),   // no comma in a year
+    };
+    box.querySelectorAll("[data-figure]").forEach((fig) => {
+      fig.querySelector("dd").textContent = figures[fig.dataset.figure];
     });
+    done(box);
 
     // Most-starred and most recently pushed repo
     const highlights = document.getElementById("highlights");
@@ -176,7 +176,7 @@
     // The latest 5 commits, read from the repos themselves so they're current. Older data
     // files don't have them yet, so fall back to the last 5 pushes from the events feed.
     if (latest && latest.length) {
-      [...latest].sort((x, y) => new Date(y.at) - new Date(x.at)).slice(0, 5).forEach((c) => {
+      latest.filter((c) => !MERGE.test(c.message)).sort((x, y) => new Date(y.at) - new Date(x.at)).slice(0, 5).forEach((c) => {
         const message = el("a", null, c.message);
         message.href = c.url;
         message.target = "_blank";
@@ -194,6 +194,8 @@
   function showError() {
     const message = "Couldn't reach GitHub right now. Try again in a few minutes.";
     document.getElementById("numbers-status").textContent = message;
+    done(document.getElementById("numbers"));
+    document.getElementById("highlights").textContent = "";
     const box = document.getElementById("languages");
     box.textContent = "";
     box.append(el("p", "muted", message));

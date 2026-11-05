@@ -76,11 +76,30 @@
 {#if failed}
   <p class="muted">Couldn't load contributions from GitHub right now.</p>
 {:else if !data}
-  <p class="muted">Loading…</p>
+  <!-- Until the data arrives: the same grid, empty, so the page doesn't jump when it fills in -->
+  <p class="heatmap-headline">
+    <span><b>&nbsp;</b>Loading contributions…</span>
+    <span class="heatmap-sub muted">&nbsp;</span>
+  </p>
+  <div class="heatmap card" aria-hidden="true">
+    <div class="heatmap-row heatmap-head">
+      <span></span>
+      {#each { length: 31 } as _, i}<span class="heatmap-day">{DAY_LABELS.includes(i + 1) ? i + 1 : ""}</span>{/each}
+      <span class="heatmap-total">sum</span>
+    </div>
+    {#each { length: 12 } as _}
+      <div class="heatmap-row">
+        <span class="heatmap-month">&nbsp;</span>
+        {#each { length: 31 } as _}<span class="heatmap-cell"></span>{/each}
+        <span class="heatmap-total"></span>
+      </div>
+    {/each}
+  </div>
+  <div class="heatmap-foot heatmap-wait"></div>
 {:else if summary}
   <p class="heatmap-headline">
-    <b>{summary.total.toLocaleString()}</b> contributions in the last 12 months
-    <span class="muted">· {plural(data.commits, "commit")} in the last year</span>
+    <span><b>{summary.total.toLocaleString()}</b> contributions in the last 12 months</span>
+    <span class="heatmap-sub muted"><span class="heatmap-dot" aria-hidden="true">·</span> {plural(data.commits, "commit")} in the last year</span>
   </p>
   <div class="heatmap card" role="img"
     aria-label="{plural(summary.total, 'contribution')} over the last 12 months, by month. Busiest month: {fmt(busiestMonth.key + '-01', { month: 'long', year: 'numeric' })}, with {busiestMonth.total}.">

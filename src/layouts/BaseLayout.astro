@@ -6,6 +6,7 @@
 // The homepage passes `home` for the full masthead; every other page gets
 // the compact header (the name as the home link, then the nav).
 import { projects } from "../data/projects";
+import { site } from "../data/person";
 
 interface Props {
   title: string;              // the whole <title>, e.g. "Projects · Alexander Kashyap"
@@ -13,14 +14,17 @@ interface Props {
   path?: string;              // set on public pages: adds the link-preview tags for this URL
   ogTitle?: string;           // link preview title (defaults to title)
   ogDescription?: string;     // link preview text (defaults to description)
-  ogImage?: { src: string; alt: string };   // link preview image, 1200 x 630 (defaults to /og.png)
+  ogImage?: { src: string; alt: string };   // link preview image, 1200 x 630 (defaults to /og.jpg, made by scripts/link-previews.mjs)
   noindex?: boolean;          // keep search engines off (unlock, private pages)
   current?: "about" | "projects" | "research" | "stats" | "private";   // marks the page's link in the nav or footer
   home?: boolean;             // the homepage's masthead instead of the compact header
+  schema?: object;            // structured data for search engines (schema.org JSON-LD), e.g. a post's Article
 }
 
-const { title, description, path, ogTitle = title, ogDescription = description, noindex = false, current, home = false } = Astro.props;
-const ogImage = Astro.props.ogImage ?? { src: "/og.png", alt: "Alexander Kashyap, software developer: C#, .NET, SQL & Python" };
+const { title, description, path, ogTitle = title, ogDescription = description, noindex = false, current, home = false, schema } = Astro.props;
+// "<" written as \u003c, so nothing in the data can close the <script> early
+const schemaJson = schema && JSON.stringify({ "@context": "https://schema.org", ...schema }).replace(/</g, "\\u003c");
+const ogImage = Astro.props.ogImage ?? { src: "/og.jpg", alt: "Alexander Kashyap, software developer in the Chicago area: I build software, dig into data, and share what I learn." };
 const here = (tab: Props["current"]) => (current === tab ? "page" : undefined);
 const email = "alexander.kashyap@gmail.com";
 const year = new Date().getFullYear();
@@ -37,13 +41,15 @@ const dateline = `${new Date().toLocaleDateString("en-US", { month: "short", yea
   {noindex && <meta name="robots" content="noindex, nofollow">}
   {path && (
     <>
+      {/* The page's one address, for search engines (the same page also answers at /x.html and /x/) */}
+      <link rel="canonical" href={new URL(path, site).href}>
       {/* Link previews (iMessage, Discord, Slack, LinkedIn, ...) */}
       <meta property="og:type" content="website">
       <meta property="og:site_name" content="Alexander Kashyap">
       <meta property="og:title" content={ogTitle}>
       <meta property="og:description" content={ogDescription}>
-      <meta property="og:url" content={new URL(path, "https://alexanderk.dev").href}>
-      <meta property="og:image" content={new URL(ogImage.src, "https://alexanderk.dev").href}>
+      <meta property="og:url" content={new URL(path, site).href}>
+      <meta property="og:image" content={new URL(ogImage.src, site).href}>
       <meta property="og:image:width" content="1200">
       <meta property="og:image:height" content="630">
       <meta property="og:image:alt" content={ogImage.alt}>
@@ -53,6 +59,7 @@ const dateline = `${new Date().toLocaleDateString("en-US", { month: "short", yea
   {/* The site is dark only: the browser's own bars, scrollbars and form controls match */}
   <meta name="color-scheme" content="dark">
   <meta name="theme-color" content="#0d0b09">
+  {schemaJson && <script type="application/ld+json" set:html={schemaJson} />}
   <link rel="icon" href="/favicon-dark.svg" type="image/svg+xml">
   <link rel="preload" href="/fonts/newsreader-display-600.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/libre-franklin-400.woff2" as="font" type="font/woff2" crossorigin>
@@ -82,7 +89,7 @@ const dateline = `${new Date().toLocaleDateString("en-US", { month: "short", yea
             <ul class="sections">
               <li><a href="/projects/" aria-current={here("projects")}>Work</a></li>
               <li><a href="/research/" aria-current={here("research")}>Research</a></li>
-              <li><a href="/#about">About</a></li>
+              <li><a href="/about" aria-current={here("about")}>About</a></li>
             </ul>
           </nav>
           <ul class="nav-actions">
@@ -102,7 +109,7 @@ const dateline = `${new Date().toLocaleDateString("en-US", { month: "short", yea
               <ul class="sections">
                 <li><a href="/projects/" aria-current={here("projects")}>Work</a></li>
                 <li><a href="/research/" aria-current={here("research")}>Research</a></li>
-                <li><a href="/#about">About</a></li>
+                <li><a href="/about" aria-current={here("about")}>About</a></li>
               </ul>
             </nav>
             <ul class="nav-actions">
@@ -130,7 +137,7 @@ const dateline = `${new Date().toLocaleDateString("en-US", { month: "short", yea
           <ul>
             <li><a href="/projects/">Work</a></li>
             <li><a href="/research/">Research</a></li>
-            <li><a href="/#about">About</a></li>
+            <li><a href="/about">About</a></li>
             <li><a href="/resume.pdf">Resume</a></li>
             <li><a href={`mailto:${email}`}>Email</a></li>
           </ul>
@@ -155,12 +162,20 @@ const dateline = `${new Date().toLocaleDateString("en-US", { month: "short", yea
     </div></div></div>
   </footer>
   <!-- The lock icon's code box (js/unlock.js); without scripts the icon just opens /unlock -->
-  <dialog class="unlock-dialog" id="unlock-dialog" aria-label="Unlock">
+  <dialog class="unlock-dialog" id="unlock-dialog" aria-labelledby="unlock-dialog-h">
+    <div class="unlock-top">
+      <h2 class="unlock-title" id="unlock-dialog-h">Private section</h2>
+      <button class="unlock-close" type="button" aria-label="Close" data-close>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+      </button>
+    </div>
+    <p class="unlock-note">A few personal projects, behind a code.</p>
     <form class="unlock-form" method="post" action="/unlock">
-      <p class="unlock-error" role="alert" hidden></p>
-      <input type="hidden" name="next" value="/private/">
-      <input name="code" type="password" inputmode="numeric" autocomplete="off" aria-label="Code" placeholder="Code" required>
+      <label class="unlock-label" for="unlock-dialog-code">Code</label>
+      <input id="unlock-dialog-code" name="code" type="password" inputmode="numeric" autocomplete="off" aria-describedby="unlock-dialog-error" required>
       <button class="btn primary" type="submit">Unlock</button>
+      <p class="unlock-error" id="unlock-dialog-error" role="alert" hidden></p>
+      <input type="hidden" name="next" value="/private/">
     </form>
   </dialog>
   {/* Hubble's Pillars of Creation behind every page (css: "4. Sky"), already dimmed. Decorative, so no alt

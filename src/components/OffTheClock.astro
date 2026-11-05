@@ -1,0 +1,64 @@
+---
+// "Off the clock": a few lines about life outside work, then seven of my
+// photos (public/img/photos/, each in several sizes). On the homepage the
+// fountain sits in the "In brief" rail on desktop, so this leaves it out
+// there; the About page passes `all` to show every photo at every width.
+// The layout is in src/styles/off-the-clock.css.
+import "../styles/off-the-clock.css";
+
+interface Props {
+  all?: boolean;   // show the fountain on desktop too (the About page)
+}
+
+const { all = false } = Astro.props;
+---
+<section class="h-section" id="otc" aria-labelledby="otc-h">
+  <div class="section-head">
+    <h2 id="otc-h" class="h-label">Off the clock</h2>
+  </div>
+  <div class:list={["otc", { "otc-all": all }]}>
+    <div class="otc-text">
+      <p>Gaming is still a big part of my life. At NIU I played on an esports scholarship.</p>
+      <p>Free software and free education are a big passion of mine. It started with tutoring in high school. At NIU I tested out of the intro C++ course, but I still made <a href="/projects/csci-240">tutorials for some of its labs</a>, mostly for friends taking it, and later I TA&rsquo;d it.</p>
+      <p>I also bike, lift and like cars, and I love learning about history and new technology.</p>
+      <p>And here are a few pictures I&rsquo;ve taken that I like.</p>
+    </div>
+
+    <figure class="ph ph-lead">
+      <div class="h-fill">
+        <img src="/img/photos/boat-sunset-960.webp" srcset="/img/photos/boat-sunset-480.webp 480w, /img/photos/boat-sunset-960.webp 960w, /img/photos/boat-sunset-1600.webp 1600w" sizes="(min-width: 1180px) 872px, (min-width: 720px) calc(100vw - 64px), calc(100vw - 32px)" width="1600" height="1200" loading="lazy" decoding="async" alt="A shrimp boat on calm water at sunset, under streaks of orange and pink cloud">
+      </div>
+      <figcaption>Shrimp boat, Tybee Island, Georgia</figcaption>
+    </figure>
+
+    <figure class="ph ph-fountain">
+      <img src="/img/photos/fountain-480.webp" srcset="/img/photos/fountain-480.webp 480w, /img/photos/fountain-960.webp 960w, /img/photos/fountain-1600.webp 1600w" sizes={all ? "(min-width: 1180px) 200px, 50vw" : "50vw"} width="1600" height="1480" loading="lazy" decoding="async" alt="Buckingham Fountain spraying water on a sunny day, with the Chicago skyline behind it">
+      <figcaption>Buckingham Fountain, Chicago</figcaption>
+    </figure>
+
+    <figure class="ph ph-valley">
+      <img src="/img/photos/sierra-valley-480.webp" srcset="/img/photos/sierra-valley-480.webp 480w, /img/photos/sierra-valley-960.webp 960w" sizes={all ? "(min-width: 1180px) 200px, 50vw" : "(min-width: 1180px) 424px, 50vw"} width="960" height="1023" loading="lazy" decoding="async" alt="A steep valley of pine forest and granite slopes under a clear blue sky, with sunlit shrubs and boulders in front">
+      <figcaption>Near Pinecrest, Stanislaus National Forest</figcaption>
+    </figure>
+
+    <figure class="ph ph-waterfall">
+      <img src="/img/photos/waterfall-480.webp" srcset="/img/photos/waterfall-480.webp 480w, /img/photos/waterfall-960.webp 960w" sizes="(min-width: 1180px) 324px, (min-width: 720px) 25vw, 50vw" width="960" height="1280" loading="lazy" decoding="async" alt="White water pouring down between large granite boulders">
+      <figcaption>Waterfall, Yosemite National Park</figcaption>
+    </figure>
+
+    <figure class="ph ph-dog">
+      <img src="/img/photos/dog-960.webp" srcset="/img/photos/dog-480.webp 480w, /img/photos/dog-960.webp 960w, /img/photos/dog-1600.webp 1600w" sizes="(min-width: 1180px) 648px, (min-width: 720px) 50vw, calc(100vw - 32px)" width="1600" height="1200" loading="lazy" decoding="async" alt="Sita, a small black and white dog, standing in sunny grass dotted with dandelions">
+      <figcaption>Sita in the grass</figcaption>
+    </figure>
+
+    <figure class="ph ph-redsky">
+      <img src="/img/photos/red-sky-960.webp" srcset="/img/photos/red-sky-480.webp 480w, /img/photos/red-sky-960.webp 960w, /img/photos/red-sky-1500.webp 1500w" sizes="(min-width: 1180px) 324px, (min-width: 720px) 25vw, 50vw" width="1500" height="2000" loading="lazy" decoding="async" alt="Rippled clouds lit red and orange above a pale field, with bare branches reaching in from the corners">
+      <figcaption>Another sunset</figcaption>
+    </figure>
+
+    <figure class="ph ph-lisle">
+      <img src="/img/photos/lisle-sunset-1600.webp" srcset="/img/photos/lisle-sunset-480.webp 480w, /img/photos/lisle-sunset-960.webp 960w, /img/photos/lisle-sunset-1600.webp 1600w, /img/photos/lisle-sunset-2400.webp 2400w" sizes="(min-width: 1180px) 1320px, calc(100vw - 32px)" width="2400" height="1800" loading="lazy" decoding="async" alt="A band of orange sunset above dark treetops, with the sky reflected in a small pond below">
+      <figcaption>Sunset over Lisle, Illinois</figcaption>
+    </figure>
+  </div>
+</section>

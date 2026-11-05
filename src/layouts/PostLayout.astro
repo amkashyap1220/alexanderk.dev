@@ -8,6 +8,7 @@
 import BaseLayout from "./BaseLayout.astro";
 import { post, posts, formatDate } from "../data/research";
 import { projects } from "../data/projects";
+import { person, site } from "../data/person";
 import "../styles/editorial.css";
 import "../styles/research.css";
 
@@ -22,6 +23,17 @@ const p = post(slug);
 // The project page that tells how it was built, and the next investigation (they loop)
 const built = projects.find((x) => x.writeup?.href === `/research/${p.slug}`);
 const next = posts.length > 1 ? posts[(posts.indexOf(p) + 1) % posts.length] : null;
+// For search engines: an article by me, with its dates and preview image
+const article = {
+  "@type": "Article",
+  headline: p.title,
+  description: p.description,
+  url: `${site}/research/${p.slug}`,
+  datePublished: p.date,
+  dateModified: p.updated ?? p.date,
+  author: { "@type": "Person", "@id": person["@id"], name: person.name, url: person.url },
+  ...(p.image && { image: `${site}/research/${p.slug}.png` }),
+};
 ---
 <BaseLayout
   title={`${p.title} · Alexander Kashyap`}
@@ -29,6 +41,7 @@ const next = posts.length > 1 ? posts[(posts.indexOf(p) + 1) % posts.length] : n
   path={`/research/${p.slug}`}
   ogImage={p.image && { src: `/research/${p.slug}.png`, alt: p.image.previewAlt ?? p.image.alt }}
   current="research"
+  schema={article}
 >
   <Fragment slot="head"><slot name="head" /></Fragment>
 <div class="gutter ed-page">

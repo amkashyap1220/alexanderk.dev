@@ -1,5 +1,10 @@
 ---
+// The private section's front page: a list of private projects, and a Lock
+// button. The Worker only sends it after the unlock code (worker/auth.js).
+// The layout is in src/styles/private.css.
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import "../../styles/editorial.css";
+import "../../styles/private.css";
 ---
 <BaseLayout
   title="Private projects · Alexander Kashyap"
@@ -7,33 +12,36 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
   noindex
   current="private"
 >
-  <section class="hero">
-    <div class="narrow">
-      <p class="eyebrow">Private</p>
-      <h1>Private projects</h1>
-      <form method="post" action="/lock" class="actions">
+<div class="gutter ed-page">
+<div class="shell">
+  <header class="page-head">
+    <p class="kicker"><span class="k">Private</span> <span>Unlocked</span></p>
+    <h1 class="page-hed">Private projects</h1>
+    <p class="page-dek">Personal projects that use my own data. Locking hides this section again on this browser.</p>
+    <div class="lock-actions">
+      <form method="post" action="/lock">
         <button class="btn" type="submit">Lock</button>
       </form>
+      <a class="h-more" href="/">Go to the homepage</a>
     </div>
-  </section>
+  </header>
 
-  <section class="section">
-    <div class="wrap">
-      {/* To add a private project: copy one <article> here and add its page next to
-          src/pages/private/fitness-tracking.astro. Everything under /private/ needs the
-          unlock code on the site, but the repo is public on GitHub: never put passwords, keys
-          or anything sensitive in these files. */}
-      <div class="grid two">
-        <article class="card project">
-          <div class="card-head">
-            <h2 class="card-title"><a class="card-link" href="/private/fitness-tracking">Fitness Tracking</a></h2>
-            <time class="when" datetime="2026">2026</time>
-          </div>
-          <p class="pill"><span>Private</span></p>
-          <p class="card-text">Workout log, Push / Pull / Legs plan, strength and volume charts, and lift rankings.</p>
-          <ul class="chips" aria-label="Tech"></ul>
-        </article>
-      </div>
+  {/* To add a private project: copy one <li> here and add its page next to
+      src/pages/private/fitness-tracking.astro. Everything under /private/ needs the
+      unlock code on the site, but the repo is public on GitHub: never put passwords, keys
+      or anything sensitive in these files. */}
+  <section class="h-section" aria-labelledby="priv-h">
+    <div class="section-head">
+      <h2 id="priv-h" class="h-label">Projects</h2>
     </div>
+    <ul class="priv-list">
+      <li>
+        <p class="kicker"><span class="k">Private</span> <span>2026</span></p>
+        <h3 class="hed"><a href="/private/fitness-tracking">Fitness Tracking</a></h3>
+        <p class="h-text">Workout log, Push / Pull / Legs plan, strength and volume charts, and lift rankings.</p>
+      </li>
+    </ul>
   </section>
+</div>
+</div>
 </BaseLayout>

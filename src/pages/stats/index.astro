@@ -1,10 +1,20 @@
 ---
+// GitHub Stats: my public GitHub repos in numbers, a year of contributions,
+// languages and the latest commits. Everything is filled in by js/stats.js
+// (and the heat map by components/stats/Contributions.svelte) from
+// /data/github.json, which the Worker refreshes every 5 minutes. Each box is
+// drawn here first at its final size, with placeholders, so nothing jumps
+// when the numbers arrive. The layout is in src/styles/stats.css.
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { projects } from "../../data/projects";
 import Contributions from "../../components/stats/Contributions.svelte";
+import "../../styles/editorial.css";
+import "../../styles/stats.css";
 
 // Which repos have a page here, for js/stats.js: { "RateWillBot": "/projects/ratewillbot", ... }
 const projectPages = Object.fromEntries(projects.map((p) => [p.repo.split("/")[1], `/projects/${p.slug}`]));
+// The numbers at the top, in order (js/stats.js fills each one in by its key)
+const figures = [["repos", "public repos"], ["commits", "commits"], ["stars", "stars"], ["languages", "languages"], ["since", "on GitHub since"]];
 ---
 <BaseLayout
   title="GitHub Stats · Alexander Kashyap"
@@ -12,61 +22,72 @@ const projectPages = Object.fromEntries(projects.map((p) => [p.repo.split("/")[1
   path="/stats/"
   current="stats"
 >
-  <section class="hero">
-    <div class="narrow">
-      <p class="eyebrow">GitHub Stats</p>
-      <h1>By the numbers</h1>
-      <p class="lead">From my public GitHub repos (forks left out), updated every 5 minutes.</p>
+<div class="gutter ed-page">
+<div class="shell">
+  <header class="page-head">
+    <p class="kicker"><span class="k">GitHub Stats</span> <span>Updated every 5 minutes</span></p>
+    <h1 class="page-hed">By the numbers</h1>
+    <p class="page-dek st-dek">Public repos only; my day-to-day C#/.NET work lives in private company repos.</p>
+  </header>
+
+  <section class="h-section" aria-labelledby="overview-h">
+    <div class="section-head">
+      <h2 id="overview-h" class="h-label">Overview</h2>
+      <span class="credit">Forks left out</span>
+    </div>
+    <p class="st-status" id="numbers-status" role="status"></p>
+    <dl class="figures" id="numbers" aria-busy="true">
+      {figures.map(([key, label]) => <div data-figure={key}><dt>{label}</dt><dd>&ndash;</dd></div>)}
+    </dl>
+    <div class="st-high" id="highlights">
+      <p><span class="muted">Most starred:</span> &ndash;</p>
+      <p><span class="muted">Last updated:</span> &ndash;</p>
     </div>
   </section>
 
-  <!-- Each box below starts with a loading message; js/stats.js replaces it. -->
-  <section class="section">
-    <div class="wrap">
-      <h2 class="sr-only">Overview</h2>
-      <p class="muted" id="numbers-status" role="status">Loading from GitHub…</p>
-      <dl class="stat-grid" id="numbers"></dl>
-      <div class="highlights" id="highlights"></div>
+  <section class="h-section" aria-labelledby="contrib-h">
+    <div class="section-head">
+      <h2 id="contrib-h" class="h-label">Contributions</h2>
+    </div>
+    <p class="st-intro">Every day of the last year on GitHub, a row per month and a dot per day: commits, pull requests, issues and reviews. Hover a dot for the day.</p>
+    <div id="contributions" aria-live="polite">
+      <Contributions client:load />
     </div>
   </section>
 
-  <section class="section">
-    <div class="narrow">
-      <h2 class="section-title">Contributions</h2>
-      <p class="section-intro">Every day of the last year on GitHub, a row per month and a dot per day: commits, pull requests, issues and reviews. Hover a dot for the day.</p>
-      <div id="contributions" aria-live="polite">
-        <Contributions client:load />
+  <div class="st-pair">
+    <section class="h-section" aria-labelledby="lang-h">
+      <div class="section-head">
+        <h2 id="lang-h" class="h-label">Languages</h2>
       </div>
-    </div>
-  </section>
-
-  <!-- Side by side on wide screens -->
-  <div class="section-pair">
-  <section class="section">
-    <div class="narrow">
-      <h2 class="section-title">Languages</h2>
-      <p class="section-intro">Across all my repos, measured by how many repos use each language, or by how much code is in it.</p>
+      <p class="st-intro">Across all my repos, measured by how many repos use each language, or by how much code is in it.</p>
       <div class="toggle" role="group" aria-label="Measure languages by">
         <button class="btn small" type="button" data-language-mode="repos" aria-pressed="true">By repos</button>
         <button class="btn small" type="button" data-language-mode="bytes" aria-pressed="false">By code size</button>
       </div>
       <div id="languages" aria-live="polite" aria-busy="true">
-        <p class="muted">Loading…</p>
+        {Array.from({ length: 8 }, (_, i) => (
+          <div class="bar-row st-wait" aria-hidden="true"><span class="bar-name">{i === 0 ? "Loading…" : " "}</span><div class="bar-track"></div><span class="bar-value">&nbsp;</span></div>
+        ))}
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section class="section">
-    <div class="narrow">
-      <h2 class="section-title">Activity</h2>
-      <p class="section-intro">My latest commits, and a summary of recent public activity: pushes, new repos, pull requests.</p>
-      <div class="activity-summary" id="activity-summary" aria-live="polite" aria-busy="true">
-        <p class="muted">Loading…</p>
+    <section class="h-section" aria-labelledby="activity-h">
+      <div class="section-head">
+        <h2 id="activity-h" class="h-label">Activity</h2>
       </div>
-      <ul class="latest" id="latest"></ul>
-    </div>
-  </section>
+      <p class="st-intro">My latest commits, and a summary of recent public activity: pushes, new repos, pull requests.</p>
+      <div class="activity-summary" id="activity-summary" aria-live="polite" aria-busy="true">
+        <p>Loading&hellip;</p>
+        <p class="muted">&nbsp;</p>
+      </div>
+      <ul class="latest" id="latest">
+        {Array.from({ length: 5 }, () => <li class="st-wait" aria-hidden="true">&nbsp;</li>)}
+      </ul>
+    </section>
   </div>
+</div>
+</div>
 
   <Fragment slot="scripts">
     <script is:inline type="application/json" id="project-pages" set:html={JSON.stringify(projectPages)}></script>

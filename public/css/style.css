@@ -12,7 +12,7 @@
    6. Footer
    7. Components    buttons, hero, pill, chips, cards, grids, sections
    8. Content       entries, prose (README + posts), posts list, unlock box, video
-   9. Stats page
+   9. Stat tiles and bars (fitness dashboard)
    10. Wider screens and phones
    The homepage's own layout is in src/styles/home.css.
    ========================================================================== */
@@ -447,15 +447,23 @@ main .hv { padding-block: var(--space-5); }
 .empty { padding: var(--space-7); border: 1px dashed var(--rule); border-radius: var(--radius-lg); background: var(--paper); color: var(--muted); font-size: var(--fs-md); text-align: center; }
 .grid > .empty { grid-column: 1 / -1; }   /* an empty state spans the whole grid, not one column */
 
-/* Unlock code box (unlock.html, and the lock icon's dialog) */
+/* Unlock code box (unlock.html, and the lock icon's dialog): a labeled field and
+   the button side by side, any error under them */
 .unlock-form { display: grid; grid-template-columns: 1fr auto; gap: var(--space-2); max-width: 280px; margin: var(--space-7) auto 0; }
-.unlock-form input { min-width: 0; padding: 10px 12px; border: 1px solid var(--frame); border-radius: var(--radius); background: var(--field); color: var(--ink); font: inherit; letter-spacing: 0.3em; text-align: center; }
-.unlock-form input::placeholder { color: var(--muted); letter-spacing: normal; }
+.unlock-label { grid-column: 1 / -1; font: 500 0.6875rem/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.unlock-form input { min-width: 0; padding: 10px 12px; border: 1px solid var(--frame); border-radius: var(--radius); background: var(--field); color: var(--ink); font: inherit; letter-spacing: 0.3em; }
 .unlock-form input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.unlock-form input[aria-invalid="true"] { border-color: var(--code-number); }
 .unlock-error { grid-column: 1 / -1; padding: var(--space-3); border: 1px solid var(--code-number); border-radius: var(--radius); color: var(--code-number); font-size: var(--fs-sm); text-align: left; }
-.unlock-dialog { width: min(320px, calc(100vw - 32px)); padding: var(--space-5); border: 1px solid var(--frame); border-radius: var(--radius); background: var(--paper); color: var(--ink); }
+.unlock-dialog { width: min(340px, calc(100vw - 32px)); padding: var(--space-5); border: 1px solid var(--frame); border-radius: var(--radius); background: var(--paper); color: var(--ink); }
 .unlock-dialog::backdrop { background: rgb(0 0 0 / 0.6); }
-.unlock-dialog .unlock-form { margin: 0; max-width: none; }
+.unlock-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: -8px -8px 0 0; }
+.unlock-title { font-family: var(--serif); font-weight: 600; font-size: 1.375rem; line-height: 1.2; }
+.unlock-close { display: inline-flex; align-items: center; justify-content: center; flex: none; width: 44px; height: 44px; padding: 0; border: 0; background: transparent; color: var(--muted); cursor: pointer; }
+.unlock-close:hover { color: var(--ink); }
+.unlock-close svg { width: 16px; height: 16px; }
+.unlock-note { margin-top: 2px; color: var(--muted); font-size: var(--fs-sm); }
+.unlock-dialog .unlock-form { margin: var(--space-4) 0 0; max-width: none; }
 
 /* Embedded video: full width, always 16:9 */
 .video { aspect-ratio: 16 / 9; overflow: hidden; border: 1px solid var(--rule); border-radius: var(--radius-lg); background: var(--soft); }
@@ -463,13 +471,11 @@ main .hv { padding-block: var(--space-5); }
 .video-link { margin-top: var(--space-3); font-size: var(--fs-sm); }
 
 
-/* ---------- 9. Stats page ---------- */
+/* ---------- 9. Stat tiles and bars (the fitness dashboard; GitHub Stats has src/styles/stats.css) ---------- */
 .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr)); gap: 10px; }
 .stat { display: flex; flex-direction: column-reverse; padding: var(--space-5) var(--space-4); text-align: center; }   /* <dt> label below its <dd> number */
 .stat-value { font-family: var(--serif); font-size: 2rem; font-weight: 600; line-height: 1.1; letter-spacing: -0.01em; }
 .stat-label { margin-top: 2px; color: var(--muted); font-size: var(--fs-xs); }
-.highlights { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-1) var(--space-7); margin-top: var(--space-6); font-size: var(--fs-md); }
-
 .toggle { display: inline-flex; gap: 6px; margin-bottom: var(--space-6); }
 
 /* Language bars: name | bar | value */
@@ -480,36 +486,6 @@ main .hv { padding-block: var(--space-5); }
 .bar { height: 100%; border-radius: var(--radius-pill); background: var(--lang, var(--muted)); }   /* the language's color */
 .bar-value { color: var(--muted); text-align: right; }
 
-.heatmap { padding: var(--space-4); }
-.heatmap-headline { margin-bottom: var(--space-3); font-size: var(--fs-md); }
-.heatmap-headline b { font-size: var(--fs-xl); color: var(--mark); }
-/* A row per month: name, a column per day of the month, the month's total */
-.heatmap-row { display: grid; grid-template-columns: 4.2em repeat(31, minmax(0, 1fr)) 2.8em; align-items: center; column-gap: 2px; padding: 1px 0; border-radius: var(--radius-sm); }
-.heatmap-row.top { background: var(--soft); }
-.heatmap-head { color: var(--muted); font-size: var(--fs-xs); }
-.heatmap-day { text-align: center; }
-.heatmap-month { color: var(--label); font-size: var(--fs-sm); white-space: nowrap; }
-.heatmap-total { color: var(--muted); font-size: var(--fs-xs); text-align: right; font-variant-numeric: tabular-nums; }
-.heatmap-cell { display: grid; place-items: center; aspect-ratio: 1; }
-.heatmap-cell i { width: calc(var(--size) * 100%); height: calc(var(--size) * 100%); border-radius: 50%; background: var(--mark); opacity: var(--shade); }
-.heatmap-cell.none i { width: 22%; height: 22%; background: var(--muted); opacity: 0.45; }
-.heatmap-cell.peak i { background: var(--star); opacity: 1; box-shadow: 0 0 0 2px var(--card), 0 0 0 3px var(--star); }
-.heatmap-foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: var(--space-2) var(--space-5); margin-top: var(--space-3); }
-.heatmap-foot p { font-size: var(--fs-sm); }
-.heatmap-foot > p:first-child { flex: 1 1 300px; }
-.heatmap-legend { display: flex; align-items: center; gap: 4px; }
-.heatmap-legend .heatmap-cell { width: 14px; }
-.heatmap-peak-key { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--star); vertical-align: 0; }
-@media (max-width: 640px) {
-  .heatmap { padding: var(--space-3) var(--space-2); }
-  .heatmap-row { grid-template-columns: 3.4em repeat(31, minmax(0, 1fr)) 2.4em; column-gap: 1px; }
-  .heatmap-head { font-size: 10px; }
-  .heatmap-month { font-size: var(--fs-xs); }
-}
-.activity-summary { font-size: var(--fs-md); }
-.latest { margin-top: var(--space-5); padding: 0; list-style: none; font-size: var(--fs-sm); }
-.latest li { padding: var(--space-2) 0; border-top: 1px solid var(--rule); }
-.latest code { font-size: var(--fs-xs); }
 
 
 /* ---------- 10. Wider screens and phones ---------- */
@@ -575,11 +551,10 @@ main .hv { padding-block: var(--space-5); }
   .wrap, .narrow { max-width: 1400px; }
   .hero { text-align: left; }
   .lead { max-width: 36em; margin-left: 0; }
-  .actions, .hero .chips, .highlights { justify-content: flex-start; }
+  .actions, .hero .chips { justify-content: flex-start; }
   .prose > :is(p, ul, ol, blockquote) { max-width: 46em; }   /* long text stays readable; tables, code and charts use the full width */
   main .pa { padding: 0 var(--space-8); }
   main .hv { padding: var(--space-6) var(--space-8); }
-  #contributions { max-width: 1000px; margin: 0 auto; }   /* the heat map's dots would get huge at full width */
   .hero .avatars { justify-content: flex-start; }
 
   /* Experience and education as a timeline: dates on the left, the rest on the right */
@@ -591,10 +566,6 @@ main .hv { padding-block: var(--space-5); }
   .entry li { padding-left: var(--space-4); }
   .entry li::before { left: 0; }
 
-  /* Pairs of sections that sit side by side (Stats: languages and activity) */
-  .section-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--space-9); max-width: 1400px; margin: 0 auto; padding-inline: 32px; border-top: 1px solid var(--rule); }
-  .section-pair > .section { border-top: 0; }
-  .section-pair .narrow { padding: 0; }
 
   /* Research: posts as a grid of cards, image on top */
   .posts { grid-template-columns: repeat(auto-fill, minmax(min(400px, 100%), 1fr)); }
@@ -606,7 +577,6 @@ main .hv { padding-block: var(--space-5); }
   :root { --fs-body: 1.0625rem; }
   .shell { padding-inline: 24px; }
   .wrap, .narrow { padding: 0 40px; }
-  .section-pair { padding-inline: 40px; }
 
   /* Homepage masthead: the two "ears" either side, the name centered under them */
   .sky-inner { min-height: 0; padding-block: 28px 52px; }

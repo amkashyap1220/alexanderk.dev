@@ -1,0 +1,129 @@
+---
+// The About page: the longer version of the homepage's "In brief" and About.
+// Facts and contact on the left (on top on phones), then a few paragraphs,
+// everywhere I've worked and studied (newest first, from my resume), the
+// tools I use, "Off the clock" with the photos, and how to reach me.
+// The layout is in src/styles/about.css.
+import BaseLayout from "../layouts/BaseLayout.astro";
+import OffTheClock from "../components/OffTheClock.astro";
+import { person } from "../data/person";
+import "../styles/editorial.css";
+import "../styles/about.css";
+
+const email = "alexander.kashyap@gmail.com";
+const toolbox = [
+  "C#", ".NET", "SQL Server (T-SQL)", "MySQL", "Python", "pandas", "GeoPandas", "statsmodels", "DuckDB",
+  "JavaScript", "TypeScript", "Svelte", "Astro", "React", "FastAPI", "REST APIs", "C++", "Git", "Jira",
+  "AWS", "Azure", "Cloudflare Workers", "JD Edwards",
+];
+
+---
+<BaseLayout
+  title="About · Alexander Kashyap"
+  description="About Alexander Kashyap, a software developer in the Chicago area: where I've worked and studied, the tools I use, and life outside work."
+  path="/about"
+  current="about"
+  schema={{ "@type": "ProfilePage", url: "https://alexanderk.dev/about", mainEntity: person }}
+>
+<div class="gutter ed-page">
+<div class="shell">
+  <header class="about-head">
+    <p class="kicker"><span class="k">About</span> <span>Chicago area</span></p>
+    <h1 class="page-hed">Alexander Kashyap</h1>
+    <p class="page-dek">Software developer. I build software, dig into data, and share what I learn.</p>
+  </header>
+
+  <div class="about-grid">
+    <aside class="about-facts" aria-label="At a glance">
+      <img class="about-photo" src="/img/linkedin-photo.jpg" width="192" height="192" alt="Alex Kashyap, smiling, in glasses" decoding="async">
+      <dl class="spec">
+        <div><dt>Now</dt><dd>Application Developer, <span class="nw">K-Rise Systems</span>, since Jan 2025</dd></div>
+        <div><dt>Studied</dt><dd>B.S. Computer Science, Northern Illinois University, 2024</dd></div>
+        <div><dt>Certified</dt><dd>AWS Certified Cloud Practitioner</dd></div>
+        <div><dt>Email</dt><dd><a href={`mailto:${email}`}>{email}</a></dd></div>
+        <div><dt>Elsewhere</dt><dd>
+          <ul class="about-links">
+            <li><a href="https://www.linkedin.com/in/alexander-kashyap/">LinkedIn</a></li>
+            <li><a href="https://github.com/amkashyap1220">GitHub</a></li>
+            <li><a href="/stats/">GitHub Stats</a></li>
+          </ul>
+        </dd></div>
+      </dl>
+      <a class="cta" href="/resume.pdf">Download resume <span class="mono">PDF</span></a>
+    </aside>
+
+    <div class="about-body">
+      <div class="about-intro">
+        <p>I&rsquo;m a software developer in the Chicago area. Since January 2025 I&rsquo;ve been an Application Developer at <span class="nw">K-Rise</span> Systems, writing C#/.NET and SQL for an <span class="nw">accounts-payable</span> automation product on JD&nbsp;Edwards. It takes an invoice from a scanned image to a voucher in the ERP. I also help set it up for clients, working with their finance teams to fit it to how they work.</p>
+        <p>On my own time I chase questions through public data, like <a href="/research/chicago-home-value">which Chicago-area zip codes sell for less than they should</a> and <a href="/research/pa-job-market">where a new physician assistant&rsquo;s pay goes furthest</a>, and I build free tools like <a href="/projects/switch-to-youtube">Switch To YouTube</a>. Right now I&rsquo;m building <a href="/projects/open-tradesman">Open Tradesman</a>, a <span class="nw">voice-to-invoice</span> app, for the PayPal AI Hackathon.</p>
+        <p>I learn fastest by building, and I like building with people. Most of what I make is free and open: tools that help someone learn a thing or make a decision.</p>
+      </div>
+
+      <section class="about-sec" aria-labelledby="cv-h">
+        <h2 id="cv-h" class="about-h2">Where I&rsquo;ve worked and studied</h2>
+        <ol class="cv">
+          <li>
+            <p class="h-when mono">Jan 2025 &ndash; now</p>
+            <h3>K-Rise Systems</h3>
+            <p class="role">Application Developer, Aurora, IL</p>
+            <ul class="what">
+              <li>Worked on the rebuild of the company&rsquo;s AP Automation product for JD Edwards in C# and .NET, adding AI features across the invoice pipeline, from scanned capture through validation to JD Edwards vouchers.</li>
+              <li>Help set it up for clients: gathering requirements from their finance teams, fitting it to their workflows, and carrying improvements back into the product.</li>
+              <li>Wrote the SQL that inserts and updates JD Edwards tables as invoices move through the pipeline, keeping accounts-payable data in sync between systems.</li>
+              <li>Built its reports and dashboards (SQL queries, JavaScript and CSS) so clients can see how the automation performs.</li>
+              <li>Used AI APIs to match addresses read from scanned invoices against address records, cutting down manual lookups.</li>
+              <li>Supported EASYPay and EASYCommerce, the company&rsquo;s .NET payments and e-commerce apps, including the SQL that keeps their data in sync with JD Edwards.</li>
+            </ul>
+          </li>
+          <li>
+            <p class="h-when mono">May 2024 &ndash; Jan 2025</p>
+            <h3>Outlier, a Scale AI platform</h3>
+            <p class="role">AI Evaluator, contract, remote</p>
+            <ul class="what">
+              <li>Evaluated and compared AI-written code for correctness, clarity and quality. My feedback was used as training data to improve large language models.</li>
+              <li>Applied detailed scoring rubrics to coding tasks, flagging bugs and logic errors.</li>
+            </ul>
+          </li>
+          <li>
+            <p class="h-when mono">May 2024</p>
+            <h3>Northern Illinois University</h3>
+            <p class="role">B.S. Computer Science</p>
+            <ul class="what">
+              <li>Coursework included databases, probability and statistics, data structures, algorithms and software engineering.</li>
+              <li>Scholarship player for NIU Esports.</li>
+              <li>Event coordinator and board member of the Association for Computing Machinery (ACM).</li>
+              <li>Teaching assistant for the intro C++ course, CSCI 240.</li>
+              <li>Transfer Merit Scholar.</li>
+            </ul>
+          </li>
+          <li>
+            <p class="h-when mono">May 2022 &ndash; Jan 2023</p>
+            <h3>Chamberlain Group</h3>
+            <p class="role">Software Engineering Intern, Middleware, Chicago</p>
+            <ul class="what">
+              <li>Built REST API endpoints in .NET 6 for the myQ connected-device platform.</li>
+              <li>Helped migrate services from .NET Core 3.1 to .NET 6, in an Agile/Scrum team.</li>
+            </ul>
+          </li>
+        </ol>
+      </section>
+
+      <section class="about-sec" aria-labelledby="tools-h">
+        <h2 id="tools-h" class="about-h2">Toolbox</h2>
+        <p class="toolbox">{toolbox.join(", ")}.</p>
+      </section>
+    </div>
+  </div>
+
+  <OffTheClock all />
+
+  <section class="h-section about-end" aria-labelledby="reach-h">
+    <div class="section-head">
+      <h2 id="reach-h" class="h-label">Contact</h2>
+    </div>
+    <p class="about-reach">If you&rsquo;re hiring, have a dataset you think I&rsquo;d enjoy, or want to talk through something you&rsquo;re building, email is the best way to reach me: <a href={`mailto:${email}`}>{email}</a>.</p>
+    <p class="about-more"><a class="h-more" href="/projects/">See my work</a> <a class="h-more" href="/research/">Read my research</a></p>
+  </section>
+</div>
+</div>
+</BaseLayout>

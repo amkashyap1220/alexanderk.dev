@@ -1,0 +1,6 @@
+# Everything public may be crawled. The private section needs the unlock code
+# and its pages say noindex, so search engines leave them out either way.
+User-agent: *
+Allow: /
+
+Sitemap: https://alexanderk.dev/sitemap.xml

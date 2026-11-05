@@ -87,3 +87,29 @@
   .h-more { padding-block: 10px; margin-top: 2px; }
   .section-head a { padding-block: 10px; margin-block: -10px; }
 }
+
+/* ---------- The work and study list (homepage About, About page) ----------
+   Newest first. Each entry: the dates, the place, the role, then a line or
+   a list of what I did. From 720px the dates sit in their own column. */
+.cv { margin: 0; padding: 0; list-style: none; }
+.cv > li { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2px; border-top: 1px solid var(--rule); padding: 16px 0; }
+.cv > li:last-child { border-bottom: 1px solid var(--rule); }
+.cv .h-when { color: var(--muted); margin-bottom: 2px; }
+.cv h3 { font-family: var(--serif); font-weight: 600; font-size: 1.3125rem; line-height: 1.2; letter-spacing: -0.005em; }
+.cv .role { color: var(--muted); font-size: 0.9375rem; line-height: 1.45; }
+.cv .what { line-height: 1.55; margin-top: 4px; }
+.cv ul.what { margin: 8px 0 0; padding-left: 1.1em; max-width: 38em; }
+.cv ul.what li + li { margin-top: 4px; }
+.cv ul.what li::marker { color: var(--muted); }
+.cv-note { margin-top: 16px; font-size: 0.9375rem; color: var(--muted); }
+@media (min-width: 720px) {
+  .cv > li { grid-template-columns: 9.5rem minmax(0, 1fr); column-gap: 24px; border-top: 0; padding: 0; }
+  .cv > li:last-child { border-bottom: 0; }
+  .cv > li > .h-when { grid-row: 1 / span 3; padding-top: 20px; margin: 0; }
+  .cv > li > :not(.h-when) { grid-column: 2; }
+  .cv > li > h3 { border-top: 1px solid var(--rule); padding-top: 16px; }
+  .cv > li > :last-child { padding-bottom: 16px; }
+  .cv > li:last-child > :last-child { border-bottom: 1px solid var(--rule); }
+  .cv-note { padding-left: calc(9.5rem + 24px); }
+  .cv-note + .h-more { margin-left: calc(9.5rem + 24px); }
+}

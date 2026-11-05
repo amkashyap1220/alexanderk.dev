@@ -1,20 +1,59 @@
 ---
+// The page for any address that doesn't exist (the Worker sends it with a
+// 404 status). A friendly line, the three pieces I'd show first, and email.
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { project } from "../data/projects";
+import "../styles/editorial.css";
+
+const email = "alexander.kashyap@gmail.com";
+// The homepage's featured three, each linked to its main page
+const picks = ["open-tradesman", "home-value-score", "alexanderk-dev"].map((slug) => {
+  const p = project(slug);
+  return { name: p.name, headline: p.headline ?? p.name, question: p.question ?? p.tagline, href: p.kind === "Research" && p.writeup ? p.writeup.href : `/projects/${p.slug}` };
+});
 ---
 <BaseLayout
   title="Page not found · Alexander Kashyap"
   description="This page doesn't exist."
 >
-  <section class="hero">
-    <div class="narrow">
-      <p class="eyebrow">404</p>
-      <h1>Page not found</h1>
-      <p class="lead">That page doesn't exist, or it moved. Try one of these instead.</p>
-      <div class="actions">
-        <a class="btn primary" href="/">About me</a>
-        <a class="btn" href="/projects/">Projects</a>
-        <a class="btn" href="/research/">Research</a>
-      </div>
+<div class="gutter ed-page">
+<div class="shell">
+  <header class="page-head">
+    <p class="kicker"><span class="k">404</span> <span>Page not found</span></p>
+    <h1 class="page-hed">Nothing lives at this address</h1>
+    <p class="page-dek">The page may have moved, or the link has a typo. Here&rsquo;s what I&rsquo;d show you first instead.</p>
+  </header>
+
+  <section class="h-section" aria-labelledby="picks-h">
+    <div class="section-head">
+      <h2 id="picks-h" class="h-label">Start here</h2>
+      <a href="/projects/">All my work</a>
     </div>
+    <ul class="nf-picks">
+      {picks.map((p) => (
+        <li>
+          <p class="kicker"><span class="k">{p.name}</span></p>
+          <h3 class="hed"><a href={p.href}>{p.headline}</a></h3>
+          <p class="q">{p.question}</p>
+        </li>
+      ))}
+    </ul>
   </section>
+
+  <p class="nf-mail">Looking for something specific? Email me at <a href={`mailto:${email}`}>{email}</a>.</p>
+</div>
+</div>
 </BaseLayout>
+
+<style>
+  .nf-picks { margin: 0; padding: 0; list-style: none; }
+  .nf-picks li + li { border-top: 1px solid var(--rule); margin-top: 24px; padding-top: 24px; }
+  .nf-picks .q { margin-bottom: 0; }
+  .nf-mail { margin-top: 48px; padding-top: 12px; border-top: 4px double var(--ink); max-width: 34em; font-family: var(--serif); font-size: 1.25rem; line-height: 1.5; }
+  .nf-mail a { overflow-wrap: anywhere; }
+  @media (min-width: 720px) {
+    .nf-picks { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .nf-picks li + li { border-top: 0; margin-top: 0; padding-top: 0; border-left: 1px solid var(--rule); padding-left: var(--col-pad); }
+    .nf-picks li:not(:last-child) { padding-right: var(--col-pad); }
+  }
+</style>
