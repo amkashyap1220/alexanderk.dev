@@ -6,7 +6,10 @@ export const API = "/private/api/fitness/";
 export const DAY_COLOR = { push: "var(--s1)", pull: "var(--s2)", legs: "var(--s3)" };
 export const MACHINE_COLOR = { treadmill: "var(--s1)", bike: "var(--s2)", elliptical: "var(--s3)" };
 
-export const fmtDate = (d, opts = { month: "short", day: "numeric" }) => new Date(d + "T12:00:00Z").toLocaleDateString("en-US", { ...opts, timeZone: "UTC" });
+// One formatter for each set of options, made once (toLocaleDateString makes a new one every call, which is slow)
+const dateFormats = {};
+export const fmtDate = (d, opts = { month: "short", day: "numeric" }) =>
+  (dateFormats[JSON.stringify(opts)] ??= new Intl.DateTimeFormat("en-US", { ...opts, timeZone: "UTC" })).format(new Date(d + "T12:00:00Z"));
 export const nameOf = (D, id) => (D.exercises.exercises.find((e) => e.id === id) || { name: id }).name;
 export const dayName = (D, d) => (D.program.days[d] ? D.program.days[d].name : d || "Workout");
 export const liftsOf = (s) => (s.lifts || []).filter((l) => (l.sets || []).length);

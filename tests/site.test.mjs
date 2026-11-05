@@ -38,7 +38,11 @@ test("every page has a title, a description and the site header and footer", () 
     assert.equal(all(html, /<title>([^<]+)<\/title>/g).length, 1, file + ": one <title>");
     assert.match(html, /<meta name="description" content="[^"]+"/, file + ": description");
     assert.match(html, /<a class="nav-private" href="\/private\/"/, file + ": Private tab");
-    assert.match(html, /<script src="\/js\/signed-in\.js"><\/script>/, file + ": signed-in.js");
+    // The Private tab shows once unlocked, from a line of script in <head> (no extra request)
+    assert.ok(html.includes('document.documentElement.classList.add("signed-in")'), file + ": signed-in check");
+    // The shared styles come first, so each page's own styles can build on them
+    const styles = all(html, /<link rel="stylesheet" href="([^"]+)"|<style>/g);
+    assert.match(styles[0] ?? "", /^\/_astro\/site\.[\w-]+\.css$/, file + ": shared stylesheet first");
     assert.match(html, /class="icon-btn unlock-link" href="\/unlock"/, file + ": footer lock icon");
     // The main nav: Work, Research and About, in a <nav> every page has (the ☰ menu it replaced is gone)
     const nav = html.match(/<nav class="site-nav" aria-label="Main">([\s\S]*?)<\/nav>/)?.[1] ?? "";

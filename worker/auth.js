@@ -19,7 +19,8 @@
    code. It can't be forged without the code, and changing the code locks
    every device out. HttpOnly, so page scripts can't read it. A second
    cookie, signed_in=1, is readable by the pages only so they can show the
-   Private tab (js/signed-in.js); it unlocks nothing by itself.
+   Private tab (a line of script in BaseLayout's <head>); it unlocks nothing
+   by itself.
 
    A short code is easy to guess by trying them all, so wrong guesses are
    slowed twice over, without KV (so they can't use up the KV writes the

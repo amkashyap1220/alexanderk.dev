@@ -10,11 +10,13 @@
    4. Sky           the photo behind every page, and keeping text readable on it
    5. Header        the homepage masthead and the compact header on other pages
    6. Footer
-   7. Components    buttons, hero, pill, chips, cards, grids, sections
-   8. Content       entries, prose (README + posts), posts list, unlock box, video
+   7. Components    buttons, cards, grids, sections
+   8. Content       prose (READMEs and code), unlock box, video
    9. Stat tiles and bars (fitness dashboard)
    10. Wider screens and phones
-   The homepage's own layout is in src/styles/home.css.
+   BaseLayout imports this file, so Astro minifies it and every page loads it
+   first. What most pages share is in editorial.css; each page's own layout
+   is in its own file next to this one (home.css, about.css, ...).
    ========================================================================== */
 
 
@@ -186,7 +188,7 @@ main:focus { outline: none; }   /* the skip link moves focus here; no ring neede
 /* A soft dark edge around text, so a bright star behind a line never washes
    it out. Solid panels (charts, maps, code, tables) don't need it. */
 body { text-shadow: 0 0 2px var(--night), 0 0 8px var(--night); }
-:is(pre, table, .card, .post-card, .pill, .hv, .pa-figure, .fit-page, .unlock-dialog, input, select, textarea, button, .btn, .cta-solid) { text-shadow: none; }
+:is(pre, table, .card, .hv, .pa-figure, .fit-page, .unlock-dialog, input, select, textarea, button, .btn, .cta-solid) { text-shadow: none; }
 
 /* Solid panels under charts, maps and tables */
 .hv, .pa-figure { background: var(--paper); border: 1px solid var(--rule); }
@@ -255,8 +257,8 @@ main .hv { padding-block: var(--space-5); }
 .foot-private { display: flex; align-items: center; gap: 8px; }
 .foot-private a { color: var(--muted); }
 .foot-private a:hover { color: var(--ink); }
-/* The lock opens the unlock box (js/unlock.js); once unlocked (js/signed-in.js)
-   it hides and a "Private" link shows instead */
+/* The lock opens the unlock box (js/unlock.js); once unlocked (the script in
+   BaseLayout's <head>) it hides and a "Private" link shows instead */
 .site-footer .unlock-link { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin-right: -14px; }
 .site-footer .unlock-link svg { width: 16px; height: 16px; }
 .nav-private { display: none; }
@@ -288,39 +290,8 @@ main .hv { padding-block: var(--space-5); }
 .icon-btn { display: inline-flex; padding: 6px; border: 0; background: none; color: var(--ink); cursor: pointer; }
 .icon-btn svg { width: 14px; height: 14px; }
 
-/* Hero: the intro at the top of a page */
-.hero { padding: var(--space-10) 0 64px; text-align: center; }
-.eyebrow { color: var(--label); font-family: var(--mono); font-weight: 500; font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; }
-.hero h1 { margin: var(--space-3) 0 var(--space-2); font-family: var(--serif); font-weight: 600; font-size: clamp(2.125rem, 1.5rem + 2.4vw, 3.25rem); line-height: 1.05; letter-spacing: -0.015em; }
-.tagline { color: var(--muted); font-family: var(--serif); font-size: 1.25rem; line-height: 1.35; }
-.lead { max-width: 36em; margin: var(--space-5) auto 0; font-family: var(--serif); font-size: 1.1875rem; line-height: 1.5; }
-/* Profile pictures, each linking to its profile */
-.avatars { display: flex; justify-content: center; gap: var(--space-7); margin-bottom: var(--space-7); }
-.avatar { display: flex; flex-direction: column; align-items: center; gap: 6px; color: var(--muted); font-size: var(--fs-xs); text-decoration: none; }
-.avatar img { width: 96px; height: 96px; border: 1px solid var(--rule); border-radius: 50%; background: var(--soft); object-fit: cover; }
-.avatar:hover { color: var(--ink); }
-.avatar:hover img { border-color: var(--ink); }
-.actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: var(--space-7); }
-
-/* Pill for live GitHub stats */
-.pill {
-  display: inline-flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  gap: var(--space-1) 10px;
-  margin-top: 14px;
-  padding: var(--space-1) 14px;
-  border: 1px solid var(--rule);
-  border-radius: var(--radius);
-  background: var(--soft);
-  color: var(--muted);
-  font-size: var(--fs-xs);
-}
-.pill > span { white-space: nowrap; }
-.pill b { color: var(--ink); font-weight: 600; }
+/* GitHub stars, and a language name with a dot in its color (set by js/github.js) */
 .star { color: var(--star); }
-/* A language name gets a dot in its color (set by js/github.js) */
 [data-field="language"][style*="--lang"]::before {
   content: "";
   display: inline-block;
@@ -330,15 +301,6 @@ main .hv { padding-block: var(--space-5); }
   border-radius: 50%;
   background: var(--lang);
 }
-.pill .sep { width: 1px; height: 12px; background: var(--rule); }
-
-/* Chips (tags) */
-.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 14px 0 0; padding: 0; list-style: none; }
-.hero .chips { justify-content: center; }
-.chip { padding: 2px 8px; border: 1px solid var(--rule); border-radius: var(--radius); color: var(--muted); font-family: var(--mono); font-weight: 500; font-size: var(--fs-2xs); letter-spacing: 0.02em; }
-
-/* Dates: "Jan 2025 – Present" */
-.when { color: var(--muted); font-family: var(--mono); font-weight: 500; font-size: var(--fs-xs); letter-spacing: 0.02em; white-space: nowrap; }
 
 /* Sections: full-width rule, then a title */
 .section { padding: var(--space-10) 0; border-top: 1px solid var(--rule); }
@@ -359,44 +321,8 @@ main .hv { padding-block: var(--space-5); }
 .card-title { font-size: var(--fs-md); font-weight: 600; }
 .card-text { margin-top: 6px; color: var(--muted); font-size: var(--fs-sm); line-height: 1.6; }
 
-/* Project cards: the title is the link, stretched over the whole card.
-   Each card spans 4 rows of the grid (head, stats, text, tags) through subgrid,
-   so every part lines up across a row. */
-.project {
-  position: relative;
-  display: grid;
-  grid-row: span 4;
-  grid-template-rows: subgrid;
-  row-gap: 0;
-  align-content: start;
-  padding: var(--space-5);
-}
-.project:hover { border-color: var(--accent); }
-.project:has(.card-link:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
-/* The date always sits top-right; a long title wraps beside it instead of pushing the date down */
-.card-head { display: grid; grid-template-columns: 1fr auto; align-items: baseline; gap: 0 var(--space-3); }
-.project .card-title { font-family: var(--serif); font-size: 1.25rem; line-height: 1.2; }
-.project .card-text { font-size: var(--fs-md); }
-.project .when { font-size: var(--fs-2xs); }
-.project .pill { justify-self: start; margin: var(--space-4) 0 var(--space-1); }
-.project .chips { align-self: start; margin-top: 0; padding-top: 14px; }
-.card-link { color: var(--ink); text-decoration: none; }
-.card-link:focus-visible { outline: none; }
-.card-link::after { content: ""; position: absolute; inset: 0; }   /* makes the whole card clickable */
-.project:hover .card-link { text-decoration: underline; text-decoration-color: var(--accent); }
-
 
 /* ---------- 8. Content ---------- */
-/* Experience / education entries */
-.entry + .entry { margin-top: var(--space-8); }
-.entry-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0 var(--space-4); }
-.entry-title { font-family: var(--serif); font-size: 1.25rem; font-weight: 600; }
-.entry-where { margin-top: 2px; color: var(--muted); font-size: var(--fs-md); }
-.entry ul { margin-top: var(--space-3); padding-left: 0; list-style: none; }
-.entry li { position: relative; padding-left: var(--space-5); font-size: 0.9375rem; line-height: 1.6; }
-.entry li + li { margin-top: var(--space-2); }
-.entry li::before { content: "›"; position: absolute; left: var(--space-1); color: var(--mark); }
-
 /* Long-form text: blog posts and READMEs (.prose), plus GitHub-only bits (.readme) */
 .prose { font-size: 1rem; line-height: 1.7; overflow-wrap: break-word; }
 .prose > * + * { margin-top: 14px; }
@@ -420,30 +346,6 @@ main .hv { padding-block: var(--space-5); }
 .readme .anchor { display: none; }                        /* GitHub's link icons next to headings */
 .readme .markdown-heading:first-child > *, .readme .markdown-body > :first-child { margin-top: 0; }
 
-/* Research: each post is a preview card, image left and text right (stacked on phones) */
-.posts { display: grid; gap: var(--space-5); padding: 0; list-style: none; }
-.post-card {
-  display: grid;
-  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
-  overflow: hidden;
-  border: 1px solid var(--rule);
-  border-radius: var(--radius-lg);
-  background: var(--card);
-  color: var(--ink);
-  text-decoration: none;
-}
-.post-card:not(:has(.post-thumb)) { grid-template-columns: 1fr; }   /* a post without an image */
-.post-card:hover { border-color: var(--accent); }
-.post-card:hover .post-title { text-decoration: underline; text-decoration-color: var(--accent); }
-.post-thumb { min-height: 190px; border-right: 1px solid var(--rule); background: var(--soft); }   /* fills the card's height */
-.post-thumb img { display: block; width: 100%; height: 100%; object-fit: cover; }
-/* Each post image has a light and a dark version; the site is dark, so the dark one shows */
-.post-thumb .thumb-light { display: none; }
-.post-body { display: flex; flex-direction: column; gap: var(--space-2); padding: var(--space-5); }
-.post-body time { color: var(--muted); font-family: var(--mono); font-weight: 500; font-size: var(--fs-xs); letter-spacing: 0.04em; text-transform: uppercase; }
-.post-title { font-family: var(--serif); font-size: 1.375rem; font-weight: 600; line-height: 1.2; }
-.post-summary { color: var(--muted); font-size: var(--fs-md); }
-.post-body .chips { margin-top: auto; padding-top: var(--space-2); }
 .empty { padding: var(--space-7); border: 1px dashed var(--rule); border-radius: var(--radius-lg); background: var(--paper); color: var(--muted); font-size: var(--fs-md); text-align: center; }
 .grid > .empty { grid-column: 1 / -1; }   /* an empty state spans the whole grid, not one column */
 
@@ -496,11 +398,8 @@ main .hv { padding-block: var(--space-5); }
 }
 
 @media (max-width: 640px) {
-  .hero { padding: 56px 0 48px; }
   .section { padding: var(--space-9) 0; }
   .section-title { font-size: 1.625rem; }
-  .post-card { grid-template-columns: 1fr; }
-  .post-thumb { min-height: 0; aspect-ratio: 1200 / 630; border-right: 0; border-bottom: 1px solid var(--rule); }
   .bar-row { grid-template-columns: 90px 1fr 80px; gap: 10px; }
   .stat-grid { grid-template-columns: 1fr 1fr; }
   .stat:last-child:nth-child(odd) { grid-column: 1 / -1; }   /* no lonely half-width tile at the end */
@@ -508,12 +407,8 @@ main .hv { padding-block: var(--space-5); }
 
 /* Tablets and up */
 @media (min-width: 641px) {
-  .hero { padding: var(--space-9) 0 var(--space-8); }
-  .lead { margin-top: var(--space-5); }
-  .actions { margin-top: var(--space-6); }
   .section { padding: var(--space-8) 0; }
   .section-intro { margin-bottom: var(--space-6); }
-  .entry + .entry { margin-top: var(--space-7); }
 }
 
 @media (min-width: 720px) {
@@ -549,28 +444,9 @@ main .hv { padding-block: var(--space-5); }
 /* Desktop: the content lines up with the header's edges, up to 1368px wide */
 @media (min-width: 1100px) {
   .wrap, .narrow { max-width: 1400px; }
-  .hero { text-align: left; }
-  .lead { max-width: 36em; margin-left: 0; }
-  .actions, .hero .chips { justify-content: flex-start; }
   .prose > :is(p, ul, ol, blockquote) { max-width: 46em; }   /* long text stays readable; tables, code and charts use the full width */
   main .pa { padding: 0 var(--space-8); }
   main .hv { padding: var(--space-6) var(--space-8); }
-  .hero .avatars { justify-content: flex-start; }
-
-  /* Experience and education as a timeline: dates on the left, the rest on the right */
-  .entry { display: grid; grid-template-columns: 150px minmax(0, 1fr); column-gap: var(--space-7); }
-  .entry-head { display: contents; }
-  .entry .when { grid-column: 1; grid-row: 1 / span 3; padding-top: 6px; white-space: normal; }
-  .entry-title, .entry-where, .entry ul { grid-column: 2; }
-  .entry ul { padding-left: var(--space-4); border-left: 1px solid var(--rule); }
-  .entry li { padding-left: var(--space-4); }
-  .entry li::before { left: 0; }
-
-
-  /* Research: posts as a grid of cards, image on top */
-  .posts { grid-template-columns: repeat(auto-fill, minmax(min(400px, 100%), 1fr)); }
-  .posts .post-card { grid-template-columns: 1fr; grid-template-rows: auto 1fr; height: 100%; }
-  .posts .post-thumb { min-height: 0; aspect-ratio: 1200 / 630; border-right: 0; border-bottom: 1px solid var(--rule); }
 }
 
 @media (min-width: 1180px) {
