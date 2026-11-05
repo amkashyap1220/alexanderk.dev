@@ -507,3 +507,9 @@ main .hv { padding-block: var(--space-5); }
 @media (pointer: coarse) {
   .sections a, .nav-actions .cta, .topbar .nav-actions .cta, .site-footer ul a, .btn { min-height: 44px; }
 }
+
+/* ---------- Technology logos (src/components/Tech.astro) ---------- */
+/* A small one-color logo before a technology's name, in the muted text color */
+.tech { white-space: nowrap; }
+.tech-logo { display: inline-block; width: 1.1em; height: 1.1em; margin-right: 0.4em; vertical-align: -0.2em; fill: var(--muted); }
+.tech-list { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 0; padding: 0; list-style: none; }

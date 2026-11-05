@@ -3,6 +3,7 @@
 // gets a figure, the rest a row each. Evergreen pieces, not a dated feed.
 // The layout is in src/styles/research.css, with the featured layout from work.css.
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import Tech from "../../components/Tech.astro";
 import { posts } from "../../data/research";
 import { projects } from "../../data/projects";
 import "../../styles/editorial.css";
@@ -42,7 +43,7 @@ const leadBuilt = built(lead.slug);
         <p class="kicker"><span class="k">{lead.chips[0]}</span> <span>{month(lead.date)}</span> <span>Data through {lead.through}</span></p>
         <h3 id="lead-t" class="hed feat-hed"><a href={`/research/${lead.slug}`}>{lead.title}</a></h3>
         <p class="h-text">{lead.lead}</p>
-        <p class="stack">{lead.chips.slice(1).map((c, i) => <>{i > 0 && " "}<span>{c}</span></>)}</p>
+        <p class="stack">{lead.chips.slice(1).map((c, i) => <>{i > 0 && " "}<Tech name={c} /></>)}</p>
         <p class="feat-links">
           <a class="h-more" href={`/research/${lead.slug}`}>{leadBuilt?.writeup?.label ?? "Read it"}</a>
           {leadBuilt && <a class="h-more" href={`/projects/${leadBuilt.slug}`}>How I built it</a>}

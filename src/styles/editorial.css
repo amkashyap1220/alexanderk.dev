@@ -20,6 +20,8 @@
 .kicker, .h-label, .stack { font-family: var(--mono); font-weight: 500; font-size: 0.75rem; line-height: 1.45; letter-spacing: 0.05em; text-transform: uppercase; }
 .kicker span, .stack span { white-space: nowrap; }
 .kicker span:not(:last-child)::after, .stack span:not(:last-child)::after { content: " \00B7"; content: " \00B7" / ""; color: var(--muted); }
+.stack .tech:not(:last-child)::after { content: none; }   /* logos separate the names, so no dots */
+.stack:has(.tech) { display: flex; flex-wrap: wrap; gap: 4px 1.1em; }
 .h-label { color: var(--ink); margin-bottom: 16px; }
 .kicker { color: var(--muted); margin-bottom: 8px; }
 .kicker .k { color: var(--accent); }

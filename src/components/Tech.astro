@@ -1,0 +1,12 @@
+---
+// A technology's name with its small logo in front, in the muted text color.
+// For lists of technologies (stack lines, project facts, the Toolbox), not
+// running sentences. Logos come from src/data/tech.ts; a name without one is
+// shown on its own.
+import { icons, techIcon } from "../data/tech";
+
+interface Props { name: string }
+const { name } = Astro.props;
+const d = icons[techIcon[name]];
+---
+<span class="tech">{d && <svg class="tech-logo" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d={d} /></svg>}{name}</span>

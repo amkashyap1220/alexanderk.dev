@@ -6,6 +6,7 @@
 // slot="intro". The repo's README is offered last, folded, as "From the repo".
 // The layout is in src/styles/work.css.
 import BaseLayout from "./BaseLayout.astro";
+import Tech from "../components/Tech.astro";
 import Readme from "../components/Readme.astro";
 import { project, dates } from "../data/projects";
 import "../styles/editorial.css";
@@ -45,7 +46,7 @@ const github = `https://github.com/${p.repo}`;
         <dl class="spec">
           <div><dt>When</dt><dd>{dates(p.when)}</dd></div>
           <div><dt>Status</dt><dd>{p.status}</dd></div>
-          <div><dt>Stack</dt><dd>{p.chips.join(", ")}</dd></div>
+          <div><dt>Stack</dt><dd><ul class="tech-list">{p.chips.map((c) => <li><Tech name={c} /></li>)}</ul></dd></div>
           <div><dt>Links</dt><dd>
             <ul class="cs-links">
               {p.writeup && <li><a href={p.writeup.href}>{p.writeup.label}</a></li>}

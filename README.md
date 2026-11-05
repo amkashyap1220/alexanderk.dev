@@ -51,5 +51,6 @@ The Worker needs these, set with `wrangler secret put`:
 
 - Fonts: Newsreader, Libre Franklin and IBM Plex Mono, all open source, served from `public/fonts/`.
 - Background: Hubble's [Pillars of Creation](https://esahubble.org/images/heic1501a/) by NASA, ESA/Hubble and the Hubble Heritage Team ([CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)).
+- Technology logos: [Simple Icons](https://simpleicons.org) (CC0).
 - The photos are my own.
 - I used AI to help write the text on this site.
