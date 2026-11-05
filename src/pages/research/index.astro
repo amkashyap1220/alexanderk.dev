@@ -47,7 +47,6 @@ const leadBuilt = built(lead.slug);
         <p class="feat-links">
           <a class="h-more" href={`/research/${lead.slug}`}>{leadBuilt?.writeup?.label ?? "Read it"}</a>
           {leadBuilt && <a class="h-more" href={`/projects/${leadBuilt.slug}`}>How I built it</a>}
-          {lead.link && <a class="h-more" href={lead.link.href}>{lead.link.label}</a>}
         </p>
       </div>
       {lead.image && (
@@ -76,7 +75,6 @@ const leadBuilt = built(lead.slug);
                 <p class="feat-links">
                   <a class="h-more" href={`/research/${p.slug}`}>{b?.writeup?.label ?? "Read it"}</a>
                   {b && <a class="h-more" href={`/projects/${b.slug}`}>How I built it</a>}
-                  {p.link && <a class="h-more" href={p.link.href}>{p.link.label}</a>}
                 </p>
               </div>
             </li>
