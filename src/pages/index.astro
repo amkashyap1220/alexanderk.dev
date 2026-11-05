@@ -2,7 +2,7 @@
 // The homepage: a brief front door. The name and tagline, a two-line intro,
 // three featured cards (a picture, a title and one line each), a short More
 // list and how to reach me.
-// The details live on the Work, Research and About pages. The layout is in
+// The details live on the Repositories, Lab and About pages. The layout is in
 // src/styles/home.css.
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { projects } from "../data/projects";
@@ -33,7 +33,7 @@ const featured = [
   },
 ];
 
-// More: the projects the Work page lists under More work. A research project links to its write-up.
+// More: the projects the Repositories page lists under More repositories. A research project links to its write-up.
 const more = projects.filter((p) => p.tier === "more").map((p) => ({ name: p.name, line: p.tagline, href: p.writeup?.href ?? `/projects/${p.slug}` }));
 ---
 <BaseLayout
@@ -56,7 +56,7 @@ const more = projects.filter((p) => p.tier === "more").map((p) => ({ name: p.nam
   <section class="h-section" aria-labelledby="feat-h">
     <div class="section-head">
       <h2 id="feat-h" class="h-label">Featured</h2>
-      <a href="/projects/">All work</a>
+      <a href="/projects/">All repositories</a>
     </div>
     <ul class="fcards">
       {featured.map((f, i) => (
