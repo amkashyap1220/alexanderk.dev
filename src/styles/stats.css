@@ -21,8 +21,10 @@
 .st-high { display: flex; flex-wrap: wrap; gap: 4px 32px; padding-top: 12px; border-top: 1px solid var(--rule); }
 .st-high p { margin: 0; }
 
-/* Contributions: the heat map, no wider than 1000px (the dots would get huge) */
-#contributions { max-width: 1000px; }
+/* Contributions: the heat map and its intro, no wider than 1000px (the dots
+   would get huge), centered under the full-width section head like the
+   charts on the research pages */
+.st-contrib { max-width: 1000px; margin-inline: auto; }
 .heatmap { padding: var(--space-4); }
 .heatmap-headline { margin-bottom: var(--space-3); font-size: var(--fs-md); }
 .heatmap-headline b { font-size: var(--fs-xl); color: var(--mark); }

@@ -7,6 +7,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { projects } from "../data/projects";
 import { person, site } from "../data/person";
+import { pics } from "../lib/pic";
 import "../styles/editorial.css";
 import "../styles/home.css";
 
@@ -61,7 +62,7 @@ const more = projects.filter((p) => p.tier === "more").map((p) => ({ name: p.nam
       {featured.map((f, i) => (
         <li class="fcard">
           <a class="fcard-pic" href={f.href} tabindex="-1" aria-hidden="true">
-            <img src={`/img/home/${f.img}.webp`} srcset={`/img/home/${f.img}-640.webp 640w, /img/home/${f.img}.webp 1200w`} sizes="(min-width: 1180px) 420px, (min-width: 720px) 31vw, calc(100vw - 32px)" width="1200" height="630" loading={i > 0 ? "lazy" : undefined} decoding="async" alt={f.alt}>
+            <img {...pics(f.img)} sizes="(min-width: 1180px) 420px, (min-width: 720px) 31vw, calc(100vw - 32px)" width="1200" height="630" loading={i > 0 ? "lazy" : undefined} decoding="async" alt={f.alt}>
           </a>
           <p class="kicker">{f.kicker.map((k, i) => <>{i > 0 && " "}<span class={i === 0 ? "k" : undefined}>{k}</span></>)}</p>
           <h3 class="hed fcard-t"><a href={f.href}>{f.title}</a></h3>
