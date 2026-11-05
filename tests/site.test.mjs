@@ -123,6 +123,13 @@ test("no page shows a phone number", () => {
   }
 });
 
+test("no page says \"How I built it\"; it's \"How it's built\"", () => {
+  for (const { file, html } of pages) {
+    const text = html.replace(/<[^>]+>/g, " ").replace(/&#39;|&#x27;|&rsquo;|’/g, "'");
+    assert.doesNotMatch(text, /how i built/i, file);
+  }
+});
+
 test("link previews and canonical links point at the page's own address, and their images exist", () => {
   for (const { file, html } of pages) {
     const url = html.match(/<meta property="og:url" content="([^"]+)"/)?.[1];

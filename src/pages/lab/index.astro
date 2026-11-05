@@ -45,7 +45,7 @@ const leadBuilt = built(lead.slug);
         <p class="stack">{lead.chips.slice(1).map((c, i) => <>{i > 0 && " "}<Tech name={c} /></>)}</p>
         <p class="feat-links">
           <a class="h-more" href={`/lab/${lead.slug}`}>{leadBuilt?.writeup?.label ?? "Read it"}</a>
-          {leadBuilt && <a class="h-more" href={`/repositories/${leadBuilt.slug}`}>How I built it</a>}
+          {leadBuilt && <a class="h-more" href={`/repositories/${leadBuilt.slug}`}>How it's built</a>}
         </p>
       </div>
       {lead.image && (
@@ -73,7 +73,7 @@ const leadBuilt = built(lead.slug);
                 <p class="inv-line">{p.summary}</p>
                 <p class="feat-links">
                   <a class="h-more" href={`/lab/${p.slug}`}>{b?.writeup?.label ?? "Read it"}</a>
-                  {b && <a class="h-more" href={`/repositories/${b.slug}`}>How I built it</a>}
+                  {b && <a class="h-more" href={`/repositories/${b.slug}`}>How it's built</a>}
                 </p>
               </div>
             </li>

@@ -60,7 +60,7 @@ const github = `https://github.com/${p.repo}`;
       <div class="cs-body">
         <p class="cs-lede">{p.summary}</p>
         {p.kind === "Research" && p.writeup && (
-          <p class="cs-callout">This page is how I built it. The findings are in the write-up. <a class="h-more" href={p.writeup.href}>{p.writeup.label}</a></p>
+          <p class="cs-callout">This page is how it's built. The findings are in the write-up. <a class="h-more" href={p.writeup.href}>{p.writeup.label}</a></p>
         )}
         <slot name="intro" />
         <slot />
