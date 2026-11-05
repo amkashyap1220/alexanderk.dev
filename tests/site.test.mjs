@@ -28,7 +28,7 @@ function fileFor(address) {
 
 test("the site builds every page", () => {
   assert.ok(pages.length >= 20, `built ${pages.length} pages`);
-  for (const p of ["index.html", "about.html", "404.html", "unlock.html", "projects/index.html", "research/index.html", "stats/index.html", "private/index.html"]) {
+  for (const p of ["index.html", "about.html", "404.html", "unlock.html", "repositories/index.html", "lab/index.html", "stats/index.html", "private/index.html"]) {
     assert.ok(pages.some((x) => x.file === p), p);
   }
 });
@@ -46,8 +46,8 @@ test("every page has a title, a description and the site header and footer", () 
     assert.match(html, /class="icon-btn unlock-link" href="\/unlock"/, file + ": footer lock icon");
     // The main nav: Work, Research and About, in a <nav> every page has (the ☰ menu it replaced is gone)
     const nav = html.match(/<nav class="site-nav" aria-label="Main">([\s\S]*?)<\/nav>/)?.[1] ?? "";
-    assert.match(nav, /<a href="\/projects\/"[^>]*>Repositories<\/a>/, file + ": nav Repositories");
-    assert.match(nav, /<a href="\/research\/"[^>]*>Lab<\/a>/, file + ": nav Lab");
+    assert.match(nav, /<a href="\/repositories\/"[^>]*>Repositories<\/a>/, file + ": nav Repositories");
+    assert.match(nav, /<a href="\/lab\/"[^>]*>Lab<\/a>/, file + ": nav Lab");
     assert.match(nav, /<a href="\/about"[^>]*>About<\/a>/, file + ": nav About");
     assert.match(html, /<a class="cta cta-solid" href="\/resume\.pdf">/, file + ": Resume in the header");
     // The unlock box: a visible title, a close button, and a labeled field tied to its error message
@@ -70,15 +70,15 @@ test("the resume is there to download, and the homepage shows the email address"
 
 test("the Repositories page lists every project under Featured repositories and More repositories, and every project page has its facts", () => {
   const slugs = all(fs.readFileSync("src/data/projects.ts", "utf8"), /slug: "([^"]+)"/g);
-  const work = pages.find((x) => x.file === "projects/index.html").html;
+  const work = pages.find((x) => x.file === "repositories/index.html").html;
   for (const tier of ["Featured repositories", "More repositories"]) assert.match(work, new RegExp(`class="h-label">${tier}<`), "Repositories: " + tier);
   assert.match(work, new RegExp(`<span>${slugs.length} projects</span>`), "Work: the project count");
   for (const slug of slugs) {
     // A research project is listed by its write-up, which links on to the project page
-    const writeup = pages.find((x) => x.file.startsWith("research/") && x.html.includes(`href="/projects/${slug}"`) && work.includes(`href="/${x.file.replace(/\.html$/, "")}"`));
-    assert.ok(work.includes(`href="/projects/${slug}"`) || writeup, `Work: a link to ${slug}, or to a write-up that links to it`);
-    const page = pages.find((x) => x.file === `projects/${slug}.html`)?.html;
-    assert.ok(page, `projects/${slug}.html`);
+    const writeup = pages.find((x) => x.file.startsWith("lab/") && x.html.includes(`href="/repositories/${slug}"`) && work.includes(`href="/${x.file.replace(/\.html$/, "")}"`));
+    assert.ok(work.includes(`href="/repositories/${slug}"`) || writeup, `Work: a link to ${slug}, or to a write-up that links to it`);
+    const page = pages.find((x) => x.file === `repositories/${slug}.html`)?.html;
+    assert.ok(page, `repositories/${slug}.html`);
     assert.match(page, /<aside class="cs-facts"/, slug + ": facts");
     assert.doesNotMatch(page, /Work in progress/, slug + ": no empty walkthrough");
     // A README waits, folded, until it's opened
@@ -88,23 +88,23 @@ test("the Repositories page lists every project under Featured repositories and 
 
 test("the Research page lists every post, and every post has its byline, findings and charts' numbers", () => {
   const slugs = all(fs.readFileSync("src/data/research.ts", "utf8"), /slug: "([^"]+)"/g);
-  const index = pages.find((x) => x.file === "research/index.html").html;
+  const index = pages.find((x) => x.file === "lab/index.html").html;
   assert.match(index, /class="h-label">Featured</, "Lab: featured");
   for (const slug of slugs) {
-    assert.ok(index.includes(`href="/research/${slug}"`), `Research: a link to ${slug}`);
-    const page = pages.find((x) => x.file === `research/${slug}.html`)?.html;
-    assert.ok(page, `research/${slug}.html`);
+    assert.ok(index.includes(`href="/lab/${slug}"`), `Research: a link to ${slug}`);
+    const page = pages.find((x) => x.file === `lab/${slug}.html`)?.html;
+    assert.ok(page, `lab/${slug}.html`);
     assert.match(page, /<p class="byline">[\s\S]*?By Alexander Kashyap[\s\S]*?Data through/, slug + ": byline");
     assert.match(page, /class="h-label">What I found<\/h2>\s*<ol>(\s*<li>[\s\S]*?<\/li>){3}/, slug + ": at least three findings");
     assert.match(page, /class="h-label">Read next</, slug + ": what to read next");
   }
   // Every PA chart has its numbers as a table, in the page as built
-  const pa = pages.find((x) => x.file === "research/pa-job-market.html").html;
+  const pa = pages.find((x) => x.file === "lab/pa-job-market.html").html;
   const charts = (pa.match(/<div class="pa-(?:chart|map)"/g) || []).length;
   assert.ok(charts > 0, "PA: charts");
   assert.equal((pa.match(/<summary>Show the numbers<\/summary>/g) || []).length, charts, "PA: a table for every chart");
   // The Chicago map's opening summary is worked out when the site is built, so the page doesn't jump when the data loads
-  const chicago = pages.find((x) => x.file === "research/chicago-home-value.html").html;
+  const chicago = pages.find((x) => x.file === "lab/chicago-home-value.html").html;
   assert.match(chicago, /id="hv-summary"[^>]*>(<!--[^>]*-->)*<b>Your top \d+ to buy\.<\/b> Best fit: /, "Chicago: the summary as built");
 });
 
@@ -151,7 +151,7 @@ test("structured data is valid JSON, and names me on the homepage, the About pag
   const ld = (file) => JSON.stringify(JSON.parse(pages.find((x) => x.file === file).html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]));
   for (const file of ["index.html", "about.html"]) assert.match(ld(file), /"@type":"Person".*"name":"Alexander Kashyap"/, file);
   for (const slug of all(fs.readFileSync("src/data/research.ts", "utf8"), /slug: "([^"]+)"/g)) {
-    assert.match(ld(`research/${slug}.html`), /"@type":"Article".*"datePublished":"\d{4}-\d\d-\d\d".*"author":\{"@type":"Person"/, slug);
+    assert.match(ld(`lab/${slug}.html`), /"@type":"Article".*"datePublished":"\d{4}-\d\d-\d\d".*"author":\{"@type":"Person"/, slug);
   }
 });
 
@@ -171,7 +171,7 @@ test("the About, Stats and 404 pages have what they promise", () => {
   assert.match(stats, /Public repos only; my day-to-day C#\/\.NET work lives in private company repos\./, "Stats: the framing line");
   assert.equal((stats.match(/<div data-figure="/g) || []).length, 5, "Stats: five numbers, drawn before the data arrives");
   const notFound = pages.find((x) => x.file === "404.html").html;
-  for (const href of ["/projects/open-tradesman", "/research/chicago-home-value", "/projects/alexanderk-dev"]) assert.ok(notFound.includes(`href="${href}"`), "404: " + href);
+  for (const href of ["/repositories/open-tradesman", "/lab/chicago-home-value", "/repositories/alexanderk-dev"]) assert.ok(notFound.includes(`href="${href}"`), "404: " + href);
   assert.match(notFound, /href="mailto:alexander\.kashyap@gmail\.com"/, "404: email");
 });
 
@@ -189,5 +189,12 @@ test("every link and file a page uses exists, at its clean address", () => {
         assert.ok(ref.startsWith("/") && fileFor(ref), `${file}: ${ref} (srcset) doesn't exist`);
       }
     }
+  }
+});
+
+test("the old Work and Research addresses redirect to Repositories and Lab", () => {
+  const rules = fs.readFileSync("public/_redirects", "utf8");
+  for (const [from, to] of [["/projects", "/repositories/"], ["/projects/*", "/repositories/:splat"], ["/research", "/lab/"], ["/research/*", "/lab/:splat"]]) {
+    assert.match(rules, new RegExp(`^${from.replace(/[*]/g, "\\*")} ${to} 301$`, "m"), from);
   }
 });

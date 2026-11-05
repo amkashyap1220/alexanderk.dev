@@ -1,5 +1,5 @@
 // Makes the link-preview images (what iMessage, Slack, LinkedIn and others show
-// for a link): public/og.jpg for most pages, and public/projects/<slug>.jpg for
+// for a link): public/og.jpg for most pages, and public/repositories/<slug>.jpg for
 // the featured projects that have `preview` set in src/data/projects.ts. Each
 // is 1200 x 630, set in the site's own fonts over the Hubble background.
 //
@@ -25,13 +25,13 @@ const cards = [
     foot: ["Repositories", "Lab", "About"],
   },
   {
-    out: "projects/open-tradesman.jpg",
+    out: "repositories/open-tradesman.jpg",
     kicker: ["Open Tradesman", "PayPal AI Hackathon"],
     hed: "Talk through the job in your language. The customer gets a priced estimate in theirs.",
     foot: ["By Alexander Kashyap"],
   },
   {
-    out: "projects/alexanderk-dev.jpg",
+    out: "repositories/alexanderk-dev.jpg",
     kicker: ["This site", "Astro", "Cloudflare"],
     hed: "A static site that keeps its own numbers fresh",
     dek: "Can a static site stay current, and prove every page works, without a server to look after?",

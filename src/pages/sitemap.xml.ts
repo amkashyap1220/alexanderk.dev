@@ -10,10 +10,10 @@ export function GET() {
   const pages: { path: string; lastmod?: string }[] = [
     { path: "/" },
     { path: "/about" },
-    { path: "/projects/" },
-    ...projects.map((p) => ({ path: `/projects/${p.slug}` })),
-    { path: "/research/" },
-    ...posts.map((p) => ({ path: `/research/${p.slug}`, lastmod: p.updated ?? p.date })),
+    { path: "/repositories/" },
+    ...projects.map((p) => ({ path: `/repositories/${p.slug}` })),
+    { path: "/lab/" },
+    ...posts.map((p) => ({ path: `/lab/${p.slug}`, lastmod: p.updated ?? p.date })),
     { path: "/stats/" },
   ];
   const body = `<?xml version="1.0" encoding="UTF-8"?>

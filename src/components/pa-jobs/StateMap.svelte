@@ -3,9 +3,9 @@
   a state's numbers and ranks when it's clicked or picked from the list. With
   metros, a second view shows each metro area as a circle sized by its PA jobs
   and colored by the same measure.
-  states: the per-state rows from /research/pa-job-market.json (src/site_data.py
+  states: the per-state rows from /lab/pa-job-market.json (src/site_data.py
   in the PhysiciansAssistantJobExploration repo); the shapes are
-  /research/pa-states.json (US Census via us-atlas). measures: the keys of
+  /lab/pa-states.json (US Census via us-atlas). measures: the keys of
   FIELDS the reader can color by; details: the keys shown for a picked state,
   and the columns of the table of numbers under the map.
 -->
@@ -44,9 +44,9 @@
   const showMetros = $derived(view === "metros" && metros != null);
 
   onMount(() => {
-    fetch("/research/pa-states.json").then((r) => r.json()).then((g) => (geo = g)).catch(() => (failed = true));
+    fetch("/lab/pa-states.json").then((r) => r.json()).then((g) => (geo = g)).catch(() => (failed = true));
     // The metro rows are only in the data file, so the page doesn't carry all of them
-    if (withMetros) fetch("/research/pa-job-market.json").then((r) => r.json()).then((d) => (metros = d.metros)).catch(() => (view = "states"));
+    if (withMetros) fetch("/lab/pa-job-market.json").then((r) => r.json()).then((d) => (metros = d.metros)).catch(() => (view = "states"));
     return onTheme(() => theme++);
   });
 

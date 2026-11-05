@@ -1,6 +1,6 @@
 /* ==========================================================================
    Research posts (src/layouts/PostLayout.astro) and the Research page
-   (src/pages/research/index.astro). The page frame, head, kickers and
+   (src/pages/lab/index.astro). The page frame, head, kickers and
    labels are in editorial.css; the Research page's featured piece
    uses the featured layout in work.css. Each post's charts have their
    own stylesheet (chicago-home-value.css, pa-job-market.css).

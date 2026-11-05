@@ -87,7 +87,7 @@ test("changing the code locks existing sessions out", async () => {
 });
 
 test("once unlocked, it only ever sends you into the private section", async () => {
-  for (const next of ["https://evil.example", "//evil.example", "/private/../index.html", "/projects/", "javascript:alert(1)"]) {
+  for (const next of ["https://evil.example", "//evil.example", "/private/../index.html", "/repositories/", "javascript:alert(1)"]) {
     const res = await handleAuth(post("/unlock", { code: "1234", next }), env());
     assert.equal(res.headers.get("Location"), "/private/", next);
   }
@@ -153,9 +153,9 @@ test("the Private tab hint alone opens nothing, and an expired session clears it
 
 test("the rest of the site isn't affected", async () => {
   const e = env();
-  assert.equal(await handleAuth(get("/projects/"), e), null);
-  const res = await worker.fetch(get("/research/"), e, { waitUntil() {} });
-  assert.equal(await res.text(), "file /research/");
+  assert.equal(await handleAuth(get("/repositories/"), e), null);
+  const res = await worker.fetch(get("/lab/"), e, { waitUntil() {} });
+  assert.equal(await res.text(), "file /lab/");
 });
 
 test("opening a private page renews the session and the Private tab, so it stays unlocked", async () => {

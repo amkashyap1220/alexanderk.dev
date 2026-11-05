@@ -17,24 +17,24 @@ const count = projects.length;
 // Each picture comes in two widths: public/img/home/<img>.webp (1200 px) and <img>-640.webp
 const featured = [
   {
-    kicker: ["App", "In progress"], title: "Open Tradesman", href: "/projects/open-tradesman", img: "open-tradesman",
+    kicker: ["App", "In progress"], title: "Open Tradesman", href: "/repositories/open-tradesman", img: "open-tradesman",
     line: "Talk through a job in your language, and the customer gets a priced estimate in theirs.",
     alt: "Three phone screens from the Open Tradesman app: a price list, the home screen with a yellow microphone button, and a $525 estimate",
   },
   {
-    kicker: ["Research", "Published"], title: "Where is the best value in Chicagoland?", href: "/research/chicago-home-value", img: "chicago-home-value",
+    kicker: ["Research", "Published"], title: "Where is the best value in Chicagoland?", href: "/lab/chicago-home-value", img: "chicago-home-value",
     line: "Every Chicago-area zip code, scored on what matters to you, on one map.",
     alt: "Map of Chicago-area zip codes colored from red (low score) to green (high score), with the 20 best-value zips outlined in blue",
   },
   {
-    kicker: ["This site", "Live"], title: "alexanderk.dev", href: "/projects/alexanderk-dev", img: "alexanderk-dev",
+    kicker: ["This site", "Live"], title: "alexanderk.dev", href: "/repositories/alexanderk-dev", img: "alexanderk-dev",
     line: "A static site that keeps its own numbers fresh and checks every page before it ships.",
     alt: "The top of this site's homepage: the name Alexander Kashyap, a short intro and three featured project cards, over a dimmed photo of Hubble's Ultra Deep Field",
   },
 ];
 
 // More: the projects the Repositories page lists under More repositories. A research project links to its write-up.
-const more = projects.filter((p) => p.tier === "more").map((p) => ({ name: p.name, line: p.tagline, href: p.writeup?.href ?? `/projects/${p.slug}` }));
+const more = projects.filter((p) => p.tier === "more").map((p) => ({ name: p.name, line: p.tagline, href: p.writeup?.href ?? `/repositories/${p.slug}` }));
 ---
 <BaseLayout
   title="Alexander Kashyap"
@@ -56,7 +56,7 @@ const more = projects.filter((p) => p.tier === "more").map((p) => ({ name: p.nam
   <section class="h-section" aria-labelledby="feat-h">
     <div class="section-head">
       <h2 id="feat-h" class="h-label">Featured</h2>
-      <a href="/projects/">All repositories</a>
+      <a href="/repositories/">All repositories</a>
     </div>
     <ul class="fcards">
       {featured.map((f, i) => (
@@ -75,7 +75,7 @@ const more = projects.filter((p) => p.tier === "more").map((p) => ({ name: p.nam
   <section class="h-section" aria-labelledby="more-h">
     <div class="section-head">
       <h2 id="more-h" class="h-label">More</h2>
-      <a href="/projects/">All {count} projects</a>
+      <a href="/repositories/">All {count} projects</a>
     </div>
     <ul class="brief">
       {more.map((m) => (

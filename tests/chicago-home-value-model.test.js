@@ -79,7 +79,7 @@ test("changes lists what came in and dropped out", () => {
 });
 
 test("the page's model reproduces src/value.py's sample top 20 for buyers and renters", () => {
-  const dir = path.join(__dirname, "..", "public", "research");
+  const dir = path.join(__dirname, "..", "public", "lab");
   const data = JSON.parse(fs.readFileSync(path.join(dir, "chicago-home-value.json")));
   const times = JSON.parse(fs.readFileSync(path.join(dir, "chicago-home-value-drive.json")));
   const index = new Map(times.zips.map((z, i) => [z, i]));
