@@ -26,25 +26,24 @@ import Walkthrough from "../../components/Walkthrough.astro";
             <tr><td><code>src/data/</code></td><td>The list of projects and research posts that the pages and cards are built from</td></tr>
             <tr><td><code>src/components/</code></td><td>Pieces shared by several pages, and the Svelte components behind the home value map and the fitness dashboard</td></tr>
             <tr><td><code>public/css/style.css</code></td><td>All the styling for every page</td></tr>
-            <tr><td><code>public/js/theme.js</code></td><td>Light and dark mode</td></tr>
+            <tr><td><code>public/fonts/</code></td><td>The three typefaces, served from the site itself</td></tr>
             <tr><td><code>public/js/gh.js</code>, <code>github.js</code>, <code>stats.js</code></td><td>Fill in the GitHub numbers, READMEs and the Stats page</td></tr>
             <tr><td><code>worker/index.js</code></td><td>The Cloudflare script that fetches from GitHub</td></tr>
             <tr><td><code>wrangler.jsonc</code>, <code>astro.config.mjs</code></td><td>Cloudflare and Astro settings</td></tr>
           </tbody>
         </table>
 
-        <h3>3. Styling and dark mode</h3>
-        <p>Every color, space and font size is defined once, as a <b>CSS variable</b> at the top of <code>style.css</code>. The rest of the stylesheet only uses the variables. Dark mode is then just a second set of values for the same variables:</p>
-<pre is:raw><code class="language-css">:root      { --bg: #eceff1; --text: #121417; }   /* light */
-:root.dark { --bg: #101214; --text: #e6e8ea; }   /* dark */
+        <h3>3. Styling</h3>
+        <p>Every color and font is defined once, as a <b>CSS variable</b> at the top of <code>style.css</code>. The rest of the stylesheet only uses the variables, so changing a color is one edit:</p>
+<pre is:raw><code class="language-css">:root {
+  --paper: #151412;    /* solid panels: charts, code, tables */
+  --ink: #EDE9E1;      /* text */
+  --accent: #6FD39A;   /* link underlines, labels, focus rings */
+}
 
-body { background: var(--bg); color: var(--text); }</code></pre>
-        <p>Switching themes means adding or removing one class, <code>dark</code>, on the page. <code>theme.js</code> does that. It runs before the page is drawn, so there's no flash of the wrong theme. It uses the theme you picked with the toggle if you've picked one that differs from your device, and otherwise follows your device's light or dark setting (picking the device's own theme again forgets the choice):</p>
-<pre is:raw><code class="language-js">const saved = localStorage.getItem("theme-choice");   // "dark", "light" or nothing
-const deviceIsDark = matchMedia("(prefers-color-scheme: dark)").matches;
-const theme = saved || (deviceIsDark ? "dark" : "light");
-document.documentElement.classList.toggle("dark", theme === "dark");</code></pre>
-        <p>The colors are "Aurora": graphite and cool grays with green and blue, kept flat, and every text color passes WCAG AA contrast. The font is DejaVu Sans Mono, the Linux Mint terminal's font, served from the site itself.</p>
+body { color: var(--ink); }</code></pre>
+        <p>The site is dark only. Behind every page is a photo of a lunar eclipse, fixed in place, so the page scrolls over the moons. The photo is dimmed in the image file itself, text gets a soft dark edge so a bright moon never washes it out, and charts, maps, tables and code sit on solid panels.</p>
+        <p>Headlines are set in Newsreader, text in Libre Franklin, and labels and dates in IBM Plex Mono. All three are open-source fonts served from the site itself, cut down to the Latin letters the site uses. Until they load, a font already on your device stands in, resized to take up the same space, so the text doesn't jump when they arrive.</p>
 
         <h3>4. Live GitHub numbers</h3>
         <p>The stars, commits and languages on the project cards come from GitHub. The obvious approach is to have each visitor's browser ask GitHub directly. The catch: GitHub only allows <b>60 requests an hour</b> per visitor without a key, and the Stats page alone needs dozens. Reload a few times and the numbers stop loading.</p>

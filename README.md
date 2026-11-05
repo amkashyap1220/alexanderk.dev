@@ -26,11 +26,17 @@ To add a project: add an entry to `src/data/projects.ts`, then copy one of the p
 
 I used AI to help write the text on this site.
 
+## Design
+
+An editorial look, dark only: headlines in Newsreader, text in Libre Franklin, and labels and dates in IBM Plex Mono, all self-hosted from `public/fonts/` (Latin only, with their licenses). One accent color, a green called Forest. Every color and font is a CSS variable at the top of `public/css/style.css`; the homepage's own layout is in `src/styles/home.css`. Every page has the same header (Work, Research, About, Resume, Email) and footer; the footer's lock icon opens the unlock box.
+
+Behind every page is a photo of a lunar eclipse (`public/img/eclipse-*.webp`, already dimmed), by [Farzad Mohsenvand](https://unsplash.com/@farzadme) on [Unsplash](https://unsplash.com/photos/lunar-eclipse-phases-in-night-sky-TbuescuqMjA). Text gets a soft dark edge over it, and charts, maps, tables and code sit on solid panels. The photos in the homepage's "Off the clock" section are my own (`public/img/photos/`). `public/resume.pdf` is my resume.
+
 ## Tests
 
 `npm test` runs the tests in `tests/` (after `npm install`). They build the site and check every page (title, description, header, footer, link previews) and that every internal link and file exists at its clean address. They also cover the unlock code and private section, the fitness dashboard's API, and the Chicago home value scoring in `public/js/chicago-home-value-model.js` (plain JavaScript the map's components call), checking it ranks the sample values exactly as the Python in [Home-Value-Score](https://github.com/amkashyap1220/Home-Value-Score) does.
 
 ## Fitness tracking (private)
 
-`/private/fitness-tracking` is a dashboard for my workouts, built from the Svelte components in `src/components/fitness/` (`Dashboard.svelte` loads the data and lays out the panels). The data is in a separate private repo (`fitness-data`), never in this one: `worker/fitness.js` reads it through the GitHub API, behind the unlock code. It needs one more Worker secret, `FITNESS_GITHUB_TOKEN`: a fine-grained GitHub token with access to `fitness-data` only, Contents read and write.
+`/private/fitness-tracking` is a dashboard for my workouts, built from the Svelte components in `src/components/fitness/` (`Dashboard.svelte` loads the data and lays out the panels). The data is in a separate repo (`fitness-data`), never in this one: `worker/fitness.js` reads it through the GitHub API, behind the unlock code. It needs one more Worker secret, `FITNESS_GITHUB_TOKEN`: a fine-grained GitHub token with access to `fitness-data` only, Contents read and write.
 
