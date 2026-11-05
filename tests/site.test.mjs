@@ -68,10 +68,10 @@ test("the resume is there to download, and the homepage shows the email address"
   assert.match(home, /href="mailto:alexander\.kashyap@gmail\.com"/, "a mailto link");
 });
 
-test("the Work page lists every project in three tiers, and every project page has its facts", () => {
+test("the Work page lists every project under Featured work and More work, and every project page has its facts", () => {
   const slugs = all(fs.readFileSync("src/data/projects.ts", "utf8"), /slug: "([^"]+)"/g);
   const work = pages.find((x) => x.file === "projects/index.html").html;
-  for (const tier of ["Featured", "More work", "Archive"]) assert.match(work, new RegExp(`class="h-label">${tier}<`), "Work: " + tier);
+  for (const tier of ["Featured work", "More work"]) assert.match(work, new RegExp(`class="h-label">${tier}<`), "Work: " + tier);
   assert.match(work, new RegExp(`<span>${slugs.length} projects</span>`), "Work: the project count");
   for (const slug of slugs) {
     assert.ok(work.includes(`href="/projects/${slug}"`), `Work: a link to ${slug}`);

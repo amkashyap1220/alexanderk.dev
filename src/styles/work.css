@@ -5,8 +5,9 @@
    homepage and the Research pages are in editorial.css. The Research page
    uses the featured layout here too.
 
-   Work page: a page head, then three tiers. Featured projects put their
-   text beside a figure from 960px; More work is a list of rows from 720px.
+   Work page: a page head, then Featured work and More work. Featured projects put their
+   text beside a picture from 960px; More work is a list of rows from 720px,
+   then the archive list.
    Project pages: a head, then the facts and the write-up, side by side
    from 1100px. Reading text stays under about 38em.
    ========================================================================== */
@@ -36,6 +37,8 @@
 .more-meta { color: var(--muted); font-size: 0.75rem; letter-spacing: 0.05em; text-transform: uppercase; }
 .more-meta span { white-space: nowrap; }
 .more-meta span:not(:last-child)::after { content: " \00B7"; content: " \00B7" / ""; }
+/* The archive tier, under More work */
+.more-sublabel { margin: 40px 0 4px; font: 500 0.75rem/1.45 var(--mono); letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); }
 
 /* ---------- Project page ---------- */
 .cs-head { padding-bottom: 24px; border-bottom: 4px double var(--ink); }
