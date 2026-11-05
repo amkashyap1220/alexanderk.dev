@@ -63,7 +63,7 @@ const page = (c) => `<!doctype html><html><head><meta charset="utf-8"><style>
   .foot { margin-top: auto; display: flex; justify-content: space-between; color: #A39E94; }
   .foot b { font-weight: 500; color: #EDE9E1; }
 </style></head><body>
-  <img class="sky" src="${file("img/pillars-1600.webp")}" alt="">
+  <img class="sky" src="${file("img/deep-field-1600.webp")}" alt="">
   <div class="shade"></div>
   <div class="card">
     <p class="kicker">${list(c.kicker)}</p>

@@ -118,7 +118,7 @@ const year = new Date().getFullYear();
           <li><a href="https://github.com/amkashyap1220" target="_blank" rel="noopener">GitHub</a></li>
           <li><a href="/stats/" aria-current={here("stats")}>GitHub Stats</a></li>
         </ul>
-        <p class="colophon">Set in Newsreader, Libre Franklin and IBM Plex Mono, all open-source typefaces. Built with Astro, hosted on Cloudflare. Background: <a href="https://esahubble.org/images/heic1501a/">Pillars of Creation</a> by NASA, ESA/Hubble and the Hubble Heritage Team.</p>
+        <p class="colophon">Set in Newsreader, Libre Franklin and IBM Plex Mono, all open-source typefaces. Built with Astro, hosted on Cloudflare. Background: the <a href="https://esahubble.org/images/heic0406a/">Hubble Ultra Deep Field</a> by NASA, ESA, S. Beckwith (STScI) and the HUDF Team.</p>
       </div>
       <div class="foot-bottom">
         <p class="mono">© {year} Alexander Kashyap</p>
@@ -149,10 +149,10 @@ const year = new Date().getFullYear();
       <input type="hidden" name="next" value="/private/">
     </form>
   </dialog>
-  {/* Hubble's Pillars of Creation behind every page (css: "4. Sky"), already dimmed. Decorative, so no alt
+  {/* Hubble's Ultra Deep Field behind every page (css: "4. Sky"), already dimmed. Decorative, so no alt
        text; low priority, so the styles and fonts load first. */}
   <div class="sky-bg" aria-hidden="true">
-    <img src="/img/pillars-1600.webp" srcset="/img/pillars-960.webp 960w, /img/pillars-1600.webp 1600w, /img/pillars-2400.webp 2400w" sizes="(orientation: portrait) 96vh, 100vw" width="2400" height="2503" alt="" decoding="async" fetchpriority="low">
+    <img src="/img/deep-field-1600.webp" srcset="/img/deep-field-960.webp 960w, /img/deep-field-1600.webp 1600w, /img/deep-field-2400.webp 2400w" sizes="(orientation: portrait) 100vh, 100vw" width="2400" height="2400" alt="" decoding="async" fetchpriority="low">
   </div>
   <script is:inline src="/js/unlock.js"></script>
   <slot name="scripts" />
