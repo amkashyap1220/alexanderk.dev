@@ -201,10 +201,18 @@
     const watch = new MutationObserver(() => theme++);
     watch.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
 
-    // The scoring script (js/chicago-home-value-model.js) is deferred, so it has run by
-    // the time the page finishes parsing; the data starts downloading meanwhile
+    // The scoring script (js/chicago-home-value-model.js) is deferred. On a return visit
+    // this component can come from the cache and start before that script has run (the
+    // page has finished parsing, but the script is still being checked for changes), so
+    // wait for the script itself; the data starts downloading meanwhile
     const files = Promise.all(["", "-zips", "-stations"].map(load));
-    const parsed = document.readyState === "loading" ? new Promise((done) => addEventListener("DOMContentLoaded", done, { once: true })) : Promise.resolve();
+    const model = document.getElementById("hv-model");
+    const parsed = window.HVModel || document.readyState === "complete" || !model ? Promise.resolve()
+      : new Promise((done) => {
+          model.addEventListener("load", done, { once: true });
+          model.addEventListener("error", done, { once: true });
+          addEventListener("load", done, { once: true });
+        });
     parsed.then(() => {
       if (window.HVModel) return files;
       failed = "blocked";

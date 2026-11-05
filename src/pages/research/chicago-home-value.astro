@@ -90,7 +90,7 @@ const found = [
 
   <Fragment slot="head">
     {/* The fit score (also tested against the Python in tests/). Deferred, so it doesn't hold up
-        the first paint; the map waits for it (HomeValue.svelte) */}
-    <script is:inline src="/js/chicago-home-value-model.js" defer></script>
+        the first paint; the map waits for it (HomeValue.svelte, by this id) */}
+    <script is:inline id="hv-model" src="/js/chicago-home-value-model.js" defer></script>
   </Fragment>
 </PostLayout>
