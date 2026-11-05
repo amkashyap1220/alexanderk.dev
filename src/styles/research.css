@@ -1,13 +1,14 @@
 /* ==========================================================================
    Research posts (src/layouts/PostLayout.astro) and the Research page
    (src/pages/research/index.astro). The page frame, head, kickers and
-   labels are in editorial.css; the Research page's lead investigation
+   labels are in editorial.css; the Research page's featured piece
    uses the featured layout in work.css. Each post's charts have their
    own stylesheet (chicago-home-value.css, pa-job-market.css).
 
    A post: the head (kicker, headline, standfirst, byline) over a double
-   rule, "What I found", the post itself, then the next investigation and
-   an email link. Everything lines up on the page's left edge.
+   rule, "What I found", the post itself, then the next post and
+   an email link. Text lines up on the page's left edge; the PA post's charts
+   are a centered column.
    ========================================================================== */
 
 /* ---------- Post head ---------- */
@@ -28,7 +29,9 @@
 /* ---------- The post itself: left-aligned with the head ---------- */
 .post .section { padding-block: 32px; }
 .post .narrow { max-width: 52rem; margin-inline: 0; padding-inline: 0; }
-.post .hv, .post .pa { margin-inline: 0; }
+/* The interactive map sits on the left edge with the text; the PA post's column of
+   charts, which is narrower than the page, is centered on it */
+.post .hv { margin-inline: 0; }
 .post .pa { padding-inline: 0; }
 
 /* ---------- The ending ---------- */

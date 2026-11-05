@@ -2,7 +2,7 @@
 // A research post. The head (kicker, headline, standfirst, byline) comes from
 // src/data/research.ts; the page passes its "What I found" points as `found`
 // (worked out from its data when the site is built) and adds the post itself
-// inside <PostLayout slug="...">. The ending links to the next investigation
+// inside <PostLayout slug="...">. The ending links to the next research post
 // and to email. Page-only scripts go in slot="scripts" (or slot="head" for
 // one that must load with the page). The layout is in src/styles/research.css.
 import BaseLayout from "./BaseLayout.astro";
@@ -20,7 +20,7 @@ interface Props {
 
 const { slug, found = [], highlight = false } = Astro.props;
 const p = post(slug);
-// The project page that tells how it was built, and the next investigation (they loop)
+// The project page that tells how it was built, and the next research post (they loop)
 const built = projects.find((x) => x.writeup?.href === `/research/${p.slug}`);
 const next = posts.length > 1 ? posts[(posts.indexOf(p) + 1) % posts.length] : null;
 // For search engines: an article by me, with its dates and preview image
@@ -75,7 +75,7 @@ const article = {
     <footer class="post-end">
       {next && (
         <div class="post-next">
-          <p class="h-label">Next investigation</p>
+          <p class="h-label">Read next</p>
           <p class="post-next-t"><a href={`/research/${next.slug}`}>{next.title}</a></p>
           <p class="post-next-s">{next.summary}</p>
         </div>

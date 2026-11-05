@@ -1,5 +1,5 @@
 ---
-// The Research page: the lead investigation (`featured` in src/data/research.ts)
+// The Research page: the featured piece (`featured` in src/data/research.ts)
 // gets a figure, the rest a row each. Evergreen pieces, not a dated feed.
 // The layout is in src/styles/research.css, with the featured layout from work.css.
 import BaseLayout from "../../layouts/BaseLayout.astro";
@@ -28,14 +28,14 @@ const leadBuilt = built(lead.slug);
 <div class="gutter ed-page">
 <div class="shell">
   <header class="page-head">
-    <p class="kicker"><span class="k">Research</span> <span>{posts.length} investigations</span></p>
+    <p class="kicker"><span class="k">Research</span> <span>{posts.length} published</span></p>
     <h1 class="page-hed">Questions I chase through public data</h1>
     <p class="page-dek">Each one is an interactive map or set of charts you can explore, with the data and code behind it.</p>
   </header>
 
   <section class="h-section" aria-labelledby="lead-h">
     <div class="section-head">
-      <h2 id="lead-h" class="h-label">Lead investigation</h2>
+      <h2 id="lead-h" class="h-label">Featured research</h2>
     </div>
     <article class="feat" aria-labelledby="lead-t">
       <div class="feat-text">
@@ -60,7 +60,7 @@ const leadBuilt = built(lead.slug);
   {rest.length > 0 && (
     <section class="h-section" aria-labelledby="more-h">
       <div class="section-head">
-        <h2 id="more-h" class="h-label">More investigations</h2>
+        <h2 id="more-h" class="h-label">More research</h2>
       </div>
       <ul class="inv-list">
         {rest.map((p) => {
@@ -75,6 +75,7 @@ const leadBuilt = built(lead.slug);
                 <p class="feat-links">
                   <a class="h-more" href={`/research/${p.slug}`}>{b?.writeup?.label ?? "Read it"}</a>
                   {b && <a class="h-more" href={`/projects/${b.slug}`}>How I built it</a>}
+                  {p.link && <a class="h-more" href={p.link.href}>{p.link.label}</a>}
                 </p>
               </div>
             </li>

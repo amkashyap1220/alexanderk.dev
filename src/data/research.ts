@@ -8,7 +8,7 @@ export interface Post {
   date: string;              // "2026-10-21"
   updated?: string;          // shown as "Updated <date>" in the byline when set
   through: string;           // how recent the data is, for the byline: "Data through <through>"
-  featured?: boolean;        // the lead investigation on the Research page (one at a time)
+  featured?: boolean;        // the featured research on the Research page (one at a time)
   lead: string;              // the line under the title on the post
   summary: string;           // the Research page card text
   description: string;       // search and link-preview text
