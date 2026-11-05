@@ -221,6 +221,9 @@ main .hv { padding-block: var(--space-5); }
    show through it. On phones only its row of links stays; the name above them
    scrolls away (the negative top). */
 .site-header { position: sticky; top: -53px; z-index: 20; background: var(--night); }
+/* The same dark strip carries on above the page, so pulling the page down past
+   its top (the bounce on phones) shows more header, not the photo above it */
+.site-header::before { content: ""; position: absolute; left: 0; right: 0; bottom: 100%; height: 100vh; background: var(--night); }
 .topbar { display: grid; grid-template-columns: minmax(0, 1fr); align-items: center; padding-top: 8px; border-bottom: 4px double var(--ink); }
 .brand { justify-self: start; display: inline-flex; align-items: center; min-height: 44px; font-family: var(--serif); font-weight: 600; font-size: 1.5rem; line-height: 1.1; letter-spacing: -0.01em; text-decoration: none; }
 .brand:hover { text-decoration: underline; text-decoration-color: var(--accent); text-decoration-thickness: 2px; }
