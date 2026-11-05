@@ -6,6 +6,7 @@
 // The layout is in src/styles/about.css.
 import BaseLayout from "../layouts/BaseLayout.astro";
 import OffTheClock from "../components/OffTheClock.astro";
+import Tech from "../components/Tech.astro";
 import { person } from "../data/person";
 import "../styles/editorial.css";
 import "../styles/about.css";
@@ -110,7 +111,7 @@ const toolbox = [
 
       <section class="about-sec" aria-labelledby="tools-h">
         <h2 id="tools-h" class="about-h2">Toolbox</h2>
-        <p class="toolbox">{toolbox.join(", ")}.</p>
+        <ul class="toolbox tech-list">{toolbox.map((t) => <li><Tech name={t} /></li>)}</ul>
       </section>
     </div>
   </div>

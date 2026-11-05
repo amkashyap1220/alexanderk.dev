@@ -1,23 +1,39 @@
 ---
-// The homepage: a front page. The masthead and nav come from BaseLayout
-// (home); the layout is in src/styles/home.css. The archive list, project
-// count and research dates come from src/data/.
+// The homepage: a brief front door. The name and tagline are in the masthead
+// (BaseLayout, home); here is a two-line intro, three featured cards (a
+// picture, a title and one line each), a short More list and how to reach me.
+// The details live on the Work, Research and About pages. The layout is in
+// src/styles/home.css.
 import BaseLayout from "../layouts/BaseLayout.astro";
-import TradesmanFlow from "../components/TradesmanFlow.astro";
-import OffTheClock from "../components/OffTheClock.astro";
-import { projects, years } from "../data/projects";
-import { post, formatDate } from "../data/research";
+import { projects } from "../data/projects";
 import { person, site } from "../data/person";
 import "../styles/editorial.css";
 import "../styles/home.css";
 
 const email = "alexander.kashyap@gmail.com";
 const count = projects.length;
-const hv = post("chicago-home-value");
-const pa = post("pa-job-market");
 
-// The archive: everything the Work page doesn't feature or list under More work
-const archive = projects.filter((p) => p.tier === "archive");
+// Each picture comes in two widths: public/img/home/<img>.webp (1200 px) and <img>-640.webp
+const featured = [
+  {
+    kicker: ["App", "In progress"], title: "Open Tradesman", href: "/projects/open-tradesman", img: "open-tradesman",
+    line: "Talk through a job in your language, and the customer gets a priced estimate in theirs.",
+    alt: "Three phone screens from the Open Tradesman app: a price list, the home screen with a yellow microphone button, and a $525 estimate",
+  },
+  {
+    kicker: ["Research", "Published"], title: "Where is the best value in Chicagoland?", href: "/research/chicago-home-value", img: "chicago-home-value",
+    line: "Every Chicago-area zip code, scored on what matters to you, on one map.",
+    alt: "Map of Chicago-area zip codes colored from red (low score) to green (high score), with the 20 best-value zips outlined in blue",
+  },
+  {
+    kicker: ["This site", "Live"], title: "alexanderk.dev", href: "/projects/alexanderk-dev", img: "alexanderk-dev",
+    line: "A static site that keeps its own numbers fresh and checks every page before it ships.",
+    alt: "The top of this site's homepage: the name Alexander Kashyap in large serif type over a dimmed photo of Hubble's Pillars of Creation",
+  },
+];
+
+// More: the projects the Work page lists under More work. A research project links to its write-up.
+const more = projects.filter((p) => p.tier === "more").map((p) => ({ name: p.name, line: p.tagline, href: p.writeup?.href ?? `/projects/${p.slug}` }));
 ---
 <BaseLayout
   title="Alexander Kashyap"
@@ -29,171 +45,41 @@ const archive = projects.filter((p) => p.tier === "archive");
 >
 <div class="gutter home">
 <div class="shell">
-  <div class="front">
-    <div class="rail">
-      <section class="brief" aria-labelledby="brief-h">
-        <h2 id="brief-h" class="h-label">In brief</h2>
-        <div class="byline">
-          <img src="/img/linkedin-photo.jpg" width="192" height="192" alt="Alex Kashyap, smiling, in glasses" decoding="async">
-          <p><strong>B.S. Computer Science, NIU</strong> <span class="bl-role">Application Developer, <span class="nw">K-Rise Systems</span></span> <span class="bl-aws">AWS Certified Cloud Practitioner</span></p>
-        </div>
-        <div class="h-intro">
-          <p>By day I write C#/.NET and SQL at <span class="nw">K-Rise</span> Systems for an <span class="nw">accounts-payable</span> automation product on JD&nbsp;Edwards. On my own time I chase questions through public data, like <a href="/research/chicago-home-value">which Chicago-area zip codes sell for less than they should</a>, and build free tools like <a href="/projects/switch-to-youtube">Switch To YouTube</a>.</p>
-          <p>I learn fastest by building, and I like building with people. Right now that means <a href="/projects/open-tradesman">a <span class="nw">voice-to-invoice</span> app for the PayPal AI Hackathon</a>.</p>
-          <p>Most of what I make is free and open: tools that help someone learn a thing or make a decision.</p>
-        </div>
-      </section>
+  <section class="hello" aria-label="About me">
+    <p class="hello-lede">By day I write C#/.NET and SQL at <span class="nw">K-Rise</span> Systems, on an <span class="nw">accounts-payable</span> automation product. On my own time I build free tools and chase questions through public data.</p>
+    <a class="h-more" href="/about">More about me</a>
+  </section>
 
-      <section class="contact" aria-labelledby="contact-h">
-        <h2 id="contact-h" class="h-label">Contact</h2>
-        <dl class="rows">
-          <div><dt>Email</dt><dd><a href={`mailto:${email}`}>{email}</a></dd></div>
-          <div><dt>LinkedIn</dt><dd><a href="https://www.linkedin.com/in/alexander-kashyap/">linkedin.com/in/<wbr><span class="nw">alexander-kashyap</span></a></dd></div>
-          <div><dt>GitHub</dt><dd><a href="https://github.com/amkashyap1220">github.com/amkashyap1220</a></dd></div>
-        </dl>
-        <a class="cta" href="/resume.pdf">Download resume <span class="mono">PDF</span></a>
-      </section>
-
-      <aside class="teaser" aria-labelledby="teaser-h">
-        <p id="teaser-h" class="h-label">From my camera roll</p>
-        <figure>
-          <img src="/img/photos/fountain-480.webp" srcset="/img/photos/fountain-480.webp 480w, /img/photos/fountain-960.webp 960w" sizes="400px" width="1600" height="1480" loading="lazy" decoding="async" alt="Buckingham Fountain spraying water on a sunny day, with the Chicago skyline behind it">
-          <figcaption><span class="mono">Buckingham Fountain, Chicago</span> A few more are in <a href="#otc">Off the clock</a><span class="down" aria-hidden="true"> &darr;</span></figcaption>
-        </figure>
-      </aside>
+  <section class="h-section" aria-labelledby="feat-h">
+    <div class="section-head">
+      <h2 id="feat-h" class="h-label">Featured</h2>
+      <a href="/projects/">All work</a>
     </div>
-
-    <section class="featured" id="work" aria-labelledby="work-h">
-      <h2 id="work-h" class="vh">Featured work</h2>
-
-      <article class="h-lead" aria-labelledby="tm-h">
-        <p class="kicker"><span class="k">My project</span> <span>PayPal AI Hackathon</span> <span>Nov 2026</span> <span>In progress</span></p>
-        <h3 id="tm-h" class="hed-lead"><span class="proj">Open Tradesman<span class="vh">:</span></span> <span class="t"><span>Talk through the job in your language.</span> <span>The&nbsp;customer gets a priced estimate in theirs.</span></span></h3>
-        <p class="dek">I&rsquo;m building a voice-first estimating app for tradespeople. Claude turns a spoken job description into an itemized, priced estimate, and PayPal invoicing handles the money, from the deposit and change orders to the final invoice.</p>
-        <div class="h-body">
-          <p>The AI does the tedious part: turning a rambling description into clean line items in someone else&rsquo;s language. I kept it out of the parts that need trust.</p>
-        </div>
-
-        <TradesmanFlow />
-
-        <p class="stack"><span>React PWA</span> <span>FastAPI</span> <span>Claude API</span> <span>PayPal Invoicing API</span> <span>Postgres</span></p>
-        <a class="h-more" href="/projects/open-tradesman">How it works</a>
-      </article>
-
-      <div class="side">
-        <article class="story" aria-labelledby="hv-h">
-          <p class="kicker"><span class="k">Research</span> <span><time datetime={hv.date}>{formatDate(hv.date)}</time></span> <span>Published</span></p>
-          <h3 id="hv-h" class="hed"><a href="/research/chicago-home-value">Where is the best value in Chicagoland?</a></h3>
-          <p class="q">If you decide what matters to you, which Chicago-area zip codes fit best, and which cost less than they should?</p>
-          <figure class="pic">
-            <img src="/img/home/chicago-home-value.webp" srcset="/img/home/chicago-home-value-640.webp 640w, /img/home/chicago-home-value.webp 1200w" sizes="(min-width: 720px) 460px, calc(100vw - 32px)" width="1200" height="630" loading="lazy" decoding="async" alt="Map of Chicago-area zip codes colored from red (low score) to green (high score), with the 20 best-value zips outlined in blue">
-            <figcaption>Red scores low, green high. The 20 best-value zips are outlined in blue.</figcaption>
-          </figure>
-          <p class="h-text">Home Value Score is an interactive map that scores every Chicago-area zip code on schools, safety, commute, train access, walkability, home age and price or rent, with weights you set. It also shows which zips sell for less, or more, than their features predict.</p>
-          <p class="stack"><span>Python</span> <span>pandas</span> <span>GeoPandas</span> <span>statsmodels</span> <span>DuckDB</span> <span>Census data</span> <span>Observable Plot</span> <span>Svelte</span></p>
-          <a class="h-more" href="/research/chicago-home-value">Explore the map</a>
-        </article>
-
-        <article class="story" aria-labelledby="site-h">
-          <p class="kicker"><span class="k">This site</span> <span>alexanderk.dev</span> <span>Live</span></p>
-          <h3 id="site-h" class="hed"><a href="/projects/alexanderk-dev">A static site that keeps its own numbers fresh</a></h3>
-          <p class="q">Can a static site stay current, and prove every page works, without a server to look after?</p>
-          <dl class="spec">
-            <div><dt>Build</dt><dd>Astro, static HTML, hosted on Cloudflare</dd></div>
-            <div><dt>Live data</dt><dd>A Worker keeps GitHub numbers fresh in KV storage</dd></div>
-            <div><dt>Charts</dt><dd>Interactive Svelte data pages</dd></div>
-            <div><dt>Private</dt><dd>A section behind an unlock code</dd></div>
-            <div><dt>Tests</dt><dd>Build the site, then check every page and link</dd></div>
-          </dl>
-          <a class="h-more" href="/projects/alexanderk-dev">How it&rsquo;s built</a>
-        </article>
-      </div>
-    </section>
-  </div>
+    <ul class="fcards">
+      {featured.map((f, i) => (
+        <li class="fcard">
+          <a class="fcard-pic" href={f.href} tabindex="-1" aria-hidden="true">
+            <img src={`/img/home/${f.img}.webp`} srcset={`/img/home/${f.img}-640.webp 640w, /img/home/${f.img}.webp 1200w`} sizes="(min-width: 1180px) 420px, (min-width: 720px) 31vw, calc(100vw - 32px)" width="1200" height="630" loading={i > 0 ? "lazy" : undefined} decoding="async" alt={f.alt}>
+          </a>
+          <p class="kicker">{f.kicker.map((k, i) => <>{i > 0 && " "}<span class={i === 0 ? "k" : undefined}>{k}</span></>)}</p>
+          <h3 class="hed fcard-t"><a href={f.href}>{f.title}</a></h3>
+          <p class="fcard-line">{f.line}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
 
   <section class="h-section" aria-labelledby="more-h">
     <div class="section-head">
-      <h2 id="more-h" class="h-label">More work</h2>
+      <h2 id="more-h" class="h-label">More</h2>
       <a href="/projects/">All {count} projects</a>
     </div>
-    <div class="cols3">
-      <article class="story3" aria-labelledby="sty-h">
-        <p class="kicker"><span class="k">Open source</span> <span>2023&ndash;present</span></p>
-        <h3 id="sty-h" class="hed"><a href="/projects/switch-to-youtube">Switch To YouTube</a></h3>
-        <p class="xform">Your Spotify playlists <span class="arr" aria-hidden="true">&rarr;</span><span class="vh">moved to</span> YouTube Music, free</p>
-        <p class="h-text">A free, open-source app that moves your liked songs and playlists over, so you don&rsquo;t have to pay a migration service to do it.</p>
-        <p class="stack"><span>Python</span> <span>Flask</span></p>
-      </article>
-      <article class="story3" aria-labelledby="bbf-h">
-        <p class="kicker"><span class="k">Web app</span> <span>2026</span> <span>Private beta</span></p>
-        <h3 id="bbf-h" class="hed"><a href="/projects/bowling-ball-finder">Bowling Ball Finder</a></h3>
-        <p class="xform">How you bowl + the balls you own <span class="arr" aria-hidden="true">&rarr;</span><span class="vh">gives</span> the ball you&rsquo;re missing</p>
-        <p class="h-text">Describe your game in plain words, list your arsenal, and it recommends the reaction you don&rsquo;t have yet. In a private beta with a few bowlers.</p>
-        <p class="stack"><span>Astro</span> <span>Svelte</span> <span>Cloudflare Workers</span> <span>D1</span></p>
-      </article>
-      <article class="story3" aria-labelledby="pa-h">
-        <p class="kicker"><span class="k">Research</span> <span><time datetime={pa.date}>{formatDate(pa.date)}</time></span> <span>Published</span></p>
-        <h3 id="pa-h" class="hed"><a href="/research/pa-job-market">The PA job market for new grads</a></h3>
-        <figure class="pic">
-          <img src="/img/home/pa-job-market.webp" srcset="/img/home/pa-job-market-640.webp 640w, /img/home/pa-job-market.webp 1200w" sizes="(min-width: 720px) 420px, calc(100vw - 32px)" width="1200" height="630" loading="lazy" decoding="async" alt="Map of US metro areas as circles sized by PA jobs and shaded from light to dark blue by median PA pay after the cost of living">
-          <figcaption>Each circle is a metro area, sized by PA jobs and shaded by pay after the cost of living.</figcaption>
-        </figure>
-        <p class="h-text">Which specialties hire new physician assistants, what they pay, and where the pay goes furthest, in charts and an interactive US map from NCCPA and BLS data.</p>
-      </article>
-    </div>
+    <ul class="brief">
+      {more.map((m) => (
+        <li><a href={m.href}><span class="brief-name">{m.name}</span> <span class="brief-line">{m.line}</span></a></li>
+      ))}
+    </ul>
   </section>
-
-  <div class="lower h-section">
-    <section id="about" aria-labelledby="about-h">
-      <div class="section-head">
-        <h2 id="about-h" class="h-label">About</h2>
-        <a href="/resume.pdf">Full resume (PDF)</a>
-      </div>
-      <p class="sublabel">Where I&rsquo;ve worked and studied</p>
-      <ol class="cv">
-        <li>
-          <p class="h-when mono">Jan 2025 &ndash; now</p>
-          <h3>K-Rise Systems</h3>
-          <p class="role">Application Developer, Aurora, IL</p>
-          <p class="what">C#/.NET and SQL on an AP automation product for JD Edwards ERP, from scanned invoice to voucher.</p>
-        </li>
-        <li>
-          <p class="h-when mono">May 2024 &ndash; Jan 2025</p>
-          <h3>Outlier, a Scale AI platform</h3>
-          <p class="role">AI Evaluator, contract</p>
-          <p class="what">Reviewed AI-written code for correctness and quality.</p>
-        </li>
-        <li>
-          <p class="h-when mono">May 2024</p>
-          <h3>Northern Illinois University</h3>
-          <p class="role">B.S. Computer Science</p>
-          <p class="what">NIU Esports scholarship player and ACM board member.</p>
-        </li>
-        <li>
-          <p class="h-when mono">May 2022 &ndash; Jan 2023</p>
-          <h3>Chamberlain Group</h3>
-          <p class="role">Software Engineering Intern, Middleware</p>
-          <p class="what">.NET 6 REST APIs for the myQ platform.</p>
-        </li>
-      </ol>
-      <p class="cv-note">Also: AWS Certified Cloud Practitioner.</p>
-      <a class="h-more" href="/about">More about me</a>
-    </section>
-
-    <aside class="archive" aria-labelledby="arch-h">
-      <div class="section-head">
-        <h2 id="arch-h" class="h-label">Archive</h2>
-      </div>
-      <ol>
-        {archive.map((p) => (
-          <li><a href={`/projects/${p.slug}`}><span class="t"><span class="nm">{p.name}</span><span class="tg">{p.tagline}</span></span> <span class="dots"></span> <span class="yr">{years(p.when)}</span></a></li>
-        ))}
-      </ol>
-      <a class="h-more" href="/projects/">All {count} projects</a>
-    </aside>
-  </div>
-
-  <OffTheClock />
 
   <section class="h-section write" id="contact" aria-labelledby="write-h">
     <div class="section-head">
@@ -212,7 +98,6 @@ const archive = projects.filter((p) => p.tier === "archive");
         <a href="https://www.linkedin.com/in/alexander-kashyap/">LinkedIn</a>
         <a href="https://github.com/amkashyap1220">GitHub</a>
       </div>
-      <p class="signoff">Thanks for reading, <span>Alex</span></p>
     </div>
   </section>
 </div>

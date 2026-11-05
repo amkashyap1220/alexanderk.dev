@@ -68,10 +68,10 @@ test("the resume is there to download, and the homepage shows the email address"
   assert.match(home, /href="mailto:alexander\.kashyap@gmail\.com"/, "a mailto link");
 });
 
-test("the Work page lists every project in three tiers, and every project page has its facts", () => {
+test("the Work page lists every project under Featured work and More work, and every project page has its facts", () => {
   const slugs = all(fs.readFileSync("src/data/projects.ts", "utf8"), /slug: "([^"]+)"/g);
   const work = pages.find((x) => x.file === "projects/index.html").html;
-  for (const tier of ["Featured", "More work", "Archive"]) assert.match(work, new RegExp(`class="h-label">${tier}<`), "Work: " + tier);
+  for (const tier of ["Featured work", "More work"]) assert.match(work, new RegExp(`class="h-label">${tier}<`), "Work: " + tier);
   assert.match(work, new RegExp(`<span>${slugs.length} projects</span>`), "Work: the project count");
   for (const slug of slugs) {
     assert.ok(work.includes(`href="/projects/${slug}"`), `Work: a link to ${slug}`);
@@ -87,14 +87,14 @@ test("the Work page lists every project in three tiers, and every project page h
 test("the Research page lists every post, and every post has its byline, findings and charts' numbers", () => {
   const slugs = all(fs.readFileSync("src/data/research.ts", "utf8"), /slug: "([^"]+)"/g);
   const index = pages.find((x) => x.file === "research/index.html").html;
-  assert.match(index, /class="h-label">Lead investigation</, "Research: the lead investigation");
+  assert.match(index, /class="h-label">Featured research</, "Research: featured research");
   for (const slug of slugs) {
     assert.ok(index.includes(`href="/research/${slug}"`), `Research: a link to ${slug}`);
     const page = pages.find((x) => x.file === `research/${slug}.html`)?.html;
     assert.ok(page, `research/${slug}.html`);
     assert.match(page, /<p class="byline">[\s\S]*?By Alexander Kashyap[\s\S]*?Data through/, slug + ": byline");
     assert.match(page, /class="h-label">What I found<\/h2>\s*<ol>(\s*<li>[\s\S]*?<\/li>){3}/, slug + ": at least three findings");
-    assert.match(page, /class="h-label">Next investigation</, slug + ": the next investigation");
+    assert.match(page, /class="h-label">Read next</, slug + ": what to read next");
   }
   // Every PA chart has its numbers as a table, in the page as built
   const pa = pages.find((x) => x.file === "research/pa-job-market.html").html;

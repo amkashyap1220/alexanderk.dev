@@ -35,7 +35,7 @@
 
 @media (min-width: 1100px) {
   .about-grid { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 9fr); align-items: start; }
-  .about-facts { position: sticky; top: 16px; padding-right: 32px; }
+  .about-facts { position: sticky; top: calc(var(--head-h) + 16px); padding-right: 32px; }
   .about-facts .spec div { grid-template-columns: minmax(0, 1fr); gap: 2px; }
   .about-links { display: block; }
   .about-links li + li { margin-top: 4px; }
