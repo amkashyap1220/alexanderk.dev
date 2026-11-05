@@ -57,6 +57,8 @@
 :root {
   /* colors: dark only. Every text color passes WCAG AA on --night and --paper. */
   --night: #0d0b09;           /* the page, under the photo */
+  --glass: rgb(13 11 9 / 0.62);   /* the header and footer: --night, see-through */
+  --glass-blur: blur(14px) saturate(1.2);
   --paper: #151412;           /* solid panels: charts, maps, code, tables, dialogs */
   --ink: #EDE9E1;             /* text */
   --muted: #A39E94;           /* secondary text */
@@ -217,13 +219,19 @@ main .hv { padding-block: var(--space-5); }
 .cta:not(.cta-solid):hover { background: var(--ink); color: var(--paper); text-shadow: none; }
 
 /* The header: the name (home link), then the nav. It stays at the top of the
-   screen as the page scrolls, on a solid strip so the photo and the page don't
-   show through it. On phones only its row of links stays; the name above them
-   scrolls away (the negative top). */
-.site-header { position: sticky; top: -53px; z-index: 20; background: var(--night); }
-/* The same dark strip carries on above the page, so pulling the page down past
-   its top (the bounce on phones) shows more header, not the photo above it */
-.site-header::before { content: ""; position: absolute; left: 0; right: 0; bottom: 100%; height: 100vh; background: var(--night); }
+   screen as the page scrolls, on a strip of smoked glass: dark enough to read,
+   with the photo and the page blurred through it (--glass, section 2). On phones only its
+   row of links stays; the name above them scrolls away (the negative top). */
+.site-header { position: sticky; top: -53px; z-index: 20; background: var(--glass); }
+/* The blur. On phones it sits on the row of links, the part that stays on
+   screen: browsers can drop the blur from a box that's partly scrolled off the
+   top. It runs edge to edge, past the side margins (.gutter). */
+.topbar-links { position: relative; isolation: isolate; }
+.topbar-links::before { content: ""; position: absolute; z-index: -1; top: 0; bottom: 0; left: calc(-1 * max(16px, env(safe-area-inset-left, 0px))); right: calc(-1 * max(16px, env(safe-area-inset-right, 0px))); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); }
+/* The same strip carries on above the page, so pulling the page down past its
+   top (the bounce on phones) shows more header, not a gap. (It can't blur:
+   the header's blur only reaches what's behind the header itself.) */
+.site-header::before { content: ""; position: absolute; left: 0; right: 0; bottom: 100%; height: 100vh; background: var(--glass); }
 .topbar { display: grid; grid-template-columns: minmax(0, 1fr); align-items: center; padding-top: 8px; border-bottom: 4px double var(--ink); }
 .brand { justify-self: start; display: inline-flex; align-items: center; min-height: 44px; font-family: var(--serif); font-weight: 600; font-size: 1.5rem; line-height: 1.1; letter-spacing: -0.01em; text-decoration: none; }
 .brand:hover { text-decoration: underline; text-decoration-color: var(--accent); text-decoration-thickness: 2px; }
@@ -236,8 +244,19 @@ main .hv { padding-block: var(--space-5); }
 .topbar .nav-actions .mono { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
 
+/* Without the blur, or for readers who ask for less transparency, the glass is
+   nearly solid so the text stays easy to read */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root { --glass: rgb(13 11 9 / 0.92); }
+}
+@media (prefers-reduced-transparency: reduce) {
+  :root { --glass: var(--night); }
+}
+
+
 /* ---------- 6. Footer ---------- */
-.site-footer { margin-top: 64px; }
+/* On the same smoked glass as the header */
+.site-footer { margin-top: 64px; background: var(--glass); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); }
 .foot-inner { padding-block: 24px 48px; border-top: 4px double var(--ink); }
 .foot-grid { display: grid; gap: 16px; }
 .foot-name { font-family: var(--serif); font-weight: 600; font-size: 1.5rem; line-height: 1.1; }
@@ -407,7 +426,9 @@ main .hv { padding-block: var(--space-5); }
 
 @media (min-width: 720px) {
   :root { --head-h: 64px; }
-  .site-header { top: 0; }
+  /* The whole header stays on screen, so the blur goes on all of it */
+  .site-header { top: 0; -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); }
+  .topbar-links::before { content: none; }
   .shell { padding-inline: 16px; }
   .nav-actions { justify-self: end; display: flex; }
   .nav-actions .cta { width: auto; }
