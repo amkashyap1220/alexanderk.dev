@@ -30,8 +30,8 @@ export const posts: Post[] = [
     description: "Play Scoundrel, the solo dungeon crawler played with a deck of cards, in your browser on a phone or a computer, with shared high scores.",
     chips: ["Card game", "Svelte", "Cloudflare Workers", "Cloudflare D1"],
     image: {
-      alt: "Three phone screens from the game: a room of four cards with a weapon held, a monster about to be fought with the weapon, and a won game with a name entered for the high scores",
-      previewAlt: "Three phone screens from the Scoundrel card game",
+      alt: "The game on a computer screen: a health bar at 12 of 20 over a room of four fantasy cards, a crowned-skull King of spades, the 7 of diamonds, a hooded-wraith Queen of clubs and the 5 of hearts",
+      previewAlt: "The Scoundrel card game on a computer screen, with a room of four fantasy cards",
     },
     link: { label: "Code", href: "https://github.com/amkashyap1220/SimpleScoundrel" },
   },
