@@ -1,7 +1,7 @@
 // Makes the link-preview images (what iMessage, Slack, LinkedIn and others show
 // for a link): public/og.jpg for most pages, and public/repositories/<slug>.jpg for
 // the featured projects that have `preview` set in src/data/projects.ts. Each
-// is 1200 x 630, set in the site's own fonts over the Hubble background.
+// is 1200 x 630, set in the site's own fonts over the sunset at the top of the site.
 //
 // Run it again after changing a headline. It needs Playwright, which isn't one
 // of the site's dependencies:
@@ -55,12 +55,12 @@ const page = (c) => `<!doctype html><html><head><meta charset="utf-8"><style>
   * { margin: 0; box-sizing: border-box; }
   html, body { width: 1200px; height: 630px; overflow: hidden; background: #0d0b09; color: #EDE9E1; }
   body { position: relative; }
-  .sky { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 42%; }
+  .sky { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 70%; }
   /* Darker on the left, where the words are */
   .shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgb(13 11 9 / 0.9) 0%, rgb(13 11 9 / 0.72) 50%, rgb(13 11 9 / 0) 100%); }
   .card { position: absolute; inset: 64px 72px 56px; display: flex; flex-direction: column; text-shadow: 0 0 12px rgb(13 11 9 / 0.8); }
   .kicker, .foot { font: 500 22px/1.3 Plex; letter-spacing: 0.06em; text-transform: uppercase; }
-  .kicker { color: #6FD39A; }
+  .kicker { color: #FF8A50; }
   .kicker i, .foot i { font-style: normal; color: #A39E94; }
   .name { margin-top: 18px; font: 600 112px/1 Newsreader; letter-spacing: -0.02em; }
   .hed { margin-top: 20px; max-width: 900px; font: 600 68px/1.06 Newsreader; letter-spacing: -0.015em; text-wrap: balance; }
@@ -70,7 +70,7 @@ const page = (c) => `<!doctype html><html><head><meta charset="utf-8"><style>
   .foot { margin-top: auto; display: flex; justify-content: space-between; color: #A39E94; }
   .foot b { font-weight: 500; color: #EDE9E1; }
 </style></head><body>
-  <img class="sky" src="${file("img/deep-field-1600.webp")}" alt="">
+  <img class="sky" src="${file("img/sunset-1600.webp")}" alt="">
   <div class="shade"></div>
   <div class="card">
     <p class="kicker">${list(c.kicker)}</p>
