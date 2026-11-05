@@ -435,6 +435,12 @@ main .hv { padding-block: var(--space-5); }
   .colophon { grid-column: 1 / -1; }
 }
 
+/* Tablets and small laptops: the footer's two link lists as columns, one link a
+   line, so they never run together into one wrapped row */
+@media (min-width: 720px) and (max-width: 1179.98px) {
+  .site-footer ul { flex-direction: column; align-items: flex-start; }
+}
+
 /* Small tablets: a little tighter, so the name, nav and buttons fit one row */
 @media (min-width: 720px) and (max-width: 959.98px) {
   .brand { font-size: 1.375rem; }

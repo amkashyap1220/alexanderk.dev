@@ -11,6 +11,7 @@
 
 .home :is(ul, ol) { margin: 0; padding: 0; list-style: none; }
 .home figure { margin: 0; }
+.home .pic { margin-bottom: 16px; }   /* the reset above would otherwise put a caption flush against the text under it */
 .home img { display: block; }
 
 .front { padding-block: 24px 0; }
