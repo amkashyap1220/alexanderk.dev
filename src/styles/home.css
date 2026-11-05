@@ -5,7 +5,7 @@
 
    Phones get one column; tablets (720px+) pair things up; desktop (1180px+)
    is a three-column front page: the "In brief" rail, the lead story and a
-   side column. Fig. 1 (the Tradesman flow) lays itself out by its own width
+   side column. Fig. 1 (the Open Tradesman flow) lays itself out by its own width
    (container queries), so it works in any column.
    ========================================================================== */
 
