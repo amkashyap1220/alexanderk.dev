@@ -5,7 +5,6 @@
         --hv-below: #3465a4; --hv-mid: #f4f6f7; --hv-above: #75507b; }
 :root.dark { --pick: #fcaf3e; --hv-top: #729fcf; --hv-0: #ef2929; --hv-1: #f57900; --hv-2: #edd400; --hv-3: #8ae234; --hv-none: #353b41;
              --hv-below: #729fcf; --hv-mid: #2a2f33; --hv-above: #ad7fa8; }
-.hv-hero { padding-bottom: var(--space-7); }
 .hv-section { padding-top: var(--space-6); }
 .hv { max-width: 1100px; margin: 0 auto var(--space-9); padding: 0 var(--space-5); }
 .hv-bar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-3); }
@@ -26,7 +25,9 @@
 .hv-grid { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: var(--space-6); align-items: start; }
 .hv-main { min-width: 0; }
 .hv-figure { margin: 0; }
-.hv-map { min-height: 300px; }
+/* The map's height is held before it draws (it's drawn width x 1.12), so nothing below it jumps */
+.hv-map { aspect-ratio: 1 / 1.12; }
+.hv-failed .hv-map { aspect-ratio: auto; }
 .hv-loading .hv-map { display: grid; place-items: center; border-radius: var(--radius-lg); background: var(--soft); }
 .hv-placeholder { color: var(--muted); font-size: var(--fs-sm); }
 .hv-map svg, .hv-chart svg { display: block; max-width: 100%; height: auto; margin: 0 auto; overflow: visible; cursor: pointer; }
@@ -96,7 +97,10 @@
 .hv-h { margin: 0; font-size: var(--fs-lg); }
 .hv-chart-box { margin: var(--space-8) 0 0; }
 .hv-chart-box > .hv-hint { max-width: 760px; margin: var(--space-2) 0 var(--space-3); }
-.hv-chart { min-height: 200px; }
+/* Held at the height it's drawn (FitPriceChart.svelte), since it draws only as the reader nears it */
+.hv-chart-box { container-type: inline-size; }
+.hv-chart { aspect-ratio: 1 / 0.7; max-height: 420px; }
+@container (max-width: 559.98px) { .hv-chart { aspect-ratio: 1 / 0.95; } }
 .hv-list { margin-top: var(--space-8); }
 .hv-list-bar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3) var(--space-5); margin-bottom: var(--space-3); font-size: var(--fs-xs); color: var(--muted); }
 .hv-list-bar .hv-h { margin-right: auto; color: var(--text); }

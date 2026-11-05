@@ -18,16 +18,20 @@
   The reader picks buying or renting, sets a target and a weight for each
   factor, can name where they work (commute becomes the drive time there,
   from /research/chicago-home-value-drive.json, src/commute.py), and can add
-  a second person. The form starts with sample values. Colors come from the
+  a second person. The drive times to the sample's workplace come with the
+  page (`cols`), so the whole grid loads only once the reader names another workplace. The form starts with sample values. Colors come from the
   site's CSS variables, so the map redraws when the theme or the width changes.
+
+  Until the data loads, the summary and legend show the sample's results,
+  worked out when the site is built (`first`), so nothing jumps when it arrives.
 
   This file holds the state and the scoring; each part of the page is its own
   component next to it. The methods tables further down the post are filled
   in when the site is built (src/pages/research/chicago-home-value.astro).
 -->
 <script>
-  import { onMount, flushSync } from "svelte";
-  import { ALL, WEIGHTS, factorsFor, findPlace, listJoin, name, parse, who } from "./hv.js";
+  import { onMount, flushSync, untrack } from "svelte";
+  import { ALL, WEIGHTS, currentOf, driveColumns, factorsFor, findPlace, listJoin, name, parse, who } from "./hv.js";
   import PersonForm from "./PersonForm.svelte";
   import Summary from "./Summary.svelte";
   import ZipMap from "./ZipMap.svelte";
@@ -35,12 +39,34 @@
   import ZipTable from "./ZipTable.svelte";
   import ZipDetail from "./ZipDetail.svelte";
 
+  let { first = null, cols } = $props();
+
   let data = $state.raw(null), geo = $state.raw(null);
   let stations = $state.raw([]);   // [lon, lat, name, agency], from chicago-home-value-stations.json
   let places = $state.raw([]);     // [{ zip, label }] for the workplace and search boxes
   let byZip = $state.raw(new Map());
-  let drive = null;                // drive(fromZip, toZip) in minutes, from chicago-home-value-drive.json
   let failed = $state(""), loading = $state(true);
+
+  const load = (f) => fetch("/research/chicago-home-value" + f + ".json").then((r) => { if (!r.ok) throw new Error(f + " " + r.status); return r.json(); });
+
+  // Drive times in minutes: to the sample's workplace from the page, to anywhere else
+  // from the whole grid (chicago-home-value-drive.json) once it loads
+  const known = driveColumns(cols);
+  let grid = null;
+  let gridState = $state("");      // "loading", "ready" or "failed"
+  const drive = (from, to) => (grid ? grid(from, to) : known.to.get(to)?.get(from) ?? null);
+  const canDrive = (to) => !to || !!grid || known.to.has(to);
+  function loadGrid() {
+    if (gridState) return;
+    gridState = "loading";
+    load("-drive").then((times) => {
+      // An n x n grid of whole minutes, row = from, column = to
+      const index = new Map(times.zips.map((z, i) => [z, i]));
+      const cells = Uint8Array.from(atob(times.minutes), (c) => c.charCodeAt(0));
+      grid = (from, to) => (index.has(from) && index.has(to) ? cells[index.get(from) * times.zips.length + index.get(to)] : null);
+      gridState = "ready";
+    }).catch(() => { gridState = "failed"; });
+  }
 
   let mode = $state("buy");
   let lens = $state("fit");        // "fit" or "value"
@@ -76,19 +102,17 @@
     return w + " still need" + (w === "You" ? "" : "s") + " a target for " + listJoin(need) + ".";
   }
 
-  function currentOf(result, view) {
-    if (view === 2 && result.both) return { picks: result.both, score: (r) => r.both, ranked: (r) => r.bothRanked, label: "best for both", k: null };
-    const k = Math.min(view, result.picks.length - 1);
-    return { picks: result.picks[k], score: (r) => r.scores[k], ranked: (r) => r.ranked[k], label: k === 0 ? "your" : "person 2's", k };
-  }
-
   // Scores every zip and says what the last change did to the top list (only when the
   // change was to the targets or weights, not to buying/renting, the view or the people)
-  let last = null;
+  let last = null, shown = null;
   const scored = $derived.by(() => {
     if (!data) return null;
     const gaps = ps.map((p, k) => missing(p, who(k))).filter(Boolean);
-    if (gaps.length) { last = null; return { gaps, result: null, cur: null, note: "" }; }
+    if (gaps.length) { last = null; return (shown = { gaps, result: null, cur: null, note: "" }); }
+    // A workplace whose drive times are still loading: keep showing the last results until they're here
+    if (gridState !== "ready" && !ps.every((p) => canDrive(p.workplace)))
+      return gridState === "failed" ? { gaps: [], wait: "The drive times didn't load. Check your connection and reload the page.", result: null, cur: null, note: "" }
+        : shown?.result ? shown : { gaps: [], wait: "Loading drive times…", result: null, cur: null, note: "" };
     const result = window.HVModel.run(data.zips, mode, ps, data.top, drive);
     const cur = currentOf(result, view);
     const context = mode + "|" + view + "|" + people.length;
@@ -100,8 +124,10 @@
       else if (last.picks.size) note = " kept the same top " + data.top + " (the order may have moved).";
     }
     last = { picks: cur.picks, context };
-    return { gaps, result, cur, note };
+    return (shown = { gaps, result, cur, note });
   });
+  // Start on the whole drive time grid as soon as a workplace needs it
+  $effect(() => { if (data && !ps.every((p) => canDrive(p.workplace))) untrack(loadGrid); });
   const result = $derived(scored?.result ?? null);
   const cur = $derived(scored?.cur ?? null);
 
@@ -175,37 +201,42 @@
     const watch = new MutationObserver(() => theme++);
     watch.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
 
-    if (!window.HVModel) {
+    // The scoring script (js/chicago-home-value-model.js) is deferred, so it has run by
+    // the time the page finishes parsing; the data starts downloading meanwhile
+    const files = Promise.all(["", "-zips", "-stations"].map(load));
+    const parsed = document.readyState === "loading" ? new Promise((done) => addEventListener("DOMContentLoaded", done, { once: true })) : Promise.resolve();
+    parsed.then(() => {
+      if (window.HVModel) return files;
       failed = "blocked";
-      return () => watch.disconnect();
-    }
-    const load = (f) => fetch("/research/chicago-home-value" + f + ".json").then((r) => { if (!r.ok) throw new Error(f + " " + r.status); return r.json(); });
-    Promise.all(["", "-zips", "-drive", "-stations"].map(load))
-      .then(([json, shapes, times, stops]) => {
+      files.catch(() => {});
+      return null;
+    })
+      .then(async (files) => {
+        if (!files) return;
+        const [json, shapes, stops] = files;
         const zips = new Map(json.zips.map((z) => [z.zip, z]));
-        // Drive times: an n x n grid of whole minutes, row = from, column = to
-        const index = new Map(times.zips.map((z, i) => [z, i]));
-        const grid = Uint8Array.from(atob(times.minutes), (c) => c.charCodeAt(0));
-        drive = (from, to) => (index.has(from) && index.has(to) ? grid[index.get(from) * times.zips.length + index.get(to)] : null);
-        places = times.zips.map((z) => ({ zip: z, label: (zips.get(z)?.place || "Zip") + ", " + (zips.get(z)?.state || (z[0] === "4" ? "IN" : "IL")) + " " + z }))
+        places = known.zips.map((z) => ({ zip: z, label: (zips.get(z)?.place || "Zip") + ", " + (zips.get(z)?.state || (z[0] === "4" ? "IN" : "IL")) + " " + z }))
           .sort((a, b) => a.label.localeCompare(b.label));
         byZip = zips;
-        geo = shapes;
-        stations = stops;
         data = json;
-        loading = false;
         people.forEach(fillSample);
         setLens("fit");
+        // Draw the map in a task of its own, after the scores, form and table, so the
+        // page is never busy for long in one go
+        await new Promise((done) => setTimeout(done));
+        geo = shapes;
+        stations = stops;
+        loading = false;
       })
       .catch(() => {
         loading = false;
-        failed = "load";
+        failed ||= "load";
       });
     return () => watch.disconnect();
   });
 </script>
 
-<div class="hv" class:hv-loading={loading && failed !== "blocked"} class:hv-unscored={scored && scored.gaps.length > 0} id="hv">
+<div class="hv" class:hv-loading={loading && failed !== "blocked"} class:hv-failed={!!failed} class:hv-unscored={scored && scored.gaps.length > 0} id="hv">
   <div class="hv-bar">
     <div class="hv-toggle" role="group" aria-label="Buying or renting">
       {#each [["buy", "Buying"], ["rent", "Renting"]] as [m, text]}
@@ -223,12 +254,12 @@
     </div>
   </div>
   <p class="hv-lens-note" id="hv-lens-note" hidden={!data || mode === "buy"}>“Price vs expected” covers sale prices only. Renters see the fit score.</p>
-  <Summary {data} {failed} {mode} {view} {ps} {scored} {factors} />
+  <Summary {data} {failed} {mode} {view} {ps} {scored} {factors} {first} />
 
   <div class="hv-grid">
     <div class="hv-main">
       <figure class="hv-figure" aria-labelledby="hv-caption">
-        <ZipMap {data} {geo} {stations} {byZip} {result} {cur} {rank} {mode} {view} {lens} {selected} {ps} {placeName} {theme} {failed} onselect={select} />
+        <ZipMap {data} {geo} {stations} {byZip} {result} {cur} {rank} {mode} {view} {lens} {selected} {ps} {placeName} {theme} {failed} {first} onselect={select} />
         <figcaption id="hv-caption">Tap a zip for details.</figcaption>
       </figure>
       <label class="hv-find"><span>Find a zip:</span>

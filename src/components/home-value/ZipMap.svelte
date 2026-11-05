@@ -5,7 +5,7 @@
   import { CONF, css, gapText, money, name, who } from "./hv.js";
   import { frame, valueColor } from "./plot.js";
 
-  let { data, geo, stations, byZip, result, cur, rank, mode, view, lens, selected, ps, placeName, theme, failed, onselect } = $props();
+  let { data, geo, stations, byZip, result, cur, rank, mode, view, lens, selected, ps, placeName, theme, failed, first, onselect } = $props();
 
   let mapEl, width = $state(0);
 
@@ -18,6 +18,8 @@
     const [lo, hi] = value ? [] : extent(inSample.map((f) => cur.score(scored.get(f.id))));
     return { scored, value, inSample, lo, hi };
   });
+  // The legend: the sample's colors (worked out when the site is built) until the map is drawn
+  const key = $derived(shade ?? (!failed && !geo && first ? { value: false, lo: first.lo, hi: first.hi } : null));
 
   // Before the reader has set their targets every zip is one neutral color
   $effect(() => {
@@ -117,15 +119,15 @@
 
 <!-- Legend: the color key changes with the lens, and always says what the numbers are -->
 <ul class="hv-legend" id="hv-legend" aria-label="Legend">
-  {#if geo}
-    {#if shade && !shade.value}
-      <li><span class="hv-num">{Math.round(shade.lo)}</span><span class="hv-key ramp"></span><span class="hv-num">{Math.round(shade.hi)}</span>Fit score (0 to 100; colors span this map's range)</li>
-    {:else if shade}
+  {#if geo || key}
+    {#if key && !key.value}
+      <li><span class="hv-num">{Math.round(key.lo)}</span><span class="hv-key ramp"></span><span class="hv-num">{Math.round(key.hi)}</span>Fit score (0 to 100; colors span this map's range)</li>
+    {:else if key}
       <li><span class="hv-num">−40%</span><span class="hv-key diverge"></span><span class="hv-num">+40%</span>Price per sq ft vs expected (below · in line · above)</li>
       <li><span class="hv-key faded"></span>Faded: low confidence</li>
     {/if}
-    {#if shade}<li><span class="hv-key pick"></span>Top {data.top} fit</li>{/if}
-    <li><span class="hv-key none"></span>{shade?.value ? "No price estimate" : shade ? "Not ranked or not in the sample (too little data)" : "Zip code"}</li>
+    {#if key}<li><span class="hv-key pick"></span>Top {data?.top ?? first.top} fit</li>{/if}
+    <li><span class="hv-key none"></span>{key?.value ? "No price estimate" : key ? "Not ranked or not in the sample (too little data)" : "Zip code"}</li>
     <li><span class="hv-key station"></span>Train station</li>
   {/if}
 </ul>

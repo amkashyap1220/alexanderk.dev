@@ -10,6 +10,9 @@ export function frame(el, width, height, marks, label, onselect, extra = {}) {
     style: { background: "transparent", color: css("--muted"), fontFamily: css("--font"), fontSize: "11px" },
     marks, ...extra,
   });
+  // One label for the whole chart: Plot also labels each layer ("geo", "dot"...), which
+  // screen readers don't need inside an image
+  plot.querySelectorAll("[aria-label]").forEach((g) => g.removeAttribute("aria-label"));
   plot.setAttribute("aria-label", label);
   plot.setAttribute("role", "img");
   plot.addEventListener("click", () => {

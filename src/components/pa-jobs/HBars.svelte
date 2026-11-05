@@ -4,13 +4,14 @@
      above set, bars over that value are the main color and the rest are
      lighter; with highlight set, only the row with that label is. With dots, each row is a dot
      on a line and the axis starts near the smallest value, so close values
-     can be told apart. -->
+     can be told apart. rowName and valueName head the table of numbers under the chart. -->
 <script>
   import * as Plot from "@observablehq/plot";
   import { onMount } from "svelte";
   import { css, draw, fmt, halo, onTheme, rowLayout, tick } from "./pa.js";
+  import Numbers from "./Numbers.svelte";
 
-  let { rows, format: formatName, label, above = null, highlight = null, xLabel = null, sort = true, dots = false } = $props();
+  let { rows, format: formatName, label, rowName, valueName, above = null, highlight = null, xLabel = null, sort = true, dots = false } = $props();
 
   const format = $derived(fmt(formatName)), ticks = $derived(tick(formatName));
   let el, width = $state(0), theme = $state(0);
@@ -21,10 +22,15 @@
     r.median != null && "Median " + fmt("money")(r.median), r.hours != null && r.hours + " hours a week on average",
     r.over200 != null && r.over200 + "% earn over $200k", r.pas != null && r.pas.toLocaleString() + " PAs", r.tip].filter(Boolean).join("\n");
 
+  const sorted = $derived(sort ? [...rows].sort((a, b) => b.value - a.value) : rows);
+  // The table: the value, plus the specialty pay chart's extra numbers and any tip line
+  const has = (key) => rows.some((r) => r[key] != null);
+  const extra = [["median", "Median", (r) => fmt("money")(r.median)], ["hours", "Hours a week", (r) => r.hours], ["over200", "Earn over $200k", (r) => r.over200 + "%"], ["pas", "PAs", (r) => r.pas.toLocaleString()], ["tip", "More", (r) => r.tip]].filter(([key]) => has(key));
+
   $effect(() => {
     theme;
     if (width < 200) return;
-    const data = sort ? [...rows].sort((a, b) => b.value - a.value) : rows;
+    const data = sorted;
     const L = rowLayout(data, width), dy = L.dy;
     const max = Math.max(...data.map((r) => r.value)), min = Math.min(...data.map((r) => r.value));
     const lo = dots ? Math.floor((min - (max - min) * 0.15) / 5000) * 5000 : 0;
@@ -49,3 +55,4 @@
 </script>
 
 <div class="pa-chart" bind:this={el} bind:clientWidth={width}></div>
+<Numbers heads={[rowName, valueName, ...extra.map(([, head]) => head)]} rows={sorted.map((r) => [r.label, format(r.value), ...extra.map(([key, , f]) => (r[key] == null ? "" : f(r)))])} />

@@ -4,11 +4,20 @@
 //   2. Copy this file to src/pages/research/<slug>.astro (lowercase-with-hyphens),
 //      set slug below to match, and write the article.
 //   3. Optional preview image: public/research/<slug>.png and <slug>-dark.png,
-//      1200 x 630, plus image.alt in research.ts.
+//      1200 x 630, plus image.alt in research.ts, and a 1200 x 630 WebP at
+//      public/img/home/<slug>.webp for the Research page.
+//   4. Fill in `found` below: "What I found", three points over the first chart.
+//      Work the numbers out from the post's data where you can, so they stay right.
 // Files starting with _ aren't pages, so this one is never published.
 import PostLayout from "../../layouts/PostLayout.astro";
+
+const found = [
+  { n: "A number", text: "and the sentence it starts." },
+  { n: "Another", text: "and what it means." },
+  { n: "A third", text: "and why it matters." },
+];
 ---
-<PostLayout slug="your-slug" highlight>
+<PostLayout slug="your-slug" {found} highlight>
   <section class="section">
     <article class="narrow prose">
       <p>Opening paragraph. Plain HTML: <code>&lt;p&gt;</code> for paragraphs,

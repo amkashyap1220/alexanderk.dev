@@ -78,3 +78,61 @@ export function findPlace(places, text) {
 export const zillow = (mode, zip) => "https://www.zillow.com/homes/for_" + (mode === "buy" ? "sale" : "rent") + "/" + zip + "_rb/";
 
 export const css = (prop) => getComputedStyle(document.documentElement).getPropertyValue(prop).trim();
+
+// The results for the person in view (0 = you, 1 = person 2, 2 = best for both)
+export function currentOf(result, view) {
+  if (view === 2 && result.both) return { picks: result.both, score: (r) => r.both, ranked: (r) => r.bothRanked, label: "best for both", k: null };
+  const k = Math.min(view, result.picks.length - 1);
+  return { picks: result.picks[k], score: (r) => r.scores[k], ranked: (r) => r.ranked[k], label: k === 0 ? "your" : "person 2's", k };
+}
+
+// The line above the map: the top list's heading and what it holds
+export function summarize(data, result, cur, mode, view, ps) {
+  const { picks, score, ranked } = cur;
+  const rows = result.rows.filter((r) => picks.has(r.zip)).sort((a, b) => score(b) - score(a));
+  if (!rows.length) return { rows: 0 };
+  const what = mode === "buy" ? "to buy" : "to rent";
+  const unranked = result.rows.filter((r) => !ranked(r)).length;
+  const head = view === 2 && ps.length > 1 ? "Best " + picks.size + " " + what + " for both of you" : (view === 1 ? "Person 2's" : "Your") + " top " + picks.size + " " + what;
+  const best = rows[0];
+  let text = " Best fit: " + name(best) + " (" + Math.round(score(best)) + " of 100). " + result.rows.length + " zips scored";
+  text += unranked ? "; " + unranked + " not ranked because data is missing for a factor carrying over " + Math.round((1 - data.min_coverage) * 100) + "% of the weight." : ".";
+  if (mode === "buy") {
+    const vs = rows.map((r) => r.value).filter(Boolean);
+    const below = vs.filter((v) => v.cls === "below").length, above = vs.filter((v) => v.cls === "above").length;
+    text += " Of the top " + rows.length + ", " + below + " sell below the price their measured features predict and " + above + " above it.";
+  }
+  return { rows: rows.length, head, text };
+}
+
+// Each weighted factor's share of one person's weights, largest first
+export function weightParts(p) {
+  const total = p.weights.reduce((s, w) => s + w, 0);
+  return ORDER.filter((i) => p.weights[i] > 0).sort((a, b) => p.weights[b] - p.weights[a])
+    .map((i) => ({ i, bar: Math.round((p.weights[i] / total) * 60), share: Math.round((p.weights[i] / total) * 100) }));
+}
+
+// Strongly related pairs among the factors one person weights (Spearman correlation across zips, |rho| >= 0.6)
+export function relatedPairs(data, p, factors) {
+  const corr = data.factor_correlation;
+  const out = [];
+  for (let a = 0; a < 7; a++) for (let b = a + 1; b < 7; b++) {
+    // Price is left out: it's a cost, not a feature, and it's meant to go with quality
+    if (a === 5 || b === 5 || (p.workplace && (a === 2 || b === 2))) continue;
+    if (p.weights[a] > 0 && p.weights[b] > 0 && Math.abs(corr.spearman[a][b]) >= 0.6)
+      out.push(factors[a].name.toLowerCase() + " and " + factors[b].name.toLowerCase() + " (ρ = " + corr.spearman[a][b].toFixed(2).replace("-", "−") + ")");
+  }
+  return out;
+}
+
+// The sample person (SAMPLE in src/value.py) as the scoring model takes them
+export const samplePerson = (data, mode) => ({ weights: [...data.sample[mode].weights], targets: [...data.sample[mode].targets], workplace: data.sample[mode].workplace });
+
+// Drive times to a few workplaces, made at build time so the page doesn't need the
+// whole grid (chicago-home-value-drive.json) until someone names another workplace.
+// cols: { zips: "46301,46302,...", to: { "60606": "12,15,..." } }, in the grid's zip order
+export function driveColumns(cols) {
+  const zips = cols.zips.split(",");
+  const to = new Map(Object.entries(cols.to).map(([w, m]) => [w, new Map(m.split(",").map((x, i) => [zips[i], +x]))]));
+  return { zips, to };
+}

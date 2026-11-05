@@ -24,6 +24,9 @@ export function draw(el, label, options) {
     style: { background: "transparent", color: css("--muted"), fontFamily: css("--font"), fontSize: "11px" },
     ...options,
   });
+  // One label for the whole chart: Plot also labels each layer ("bar", "dot"...), which
+  // screen readers don't need inside an image
+  plot.querySelectorAll("[aria-label]").forEach((g) => g.removeAttribute("aria-label"));
   plot.setAttribute("aria-label", label);
   plot.setAttribute("role", "img");
   el.replaceChildren(plot);

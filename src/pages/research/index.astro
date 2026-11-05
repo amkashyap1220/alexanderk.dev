@@ -1,44 +1,86 @@
 ---
-// The Research page: one card per post in src/data/research.ts
+// The Research page: the lead investigation (`featured` in src/data/research.ts)
+// gets a figure, the rest a row each. Evergreen pieces, not a dated feed.
+// The layout is in src/styles/research.css, with the featured layout from work.css.
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { posts, formatDate } from "../../data/research";
+import { posts } from "../../data/research";
+import { projects } from "../../data/projects";
+import "../../styles/editorial.css";
+import "../../styles/work.css";
+import "../../styles/research.css";
+
+const lead = posts.find((p) => p.featured) ?? posts[0];
+const rest = posts.filter((p) => p !== lead);
+const month = (date: string) => new Date(date + "T12:00:00Z").toLocaleDateString("en-US", { month: "short", year: "numeric", timeZone: "UTC" });
+// The project page that tells how each one was built
+const built = (slug: string) => projects.find((x) => x.writeup?.href === `/research/${slug}`);
+const thumb = (slug: string) => `/img/home/${slug}.webp`;
+const leadBuilt = built(lead.slug);
 ---
 <BaseLayout
   title="Research · Alexander Kashyap"
-  description="Research by Alexander Kashyap: data projects and what I found."
+  description="Research by Alexander Kashyap: questions answered with public data, each with interactive charts and the data and code behind them."
   path="/research/"
   current="research"
 >
-  <section class="hero">
-    <div class="narrow">
-      <p class="eyebrow">Research</p>
-      <h1>Research</h1>
-      <p class="lead">Data projects and fun charts.</p>
+<div class="gutter ed-page">
+<div class="shell">
+  <header class="page-head">
+    <p class="kicker"><span class="k">Research</span> <span>{posts.length} investigations</span></p>
+    <h1 class="page-hed">Questions I chase through public data</h1>
+    <p class="page-dek">Each one is an interactive map or set of charts you can explore, with the data and code behind it.</p>
+  </header>
+
+  <section class="h-section" aria-labelledby="lead-h">
+    <div class="section-head">
+      <h2 id="lead-h" class="h-label">Lead investigation</h2>
     </div>
+    <article class="feat" aria-labelledby="lead-t">
+      <div class="feat-text">
+        <p class="kicker"><span class="k">{lead.chips[0]}</span> <span>{month(lead.date)}</span> <span>Data through {lead.through}</span></p>
+        <h3 id="lead-t" class="hed feat-hed"><a href={`/research/${lead.slug}`}>{lead.title}</a></h3>
+        <p class="h-text">{lead.lead}</p>
+        <p class="stack">{lead.chips.slice(1).map((c, i) => <>{i > 0 && " "}<span>{c}</span></>)}</p>
+        <p class="feat-links">
+          <a class="h-more" href={`/research/${lead.slug}`}>{leadBuilt?.writeup?.label ?? "Read it"}</a>
+          {leadBuilt && <a class="h-more" href={`/projects/${leadBuilt.slug}`}>How I built it</a>}
+          {lead.link && <a class="h-more" href={lead.link.href}>{lead.link.label}</a>}
+        </p>
+      </div>
+      {lead.image && (
+        <figure class="pic feat-fig">
+          <img src={thumb(lead.slug)} width="1200" height="630" decoding="async" alt={lead.image.alt}>
+        </figure>
+      )}
+    </article>
   </section>
 
-  <section class="section">
-    <div class="wrap">
-      <ul class="posts">
-        {posts.map((p) => (
-          <li>
-            <a class="post-card" href={`/research/${p.slug}`}>
-              {p.image && (
-                <span class="post-thumb">
-                  <img class="thumb-light" src={`/research/${p.slug}.png`} alt={p.image.alt} width="1200" height="630" loading="lazy">
-                  <img class="thumb-dark" src={`/research/${p.slug}-dark.png`} alt={p.image.alt} width="1200" height="630" loading="lazy">
-                </span>
-              )}
-              <span class="post-body">
-                <time datetime={p.date}>{formatDate(p.date)}</time>
-                <h2 class="post-title">{p.title}</h2>
-                <span class="post-summary">{p.summary}</span>
-                <span class="chips">{p.chips.map((chip) => <span class="chip">{chip}</span>)}</span>
-              </span>
-            </a>
-          </li>
-        ))}
+  {rest.length > 0 && (
+    <section class="h-section" aria-labelledby="more-h">
+      <div class="section-head">
+        <h2 id="more-h" class="h-label">More investigations</h2>
+      </div>
+      <ul class="inv-list">
+        {rest.map((p) => {
+          const b = built(p.slug);
+          return (
+            <li class="inv">
+              {p.image && <div class="inv-thumb"><img src={thumb(p.slug)} width="1200" height="630" loading="lazy" decoding="async" alt={p.image.alt}></div>}
+              <div>
+                <p class="kicker"><span class="k">{p.chips[0]}</span> <span>{month(p.date)}</span> <span>Data through {p.through}</span></p>
+                <h3 class="inv-name"><a href={`/research/${p.slug}`}>{p.title}</a></h3>
+                <p class="inv-line">{p.summary}</p>
+                <p class="feat-links">
+                  <a class="h-more" href={`/research/${p.slug}`}>{b?.writeup?.label ?? "Read it"}</a>
+                  {b && <a class="h-more" href={`/projects/${b.slug}`}>How I built it</a>}
+                </p>
+              </div>
+            </li>
+          );
+        })}
       </ul>
-    </div>
-  </section>
+    </section>
+  )}
+</div>
+</div>
 </BaseLayout>

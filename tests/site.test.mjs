@@ -76,6 +76,28 @@ test("the Work page lists every project in three tiers, and every project page h
   }
 });
 
+test("the Research page lists every post, and every post has its byline, findings and charts' numbers", () => {
+  const slugs = all(fs.readFileSync("src/data/research.ts", "utf8"), /slug: "([^"]+)"/g);
+  const index = pages.find((x) => x.file === "research/index.html").html;
+  assert.match(index, /class="h-label">Lead investigation</, "Research: the lead investigation");
+  for (const slug of slugs) {
+    assert.ok(index.includes(`href="/research/${slug}"`), `Research: a link to ${slug}`);
+    const page = pages.find((x) => x.file === `research/${slug}.html`)?.html;
+    assert.ok(page, `research/${slug}.html`);
+    assert.match(page, /<p class="byline">[\s\S]*?By Alexander Kashyap[\s\S]*?Data through/, slug + ": byline");
+    assert.match(page, /class="h-label">What I found<\/h2>\s*<ol>(\s*<li>[\s\S]*?<\/li>){3}/, slug + ": at least three findings");
+    assert.match(page, /class="h-label">Next investigation</, slug + ": the next investigation");
+  }
+  // Every PA chart has its numbers as a table, in the page as built
+  const pa = pages.find((x) => x.file === "research/pa-job-market.html").html;
+  const charts = (pa.match(/<div class="pa-(?:chart|map)"/g) || []).length;
+  assert.ok(charts > 0, "PA: charts");
+  assert.equal((pa.match(/<summary>Show the numbers<\/summary>/g) || []).length, charts, "PA: a table for every chart");
+  // The Chicago map's opening summary is worked out when the site is built, so the page doesn't jump when the data loads
+  const chicago = pages.find((x) => x.file === "research/chicago-home-value.html").html;
+  assert.match(chicago, /id="hv-summary"[^>]*>(<!--[^>]*-->)*<b>Your top \d+ to buy\.<\/b> Best fit: /, "Chicago: the summary as built");
+});
+
 test("no page shows a phone number", () => {
   // US-style numbers: 555-123-4567, (555) 123-4567, 555.123.4567, +1 555 123 4567
   const phone = /(?:\+1[\s.-]?)?(?:\(\d{3}\)\s?|\b\d{3}[\s.-])\d{3}[\s.-]\d{4}\b/;

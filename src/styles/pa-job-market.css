@@ -5,7 +5,6 @@
         --pa-1: #3465a4; --pa-2: #f57900; --pa-dot: #ce5c00; }
 :root.dark { --pa-r0: #3b4a5c; --pa-r1: #3f5f86; --pa-r2: #4f7fb8; --pa-r3: #729fcf; --pa-r4: #b4d2f0; --pa-none: #353b41;
              --pa-1: #729fcf; --pa-2: #fcaf3e; --pa-dot: #fcaf3e; }
-.pa-hero { padding-bottom: var(--space-7); }
 .pa { max-width: 1000px; margin: 0 auto; padding: 0 var(--space-5); }
 .pa-figure { margin: var(--space-7) 0 var(--space-9); }
 .pa-figure h2 { margin: 0 0 var(--space-2); font-size: var(--fs-xl); }
@@ -37,5 +36,14 @@
 .pa-table-wrap table { width: 100%; border-collapse: collapse; font-size: var(--fs-xs); font-variant-numeric: tabular-nums; }
 .pa-table-wrap th, .pa-table-wrap td { padding: 4px 8px; border-bottom: 1px solid var(--border); text-align: right; }
 .pa-table-wrap th:first-child, .pa-table-wrap td:first-child { text-align: left; }
+.pa-table-wrap thead th { color: var(--muted); font-weight: 500; vertical-align: bottom; }
+.pa-table-wrap tbody th { font-weight: 400; }
+/* "Show the numbers" under each chart (Numbers.svelte) */
+.pa-numbers { margin-top: var(--space-2); }
+.pa-numbers > summary { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; cursor: pointer; font-size: var(--fs-xs); font-weight: 600; list-style: none; }
+.pa-numbers > summary::-webkit-details-marker { display: none; }
+.pa-numbers > summary::before { content: "+"; content: "+" / ""; width: 1ch; font-family: var(--mono); color: var(--accent); }
+.pa-numbers[open] > summary::before { content: "\2212"; content: "\2212" / ""; }
+.pa-numbers > summary:hover { text-decoration: underline; text-decoration-color: var(--accent); }
 @media (max-width: 560px) { .pa { padding: 0 var(--space-4); } .pa-stats b { font-size: var(--fs-xl); }
   .pa-dl { grid-template-columns: 1fr; } .pa-dl dd { margin-bottom: var(--space-2); } }

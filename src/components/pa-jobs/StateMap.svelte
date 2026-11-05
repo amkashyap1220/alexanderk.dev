@@ -6,12 +6,14 @@
   states: the per-state rows from /research/pa-job-market.json (src/site_data.py
   in the PhysiciansAssistantJobExploration repo); the shapes are
   /research/pa-states.json (US Census via us-atlas). measures: the keys of
-  FIELDS the reader can color by; details: the keys shown for a picked state.
+  FIELDS the reader can color by; details: the keys shown for a picked state,
+  and the columns of the table of numbers under the map.
 -->
 <script>
   import * as Plot from "@observablehq/plot";
   import { onMount } from "svelte";
   import { css, draw, k, num, onTheme } from "./pa.js";
+  import Numbers from "./Numbers.svelte";
 
   let { states, measures, details, metros: withMetros = false } = $props();
 
@@ -129,3 +131,5 @@
     </dl>
   </div>
 {/if}
+
+<Numbers heads={["State", ...details.map((key) => FIELDS[key].long)]} rows={[...states].sort((a, b) => a.name.localeCompare(b.name)).map((s) => [s.name, ...details.map((key) => FIELDS[key].fmt(s[key]))])} />

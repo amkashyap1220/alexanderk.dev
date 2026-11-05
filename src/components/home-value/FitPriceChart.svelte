@@ -10,9 +10,18 @@
   let chartEl, width = $state(0);
   const shown = $derived(!!result && mode === "buy");
 
+  // The chart is drawn once it's within a screen or so of the reader, not while the page loads
+  let near = $state(false);
+  $effect(() => {
+    if (near || !shown) return;
+    const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) near = true; }, { rootMargin: "100% 0px" });
+    io.observe(chartEl);
+    return () => io.disconnect();
+  });
+
   $effect(() => {
     theme;   // the colors come from the page's CSS, so redraw when the theme changes
-    if (!shown || width < 200) return;
+    if (!shown || !near || width < 200) return;
     const { picks, score, ranked } = cur;
     const rows = result.rows.filter((r) => r.value && ranked(r) && score(r) != null);
     const cut = Math.min(...rows.filter((r) => picks.has(r.zip)).map(score));

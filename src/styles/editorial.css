@@ -4,8 +4,16 @@
    fact lists, the archive list with dotted leaders, and Fig. 1 (the Open
    Tradesman flow, src/components/TradesmanFlow.astro), which lays itself
    out by its own width (container queries), so it works in any column.
-   Each page's own layout is in home.css or work.css.
+   Also the frame and head of the Work, project and Research pages.
+   Each page's own layout is in home.css, work.css or research.css.
    ========================================================================== */
+
+/* ---------- Page frame and head (Work, projects, Research) ---------- */
+.ed-page { padding-block: 32px 16px; }
+.page-hed { font-family: var(--serif); font-weight: 600; font-size: clamp(2.25rem, 1.6rem + 2.6vw, 3.5rem); line-height: 1.04; letter-spacing: -0.018em; }
+.page-dek { margin-top: 12px; max-width: 34em; font-family: var(--serif); font-size: clamp(1.125rem, 1rem + 0.5vw, 1.3125rem); line-height: 1.45; color: var(--muted); }
+.ed-page .section-head .credit { font-size: 0.875rem; }
+@media (min-width: 1180px) { .ed-page { padding-top: 40px; } }
 
 .archive ol, .steps, .pay { margin: 0; padding: 0; list-style: none; }
 .pic img { display: block; }
