@@ -1,6 +1,6 @@
 /* ==========================================================================
    The homepage's own layout (src/pages/index.astro): a brief front door.
-   The type, colors, masthead, nav and footer it shares with every page are
+   The type, colors, header and footer it shares with every page are
    in src/styles/site.css; the labels, kickers and headlines it shares with
    the Work pages are in src/styles/editorial.css.
 
@@ -13,7 +13,9 @@
 
 /* ---------- The intro ---------- */
 .hello { padding-top: 32px; max-width: 46rem; }
-.hello-lede { font-family: var(--serif); font-size: clamp(1.25rem, 1.1rem + 0.7vw, 1.625rem); line-height: 1.42; }
+.hello .kicker { margin-bottom: 8px; }
+.hello-tag { margin-top: 12px; font-family: var(--serif); font-size: clamp(1.25rem, 1.1rem + 0.7vw, 1.625rem); line-height: 1.35; }
+.hello-lede { margin-top: 16px; max-width: 38em; font-size: 1.0625rem; line-height: 1.6; color: var(--muted); }
 
 /* ---------- Featured: three cards ---------- */
 .fcards { display: grid; gap: 32px; }
@@ -44,7 +46,7 @@
 .reach a:not(.cta) { font-weight: 600; display: inline-flex; align-items: center; min-height: 44px; }
 
 @media (min-width: 720px) {
-  .hello { padding-top: 48px; }
+  .hello { padding-top: 40px; }
   /* Equal columns, with a rule down the middle of each gap */
   .fcards { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 calc(2 * var(--col-pad)); }
   .fcard + .fcard { position: relative; }
