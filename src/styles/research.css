@@ -7,8 +7,8 @@
 
    A post: the head (kicker, headline, standfirst, byline) over a double
    rule, "What I found", the post itself, then the next post and
-   an email link. Text lines up on the page's left edge; the PA post's charts
-   are a centered column.
+   an email link. The head lines up on the page's left edge; the charts and
+   map below it are a centered column.
    ========================================================================== */
 
 /* ---------- Post head ---------- */
@@ -29,10 +29,10 @@
 /* ---------- The post itself: left-aligned with the head ---------- */
 .post .section { padding-block: 32px; }
 .post .narrow { max-width: 52rem; margin-inline: 0; padding-inline: 0; }
-/* The interactive map sits on the left edge with the text; the PA post's column of
-   charts, which is narrower than the page, is centered on it */
-.post .hv { margin-inline: 0; }
+/* The charts and the map are narrower than the page, so their column is centered
+   on it; the Chicago post's text below the map lines up with the map */
 .post .pa { padding-inline: 0; }
+.post .hv-section .narrow { max-width: 1100px; margin-inline: auto; }
 
 /* ---------- The ending ---------- */
 .post-end { margin-top: 32px; padding-top: 12px; border-top: 4px double var(--ink); }
