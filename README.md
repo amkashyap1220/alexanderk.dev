@@ -30,7 +30,7 @@ I used AI to help write the text on this site.
 
 An editorial look, dark only: headlines in Newsreader, text in Libre Franklin, and labels and dates in IBM Plex Mono, all self-hosted from `public/fonts/` (Latin only, with their licenses). One accent color, a green called Forest. Every color and font is a CSS variable at the top of `public/css/style.css`; the homepage's and the Work pages' layouts are in `src/styles/`. Every page has the same header (Work, Research, About, Resume, Email) and footer; the footer's lock icon opens the unlock box.
 
-Behind every page is a photo of a lunar eclipse (`public/img/eclipse-*.webp`, already dimmed), by [Farzad Mohsenvand](https://unsplash.com/@farzadme) on [Unsplash](https://unsplash.com/photos/lunar-eclipse-phases-in-night-sky-TbuescuqMjA). Text gets a soft dark edge over it, and charts, maps, tables and code sit on solid panels. The photos in the homepage's "Off the clock" section are my own (`public/img/photos/`). `public/resume.pdf` is my resume.
+Behind every page is Hubble's [Pillars of Creation](https://esahubble.org/images/heic1501a/) (`public/img/pillars-*.webp`, already dimmed), by NASA, ESA/Hubble and the Hubble Heritage Team, under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Text gets a soft dark edge over it, and charts, maps, tables and code sit on solid panels. The photos in the homepage's "Off the clock" section are my own (`public/img/photos/`). `public/resume.pdf` is my resume.
 
 ## Tests
 
