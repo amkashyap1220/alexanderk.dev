@@ -25,6 +25,13 @@ const cards = [
     foot: ["Repositories", "Lab", "About"],
   },
   {
+    out: "repositories/scoundrel.jpg",
+    kicker: ["Scoundrel", "A card game"],
+    hed: "A dungeon crawler in a deck of cards",
+    dek: "Can a high-score list trust a game played in your browser?",
+    foot: ["By Alexander Kashyap"],
+  },
+  {
     out: "repositories/open-tradesman.jpg",
     kicker: ["Open Tradesman", "PayPal AI Hackathon"],
     hed: "Talk through the job in your language. The customer gets a priced estimate in theirs.",

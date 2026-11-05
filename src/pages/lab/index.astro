@@ -39,7 +39,7 @@ const leadBuilt = built(lead.slug);
     </div>
     <article class="feat" aria-labelledby="lead-t">
       <div class="feat-text">
-        <p class="kicker"><span class="k">{lead.chips[0]}</span> <span>{month(lead.date)}</span> <span>Data through {lead.through}</span></p>
+        <p class="kicker"><span class="k">{lead.chips[0]}</span> <span>{month(lead.date)}</span> {lead.through && <span>Data through {lead.through}</span>}</p>
         <h3 id="lead-t" class="hed feat-hed"><a href={`/lab/${lead.slug}`}>{lead.title}</a></h3>
         <p class="h-text">{lead.lead}</p>
         <p class="stack">{lead.chips.slice(1).map((c, i) => <>{i > 0 && " "}<Tech name={c} /></>)}</p>
@@ -68,7 +68,7 @@ const leadBuilt = built(lead.slug);
             <li class="inv">
               {p.image && <div class="inv-thumb"><img {...pics(p.slug)} sizes="(min-width: 720px) 390px, calc(100vw - 32px)" width="1200" height="630" loading="lazy" decoding="async" alt={p.image.alt}></div>}
               <div>
-                <p class="kicker"><span class="k">{p.chips[0]}</span> <span>{month(p.date)}</span> <span>Data through {p.through}</span></p>
+                <p class="kicker"><span class="k">{p.chips[0]}</span> <span>{month(p.date)}</span> {p.through && <span>Data through {p.through}</span>}</p>
                 <h3 class="inv-name"><a href={`/lab/${p.slug}`}>{p.title}</a></h3>
                 <p class="inv-line">{p.summary}</p>
                 <p class="feat-links">

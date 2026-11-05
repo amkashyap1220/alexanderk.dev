@@ -55,7 +55,7 @@ const article = {
         <span>By Alexander Kashyap</span>
         <span><time datetime={p.date}>{formatDate(p.date)}</time></span>
         {p.updated && <span>Updated <time datetime={p.updated}>{formatDate(p.updated)}</time></span>}
-        <span>Data through {p.through}</span>
+        {p.through && <span>Data through {p.through}</span>}
         {p.link && <a href={p.link.href}>{p.link.label}</a>}
         {built && <a href={`/repositories/${built.slug}`}>How I built it</a>}
       </p>

@@ -1,0 +1,53 @@
+---
+// The Scoundrel card game, embedded from its own app (amkashyap1220/SimpleScoundrel,
+// at scoundrel.alexanderk.dev, which also keeps the high scores). The game
+// tells this page its height, so the frame fits it without a scrollbar.
+import PostLayout from "../../layouts/PostLayout.astro";
+
+const GAME = "https://scoundrel.alexanderk.dev";
+---
+<PostLayout slug="scoundrel">
+  <section class="section">
+    <article class="narrow prose">
+      <p>Scoundrel is a one-player dungeon crawler for an ordinary deck of cards, designed by Zach Gage and Kurt Bieg in 2011. Clubs and spades are monsters, diamonds are weapons, and hearts are health potions. Each room deals you four cards: face three of them, or slip past the room and face the next one. Make it through all 44 cards with any health left to win.</p>
+      <p>Tap a card to see what it would do, then confirm. When the game ends, add your name to the high scores. The full rules and how I built it are on the <a href="/repositories/scoundrel">project page</a>.</p>
+    </article>
+  </section>
+
+  <section class="section scoundrel-wrap" aria-label="The game">
+    <iframe
+      id="scoundrel-game"
+      class="scoundrel-frame"
+      src={`${GAME}/?theme=dark`}
+      title="Scoundrel, the card game"
+      loading="eager"
+      allow="clipboard-write"
+    ></iframe>
+    <p class="scoundrel-note"><a href={GAME}>Open the game on its own page</a></p>
+  </section>
+
+  <style>
+    .scoundrel-wrap { max-width: 680px; margin-inline: auto; }
+    .scoundrel-frame {
+      display: block;
+      width: 100%;
+      height: 1150px;
+      border: 1px solid rgb(237 233 225 / 0.16);
+      border-radius: 12px;
+      background: #14161b;
+    }
+    .scoundrel-note { margin-top: 0.75rem; text-align: center; font-size: 0.9rem; }
+  </style>
+
+  <script slot="scripts" is:inline>
+    // The game sends its height whenever it changes
+    (() => {
+      const frame = document.getElementById("scoundrel-game");
+      addEventListener("message", (e) => {
+        if (e.origin !== "https://scoundrel.alexanderk.dev" || e.source !== frame.contentWindow) return;
+        const h = Number(e.data && e.data.type === "scoundrel:height" && e.data.height);
+        if (h > 200 && h < 5000) frame.style.height = h + 2 + "px";
+      });
+    })();
+  </script>
+</PostLayout>
