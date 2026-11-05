@@ -1,10 +1,10 @@
 ---
-// A project's own write-up. Put your HTML between <Walkthrough> and
-// </Walkthrough>; left empty, it shows "Work in progress."
+// A project's own write-up: put your HTML between <Walkthrough> and
+// </Walkthrough>. A page without one just leaves it out.
+interface Props { title?: string }
+const { title = "How it works" } = Astro.props;
 ---
-<section class="section" id="walkthrough">
-  <div class="narrow">
-    <h2 class="section-title">Walkthrough</h2>
-    <slot><p class="muted">Work in progress.</p></slot>
-  </div>
+<section class="cs-sec" id="walkthrough" aria-labelledby="walkthrough-h">
+  <h2 id="walkthrough-h" class="cs-h2">{title}</h2>
+  <slot />
 </section>

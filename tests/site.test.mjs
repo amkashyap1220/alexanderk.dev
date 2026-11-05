@@ -60,6 +60,22 @@ test("the resume is there to download, and the homepage shows the email address"
   assert.match(home, /href="mailto:alexander\.kashyap@gmail\.com"/, "a mailto link");
 });
 
+test("the Work page lists every project in three tiers, and every project page has its facts", () => {
+  const slugs = all(fs.readFileSync("src/data/projects.ts", "utf8"), /slug: "([^"]+)"/g);
+  const work = pages.find((x) => x.file === "projects/index.html").html;
+  for (const tier of ["Featured", "More work", "Archive"]) assert.match(work, new RegExp(`class="h-label">${tier}<`), "Work: " + tier);
+  assert.match(work, new RegExp(`<span>${slugs.length} projects</span>`), "Work: the project count");
+  for (const slug of slugs) {
+    assert.ok(work.includes(`href="/projects/${slug}"`), `Work: a link to ${slug}`);
+    const page = pages.find((x) => x.file === `projects/${slug}.html`)?.html;
+    assert.ok(page, `projects/${slug}.html`);
+    assert.match(page, /<aside class="cs-facts"/, slug + ": facts");
+    assert.doesNotMatch(page, /Work in progress/, slug + ": no empty walkthrough");
+    // A README waits, folded, until it's opened
+    if (page.includes("data-readme=")) assert.match(page, /<details class="repo-fold">[\s\S]*?data-readme=/, slug + ": README folded");
+  }
+});
+
 test("no page shows a phone number", () => {
   // US-style numbers: 555-123-4567, (555) 123-4567, 555.123.4567, +1 555 123 4567
   const phone = /(?:\+1[\s.-]?)?(?:\(\d{3}\)\s?|\b\d{3}[\s.-])\d{3}[\s.-]\d{4}\b/;

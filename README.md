@@ -14,21 +14,21 @@ Built with [Astro](https://astro.build) into plain HTML, CSS and JavaScript, and
 | --- | --- |
 | `src/layouts/` | The page shell (head, header, footer) in `BaseLayout.astro`, plus the project and research post layouts built on it |
 | `src/pages/` | One file per page; its path is the page's address |
-| `src/data/` | The projects and research posts; their pages and the Projects and Research cards are built from these |
-| `src/components/`, `src/styles/` | Small shared pieces (README, chips, GitHub numbers) and page-only styles |
+| `src/data/` | The projects and research posts; their pages, the Work page's lists and the Research cards are built from these |
+| `src/components/`, `src/styles/` | Small shared pieces (the folded README, Fig. 1 of Open Tradesman) and page styles: `editorial.css` for what the homepage and Work pages share, `home.css` and `work.css` for each one's layout |
 | `src/components/home-value/` | The Chicago home value map, chart, table and form (Svelte), loaded only on that post |
 | `src/components/fitness/` | The fitness dashboard: one Svelte component per panel, loaded only on that page |
 | `src/components/pa-jobs/` | The PA job market post's map and charts (Svelte + Observable Plot), reading `public/research/pa-job-market.json` |
 | `public/` | Copied to the site as is: `css/style.css`, the browser scripts in `js/`, images and data files |
 | `worker/` | The Cloudflare Worker: GitHub data, the private section's unlock code and the fitness API (never uploaded as a file) |
 
-To add a project: add an entry to `src/data/projects.ts`, then copy one of the pages in `src/pages/projects/` to `<slug>.astro` and write its sections. To add a research post, follow the steps at the top of `src/pages/research/_template.astro`.
+To add a project: add an entry to `src/data/projects.ts` (its `tier` puts it under Featured, More work or Archive on the Work page), then copy one of the pages in `src/pages/projects/` to `<slug>.astro` and write its sections. To add a research post, follow the steps at the top of `src/pages/research/_template.astro`.
 
 I used AI to help write the text on this site.
 
 ## Design
 
-An editorial look, dark only: headlines in Newsreader, text in Libre Franklin, and labels and dates in IBM Plex Mono, all self-hosted from `public/fonts/` (Latin only, with their licenses). One accent color, a green called Forest. Every color and font is a CSS variable at the top of `public/css/style.css`; the homepage's own layout is in `src/styles/home.css`. Every page has the same header (Work, Research, About, Resume, Email) and footer; the footer's lock icon opens the unlock box.
+An editorial look, dark only: headlines in Newsreader, text in Libre Franklin, and labels and dates in IBM Plex Mono, all self-hosted from `public/fonts/` (Latin only, with their licenses). One accent color, a green called Forest. Every color and font is a CSS variable at the top of `public/css/style.css`; the homepage's and the Work pages' layouts are in `src/styles/`. Every page has the same header (Work, Research, About, Resume, Email) and footer; the footer's lock icon opens the unlock box.
 
 Behind every page is a photo of a lunar eclipse (`public/img/eclipse-*.webp`, already dimmed), by [Farzad Mohsenvand](https://unsplash.com/@farzadme) on [Unsplash](https://unsplash.com/photos/lunar-eclipse-phases-in-night-sky-TbuescuqMjA). Text gets a soft dark edge over it, and charts, maps, tables and code sit on solid panels. The photos in the homepage's "Off the clock" section are my own (`public/img/photos/`). `public/resume.pdf` is my resume.
 

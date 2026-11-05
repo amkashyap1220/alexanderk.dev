@@ -1,52 +1,115 @@
 ---
-// The Projects page: one card per project in src/data/projects.ts
+// The Work page: three tiers from src/data/projects.ts (each project's `tier`).
+// Featured projects get a figure, More work a line and a status each, and the
+// archive a list with dotted leaders. The layout is in src/styles/work.css.
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import RepoStats from "../../components/RepoStats.astro";
-import Chips from "../../components/Chips.astro";
-import { projects } from "../../data/projects";
+import TradesmanFlow from "../../components/TradesmanFlow.astro";
+import { projects, project, years } from "../../data/projects";
+import "../../styles/editorial.css";
+import "../../styles/work.css";
 
-const year = (date: string) => date.slice(0, 4);
+const count = projects.length;
+const first = projects.map((p) => p.when.start.slice(0, 4)).sort()[0];
+const more = projects.filter((p) => p.tier === "more");
+const archive = projects.filter((p) => p.tier === "archive");
+const tm = project("open-tradesman");
+const hv = project("home-value-score");
+const site = project("alexanderk-dev");
+// A research project's main page is its write-up; its project page tells how it was built
+const href = (p: (typeof projects)[number]) => p.kind === "Research" && p.writeup ? p.writeup.href : `/projects/${p.slug}`;
 ---
 <BaseLayout
-  title="Projects · Alexander Kashyap"
-  description="Projects by Alexander Kashyap."
+  title="Work · Alexander Kashyap"
+  description="Projects by Alexander Kashyap: a voice-to-invoice app for the PayPal AI Hackathon, a map of the best-value zip codes around Chicago, this site, and more, newest first."
   path="/projects/"
   current="projects"
 >
-  <section class="hero">
-    <div class="narrow">
-      <p class="eyebrow">Projects</p>
-      <h1>Things I've built</h1>
-      <p class="lead">Open-source work with live stats from GitHub. Click a project for its README and a walkthrough of the code.</p>
-    </div>
-  </section>
+<div class="gutter ed-page">
+<div class="shell">
+  <header class="page-head">
+    <p class="kicker"><span class="k">Work</span> <span>{count} projects</span> <span>{first}&ndash;now</span></p>
+    <h1 class="page-hed">Things I&rsquo;ve built</h1>
+    <p class="page-dek">Apps, data investigations and coursework, newest first. The three at the top are the ones I&rsquo;d show you first.</p>
+  </header>
 
-  <section class="section">
-    <div class="wrap">
-      <div class="grid two">
-        {projects.map((p) => (
-          <article class="card project">
-            <div class="card-head">
-              <h2 class="card-title"><a class="card-link" href={`/projects/${p.slug}`}>{p.name}</a></h2>
-              {!p.when.end ? (
-                <time class="when" datetime={p.when.start}>{year(p.when.start)}</time>
-              ) : p.when.end === "present" ? (
-                <span class="when"><time datetime={p.when.start}>{year(p.when.start)}</time> – Present</span>
-              ) : (
-                <span class="when"><time datetime={p.when.start}>{year(p.when.start)}</time> – <time datetime={p.when.end}>{year(p.when.end)}</time></span>
-              )}
-            </div>
-            <RepoStats repo={p.repo} />
-            <p class="card-text">{p.summary}</p>
-            <Chips items={p.chips} />
-          </article>
-        ))}
+  <section class="h-section" aria-labelledby="feat-h">
+    <div class="section-head">
+      <h2 id="feat-h" class="h-label">Featured</h2>
+    </div>
+
+    <article class="feat" aria-labelledby="tm-h">
+      <div class="feat-text">
+        <p class="kicker"><span class="k">{tm.name}</span> <span>PayPal AI Hackathon</span> <span>Nov 2026</span> <span>{tm.status}</span></p>
+        <h3 id="tm-h" class="hed feat-hed"><a href={`/projects/${tm.slug}`}>{tm.headline}</a></h3>
+        <p class="q">{tm.question}</p>
+        <p class="h-text">A voice-first estimating app for tradespeople. Claude turns a spoken job description into an itemized, priced estimate, and PayPal invoicing handles the money. The AI does the tedious part; prices and payments never depend on it.</p>
+        <p class="stack">{tm.chips.map((c, i) => <>{i > 0 && " "}<span>{c}</span></>)}</p>
+        <p class="feat-links"><a class="h-more" href={`/projects/${tm.slug}`}>How it works</a> <a class="h-more" href={`https://github.com/${tm.repo}`}>Code</a></p>
       </div>
-    </div>
+      <div class="feat-fig">
+        <TradesmanFlow id="fig1-work" compact />
+      </div>
+    </article>
+
+    <article class="feat" aria-labelledby="hv-h">
+      <div class="feat-text">
+        <p class="kicker"><span class="k">{hv.name}</span> <span>{hv.kind}</span> <span>{years(hv.when)}</span> <span>{hv.status}</span></p>
+        <h3 id="hv-h" class="hed feat-hed"><a href={hv.writeup!.href}>{hv.headline}</a></h3>
+        <p class="q">{hv.question}</p>
+        <p class="h-text">An interactive map that scores every Chicago-area zip code on schools, safety, commute, train access, walkability, home age and price or rent, with weights you set. It also shows which zips sell for less, or more, than their features predict.</p>
+        <p class="stack">{hv.chips.map((c, i) => <>{i > 0 && " "}<span>{c}</span></>)}</p>
+        <p class="feat-links"><a class="h-more" href={hv.writeup!.href}>Explore the map</a> <a class="h-more" href={`/projects/${hv.slug}`}>How I built it</a></p>
+      </div>
+      <figure class="pic feat-fig">
+        <img src="/img/home/chicago-home-value.webp" width="1200" height="630" loading="lazy" decoding="async" alt="Map of Chicago-area zip codes colored from red (low score) to green (high score), with the 20 best-value zips outlined in blue">
+        <figcaption>Red scores low, green high. The 20 best-value zips are outlined in blue.</figcaption>
+      </figure>
+    </article>
+
+    <article class="feat" aria-labelledby="site-h">
+      <div class="feat-text">
+        <p class="kicker"><span class="k">{site.name}</span> <span>{site.kind}</span> <span>{years(site.when)}</span> <span>{site.status}</span></p>
+        <h3 id="site-h" class="hed feat-hed"><a href={`/projects/${site.slug}`}>{site.headline}</a></h3>
+        <p class="q">{site.question}</p>
+        <p class="h-text">The page you&rsquo;re reading: plain HTML built with Astro, a small Cloudflare script that keeps the GitHub numbers fresh, and tests that build the site and check every page and link before it ships.</p>
+        <p class="feat-links"><a class="h-more" href={`/projects/${site.slug}`}>How it&rsquo;s built</a> <a class="h-more" href={`https://github.com/${site.repo}`}>Code</a></p>
+      </div>
+      <dl class="spec feat-fig">
+        <div><dt>Build</dt><dd>Astro, static HTML, hosted on Cloudflare</dd></div>
+        <div><dt>Live data</dt><dd>A Worker keeps GitHub numbers fresh in KV storage</dd></div>
+        <div><dt>Charts</dt><dd>Interactive Svelte data pages</dd></div>
+        <div><dt>Private</dt><dd>A section behind an unlock code</dd></div>
+        <div><dt>Tests</dt><dd>Build the site, then check every page and link</dd></div>
+      </dl>
+    </article>
   </section>
 
-  <Fragment slot="scripts">
-    <script is:inline src="/js/gh.js"></script>
-    <script is:inline src="/js/github.js"></script>
-  </Fragment>
+  <section class="h-section" aria-labelledby="more-h">
+    <div class="section-head">
+      <h2 id="more-h" class="h-label">More work</h2>
+    </div>
+    <ul class="more">
+      {more.map((p) => (
+        <li>
+          <h3 class="more-name"><a href={href(p)}>{p.name}</a></h3>
+          <p class="more-line">{p.tagline}{p.kind === "Research" && <> <a class="more-sub" href={`/projects/${p.slug}`}>How I built it</a></>}</p>
+          <p class="more-meta mono"><span>{p.kind}</span> <span>{p.status}</span> <span>{years(p.when)}</span></p>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="h-section archive" aria-labelledby="arch-h">
+    <div class="section-head">
+      <h2 id="arch-h" class="h-label">Archive</h2>
+      <p class="credit">Coursework, games and early projects</p>
+    </div>
+    <ol>
+      {archive.map((p) => (
+        <li><a href={`/projects/${p.slug}`}><span class="t"><span class="nm">{p.name}</span><span class="tg">{p.tagline}</span></span> <span class="dots"></span> <span class="yr">{years(p.when)}</span></a></li>
+      ))}
+    </ol>
+  </section>
+</div>
+</div>
 </BaseLayout>

@@ -1,0 +1,57 @@
+---
+// Written from the project's README, CLAUDE.md and docs/MILESTONES.md
+import ProjectLayout from "../../layouts/ProjectLayout.astro";
+import TradesmanFlow from "../../components/TradesmanFlow.astro";
+---
+<ProjectLayout slug="open-tradesman">
+  <Fragment slot="intro">
+    <section class="cs-sec" aria-labelledby="ot-short">
+      <h2 id="ot-short" class="cs-h2">In short</h2>
+      <div class="prose">
+        <ul>
+          <li><b>The problem.</b> Writing up an estimate and chasing the deposit and the final payment is office work, done after a day of real work. When the tradesperson and the customer speak different languages, it&rsquo;s harder still.</li>
+          <li><b>The approach.</b> The tradesperson talks through the job. Claude drafts an itemized estimate in the customer&rsquo;s language, priced from the tradesperson&rsquo;s own price book, and PayPal invoices handle the deposit, change orders and final invoice. The AI only drafts: a person confirms before money moves or a customer sees anything.</li>
+          <li><b>Where it is.</b> I&rsquo;m building it for the PayPal AI Hackathon, with submissions due November 12, 2026. Payments run in PayPal&rsquo;s sandbox.</li>
+        </ul>
+      </div>
+    </section>
+  </Fragment>
+
+  <section class="cs-sec cs-wide" aria-labelledby="ot-flow">
+    <h2 id="ot-flow" class="cs-h2">How a job moves through it</h2>
+    <TradesmanFlow />
+  </section>
+
+  <section class="cs-sec" aria-labelledby="ot-decisions">
+    <h2 id="ot-decisions" class="cs-h2">Key decisions</h2>
+    <ol class="decisions">
+      <li>
+        <h3>The AI picks the items; the price book sets the prices.</h3>
+        <p>For each line of an estimate, Claude chooses an item id from the tradesperson&rsquo;s price book, and the server looks up the price. A line Claude can&rsquo;t match is marked &ldquo;needs price&rdquo; and stops the estimate from sending. No number a model writes ever becomes a price.</p>
+      </li>
+      <li>
+        <h3>A person confirms before money moves.</h3>
+        <p>Sending an estimate, approving a change order, confirming how a receipt splits across jobs and sending the final invoice all wait for the tradesperson, and each one goes in an audit log. Measurements work the same way: quantities come only from what the tradesperson said, and anything missing becomes a question instead of a guess.</p>
+      </li>
+      <li>
+        <h3>Money questions run read-only.</h3>
+        <p>The tradesperson can ask about their money in plain words, like <span lang="es">&ldquo;¿Cuánto me deben este mes?&rdquo;</span> (&ldquo;How much am I owed this month?&rdquo;). A smaller Claude model writes the database query. It has to be a single <code>SELECT</code>, gets a row limit, and runs as a database user that can only read.</p>
+      </li>
+      <li>
+        <h3>Money is whole cents.</h3>
+        <p>Every amount on the server is a whole number of cents, turned into dollars only when it goes to PayPal and when it&rsquo;s shown on screen. Deposits, change orders and final invoices add up without rounding drift.</p>
+      </li>
+    </ol>
+  </section>
+
+  <section class="cs-sec" aria-labelledby="ot-built">
+    <h2 id="ot-built" class="cs-h2">How it&rsquo;s built</h2>
+    <dl class="spec cs-spec">
+      <div><dt>App</dt><dd>A React web app you can install from the browser, voice first, with every label in Spanish and English</dd></div>
+      <div><dt>API</dt><dd>Python and FastAPI, on Postgres</dd></div>
+      <div><dt>AI</dt><dd>Claude for estimates, translation and receipts, always answering in a fixed JSON format; Whisper on Cloudflare Workers AI turns voice notes into text</dd></div>
+      <div><dt>Payments</dt><dd>The PayPal Invoicing API, in the sandbox. PayPal&rsquo;s payment notices are verified before a job is marked paid</dd></div>
+      <div><dt>Tests</dt><dd>Run without the network, with stand-ins for Claude and PayPal</dd></div>
+    </dl>
+  </section>
+</ProjectLayout>

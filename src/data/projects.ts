@@ -1,21 +1,42 @@
-// Every project on the site, in the order the Projects page lists them.
-// Each one also needs a page at src/pages/projects/<slug>.astro (copy one
-// of those; the hero, live GitHub numbers and README come from here).
+// Every project on the site, newest first within each tier. The Work page
+// (/projects/) lists them in three tiers; each one also needs a page at
+// src/pages/projects/<slug>.astro (copy one of those; the page's header,
+// facts and README come from here).
 
 export interface Project {
   slug: string;              // the page's address: /projects/<slug>
   name: string;
-  tagline: string;
-  summary: string;           // the page's lead, and the Projects card text
+  tagline: string;           // one line: the archive list, and the page's dek when there's no question
+  summary: string;           // the page's opening paragraph
   description?: string;      // search and link-preview text (defaults to "<name>: <summary>")
   repo: string;              // "owner/name" on GitHub
-  chips: string[];
+  chips: string[];           // the stack, in the page's facts
   when: { start: string; end?: string };   // "2021", "2020-12"; end "present" for ongoing
-  readme: boolean;           // show the repo's README on the page
-  writeup?: { label: string; href: string };   // a main button before "View on GitHub"
+  readme: boolean;           // offer the repo's README ("From the repo") on the page
+  kind: string;              // the label above the headline: "Web app", "Research", "Coursework"
+  status: string;            // "In progress", "Live", "Published", "Finished"
+  tier: "featured" | "more" | "archive";   // where the Work page lists it
+  headline?: string;         // a featured project's headline, after its name
+  question?: string;         // the question the project answers, under the headline
+  app?: { label: string; href: string };       // the live app
+  writeup?: { label: string; href: string };   // the research write-up
 }
 
 export const projects: Project[] = [
+  {
+    slug: "open-tradesman",
+    name: "Open Tradesman",
+    tagline: "Talk through a job, send a priced estimate, get paid",
+    summary: "A voice-first estimating app for tradespeople, built for the PayPal AI Hackathon. The tradesperson talks through the job in their own language; Claude turns it into an itemized, priced estimate in the customer's language; and PayPal invoicing handles the money, from the deposit and change orders to the final invoice.",
+    description: "Open Tradesman: a voice-first estimating app for tradespeople, built for the PayPal AI Hackathon. Claude turns a spoken job description into a priced estimate in the customer's language, and PayPal invoicing handles the money.",
+    repo: "amkashyap1220/Open-Tradesman",
+    chips: ["React PWA", "FastAPI", "Claude API", "PayPal Invoicing API", "Postgres"],
+    when: { start: "2026-11", end: "present" },
+    readme: true,
+    kind: "Hackathon", status: "In progress", tier: "featured",
+    headline: "Talk through the job in your language. The customer gets a priced estimate in theirs.",
+    question: "Can the AI do the tedious part of quoting a job, while every price and every payment stays in the tradesperson’s hands?",
+  },
   {
     slug: "bowling-ball-finder",
     name: "Bowling Ball Finder",
@@ -26,7 +47,8 @@ export const projects: Project[] = [
     chips: ["Astro", "Svelte", "Cloudflare Workers", "Cloudflare D1", "Cloudflare Access"],
     when: {"start": "2026", "end": "present"},
     readme: true,
-    writeup: {"label": "Open the app", "href": "https://bowling.alexanderk.dev"},
+    kind: "Web app", status: "Private beta", tier: "more",
+    app: { label: "Open the app (testers only)", href: "https://bowling.alexanderk.dev" },
   },
   {
     slug: "pa-job-market",
@@ -38,7 +60,8 @@ export const projects: Project[] = [
     chips: ["Python", "pandas", "NCCPA data", "BLS data", "Observable Plot", "Svelte"],
     when: {"start": "2026"},
     readme: true,
-    writeup: {"label": "See the charts", "href": "/research/pa-job-market"},
+    kind: "Research", status: "Published", tier: "more",
+    writeup: { label: "See the charts", href: "/research/pa-job-market" },
   },
   {
     slug: "home-value-score",
@@ -50,7 +73,10 @@ export const projects: Project[] = [
     chips: ["Python", "pandas", "GeoPandas", "statsmodels", "DuckDB", "Census data", "Observable Plot"],
     when: {"start": "2026"},
     readme: true,
-    writeup: {"label": "Read the write-up", "href": "/research/chicago-home-value"},
+    kind: "Research", status: "Published", tier: "featured",
+    headline: "Where is the best value in Chicagoland?",
+    question: "If you decide what matters to you, which Chicago-area zip codes fit best, and which cost less than they should?",
+    writeup: { label: "Explore the map", href: "/research/chicago-home-value" },
   },
   {
     slug: "switch-to-youtube",
@@ -61,6 +87,7 @@ export const projects: Project[] = [
     chips: ["Python", "Flask", "Spotify API", "YouTube Music API", "Docker"],
     when: {"start": "2023", "end": "present"},
     readme: true,
+    kind: "Web app", status: "Open source", tier: "more",
   },
   {
     slug: "alexanderk-dev",
@@ -71,6 +98,9 @@ export const projects: Project[] = [
     chips: ["Astro", "HTML", "CSS", "JavaScript", "GitHub API", "Cloudflare"],
     when: {"start": "2026", "end": "present"},
     readme: true,
+    kind: "This site", status: "Live", tier: "featured",
+    headline: "A static site that keeps its own numbers fresh",
+    question: "Can a static site stay current, and prove every page works, without a server to look after?",
   },
   {
     slug: "dotnet",
@@ -81,6 +111,7 @@ export const projects: Project[] = [
     chips: ["C#", "ASP.NET Core", "React", "Azure SQL", "OpenAI API"],
     when: {"start": "2025"},
     readme: true,
+    kind: "Web app", status: "Retired", tier: "archive",
   },
   {
     slug: "atg-shop",
@@ -91,6 +122,7 @@ export const projects: Project[] = [
     chips: ["PHP", "MySQL", "SQL", "Database design"],
     when: {"start": "2021"},
     readme: true,
+    kind: "Course project", status: "Finished", tier: "archive",
   },
   {
     slug: "csci-241",
@@ -101,6 +133,7 @@ export const projects: Project[] = [
     chips: ["C++", "Data structures", "Algorithms"],
     when: {"start": "2021"},
     readme: false,
+    kind: "Coursework", status: "Finished", tier: "archive",
   },
   {
     slug: "csci-330",
@@ -111,6 +144,7 @@ export const projects: Project[] = [
     chips: ["C++", "Bash", "awk", "Sockets"],
     when: {"start": "2021"},
     readme: false,
+    kind: "Coursework", status: "Finished", tier: "archive",
   },
   {
     slug: "csci-240",
@@ -121,6 +155,7 @@ export const projects: Project[] = [
     chips: ["C++", "Teaching", "Video walkthroughs"],
     when: {"start": "2020-12", "end": "2021-02"},
     readme: true,
+    kind: "Coursework", status: "Finished", tier: "archive",
   },
   {
     slug: "gaps-between-the-primes",
@@ -131,6 +166,7 @@ export const projects: Project[] = [
     chips: ["C++", "Number theory", "Algorithms"],
     when: {"start": "2020"},
     readme: true,
+    kind: "Program", status: "Finished", tier: "archive",
   },
   {
     slug: "ratewillbot",
@@ -141,6 +177,7 @@ export const projects: Project[] = [
     chips: ["Python", "discord.py"],
     when: {"start": "2020"},
     readme: true,
+    kind: "Discord bot", status: "Finished", tier: "archive",
   },
   {
     slug: "college-experience",
@@ -151,6 +188,7 @@ export const projects: Project[] = [
     chips: ["Java", "Android", "Game"],
     when: {"start": "2020"},
     readme: false,
+    kind: "Android game", status: "Finished", tier: "archive",
   },
   {
     slug: "cnit-255",
@@ -161,6 +199,7 @@ export const projects: Project[] = [
     chips: ["Java", "Swing", "OOP"],
     when: {"start": "2019"},
     readme: false,
+    kind: "Coursework", status: "Finished", tier: "archive",
   },
   {
     slug: "cosmishapes",
@@ -171,8 +210,26 @@ export const projects: Project[] = [
     chips: ["Unity", "C#", "Game"],
     when: {"start": "2018"},
     readme: false,
+    kind: "Unity game", status: "Finished", tier: "archive",
   },
 ];
+
+// "2021", "2020–21", "2023–now": the Work page's lists and the homepage archive
+export function years({ start, end }: Project["when"]): string {
+  const from = start.slice(0, 4);
+  if (end === "present") return `${from}–now`;
+  const to = end?.slice(0, 4);
+  return !to || to === from ? from : `${from}–${to.slice(2)}`;
+}
+
+// "Nov 2026 – now", "Dec 2020 – Feb 2021", "2021": a project page's facts
+export function dates({ start, end }: Project["when"]): string {
+  const month = (d: string) => d.length > 4
+    ? new Date(d + "-15").toLocaleDateString("en-US", { month: "short", year: "numeric", timeZone: "UTC" })
+    : d;
+  if (end === "present") return `${month(start)} – now`;
+  return end && end !== start ? `${month(start)} – ${month(end)}` : month(start);
+}
 
 export function project(slug: string): Project {
   const p = projects.find((x) => x.slug === slug);

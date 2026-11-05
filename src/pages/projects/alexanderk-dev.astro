@@ -3,7 +3,7 @@ import ProjectLayout from "../../layouts/ProjectLayout.astro";
 import Walkthrough from "../../components/Walkthrough.astro";
 ---
 <ProjectLayout slug="alexanderk-dev" highlight>
-  <Walkthrough>
+  <Walkthrough title="How it’s built">
       <p class="section-intro">How this site works, from the files you see in the repo to the live GitHub numbers. You'll want to know basic HTML, CSS and JavaScript going in.</p>
 
       <div class="prose">
@@ -22,12 +22,12 @@ import Walkthrough from "../../components/Walkthrough.astro";
           <thead><tr><th>File</th><th>What it does</th></tr></thead>
           <tbody>
             <tr><td><code>src/layouts/</code></td><td>The page shell (head, header, footer) and the project and post layouts</td></tr>
-            <tr><td><code>src/pages/</code></td><td>One file per page: About, Projects, Research, Stats</td></tr>
-            <tr><td><code>src/data/</code></td><td>The list of projects and research posts that the pages and cards are built from</td></tr>
+            <tr><td><code>src/pages/</code></td><td>One file per page: Home, Work, Research, Stats</td></tr>
+            <tr><td><code>src/data/</code></td><td>The list of projects and research posts that the pages and lists are built from</td></tr>
             <tr><td><code>src/components/</code></td><td>Pieces shared by several pages, and the Svelte components behind the home value map and the fitness dashboard</td></tr>
-            <tr><td><code>public/css/style.css</code></td><td>All the styling for every page</td></tr>
+            <tr><td><code>public/css/style.css</code>, <code>src/styles/</code></td><td>The styling every page shares, and each page’s own layout</td></tr>
             <tr><td><code>public/fonts/</code></td><td>The three typefaces, served from the site itself</td></tr>
-            <tr><td><code>public/js/gh.js</code>, <code>github.js</code>, <code>stats.js</code></td><td>Fill in the GitHub numbers, READMEs and the Stats page</td></tr>
+            <tr><td><code>public/js/gh.js</code>, <code>github.js</code>, <code>stats.js</code></td><td>Fill in the READMEs and the Stats page</td></tr>
             <tr><td><code>worker/index.js</code></td><td>The Cloudflare script that fetches from GitHub</td></tr>
             <tr><td><code>wrangler.jsonc</code>, <code>astro.config.mjs</code></td><td>Cloudflare and Astro settings</td></tr>
           </tbody>
@@ -46,7 +46,7 @@ body { color: var(--ink); }</code></pre>
         <p>Headlines are set in Newsreader, text in Libre Franklin, and labels and dates in IBM Plex Mono. All three are open-source fonts served from the site itself, cut down to the Latin letters the site uses. Until they load, a font already on your device stands in, resized to take up the same space, so the text doesn't jump when they arrive.</p>
 
         <h3>4. Live GitHub numbers</h3>
-        <p>The stars, commits and languages on the project cards come from GitHub. The obvious approach is to have each visitor's browser ask GitHub directly. The catch: GitHub only allows <b>60 requests an hour</b> per visitor without a key, and the Stats page alone needs dozens. Reload a few times and the numbers stop loading.</p>
+        <p>The stars, commits and languages on the GitHub Stats page, and the READMEs on the project pages, come from GitHub. The obvious approach is to have each visitor's browser ask GitHub directly. The catch: GitHub only allows <b>60 requests an hour</b> per visitor without a key, and the Stats page alone needs dozens. Reload a few times and the numbers stop loading.</p>
         <p>The fix is to have <b>one</b> program ask GitHub on everyone's behalf and share the answer. That program is a Cloudflare <b>Worker</b>, a small script that runs on Cloudflare's servers. Cloudflare starts it every 5 minutes:</p>
 <pre is:raw><code class="language-json">// wrangler.jsonc
 "triggers": { "crons": ["*/5 * * * *"] }</code></pre>
@@ -65,15 +65,15 @@ body { color: var(--ink); }</code></pre>
   const body = await env.GITHUB_DATA.get("github.json");
   return new Response(body, { headers: { "Content-Type": "application/json" } });
 }</code></pre>
-        <p>On the pages, each number starts as a placeholder that says which repo and which number it wants:</p>
-<pre is:raw><code class="language-html">&lt;b data-gh="amkashyap1220/SwitchToYoutube" data-field="stars"&gt;--&lt;/b&gt;</code></pre>
-        <p><code>github.js</code> finds every placeholder, looks the repo up in the data file, and fills in the number:</p>
-<pre is:raw><code class="language-js">document.querySelectorAll("[data-gh]").forEach((el) =&gt; {
-  repo(el.dataset.gh).then((data) =&gt; {
-    el.textContent = data[el.dataset.field];
+        <p>On a project page, the folded README at the bottom says which repo it wants:</p>
+<pre is:raw><code class="language-html">&lt;div data-readme="amkashyap1220/SwitchToYoutube"&gt;...&lt;/div&gt;</code></pre>
+        <p>The first time you open it, <code>github.js</code> looks the repo up in the data file and fills it in. Until then the page doesn't download the data at all:</p>
+<pre is:raw><code class="language-js">fold.addEventListener("toggle", () =&gt; {
+  readme(box.dataset.readme).then((html) =&gt; {
+    box.innerHTML = html;   // already made safe by GitHub
   });
 });</code></pre>
-        <p>Now visitors' browsers never talk to GitHub at all, and the numbers are never more than about 5 minutes old.</p>
+        <p>Now visitors' browsers never talk to GitHub at all, and the numbers and READMEs are never more than about 5 minutes old.</p>
 
         <h3>5. The Stats page is a small data pipeline</h3>
         <p><code>stats.js</code> is organized like an <b>ETL</b> job, the extract-transform-load pattern data engineers use everywhere:</p>
