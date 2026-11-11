@@ -1,0 +1,40 @@
+---
+// Royal Flux, embedded from its own app (amkashyap1220/BalatroClone, at
+// royalflux.alexanderk.dev). The game fills whatever space it's given, so the
+// frame has a fixed height instead of following the game.
+import PostLayout from "../../layouts/PostLayout.astro";
+
+const GAME = "https://royalflux.alexanderk.dev";
+---
+<PostLayout slug="royal-flux">
+  <section class="section">
+    <article class="narrow prose">
+      <p>Royal Flux is a poker roguelike. Each round asks for a score: pick up to five cards, play them as a poker hand, and the hand scores its chips times its mult. You get a few hands and a few discards to reach the target. Between rounds, a shop sells charms that change the rules, one-use cards that level up hands or rework your deck, and packs of both. Survive eight antes, each ending in a boss with a rule of its own, to win the run.</p>
+      <p>Tap cards to pick them, and press and hold anything to see what it does. On a phone it plays best on its own page, where you can also add it to your home screen and play offline. How it&rsquo;s built is on the <a href="/repositories/royal-flux">project page</a>.</p>
+    </article>
+  </section>
+
+  <section class="section royal-wrap" aria-label="The game">
+    <iframe
+      class="royal-frame"
+      src={GAME}
+      title="Royal Flux, the card game"
+      loading="eager"
+    ></iframe>
+    <p class="royal-note"><a href={GAME}>Open the game on its own page</a></p>
+  </section>
+
+  <style>
+    .royal-wrap { max-width: 1100px; margin-inline: auto; }
+    .royal-frame {
+      display: block;
+      width: 100%;
+      height: min(80vh, 760px);
+      min-height: 560px;
+      border: 1px solid rgb(237 233 225 / 0.16);
+      border-radius: 12px;
+      background: #052820;
+    }
+    .royal-note { margin-top: 0.75rem; text-align: center; font-size: 0.9rem; }
+  </style>
+</PostLayout>

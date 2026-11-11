@@ -21,6 +21,20 @@ export interface Post {
 
 export const posts: Post[] = [
   {
+    slug: "royal-flux",
+    title: "Royal Flux",
+    date: "2026-11-11",
+    lead: "A poker roguelike. Play hands to score chips times mult, beat the blinds, and build a deck and a row of charms that break the rules in your favor.",
+    summary: "Royal Flux, an original poker roguelike deckbuilder, to play right here or install on your phone.",
+    description: "Play Royal Flux, an original poker roguelike deckbuilder, in your browser on a phone or a computer. Install it to your home screen to play offline.",
+    chips: ["Card game", "React", "TypeScript", "Cloudflare Workers"],
+    image: {
+      alt: "The game on a computer screen: a green felt table with five selected playing cards raised from a hand of eight, a Pair worth 10 chips times 2 mult, and a small blind asking for 300",
+      previewAlt: "The Royal Flux card game on a computer screen, with a hand of playing cards on green felt",
+    },
+    link: { label: "Code", href: "https://github.com/amkashyap1220/BalatroClone" },
+  },
+  {
     slug: "scoundrel",
     title: "Scoundrel",
     date: "2026-11-05",

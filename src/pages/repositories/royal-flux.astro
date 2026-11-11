@@ -1,0 +1,68 @@
+---
+// Written from the project's README. The game's Lab page links here.
+import ProjectLayout from "../../layouts/ProjectLayout.astro";
+import { pics } from "../../lib/pic";
+---
+<ProjectLayout slug="royal-flux">
+  <Fragment slot="intro">
+    <section class="cs-sec" aria-labelledby="rf-short">
+      <h2 id="rf-short" class="cs-h2">In short</h2>
+      <div class="prose">
+        <ul>
+          <li><b>The game.</b> A poker roguelike deckbuilder with its own charms, bosses, decks and art. Every card face, icon and sound is original, drawn in CSS and made with the Web Audio API. <a href="/lab/royal-flux">Play it in the Lab</a>.</li>
+          <li><b>On your phone.</b> The table fits one phone screen. Press and hold anything to see what it does. Add it to your home screen and it opens full screen and plays offline.</li>
+          <li><b>No server.</b> The whole game runs in your browser, and your runs, unlocks and stats are saved there.</li>
+        </ul>
+      </div>
+    </section>
+    <figure class="pic cs-sec">
+      <img {...pics("royal-flux")} sizes="(min-width: 1100px) 60vw, calc(100vw - 32px)" width="1200" height="630" decoding="async" alt="The game on a computer screen: a green felt table with five selected playing cards raised from a hand of eight, a Pair worth 10 chips times 2 mult, and a small blind asking for 300">
+      <figcaption>The first round of a run: a Pair, worth 10 chips times 2 mult.</figcaption>
+    </figure>
+  </Fragment>
+
+  <section class="cs-sec" id="how-to-play" aria-labelledby="rf-play">
+    <h2 id="rf-play" class="cs-h2">How to play</h2>
+    <div class="prose">
+      <p>A run is eight antes of three rounds each: a small blind, a big blind and a boss. Each round sets a score to reach.</p>
+      <ul>
+        <li><b>Play a hand.</b> Pick up to five cards and play them. The poker hand they make sets the base chips and mult, each scoring card adds its chips, and the total is chips times mult.</li>
+        <li><b>Discard.</b> Throw away up to five cards to draw new ones. You get a few hands and a few discards a round.</li>
+        <li><b>Shop.</b> Winning a round pays out, and the shop sells charms that change how hands score, one-use cards that level up a hand or change your cards, and packs.</li>
+        <li><b>Bosses.</b> The third round of every ante has a boss with a rule of its own, like a suit whose cards score nothing, or a hand size two cards smaller.</li>
+      </ul>
+      <p>Beat the eighth boss to win, then keep going in endless mode if you like. Achievements unlock new decks, and each win unlocks a harder Heat level.</p>
+    </div>
+  </section>
+
+  <section class="cs-sec" aria-labelledby="rf-decisions">
+    <h2 id="rf-decisions" class="cs-h2">Key decisions</h2>
+    <ol class="decisions">
+      <li>
+        <h3>The rules are a pure, seeded engine.</h3>
+        <p>Every action takes the run and returns the next run, with a seeded random number generator inside it, so a seed always deals the same run. The engine has no screen code, which keeps it easy to test: hundreds of tests cover each hand, each charm and bot-played runs.</p>
+      </li>
+      <li>
+        <h3>The scoring is a list of steps.</h3>
+        <p>Scoring a hand returns every step that changed the chips or the mult and where it came from. The screen plays those steps back one at a time, so you can see which card or charm added what.</p>
+      </li>
+      <li>
+        <h3>Built for a phone first.</h3>
+        <p>A phone held upright gets its own layout that fits the whole table on one screen. A long press shows a card&rsquo;s details, so a tap only ever selects it. A service worker keeps every file, so the installed game plays with no connection.</p>
+      </li>
+    </ol>
+  </section>
+
+  <section class="cs-sec" aria-labelledby="rf-built">
+    <h2 id="rf-built" class="cs-h2">How it&rsquo;s built</h2>
+    <dl class="spec cs-spec">
+      <div><dt>Game</dt><dd>React 19 and TypeScript, built with Vite into a few static files</dd></div>
+      <div><dt>Rules</dt><dd>A pure TypeScript engine with a seeded shuffle and data files for the charms, bosses and decks</dd></div>
+      <div><dt>Art and sound</dt><dd>Cards and icons drawn in CSS; sound effects and music made live with the Web Audio API</dd></div>
+      <div><dt>Hosting</dt><dd>A Cloudflare Worker that serves the static files at royalflux.alexanderk.dev, deployed on every push</dd></div>
+      <div><dt>Offline</dt><dd>A web app manifest and a service worker that caches every file the build makes</dd></div>
+      <div><dt>Tests</dt><dd>Vitest, for the engine, each charm, saves and bot-played runs</dd></div>
+      <div><dt>On this site</dt><dd>Embedded in the Lab page in a frame</dd></div>
+    </dl>
+  </section>
+</ProjectLayout>
